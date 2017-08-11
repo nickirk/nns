@@ -23,16 +23,14 @@ The input layer are for the basis determinants and the output layer will give ou
 ```math
 E({W_i})^{(t)}=<\Psi^{(t)}|H|\Psi^{(t)}>=\sum_{i}^N\sum_{j}C_i^*C_j<i|H|j>
 ```
-
 and the derivatives 
 
 ```math
 \delta_i^{(t)}=\frac{\partial E}{\partial W_i^{(t)}}
 ```
-
 using back-propagation algorithm. $`t`$ is the training number.
 6. Updating the connection weights between neurons $`W_i^{(t+1)}=W_i^{(t)}-\alpha \delta_i^{(t)}`$.
-7. Going back to 1 and repeat the steps for $`M (t=0,1,2,\dots,M)`$ times (or until $`\delta_i^k<\epsilon`$ where $`\epsilon`$ is the tolerance).
+7. Going back to 1 and repeat the steps for $`M(t=0,1,2,\dots,M)`$ times (or until $`\delta_i^{(t)}<\epsilon`$ where $`\epsilon`$ is the tolerance).
 
 ## Structure of the code
 
