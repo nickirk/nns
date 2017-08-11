@@ -7,6 +7,7 @@
 
 Based on stochastic gradient descend, stochastically choose determinants to sample the wave function. However the most important ones are always included in each sampling (e.g. the HF determinant, if there are other determinants which are also important, we should always include them as well, static correlations), we only choose some other determinants stochastically. 
 0. Given the number of electrons and number of orbitals, constructing all the possible determinants and passing the total number of determinants as the size of the Hamiltonian.
+
 1. Generating a Hamiltonian 
 ```math
 \hat{K}=\hat{H}-E_{HF}\delta_{ij}
@@ -17,10 +18,12 @@ randomly chosen to be small nonzero values.
 3. Constructing a three-layer neural network, with input layer, one hidden layer and the output layer.
 The input layer are for the basis determinants and the output layer will give output of the coefficient of this determinant.
 4. Feeding each determinant $`i`$ in the list to the neural netwrok and obtaining the coefficient $`C_i`$.
+
 5. Calculating 
 ```math
 E({W_i})^{(t)}=<\Psi^{(t)}|H|\Psi^{(t)}>=\sum_{i}^N\sum_{j}C_i^*C_j<i|H|j>
 ```
+
 and the derivatives 
 ```math
 \delta_i^{(t)}=\frac{\partial E}{\partial W_i^{(t)}}
