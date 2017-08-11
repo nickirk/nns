@@ -1,3 +1,3 @@
 #include "Nnw.cxx"
-#include "Hamiltonian.cxx"
+#include "ModelSys.cxx"
 #include "Sampler.cxx"
