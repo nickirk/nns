@@ -14,9 +14,12 @@ Based on stochastic gradient descend, stochastically choose determinants to samp
 ```
 of which the diagonal terms starting with $`0`$ and increase as $`0+diagDelta*i*i`$ and offDiag terms are
 randomly chosen to be small nonzero values. 
+
 2. Creating a list of determinants. Starting from HF determinant as the first element of the list, choosing randomly the next determinant $`i`$ which is connected to the previous determinant based on the magnitude of the off-diagonal term as the second determinant in the list. Then starting from determinant $`i`$, repeat the above procedure until we have $`N`$ determinants in the list. 
+
 3. Constructing a three-layer neural network, with input layer, one hidden layer and the output layer.
 The input layer are for the basis determinants and the output layer will give output of the coefficient of this determinant.
+
 4. Feeding each determinant $`i`$ in the list to the neural netwrok and obtaining the coefficient $`C_i`$.
 
 5. Calculating 
@@ -29,7 +32,9 @@ and the derivatives
 \delta_i^{(t)}=\frac{\partial E}{\partial W_i^{(t)}}
 ```
 using back-propagation algorithm. $`t`$ is the training number.
+
 6. Updating the connection weights between neurons $`W_i^{(t+1)}=W_i^{(t)}-\alpha \delta_i^{(t)}`$.
+
 7. Going back to 1 and repeat the steps for $`M (t=0,1,2,...,M)`$ times (or until $`\delta_i^{(t)}<\epsilon`$ where $`\epsilon`$ is the tolerance).
 
 ## Structure of the code
