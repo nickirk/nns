@@ -1,6 +1,7 @@
 #ifndef ModelSys_DEFINED
 #define ModelSys_DEFINED
 
+#include<Determinant.hpp>
 // type of the determiants
 typedef std::vector<bool> detType;
 

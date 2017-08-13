@@ -4,14 +4,6 @@
 #include <random>
 #include <math.h>
 
-inline int intcast(detType const & in){
-  int out=0;
-  for(size_t i=0;i<in.size();++i){
-    if(in(i)){
-      out+=pow(2,i);
-    }
-  }
-}
 
 Basis::Basis(int numEle_, int numOrb_){
   numEle = numEle_;
@@ -23,47 +15,56 @@ int Basis::getSize(){return size;}
 
 void Basis::generateBasis(){
   basis = new BasisIndexRef[size];
+  Determinant tmpDet(numOrb);
+  Determinant lastDet(numOrb);
+  for (int i=numOrb-1; i>=(numOrb-numEle); i--){
+    lastDet.create(i);
+  }
+  for (int i=0; i<numEle; i++){
+    tmpDet.create(i);
+  }  
+  int cursor(numEle-1);
+  int end(numOrb-1);
+  while (tmpDet.intCast() != lastDet.intCast()){
+    if (cursor == end){
+      cursor--;
+      end--;
+    }  
+  }
 }
 
-detType Basis::getIndex(detType det_) {
-  std::vector<int> position;
-  for (int i=0; i < numOrb; i++){
-    if (det_[i] == 1) position.push_back(i);
-  }
-  for (int j=0; j<numEle; j++){
-    
-  }
-}
+//detType Basis::getIndex(detType det_) {
+//  std::vector<int> position;
+//  for (int i=0; i < numOrb; i++){
+//    if (det_[i] == 1) position.push_back(i);
+//  }
+//  for (int j=0; j<numEle; j++){
+//    
+//  }
+//}
 
-int reduce(int position, int restOfEle){
-  int sum(0);
-  if (restOfEle == 1){
-    return position[1]
-  }
-  else return sum+=reduce(position, restOfEle-1)
-}
 
-int Basis::getDetByIndex(int index_){}
+Determinant Basis::getDetByIndex(int index_){
+  return 
+}
 
 class Basis::BasisIndexRef(){
   public:
     BasisIndexRef(){
-      for (int i=0; i<size; i++){
-        det[i] = 0;
-      }
+       
       index = 0;
     }
-    BasisIndexRef(detType det_, int index_): det(det_), index(index_){}
-    static bool sortByDet (BasisIndexRef const& basisindexref1, 
-      BasisIndexRef const& basisindexref2) {
-      
-    }
+    BasisIndexRef(Determinant det_, int index_): det(det_), index(index_){}
+    //static bool sortByDet (BasisIndexRef const& basisindexref1, 
+    //  BasisIndexRef const& basisindexref2) {
+    //  
+    //}
     static bool sortByIndex (BasisIndexRef const& basisindexref1, 
       BasisIndexRef const& basisindexref2) {
       return basisindexref1.index < basisindexref2.index;
     }
   private:
-    detType det;
+    Determinant det(size);
     int index;
 }
 
