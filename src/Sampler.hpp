@@ -1,13 +1,12 @@
-#include <vector>
-#include <random>
+#ifndef Sampler_DEFINED
+#define Sampler_DEFINED
+
 #include <ModelSys.hpp>
 
-// type of the determinants
-typedef std::vector<bool> detType;
 
-class sampler{
+class Sampler{
 public:
-  sampler(Hamiltonian const &H_, int numStates_, detType HF):H(H_),numStates(numStates_),
+  Sampler(Hamiltonian const &H_, int numStates_, detType HF):H(H_),numStates(numStates_),
 							     cDet(HF){}
   // two functionalities: get a random coupled determinant and get an array of 
   // random coupled determinants
@@ -21,3 +20,5 @@ private:
   // this tracks the last determinant
   mutable detType cDet;
 };
+
+#endif

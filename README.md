@@ -48,3 +48,12 @@ template
 getDets(){}
 ```
 
+## Naming of Variables
+
+- Class names are in CamelCase, starting with an upper case character. They should have noun character. (AmplitudeSolver, Algorithm, not Solve),
+- Derived classes should end with the name of the super class, unless it is kind of obvious (BinaryFtodLoader)
+- Methods are in camelCase, starting with a lower case character. They should have verb character. (solve, normalize, not loader)
+- Instances of classes and types are named in camelCase, preferably according to the class name they are an instance of. (Parser parser, int maxIterations)
+- Mathematical objects, such as numbers and tensors, may additionally be named according to the mathematical symbol nomenclature (int n, Tensor<> Vabij).
+- Acronyms should be treated as a normal word. (FtodLoader, not FTODLoader)
+

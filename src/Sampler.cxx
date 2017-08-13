@@ -3,7 +3,7 @@
 #include <ModelSys.hpp>
 #include <Sampler.hpp>
 
-void sampler::generateList(std::vector<detType > &list) const{
+void Sampler::generateList(std::vector<detType > &list) const{
   // this just repeatedly gets new random states and adds them to the list
   list = std::vector<detType >(numStates);
   for(int i=0;i<numStates;++i){
