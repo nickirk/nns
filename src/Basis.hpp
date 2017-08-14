@@ -24,7 +24,7 @@
 class Basis{
   public:
     Basis(int numEle_, int numOrb_);
-    int getSize();
+    int getSize() const;
     detType getDetByIndex(int index);
     int getIndexByDet(detType const & det_);
   private:

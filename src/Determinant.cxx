@@ -66,3 +66,15 @@ std::vector<int> getOccupiedPositions(detType const &det) {
   }
   return positions;
 }
+
+int verbatimCast(detType const & det){
+	int tmp = 0;
+	for(size_t i = 0;i<det.size();++i){
+		if(det[i]){
+			tmp += pow(2,i);
+		}
+	}
+	return tmp;
+}
+
+bool operator==(detType const& a, detType const& b) const { return verbatimCast(a) == verbatimCast(b);}

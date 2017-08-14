@@ -10,9 +10,10 @@ struct gathered{
 };
 
 Hamiltonian::Hamiltonian(int size_, double diagDelta_, double offDiagMagntd_, double
-  offDiagNonZeroRatio_): rowVec(std::vector<int>(0)),colVec(std::vector<int>(0)),
+  offDiagNonZeroRatio_, Basis const &basis_): rowVec(std::vector<int>(0)),colVec(std::vector<int>(0)),
   valueVec(std::vector<double>(0)), sorted(false){
-      size = size_;
+      basis = basis_;
+      size = basis.getSize();
       diagDelta = diagDelta_;
       offDiagMagntd = offDiagMagntd_;
       offDiagNonZeroRatio = offDiagNonZeroRatio_;
@@ -27,6 +28,8 @@ void Hamiltonian::sparseAccess(int pos, int &row, int &col, double &value){
   row=rowVec[pos];col=colVec[pos];value=valueVec[pos];}
 
 double& Hamiltonian::operator() (detType i, detType j);
+//void Hamiltonian::sparseAcess(int pos, int &row, int &col, double &value){
+//  row=rowVec[pos];col=colVec[pos];value=valueVec[pos];}
 
 void Hamiltonian::multiplyMatrixVector(double *v, double *w){
     for(int i=0;i<size;++i){
@@ -82,4 +85,15 @@ void Hamiltonian::sortH(){
 		colVec[i]=buffer[i].col;
 	}
 	sorted = true;
+}
+
+double Hamiltonian::lookupValue(int const &i, int const &j){
+  std::vector<int>::iterator iter = rowVec.begin();
+  double value(0.);
+  while ((iter = std::find_if(iter, rowVec.end(), i)) != rowVec.end()){
+    int pos = iter - rowVec.begin();
+    if (colVec[pos] == j) value = valueVec[pos];
+    iter++;
+  }
+  return value;
 }
