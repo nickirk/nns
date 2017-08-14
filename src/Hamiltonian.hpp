@@ -1,26 +1,10 @@
-#ifndef ModelSys_DEFINED
-#define ModelSys_DEFINED
+#ifndef Hamiltonian_DEFINED
+#define Hamiltonian_DEFINED
 
-#include<Determinant.hpp>
+#include "Determinant.hpp"
+#include "Basis.hpp"
+
 // type of the determiants
-typedef std::vector<bool> detType;
-
-inline int intcast(detType const & in);
-
-class Basis{
-  public:
-    Basis(int numEle_, int numOrb_);
-    int getSize();
-  private:
-    int numEle;
-    int numOrb;
-    int size;
-    void generateBasis();
-    void indexBasis();
-    class BasisIndexRef();
-};
-
-
 class Hamiltonian{
   public:
     Hamiltonian(int size_, double diagDelta_, double offDiagMagntd_, double

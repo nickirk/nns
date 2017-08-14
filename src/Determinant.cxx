@@ -3,19 +3,31 @@
 #include <iostream>
 #include <math.h>
 #include "Determinant.hpp"
-
+Determinant::Determinant(){
+  size = 0;
+  det.resize(size, 0);
+}
 Determinant::Determinant(int size_){
   size = size_;
   det.resize(size, 0); 
 }
 
-Determinant::Determinant(Determinant &determinant_){
+Determinant::Determinant(Determinant const &determinant_){
   size = determinant_.getSize();
   det.resize(size, 0); 
   std::vector<int> pos = determinant_.getOccupiedPositions();
   for (size_t i=0; i < pos.size(); i++){
     this->create(pos[i]);
   }
+}
+
+void Determinant::operator = (Determinant const &determinant_){
+   size = determinant_.getSize();
+   det.resize(size, 0);
+   std::vector<int> pos(determinant_.getOccupiedPositions());
+   for (int i=0; i<pos.size(); ++i){
+     det[pos[i]]=1;
+   }
 }
 
 void Determinant::annihilate(int pos){

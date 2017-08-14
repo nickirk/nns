@@ -1,72 +1,8 @@
-#include <ModelSys.hpp>
 #include <stdio.h>
 #include <vector>
 #include <random>
 #include <math.h>
-
-
-Basis::Basis(int numEle_, int numOrb_){
-  numEle = numEle_;
-  numOrb = numOrb_; 
-  generateBasis();
-}
-
-int Basis::getSize(){return size;}
-
-void Basis::generateBasis(){
-  basis = new BasisIndexRef[size];
-  Determinant tmpDet(numOrb);
-  Determinant lastDet(numOrb);
-  for (int i=numOrb-1; i>=(numOrb-numEle); i--){
-    lastDet.create(i);
-  }
-  for (int i=0; i<numEle; i++){
-    tmpDet.create(i);
-  }  
-  int cursor(numEle-1);
-  int end(numOrb-1);
-  while (tmpDet.intCast() != lastDet.intCast()){
-    if (cursor == end){
-      cursor--;
-      end--;
-    }  
-  }
-}
-
-//detType Basis::getIndex(detType det_) {
-//  std::vector<int> position;
-//  for (int i=0; i < numOrb; i++){
-//    if (det_[i] == 1) position.push_back(i);
-//  }
-//  for (int j=0; j<numEle; j++){
-//    
-//  }
-//}
-
-
-Determinant Basis::getDetByIndex(int index_){
-  return 
-}
-
-class Basis::BasisIndexRef(){
-  public:
-    BasisIndexRef(){
-       
-      index = 0;
-    }
-    BasisIndexRef(Determinant det_, int index_): det(det_), index(index_){}
-    //static bool sortByDet (BasisIndexRef const& basisindexref1, 
-    //  BasisIndexRef const& basisindexref2) {
-    //  
-    //}
-    static bool sortByIndex (BasisIndexRef const& basisindexref1, 
-      BasisIndexRef const& basisindexref2) {
-      return basisindexref1.index < basisindexref2.index;
-    }
-  private:
-    Determinant det(size);
-    int index;
-}
+#include "Hamiltonian.hpp"
 
 Hamiltonian::Hamiltonian(int size_, double diagDelta_, double offDiagMagntd_, double
   offDiagNonZeroRatio_): rowVec(std::vector<int>(0)),colVec(std::vector<int>(0)),
