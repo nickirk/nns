@@ -23,9 +23,9 @@
 class Basis{
   public:
     Basis(int numEle_, int numOrb_);
-    int getSize();
-    Determinant getDetByIndex(int const & index_);
-    int getIndexByDet(Determinant const & det_);
+    int getSize() const;
+    Determinant getDetByIndex(int const & index_) const;
+    int getIndexByDet(Determinant const & det_) const;
   private:
     int numEle;
     int numOrb;

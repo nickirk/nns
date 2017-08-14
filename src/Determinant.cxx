@@ -29,6 +29,10 @@ void Determinant::operator = (Determinant const &determinant_){
      det[pos[i]]=1;
    }
 }
+Determinant& Determinant::operator = (Determinant const &determinant_){
+  this = &determinant_;
+  return *this;
+}
 
 void Determinant::annihilate(int pos){
   if (pos > size || pos < 0){

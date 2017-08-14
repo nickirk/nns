@@ -18,13 +18,13 @@ Basis::Basis(int numOrb_, int numEle_){
   createBasisDet(0, numEle_);
 }
 
-Determinant Basis::getDetByIndex(int const & index_){
+Determinant Basis::getDetByIndex(int const & index_) const{
   int pos = std::find(indexBasis.begin(), 
 		  indexBasis.end(), index_) - indexBasis.begin();
   return basis[pos];
 }
 
-int Basis::getIndexByDet(Determinant const & det_){
+int Basis::getIndexByDet(Determinant const & det_) const{
   int pos = std::find(basis.begin(), basis.end(), det_)-basis.begin();
   return indexBasis[pos];
 }
@@ -33,7 +33,7 @@ int Basis::calcSize(int numOrb_, int numEle_){
   if (numEle_==0) return 1;
   return (numOrb_ * calcSize(numOrb_ -1, numEle_-1)) / numEle_;
 }
-int Basis::getSize(){return size;}
+int Basis::getSize() const {return size;}
 
 void Basis::createBasisDet(int offset, int numEle_){
   if (numEle_ == 0 ){

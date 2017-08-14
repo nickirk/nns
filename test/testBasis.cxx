@@ -4,7 +4,7 @@
 #include "../src/Basis.hpp"
 using namespace std;
 int main(){
-  Basis basis(4,2);
+  Basis basis(10,4);
   cout << "size= " << basis.getSize() << endl;
   for (int i=0; i < basis.getSize(); ++i){
     Determinant det;
