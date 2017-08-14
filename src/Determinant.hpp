@@ -3,6 +3,9 @@
 
 #include <stdio.h>
 #include <vector>
+#include "detType.hpp"
+
+// deprecated
 class Determinant{
    public:
      Determinant();
@@ -17,8 +20,14 @@ class Determinant{
      bool operator <(Determinant const &det_) ;
    private:
      int size;
-     std::vector<bool> det;
+     detType det;
 };
 
+
+// these should not be members of some class, better use generic functions
+void create(detType &det, int pos);
+void annihilate(detType &det, int pos);
+// this operator likely never occurs, better use a lambda when needed
+bool operator<(detType const &a, detType const &b);
 
 #endif

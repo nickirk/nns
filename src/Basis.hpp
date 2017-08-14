@@ -2,6 +2,7 @@
 #define Basis_DEFINED
 
 #include "Determinant.hpp"
+#include "detType.hpp"
 //
 // type of the determiants
 
@@ -24,8 +25,8 @@ class Basis{
   public:
     Basis(int numEle_, int numOrb_);
     int getSize();
-    Determinant getDetByIndex(int const & index_);
-    int getIndexByDet(Determinant const & det_);
+    detType getDetByIndex(int index);
+    int getIndexByDet(detType const & det_);
   private:
     int numEle;
     int numOrb;
@@ -35,7 +36,9 @@ class Basis{
     std::vector<int> combination;
     int calcSize(int numOrb_, int numEle_);
     void createBasisDet(int offset, int numEle_);
-    std::vector<Determinant> basis;
+    // determinants need to be accessed often, no need to add some
+    // overhead by using an extra class here, better use an alias
+    std::vector<detType > basis;
     std::vector<int> indexBasis;
 };
 

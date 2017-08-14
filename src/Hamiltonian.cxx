@@ -4,9 +4,14 @@
 #include <math.h>
 #include "Hamiltonian.hpp"
 
+struct gathered{
+	double val;
+	int col,row;
+};
+
 Hamiltonian::Hamiltonian(int size_, double diagDelta_, double offDiagMagntd_, double
   offDiagNonZeroRatio_): rowVec(std::vector<int>(0)),colVec(std::vector<int>(0)),
-  valueVec(std::vector<double>(0)){
+  valueVec(std::vector<double>(0)), sorted(false){
       size = size_;
       diagDelta = diagDelta_;
       offDiagMagntd = offDiagMagntd_;
@@ -18,19 +23,17 @@ int Hamiltonian::getSize() const {return size;}
 
 int Hamiltonian::getSparseSize() const {return valueVec.size();}
 
-void Hamiltonian::sparseAcess(int pos, int &row, int &col, double &value){
+void Hamiltonian::sparseAccess(int pos, int &row, int &col, double &value){
   row=rowVec[pos];col=colVec[pos];value=valueVec[pos];}
 
-double& Hamiltonian::operator() (std::vector<bool> i, std::vector<bool> j) {return entry(intcast(i),intcast(j));}
-
-double& Hamiltonian::operator() (int i, int j) {};
+double& Hamiltonian::operator() (detType i, detType j);
 
 void Hamiltonian::multiplyMatrixVector(double *v, double *w){
     for(int i=0;i<size;++i){
       v[i]=0.0;
     }
     for(int i=0;i<valueVec.size();++i){
-      v[rowVec[i]]+=valVec[i]*w[colVec[i]];
+      v[rowVec[i]]+=valueVec[i]*w[colVec[i]];
     }
   }
       
@@ -61,4 +64,22 @@ void Hamiltonian::initHamiltonian(){
       }
     }
   }
+}
+
+void Hamiltonian::sortH(){
+	int numEls = getSparseSize();
+	std::vector<gathered> buffer(numEls);
+	for(size_t i=0;i<numEls;++i){
+		buffer[i].val = valueVec[i];
+		buffer[i].row = rowVec[i];
+		buffer[i].col = colVec[i];
+	}
+	std::sort(buffer.begin(),buffer.end(),[]
+			 (gathered const &a, gathered const &b){return a.row > b.row;});
+	for(size_t i=0;i<numEls;++i){
+		valueVec[i]=buffer[i].val;
+		rowVec[i]=buffer[i].row;
+		colVec[i]=buffer[i].col;
+	}
+	sorted = true;
 }

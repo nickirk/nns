@@ -1,13 +1,13 @@
 #ifndef Sampler_DEFINED
 #define Sampler_DEFINED
 
-#include <ModelSys.hpp>
+#include <detType.hpp>
+#include <Hamiltonian.hpp>
 
-
-class Sampler{
+class sampler{
 public:
-  Sampler(Hamiltonian const &H_, int numStates_, detType HF):H(H_),numStates(numStates_),
-							     cDet(HF){}
+  sampler(Hamiltonian const &H_, detType const &HF, Basis const &fullBasis_, int numStates_):H(H_),fullBasis(fullBasis_),
+							     numStates(numStates_),cDet(HF){}
   // two functionalities: get a random coupled determinant and get an array of 
   // random coupled determinants
   void generateList(std::vector<detType > &list)const;
@@ -16,9 +16,12 @@ public:
 private:
   // Hamiltonian
   Hamiltonian &H;
+  Basis &fullBasis;
   int numStates;
   // this tracks the last determinant
   mutable detType cDet;
 };
+
+inline double dblAbs(double x){if(x>0) return x;return -x;}
 
 #endif

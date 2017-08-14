@@ -3,6 +3,7 @@
 #include <iostream>
 #include <math.h>
 #include "Determinant.hpp"
+#include "errors.hpp"
 Determinant::Determinant(){
   size = 0;
   det.resize(size, 0);
@@ -30,50 +31,38 @@ void Determinant::operator = (Determinant const &determinant_){
    }
 }
 
-void Determinant::annihilate(int pos){
-  if (pos > size || pos < 0){
+void annihilate(detType &det, int pos){
+  if (pos > det.size() || pos < 0){
     std::cerr << "Error! Create outside of range! "; 
-    std::abort();
+    throw outOfRangeError(pos);
   }
   if (det[pos]){ 
     det[pos] = 0;
   }
   else{ 
     std::cerr << "Error! Cannot annihilate an unoccupied state! ";
-    std::abort();
+    throw invalidAnnihilation(pos);
   }
 }
 
-void Determinant::create(int pos){
-  if (pos > size || pos < 0){
+void create(detType &det, int pos){
+  if (pos > det.size() || pos < 0){
     std::cerr << "Error! Create outside of range! "; 
-    std::abort();
+    throw outOfRangeError(pos);
   }
   if (det[pos]){
     std::cerr << "Error! Cannot create on an occupied state! ";
-    std::abort();
+    throw invalidCreation(pos);
   }
   else{
     det[pos] = 1;
   }
 }
 
-std::vector<int> Determinant::getOccupiedPositions() const {
+std::vector<int> getOccupiedPositions(detType const &det) {
   std::vector<int> positions;
-  for (int i=0; i < size; i++){
+  for (int i=0; i < det.size(); i++){
     if (det[i]) positions.push_back(i);
   }
   return positions;
-}
-
-int Determinant::getSize() const {return size;}
-
-int Determinant::intCast() const{
-  int out=0;
-  for(int i=0;i<size;++i){
-    if(det[i]){
-      out+=pow(2,i);
-    }
-  }
-  return out;
 }

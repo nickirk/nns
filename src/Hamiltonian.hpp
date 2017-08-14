@@ -8,21 +8,25 @@
 class Hamiltonian{
   public:
     Hamiltonian(int size_, double diagDelta_, double offDiagMagntd_, double
-		offDiagNonZeroRatio_){}
+		offDiagNonZeroRatio_);
     int getSize() const;
     int getSparseSize() const;
-    void sparseAcess(int pos, int &row, int &col, double &value);
+    void sparseAccess(int pos, int &row, int &col, double &value);
     double & operator () (detType i, detType j);
-    double & operator () (int i, int j);
+    double & operator () (int i, int j){return (*this)(detCast(i),detCast(j));}
     void multiplyMatrixVector(double *v, double *w);
+    int lowerPos(int i){if(!sorted) sortH(); return std::find(rowVec.begin(),rowVec.end(),i);}
+    int upperPos(int i){if(!sorted) sortH(); return std::find_end(rowVec.begin(),rowVec.end(),i);}
   private:
     int size;
     double diagDelta;
     double offDiagMagntd;
-    double OffDiagNonZeroRatio;
+    double offDiagNonZeroRatio;
     std::vector<int> rowVec, colVec;
     std::vector<double> valueVec;
     void initHamiltonian();
+    void sortH();
+    bool sorted;
 };
 
 #endif

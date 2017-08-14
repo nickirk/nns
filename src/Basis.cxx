@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "Basis.hpp"
 #include "Determinant.hpp"
+#include "detType.hpp"
 
 
 Basis::Basis(int numEle_, int numOrb_){
@@ -16,13 +17,11 @@ Basis::Basis(int numEle_, int numOrb_){
   createBasisDet(0, numEle_);
 }
 
-Determinant Basis::getDetByIndex(int const & index_){
-  int pos = std::find(indexBasis.begin(), 
-		  indexBasis.end(), index_) - indexBasis.begin();
-  return basis[pos];
+detType Basis::getDetByIndex(int index){
+  return basis[index];
 }
 
-int Basis::getIndexByDet(Determinant const & det_){
+int Basis::getIndexByDet(detType const & det_){
   int pos = std::find(basis.begin(), basis.end(), det_)-basis.begin();
   return indexBasis[pos];
 }
@@ -35,9 +34,9 @@ int Basis::getSize(){return size;}
 
 void Basis::createBasisDet(int offset, int numEle_){
   if (numEle_ == 0 ){
-    Determinant tmpDet(numOrb);
+    detType tmpDet(numOrb);
     for (int i = 0; i < combination.size(); ++i){
-      tmpDet.create(combination[i]); 
+      create(tmpDet,combination[i]);
     }
     indexBasis.push_back(indexOfDet++);
     basis.push_back(tmpDet);

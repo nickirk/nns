@@ -1,9 +1,9 @@
 #include <vector>
 #include <random>
-#include <ModelSys.hpp>
-#include <Sampler.hpp>
+#include "Hamiltonian.hpp"
+#include "Sampler.hpp"
 
-void Sampler::generateList(std::vector<detType > &list) const{
+void sampler::generateList(std::vector<detType > &list) const{
   // this just repeatedly gets new random states and adds them to the list
   list = std::vector<detType >(numStates);
   for(int i=0;i<numStates;++i){
@@ -12,10 +12,10 @@ void Sampler::generateList(std::vector<detType > &list) const{
   }
 }
 
-detType getRandomDeterminant(detType const &startingPoint) const{
+detType sampler::getRandomDeterminant(detType const &startingPoint) const{
   std::vector<detType > tempDets(0);
   // first, convert the determinant to an index
-  int j = intcast(startingPoint);
+  int j = fullBasis.getIndexByDet(startingPoint);
   // get the range that corresponds to this index' row
   // here, we need the sorted representation. This is best done in the Hamiltonian class
   int lower = H.lowerPos(j);
@@ -28,7 +28,7 @@ detType getRandomDeterminant(detType const &startingPoint) const{
   // compute the normalization sum_j |K_ij|
   for(int i=lower;i<=upper;++i){
     H.sparseAccess(i,row,col,value);
-    K+=std::abs(value);
+    K+=dblAbs(value);
   }
   for(int i=lower;i<=upper;++i){
     p=rng()/normalizer;
@@ -39,7 +39,7 @@ detType getRandomDeterminant(detType const &startingPoint) const{
       // here, we need the reverse of intcast, i.e. the conversion of the index
       // to the determinant. It shall just return lookuptable(i) for a given index i
       // (lookuptable contains the determinants for conversion to int)
-      tempDets.push_back(detTypeCast(col));
+      tempDets.push_back(fullBasis.getDetByIndex(col));
     }
   }
   // pick a random determinant from the temporary list
