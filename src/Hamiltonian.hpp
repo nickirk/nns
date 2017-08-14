@@ -18,7 +18,7 @@ class Hamiltonian{
     double & operator () (int i, int j){return (*this)(basis.getDetByIndex(i),basis.getDetByIndex(j));}
     void multiplyMatrixVector(double *v, double *w);
     int lowerPos(int i){if(!sorted) sortH(); return std::find(rowVec.begin(),rowVec.end(),i);}
-    int upperPos(int i){if(!sorted) sortH(); return std::find_end(rowVec.begin(),rowVec.end(),i);}
+    int upperPos(int i){if(!sorted) sortH(); return std::find(rowVec.begin(),rowVec.end(),i);}
   private:
     int size;
     double diagDelta;
@@ -30,7 +30,7 @@ class Hamiltonian{
     void sortH();
     bool sorted;
     double lookupValue(int const &i, int const &j);
-    Basis const & basis;
+    Basis const& basis;
 };
 
 #endif

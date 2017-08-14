@@ -11,8 +11,7 @@ struct gathered{
 
 Hamiltonian::Hamiltonian(int size_, double diagDelta_, double offDiagMagntd_, double
   offDiagNonZeroRatio_, Basis const &basis_): rowVec(std::vector<int>(0)),colVec(std::vector<int>(0)),
-  valueVec(std::vector<double>(0)), sorted(false){
-      basis = basis_;
+  valueVec(std::vector<double>(0)), sorted(false),basis(basis_){
       size = basis.getSize();
       diagDelta = diagDelta_;
       offDiagMagntd = offDiagMagntd_;
@@ -50,13 +49,16 @@ void Hamiltonian::initHamiltonian(){
     colVec.push_back(i);
   }
   
+  std::random_device rng;
+  double const normalizer = static_cast<double>(rng.max());
+
   //offdiagonal terms are generated sparsely and randomly
   for (int j = 0; j < size; j++){
     for (int i = j+1; i < size; i++){
-      double prob = ((double) rand() / (RAND_MAX));
+      double prob = rng()/normalizer;
       //std::cout << prob << std::endl;
       if (prob < offDiagNonZeroRatio){
-        double fraction = ((double) rand() / (RAND_MAX));
+        double fraction = rng()/normalizer;
         //std::cout << fraction << std::endl;
         valueVec.push_back(diagDelta*offDiagMagntd*fraction);
         valueVec.push_back(diagDelta*offDiagMagntd*fraction);

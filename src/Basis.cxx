@@ -19,11 +19,11 @@ Basis::Basis(int numOrb_, int numEle_){
   createBasisDet(0, numEle_);
 }
 
-detType Basis::getDetByIndex(int index){
+detType Basis::getDetByIndex(int index) const{
   return basis[index];
 }
 
-int Basis::getIndexByDet(detType const & det_){
+int Basis::getIndexByDet(detType const & det_) const{
   int pos = std::find(basis.begin(), basis.end(), det_)-basis.begin();
   return indexBasis[pos];
 }
