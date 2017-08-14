@@ -3,11 +3,13 @@
 #include <random>
 #include <math.h>
 #include <algorithm>
+#include <stdio.h>
+#include <iostream>
 #include "Basis.hpp"
 #include "Determinant.hpp"
 
 
-Basis::Basis(int numEle_, int numOrb_){
+Basis::Basis(int numOrb_, int numEle_){
   numEle = numEle_;
   numOrb = numOrb_; 
   indexOfDet = 0;
@@ -22,10 +24,10 @@ Determinant Basis::getDetByIndex(int const & index_){
   return basis[pos];
 }
 
-int Basis::getIndexByDet(Determinant const & det_){
-  int pos = std::find(basis.begin(), basis.end(), det_)-basis.begin();
-  return indexBasis[pos];
-}
+//int Basis::getIndexByDet(Determinant const & det_){
+//  int pos = std::find(basis.begin(), basis.end(), det_)-basis.begin();
+//  return indexBasis[pos];
+//}
 
 int Basis::calcSize(int numOrb_, int numEle_){
   if (numEle_==0) return 1;
@@ -38,12 +40,15 @@ void Basis::createBasisDet(int offset, int numEle_){
     Determinant tmpDet(numOrb);
     for (int i = 0; i < combination.size(); ++i){
       tmpDet.create(combination[i]); 
+      //std::cout << "Pos= " << combination[i] << std::endl;
     }
     indexBasis.push_back(indexOfDet++);
+    //std::cout << "index= " << indexOfDet << std::endl;
+    //std::cout << "intCast= " << tmpDet.intCast() << std::endl;
     basis.push_back(tmpDet);
     return;
   }
-  for (int i = offset; i <= listOfOrbNum.size() - numEle; ++i){
+  for (int i = offset; i <= listOfOrbNum.size() - numEle_; ++i){
     combination.push_back(listOfOrbNum[i]);
     createBasisDet(i+1, numEle_-1);
     combination.pop_back();
