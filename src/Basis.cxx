@@ -24,10 +24,10 @@ Determinant Basis::getDetByIndex(int const & index_){
   return basis[pos];
 }
 
-//int Basis::getIndexByDet(Determinant const & det_){
-//  int pos = std::find(basis.begin(), basis.end(), det_)-basis.begin();
-//  return indexBasis[pos];
-//}
+int Basis::getIndexByDet(Determinant const & det_){
+  int pos = std::find(basis.begin(), basis.end(), det_)-basis.begin();
+  return indexBasis[pos];
+}
 
 int Basis::calcSize(int numOrb_, int numEle_){
   if (numEle_==0) return 1;

@@ -77,3 +77,5 @@ int Determinant::intCast() const{
   }
   return out;
 }
+
+bool Determinant::operator==(Determinant const& det_) const { return this->intCast() == det_.intCast();}

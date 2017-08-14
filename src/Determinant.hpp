@@ -14,7 +14,7 @@ class Determinant{
      std::vector<int> getOccupiedPositions() const;
      int getSize() const;
      int intCast() const;
-     bool operator <(Determinant const &det_) ;
+     bool operator == (Determinant const &det_) const;
    private:
      int size;
      std::vector<bool> det;
