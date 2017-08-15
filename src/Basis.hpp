@@ -1,3 +1,10 @@
+/*
+ * Basis.hpp
+ * Copyright (c) 2017
+ * Author: Ke Liao and Kai Guther
+ * All rights reserved
+ */
+
 #ifndef Basis_DEFINED
 #define Basis_DEFINED
 
@@ -7,19 +14,6 @@
 // type of the determiants
 
 
-//class BasisIndexRef{
-//  public:
-//    BasisIndexRef(): index(0){}
-//    BasisIndexRef(Determinant det_, int index_): det(det_), index(index_){}
-//    BasisIndexRef(BasisIndexRef const & basisIndexRef): det(basisIndexRef.det),
-//      index(basisIndexRef.index){}
-//    static bool sortByIndex(BasisIndexRef const& basisindexref1,
-//		  BasisIndexRef const& basisindexref2){
-//      return basisindexref1.index < basisindexref2.index;
-//    };
-//    Determinant det;
-//    int index;
-//};
 
 class Basis{
   public:

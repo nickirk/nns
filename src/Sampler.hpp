@@ -1,3 +1,9 @@
+/*
+ * Sampler.hpp
+ * Copyright (c) 2017
+ * Author: Ke Liao and Kai Guther
+ * All rights reserved
+ */
 #ifndef Sampler_DEFINED
 #define Sampler_DEFINED
 

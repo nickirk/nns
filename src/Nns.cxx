@@ -1,3 +1,9 @@
+/*
+ * Nns.cxx
+ * Copyright (c) 2017
+ * Author: Ke Liao and Kai Guther
+ * All rights reserved
+ */
 #include <stdio.h>
 #include <iostream>
 #include <fstream>

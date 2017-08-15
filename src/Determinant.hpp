@@ -1,3 +1,10 @@
+/*
+ * Hamiltonian.cxx
+ * Copyright (c) 2017
+ * Author: Ke Liao and Kai Guther
+ * All rights reserved
+ */
+
 #ifndef Determinant_DEFINED
 #define Determinant_DEFINED
 

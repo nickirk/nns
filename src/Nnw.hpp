@@ -1,3 +1,10 @@
+/*
+ * Nnw.hpp
+ * Copyright (c) 2017
+ * Author: Ke Liao and Kai Guther
+ * All rights reserved
+ */
+
 #ifndef NeuralNetwork_DEFINED
 #define NeuralNetwork_DEFINED
 
