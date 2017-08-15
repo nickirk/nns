@@ -17,15 +17,15 @@ NeuralNetwork::NeuralNetwork(std::vector<int> sizes_, Hamiltonian const&H_,
     activations.push_back(VectorXd::Zero(sizes[i]));
     if (i==0) {
       biases.push_back(VectorXd::Zero(sizes[0]));
-      delta_biases.push_back(VectorXd::Zero(sizes[0]));
+      nabla_biases.push_back(VectorXd::Zero(sizes[0]));
     }
     else{ 
       biases.push_back(VectorXd::Random(sizes[i]));
-      delta_biases.push_back(VectorXd::Zero(sizes[i]));
+      nabla_biases.push_back(VectorXd::Zero(sizes[i]));
     }
     if (i < sizes.size()-1) {
       weights.push_back(MatrixXd::Random(sizes[i+1], sizes[i]));
-      delta_weights.push_back(MatrixXd::Zero(sizes[i+1], sizes[i]));
+      nabla_weights.push_back(MatrixXd::Zero(sizes[i+1], sizes[i]));
     }
   }
 }
@@ -64,12 +64,19 @@ void backPropagate(int numDets){
   std::vector<double> dEdC(NablaE_C());
   std::vector<vector<double>> delta_Epoch;
   for (int epoch=0; epoch < numDets; ++i){
-    std::vector<VectorXd> delta_Layer;
-    delta_Layer.push_back(
-      dEdC[epoch] * inputSignal_Epochs[epoch][numLayers-1].unaryExpr(&Tanh_prime)
-    );
-    for (int layer=numLayers-1; layer > 0; --layer){
-      
+    VectorXd delta_LastLayer;
+    delta_LastLayer = 
+      dEdC[epoch]*inputSignal_Epochs[epoch][numLayers-1].unaryExpr(&Tanh_prime);
+    nabla_biases[numLayers-1] += delta_LastLayer;
+    nabla_weights[numLayers-1] += 
+    for (int layer=numLayers-2; layer > 0; --layer){
+      VectorXd deltaPreviousLayer(delta_LastLayer);
+      VectorXd deltaThisLayer;
+      MatrixXd deltaAsDiagonal;
+      deltaThisLayer = weights[layer+1].transpose() * deltaPreviousLayer 
+      deltaAsDiagonal = deltaThisLayer.asDiagonal();
+      deltaThisLayer = deltaAsDiagonal 
+        * inputSignal_Epochs[epoch][layer].unaryExpr(&Tanh_prime);
     }
   }
   delta = 

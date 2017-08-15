@@ -28,8 +28,8 @@ class NeuralNetwork{
     std::vector<VectorXd> biases;
     std::vector<MatrixXd> weights;
     std::vector<double> output_Cs;
-    std::vector<VectorXd> delta_biases;
-    std::vector<MatrixXd> delta_weights;
+    std::vector<VectorXd> nabla_biases;
+    std::vector<MatrixXd> nabla_weights;
     Hamiltonian &H;
     Basis &fullBasis;
     double energy;
