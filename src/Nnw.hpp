@@ -19,7 +19,6 @@
 using namespace Eigen;
 class NeuralNetwork{
   public:
-    NeuralNetwork();
     NeuralNetwork(std::vector<int> sizes_);
     void train();
 
@@ -31,11 +30,15 @@ class NeuralNetwork{
     std::vector<double> output_Cs;
     std::vector<VectorXd> delta_biases;
     std::vector<MatrixXd> delta_weights;
+    Hamiltonian &H;
+    Basis &fullBasis;
+    double energy;
     double calcEnergy();
     double feedForward(double activation_);
-    double NablaE_C();
+    std::vector<double> NablaE_C();
     void backPropagate();
 };
 
-inline double tanh_prime(double in){return 1-tanh(in)*tanh(in);}
+double Tanh_prime(double in){return 1-tanh(in)*tanh(in);}
+double Tanh(double in) {return tanh(in);}
 #endif

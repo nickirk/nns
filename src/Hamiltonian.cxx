@@ -33,7 +33,22 @@ int Hamiltonian::getSparseSize() const {return valueVec.size();}
 void Hamiltonian::sparseAccess(int pos, int &row, int &col, double &value){
   row=rowVec[pos];col=colVec[pos];value=valueVec[pos];}
 
-double& Hamiltonian::operator() (detType i, detType j);
+double& Hamiltonian::operator() (detType const &i, detType const &j){
+  int row = basis.getIndexByDet(i);
+  int col = basis.getIndexByDet(j);
+  return this->(row, col);
+};
+
+double& Hamiltonian::operator() (int const &i, int const &j){
+  std::vector<int>::iterator iter = rowVec.begin();
+  double value(0.);
+  while ((iter = std::find_if(iter, rowVec.end(), i)) != rowVec.end()){
+    int pos = iter - rowVec.begin();
+    if (colVec[pos] == j) value = valueVec[pos];
+    iter++;
+  }
+  return value;
+}
 //void Hamiltonian::sparseAcess(int pos, int &row, int &col, double &value){
 //  row=rowVec[pos];col=colVec[pos];value=valueVec[pos];}
 
@@ -96,13 +111,3 @@ void Hamiltonian::sortH(){
 	sorted = true;
 }
 
-double Hamiltonian::lookupValue(int const &i, int const &j){
-  std::vector<int>::iterator iter = rowVec.begin();
-  double value(0.);
-  while ((iter = std::find_if(iter, rowVec.end(), i)) != rowVec.end()){
-    int pos = iter - rowVec.begin();
-    if (colVec[pos] == j) value = valueVec[pos];
-    iter++;
-  }
-  return value;
-}
