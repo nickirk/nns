@@ -12,13 +12,13 @@
 #include "Basis.hpp"
 #include "Hamiltonian.hpp"
 
-class sampler{
+class Sampler{
 public:
-  sampler(Hamiltonian const &H_, detType const &HF, Basis const &fullBasis_, int numStates_):H(H_),fullBasis(fullBasis_),
+  Sampler(Hamiltonian const &H_, detType const &HF, Basis const &fullBasis_, int numStates_):H(H_),fullBasis(fullBasis_),
 											     numStates(numStates_),cDet(std::vector<detType >(1,HF)){}
   // two functionalities: get a random coupled determinant and get an array of 
   // random coupled determinants
-  void generateList(std::vector<detType > &list)const;
+  void generateList(std::vector<detType > &list);
   detType getRandomDeterminant(detType const &startingPoint) const;
   // for ab-initio: introduce an overload of generateList for ab-initio hamiltonians
 
@@ -28,8 +28,8 @@ public:
   int getNumStates()const {return numStates;}
 private:
   // Hamiltonian
-  Hamiltonian &H;
-  Basis &fullBasis;
+  Hamiltonian const &H;
+  Basis const &fullBasis;
   int numStates;
   // this is the reference space in terms of determinants
   std::vector<detType > cDet;

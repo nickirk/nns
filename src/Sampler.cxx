@@ -8,11 +8,11 @@
 #include <random>
 #include "Sampler.hpp"
 
-void sampler::generateList(std::vector<detType > &list) const{
+void Sampler::generateList(std::vector<detType > &list) {
   // this just repeatedly gets new random states and adds them to the list
   // if the number of target states is not an integer multiple of the number of
   // reference states, we have to round up the number of target states
-  if(numStates%cDet.size()!=0) numStates = (numStates/cDet.size()+1)*cDet.size()
+  if(numStates%cDet.size()!=0) numStates = (numStates/cDet.size()+1)*cDet.size();
   list = std::vector<detType >(numStates);
   detType buf;
   for(size_t j=0;j<cDet.size();++j){
@@ -25,7 +25,7 @@ void sampler::generateList(std::vector<detType > &list) const{
   }
 }
 
-detType sampler::getRandomDeterminant(detType const &startingPoint) const{
+detType Sampler::getRandomDeterminant(detType const &startingPoint) const{
   std::vector<detType > tempDets(0);
   // first, convert the determinant to an index
   int j = fullBasis.getIndexByDet(startingPoint);
