@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <iostream>
-#include <Eigen/Eigenvalues>
+//#include <Eigen/Eigenvalues>
 #include "../src/Determinant.hpp"
 #include "../src/Basis.hpp"
 #include "../src/Hamiltonian.hpp"
@@ -17,6 +17,15 @@ int main(){
     }
     cout << endl;
   }
+  /*
+  cout << modelHam.lowerPos(0)<<'\t'<<modelHam.upperPos(0)<<'\n';
+  int a,b;
+  double c;
+  for(int i(0);i<modelHam.getSparseSize();++i){
+    modelHam.sparseAccess(i,a,b,c);
+    cout << a << '\t'<<b<<'\t'<<c<<'\n';
+  }
+  */
   Eigen::MatrixXd H(Eigen::MatrixXd::Zero(modelHam.getSize(),modelHam.getSize())); 
   for (int i=0; i<modelHam.getSparseSize(); ++i){
     int row, col;

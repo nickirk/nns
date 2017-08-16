@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <iostream>
-#include <Eigen/Eigenvalues>
 #include "../src/Determinant.hpp"
 #include "../src/Basis.hpp"
 #include "../src/Hamiltonian.hpp"

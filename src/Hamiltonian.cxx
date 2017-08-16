@@ -20,7 +20,7 @@ struct gathered{
 
 Hamiltonian::Hamiltonian(double diagDelta_, double offDiagMagntd_, double
   offDiagNonZeroRatio_, Basis const &basis_): rowVec(std::vector<int>(0)),colVec(std::vector<int>(0)),
-  valueVec(std::vector<double>(0)), sorted(false),basis(basis_){
+  valueVec(std::vector<double>(0)), basis(basis_){
       size = basis.getSize();
       diagDelta = diagDelta_;
       offDiagMagntd = offDiagMagntd_;
@@ -43,7 +43,7 @@ int Hamiltonian::getSize() const {return size;}
 
 int Hamiltonian::getSparseSize() const {return valueVec.size();}
 
-void Hamiltonian::sparseAccess(int pos, int &row, int &col, double &value){
+void Hamiltonian::sparseAccess(int pos, int &row, int &col, double &value) const{
   row=rowVec[pos];col=colVec[pos];value=valueVec[pos];}
 
 double Hamiltonian::operator() (detType const &i, detType const &j){
@@ -126,16 +126,13 @@ void Hamiltonian::sortH(){
 		rowVec[i]=buffer[i].row;
 		colVec[i]=buffer[i].col;
 	}
-	sorted = true;
 }
 
-int Hamiltonian::lowerPos(int const i){
-  if(!sorted) sortH();
+int Hamiltonian::lowerPos(int const i) const{
   return std::distance(colVec.begin(),std::find(colVec.begin(),colVec.end(),i));
 }
 
-int Hamiltonian::upperPos(int const i){
-  if(!sorted) sortH();
+int Hamiltonian::upperPos(int const i) const{
   return std::distance(colVec.begin(),std::find(colVec.rbegin(),colVec.rend(),i).base());
 }
 

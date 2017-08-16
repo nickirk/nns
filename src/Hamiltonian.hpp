@@ -19,13 +19,13 @@ class Hamiltonian{
 		offDiagNonZeroRatio_, Basis const & basis_);
     int getSize() const;
     int getSparseSize() const;
-    void sparseAccess(int pos, int &row, int &col, double &value);
+    void sparseAccess(int pos, int &row, int &col, double &value) const;
     double  operator () (detType const &i, detType const &j);
     double  operator () (int const i, int const j);
     void multiplyMatrixVector(double *v, double *w);
     //What are these two functions for?
-    int lowerPos(int i);
-    int upperPos(int i);
+    int lowerPos(int i) const;
+    int upperPos(int i) const;
   private:
     int size;
     double diagDelta;
@@ -36,7 +36,6 @@ class Hamiltonian{
     std::vector<double> valueVec;
     void initHamiltonian();
     void sortH();
-    bool sorted;
     double lookupValue(int const &i, int const &j);
     Basis const& basis;
 };

@@ -18,7 +18,7 @@ public:
 											     numStates(numStates_),cDet(std::vector<detType >(1,HF)){}
   // two functionalities: get a random coupled determinant and get an array of 
   // random coupled determinants
-  void generateList(std::vector<detType > &list);
+  void generateList(std::vector<detType > &list) const;
   detType getRandomDeterminant(detType const &startingPoint) const;
   // for ab-initio: introduce an overload of generateList for ab-initio hamiltonians
 
