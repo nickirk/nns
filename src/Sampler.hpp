@@ -7,8 +7,10 @@
 #ifndef Sampler_DEFINED
 #define Sampler_DEFINED
 
-#include <detType.hpp>
-#include <Hamiltonian.hpp>
+#include <vector>
+#include "Determinant.hpp"
+#include "Basis.hpp"
+#include "Hamiltonian.hpp"
 
 class sampler{
 public:

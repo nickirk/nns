@@ -6,7 +6,6 @@
  */
 #include <vector>
 #include <random>
-#include "Hamiltonian.hpp"
 #include "Sampler.hpp"
 
 void sampler::generateList(std::vector<detType > &list) const{
