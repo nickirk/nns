@@ -8,7 +8,9 @@
 #include <stdio.h>
 #include <vector>
 #include <random>
+#include <iostream>
 #include <math.h>
+#include <algorithm>
 #include "Hamiltonian.hpp"
 
 struct gathered{
@@ -16,7 +18,7 @@ struct gathered{
 	int col,row;
 };
 
-Hamiltonian::Hamiltonian(int size_, double diagDelta_, double offDiagMagntd_, double
+Hamiltonian::Hamiltonian(double diagDelta_, double offDiagMagntd_, double
   offDiagNonZeroRatio_, Basis const &basis_): rowVec(std::vector<int>(0)),colVec(std::vector<int>(0)),
   valueVec(std::vector<double>(0)), sorted(false),basis(basis_){
       size = basis.getSize();
@@ -24,6 +26,17 @@ Hamiltonian::Hamiltonian(int size_, double diagDelta_, double offDiagMagntd_, do
       offDiagMagntd = offDiagMagntd_;
       offDiagNonZeroRatio = offDiagNonZeroRatio_;
       initHamiltonian();
+      sortH();
+      //std::cout <<"Value from within the class" <<std::endl; 
+      //for (int i=0; i<valueVec.size(); ++i){
+      //  std::cout << valueVec[i] << "," << std::endl;
+      //}
+      //for (int i=0; i<colVec.size(); ++i){
+      //  std::cout << "Sorted column vec " << colVec[i] << "," << std::endl;
+      //}
+      //for (int i=0; i<rowVec.size(); ++i){
+      //  std::cout << "Sorted row vec " << rowVec[i] << "," << std::endl;
+      //}
 }
 
 int Hamiltonian::getSize() const {return size;}
@@ -33,20 +46,22 @@ int Hamiltonian::getSparseSize() const {return valueVec.size();}
 void Hamiltonian::sparseAccess(int pos, int &row, int &col, double &value){
   row=rowVec[pos];col=colVec[pos];value=valueVec[pos];}
 
-double& Hamiltonian::operator() (detType const &i, detType const &j){
+double Hamiltonian::operator() (detType const &i, detType const &j){
+  double value(0.);
   int row = basis.getIndexByDet(i);
   int col = basis.getIndexByDet(j);
-  return this->(row, col);
+  value = (*this)(row, col);
+  return value;
 };
 
-double& Hamiltonian::operator() (int const &i, int const &j){
-  std::vector<int>::iterator iter = rowVec.begin();
-  double value(0.);
-  while ((iter = std::find_if(iter, rowVec.end(), i)) != rowVec.end()){
-    int pos = iter - rowVec.begin();
-    if (colVec[pos] == j) value = valueVec[pos];
-    iter++;
-  }
+double Hamiltonian::operator() (int const i, int const j){
+  std::vector<int>::iterator iter;
+  double value(0.0);
+  iter =  std::find(rowVec.begin()+lowerPos(j), rowVec.begin()+upperPos(j), i);
+  int pos = iter - rowVec.begin();
+  if (pos < upperPos(j)) value=valueVec[pos];
+  //std::cout << "pos= " << pos << std::endl;
+  //std::cout << "upperPos= " << upperPos(j)+1 << std::endl;
   return value;
 }
 //void Hamiltonian::sparseAcess(int pos, int &row, int &col, double &value){
@@ -81,9 +96,12 @@ void Hamiltonian::initHamiltonian(){
       //std::cout << prob << std::endl;
       if (prob < offDiagNonZeroRatio){
         double fraction = rng()/normalizer;
+        double signProb = rng()/normalizer;
+        double sign(1);
+        if (signProb < 0.5) sign = -1;
         //std::cout << fraction << std::endl;
-        valueVec.push_back(diagDelta*offDiagMagntd*fraction);
-        valueVec.push_back(diagDelta*offDiagMagntd*fraction);
+        valueVec.push_back(sign*diagDelta*offDiagMagntd*fraction);
+        valueVec.push_back(sign*diagDelta*offDiagMagntd*fraction);
         rowVec.push_back(i);
         rowVec.push_back(j);
         colVec.push_back(j);
@@ -102,12 +120,22 @@ void Hamiltonian::sortH(){
 		buffer[i].col = colVec[i];
 	}
 	std::sort(buffer.begin(),buffer.end(),[]
-			 (gathered const &a, gathered const &b){return a.row > b.row;});
+			 (gathered const &a, gathered const &b){return a.col > b.col;});
 	for(size_t i=0;i<numEls;++i){
 		valueVec[i]=buffer[i].val;
 		rowVec[i]=buffer[i].row;
 		colVec[i]=buffer[i].col;
 	}
 	sorted = true;
+}
+
+int Hamiltonian::lowerPos(int const i){
+  if(!sorted) sortH();
+  return std::distance(colVec.begin(),std::find(colVec.begin(),colVec.end(),i));
+}
+
+int Hamiltonian::upperPos(int const i){
+  if(!sorted) sortH();
+  return std::distance(colVec.begin(),std::find(colVec.rbegin(),colVec.rend(),i).base());
 }
 

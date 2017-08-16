@@ -9,15 +9,13 @@
 #define Basis_DEFINED
 
 #include "Determinant.hpp"
-#include "detType.hpp"
 //
 // type of the determiants
 
 
-
 class Basis{
   public:
-    Basis(int numEle_, int numOrb_);
+    Basis(int numOrb_, int numEle_);
     int getSize() const;
     detType getDetByIndex(int index) const;
     int getIndexByDet(detType const & det_) const;
