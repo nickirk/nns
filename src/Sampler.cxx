@@ -11,10 +11,18 @@
 
 void sampler::generateList(std::vector<detType > &list) const{
   // this just repeatedly gets new random states and adds them to the list
+  // if the number of target states is not an integer multiple of the number of
+  // reference states, we have to round up the number of target states
+  if(numStates%cDet.size()!=0) numStates = (numStates/cDet.size()+1)*cDet.size()
   list = std::vector<detType >(numStates);
-  for(int i=0;i<numStates;++i){
-    cDet=getRandomDeterminant(cDet);
-    list[i]=cDet;
+  detType buf;
+  for(size_t j=0;j<cDet.size();++j){
+    // now, numStates/cDet.size() is always an integer
+    buf = cDet[j];
+    for(int i=0;i<numStates/cDet.size();++i){
+      buf=getRandomDeterminant(buf);
+      list[i]=buf;
+    }
   }
 }
 
