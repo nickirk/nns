@@ -48,6 +48,8 @@ void NeuralNetwork::calcEnergy(std::vector<detType> const&listDetsToTrain){
 }
 
 std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double eta){
+  //clear the output_Cs vector for each new training
+  output_Cs.clear();
   //listDetsToTrain = listDetsToTrain_; 
   int numDets(listDetsToTrain.size());
   std::vector<std::vector<VectorXd>> inputSignal_Epochs;
@@ -86,6 +88,18 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
     inputSignal_Epochs.push_back(inputSignal);
     activations_Epochs.push_back(activations);
     output_Cs.push_back(activations[numLayersNeuron-1][0]);
+   
+    //std::cout <<"1 num Det= " << epoch<< std::endl;
+    ////std::cout << "inputSignal= " << inputSignal[numLayersNeuron-1][0] <<std::endl;
+    //std::cout << "1 inputsignal_epoch= "<<inputSignal_Epochs[epoch][numLayersNeuron-1][0] << std::endl; 
+    //std::cout << "1 inputsignal_epoch size= "<<inputSignal_Epochs.size() << std::endl; 
+    ////std::cout << "activations= " << activations[numLayersNeuron-1][0] <<std::endl;
+    //std::cout << "1 activation_epoch= " <<activations_Epochs[epoch][numLayersNeuron-1][0] << std::endl; 
+
+    //std::cout << "1 activation_epoch size= " <<activations_Epochs.size() << std::endl; 
+    //std::cout << "1 Output coeff= " << output_Cs[epoch] << std::endl;
+    //std::cout << "1 Output coeff size= " << output_Cs.size() << std::endl;
+    //std::cout << "1 last bias= " << biases[1] << std::endl;
   }
   
   //calculating variational energy
@@ -120,7 +134,13 @@ void NeuralNetwork::backPropagate(
   std::vector<double> dEdC(NablaE_C(listDetsToTrain));
   for (int epoch=0; epoch < numDets; ++epoch){
     VectorXd deltaTheLastLayer;
-    
+    //std::cout <<"num Det= " << epoch<< std::endl;
+    //std::cout << "inputsignal= "<<inputSignal_Epochs[epoch][numLayersNeuron-1][0] << std::endl; 
+    //std::cout << "inputsignal size= "<<inputSignal_Epochs.size() << std::endl; 
+    //std::cout << "activation= " <<activations_Epochs[epoch][numLayersNeuron-1][0] << std::endl; 
+    //std::cout << "activation size= " <<activations_Epochs.size() << std::endl; 
+    //std::cout << "Output coeff= " << output_Cs[epoch] << std::endl;
+    //std::cout << "Output coeff size= " << output_Cs.size() << std::endl;
     deltaTheLastLayer = 
     dEdC[epoch]*inputSignal_Epochs[epoch][numLayersNeuron-1].unaryExpr(
                                     &Tanh_prime);
@@ -129,6 +149,8 @@ void NeuralNetwork::backPropagate(
     //Treat them as Vectors and Matrices.
     //Starting from the last layer of neuron and backpropagate the error.
     //nabla_weights have the same structure as weights, only numLayers-2 layers.
+    std::vector<VectorXd> deltaAllLayers;
+    deltaAllLayers.push_back(deltaTheLastLayer);
     nabla_biases[numLayersBiasesWeights-1] += deltaTheLastLayer;
     nabla_weights[numLayersBiasesWeights-1] += 
       deltaTheLastLayer * activations_Epochs[epoch][numLayersNeuron-2].transpose();
@@ -136,9 +158,9 @@ void NeuralNetwork::backPropagate(
       //Calculating the error from the second last layer to
       //the 1st layer (0th layer is the input neurons, have no biases.)
       //Remember weights have only 0th -- numLayers-2 layers.
-      VectorXd deltaPreviousLayer(deltaTheLastLayer);
+      VectorXd deltaPreviousLayer=deltaAllLayers[numLayersBiasesWeights-2-layer];
       VectorXd deltaThisLayer;
-      MatrixXd deltaAsDiagonal;
+      //MatrixXd deltaAsDiagonal;
       //\delta_l = ((weights_{l+1, l}^T\delta^{l+1})) .* tanh'(z^l);
       //where ^T means transpose, l means lth layer, tanh' means the derivative
       //of tanh and z^l= tanh(weights_{l,l-1}activations^{l-1}) is the input signal 
@@ -152,6 +174,7 @@ void NeuralNetwork::backPropagate(
          * inputSignal_Epochs[epoch][layer+1].unaryExpr(&Tanh_prime).array();
       //deltaThisLayer = deltaAsDiagonal * 
       // VectorXd::Ones(deltaThisLayer.size());
+      deltaAllLayers.push_back(deltaThisLayer);
       nabla_biases[layer] += deltaThisLayer;
       //get a weight matrix. \partial C/\partial w^{l}_{jk} = a^{l-1}_k \delta_j^l 
       //the layer here refers to the lth layer of Biases and weights, so for
