@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <iostream>
-//#include <Eigen/Eigenvalues>
+#include <Eigen/Eigenvalues>
 #include "../src/Determinant.hpp"
 #include "../src/Basis.hpp"
 #include "../src/Hamiltonian.hpp"
@@ -14,6 +14,12 @@ int main(){
   for (int i(0); i<modelHam.getSize(); ++i){
     for (int j(0); j< modelHam.getSize(); ++j){
       cout << modelHam(i,j) << ", " ;
+    }
+    cout << endl;
+  }
+  for (int i(0); i<modelHam.getSize(); ++i){
+    for (int j(0); j< modelHam.getSize(); ++j){
+      cout << modelHam(basis.getDetByIndex(i), basis.getDetByIndex(j)) << ",";
     }
     cout << endl;
   }

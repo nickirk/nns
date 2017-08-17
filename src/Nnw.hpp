@@ -15,32 +15,36 @@
 #include "Determinant.hpp"
 #include "Basis.hpp"
 #include "Hamiltonian.hpp"
-#include "Sampler.hpp"
+//#include "Sampler.hpp"
 using namespace Eigen;
 class NeuralNetwork{
   public:
-    NeuralNetwork(std::vector<int> sizes_, Hamiltonian const&H_,
+    NeuralNetwork(std::vector<int> const &sizes_, Hamiltonian const&H_,
       Basis const &fullBasis_);
-    void train();
-
+    std::vector<detType> train(std::vector<detType> const&listDetsToTrain, double eta);
+    double getEnergy(){return energy;}
   private:
     std::vector<int> sizes;
-    std::vector<VectorXd> activations;
     std::vector<VectorXd> biases;
     std::vector<MatrixXd> weights;
     std::vector<double> output_Cs;
     std::vector<VectorXd> nabla_biases;
     std::vector<MatrixXd> nabla_weights;
-    Hamiltonian &H;
-    Basis &fullBasis;
+    //std::vector<detType> &listDetsToTrain;
+    Hamiltonian const&H;
+    Basis const&fullBasis;
     double energy;
-    void calcEnergy();
-    void train(std::vector<detType> &list, double eta);
+    void calcEnergy(std::vector<detType> const &listDetsToTrain);
+    //std::vector<detType> train(std::vector<detType> &listDetsToTrain_, double eta);
     //double feedForward(double activation_);
-    void backPropagate(int numDets);
-    std::vector<double> NablaE_C();
+    void backPropagate(
+           std::vector<detType> const &listDetsToTrain,
+           std::vector<std::vector<VectorXd>> const &inputSignal_Epochs,
+           std::vector<std::vector<VectorXd>> const &activations
+         );
+    std::vector<double> NablaE_C(std::vector<detType> const &listDetsToTrain);
 };
 
-double Tanh_prime(double in){return 1-tanh(in)*tanh(in);}
-double Tanh(double in) {return tanh(in);}
+double Tanh_prime(double in);
+double Tanh(double in); 
 #endif

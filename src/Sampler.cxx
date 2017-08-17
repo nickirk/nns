@@ -44,10 +44,12 @@ detType Sampler::getRandomDeterminant(detType const &startingPoint) const{
   // compute the normalization sum_j |K_ij|
   for(int i=lower;i<upper;++i){
     H.sparseAccess(i,row,col,value);
+    if (col == j) continue;
     K+=dblAbs(value);
   }
   while(tempDets.size() == 0){
     for(int i=lower;i<upper;++i){
+      if (col == j) continue;
       p=rng()/normalizer;
       // get all coupled determinants and accept them into the temporary list
       // with probability K_ij/K

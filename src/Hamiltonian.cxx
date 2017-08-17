@@ -46,7 +46,7 @@ int Hamiltonian::getSparseSize() const {return valueVec.size();}
 void Hamiltonian::sparseAccess(int pos, int &row, int &col, double &value) const{
   row=rowVec[pos];col=colVec[pos];value=valueVec[pos];}
 
-double Hamiltonian::operator() (detType const &i, detType const &j){
+double Hamiltonian::operator() (detType const &i, detType const &j) const {
   double value(0.);
   int row = basis.getIndexByDet(i);
   int col = basis.getIndexByDet(j);
@@ -54,8 +54,8 @@ double Hamiltonian::operator() (detType const &i, detType const &j){
   return value;
 };
 
-double Hamiltonian::operator() (int const i, int const j){
-  std::vector<int>::iterator iter;
+double Hamiltonian::operator() (int const i, int const j) const {
+  std::vector<int>::const_iterator iter;
   double value(0.0);
   iter =  std::find(rowVec.begin()+lowerPos(j), rowVec.begin()+upperPos(j), i);
   int pos = iter - rowVec.begin();

@@ -20,8 +20,8 @@ class Hamiltonian{
     int getSize() const;
     int getSparseSize() const;
     void sparseAccess(int pos, int &row, int &col, double &value) const;
-    double  operator () (detType const &i, detType const &j);
-    double  operator () (int const i, int const j);
+    double  operator () (detType const &i, detType const &j) const;
+    double  operator () (int const i, int const j) const;
     void multiplyMatrixVector(double *v, double *w);
     //What are these two functions for?
     int lowerPos(int i) const;
