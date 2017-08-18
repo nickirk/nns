@@ -22,7 +22,7 @@ int main(){
     }
   }
   cout << "eigenV= \n" << H.eigenvalues() << endl;
-  vector<int> size_NNW = {numStates, 40,1};
+  vector<int> size_NNW = {numStates, 20,1};
   vector<detType> list;
   for (int i=0; i<basis.getSize(); ++i){
     list.push_back(basis.getDetByIndex(i));
@@ -34,7 +34,7 @@ int main(){
   }
   NeuralNetwork NNW(size_NNW, modelHam, basis);
   while (true){
-    NNW.train(list, 0.4); 
+    NNW.train(list, 0.5); 
     cout << "energy= " << NNW.getEnergy() << endl;
   }
 }

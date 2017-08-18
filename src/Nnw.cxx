@@ -38,12 +38,13 @@ void NeuralNetwork::calcEnergy(std::vector<detType> const&listDetsToTrain){
   double Hij(0.);
   int numDets = listDetsToTrain.size();
   for (int i=0; i < numDets; ++i){
-    for (int j=i; j < numDets; ++j){
-      Hij = 2 * H(listDetsToTrain[i], listDetsToTrain[j]);
+    normalizerCoeff += output_Cs[i] * output_Cs[i];
+    for (int j=0; j < numDets; ++j){
+      Hij = H(listDetsToTrain[i], listDetsToTrain[j]);
       energy += output_Cs[i] * output_Cs[j] * Hij;
-      normalizerCoeff += 2* output_Cs[i] * output_Cs[j];
     }
   }
+  std::cout << "normE= " << normalizerCoeff << std::endl;
   energy /= normalizerCoeff;
 }
 
@@ -191,10 +192,15 @@ std::vector<double> NeuralNetwork::NablaE_C(
   int numDets = listDetsToTrain.size();
   for (int i=0; i < numDets; ++i){
     double dEdC_i(0.);
+    double normalizerCoeff(0.);
     for (int j=0; j < numDets; ++j){
+      normalizerCoeff += output_Cs[j]*output_Cs[j];
       dEdC_i += 2* output_Cs[i] * output_Cs[j] * H(listDetsToTrain[i], 
                                                    listDetsToTrain[j]);
     }
+    std::cout << "normdE= " << normalizerCoeff << std::endl;
+    dEdC_i -= 2*energy*output_Cs[i];
+    dEdC_i /= normalizerCoeff;
     dEdC.push_back(dEdC_i);
   }
   return dEdC;
