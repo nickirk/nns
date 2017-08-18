@@ -14,7 +14,9 @@ void Sampler::generateList(std::vector<detType > &list) const{
   // if the number of target states is not an integer multiple of the number of
   // reference states, we have to round up the number of target states
   int numComp = numStates;
+  //std::cout << "size of list= " << list.size() << std::endl;
   if(numStates%cDet.size()!=0) numComp = (numStates/cDet.size()+1)*cDet.size();
+  //std::cout << "size of numComp= " << numComp << std::endl;
   list = std::vector<detType >(numComp);
   detType buf;
   for(size_t j=0;j<cDet.size();++j){
@@ -44,16 +46,16 @@ detType Sampler::getRandomDeterminant(detType const &startingPoint) const{
   // compute the normalization sum_j |K_ij|
   for(int i=lower;i<upper;++i){
     H.sparseAccess(i,row,col,value);
-    if (col == j) continue;
+    if (row == j) continue;
     K+=dblAbs(value);
   }
   while(tempDets.size() == 0){
     for(int i=lower;i<upper;++i){
-      if (col == j) continue;
       p=rng()/normalizer;
       // get all coupled determinants and accept them into the temporary list
       // with probability K_ij/K
       H.sparseAccess(i,row,col,value);
+      if (row == j) continue;
       //std::cout<<"Choosing "<<dblAbs(value)/K<<std::endl;
       if(p<dblAbs(value)/K){
 	// here, we need the reverse of intcast, i.e. the conversion of the index

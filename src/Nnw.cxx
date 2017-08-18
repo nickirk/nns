@@ -44,7 +44,7 @@ void NeuralNetwork::calcEnergy(std::vector<detType> const&listDetsToTrain){
       energy += output_Cs[i] * output_Cs[j] * Hij;
     }
   }
-  std::cout << "normE= " << normalizerCoeff << std::endl;
+  //std::cout << "normE= " << normalizerCoeff << std::endl;
   energy /= normalizerCoeff;
 }
 
@@ -65,6 +65,7 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
   inputSignal.push_back(VectorXd::Zero(sizes[0]));
   for (int layer=0; layer < numLayersBiasesWeights; ++layer){
     activations.push_back(VectorXd::Zero(sizes[layer+1]));
+    inputSignal.push_back(VectorXd::Zero(sizes[layer+1]));
     nabla_biases[layer] *= 0.; 
     nabla_weights[layer] *=0.;
   } 
@@ -83,16 +84,25 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
       //std::cout << weights[layer-1] << std::endl;
       //std::cout << activations[layer-1] << std::endl;
       activations[layer] = weights[layer-1]*activations[layer-1]+biases[layer-1];
-      inputSignal.push_back(activations[layer]);
+      inputSignal[layer] = activations[layer];
+      //if (layer == numLayersNeuron-1){
+      //  std::cout << "inputSignal act= " << activations[layer] << std::endl;        
+      //  std::cout << "inputSignal size= " << inputSignal.size() << std::endl;        
+      //  std::cout << "inputSignal= " << inputSignal[layer] << std::endl;        
+      //}
       activations[layer] = activations[layer].unaryExpr(&Tanh);
+      //if (layer == numLayersNeuron-1){
+      //  std::cout << "activation= " << activations[layer] << std::endl;        
+      //}
     }
     inputSignal_Epochs.push_back(inputSignal);
     activations_Epochs.push_back(activations);
     output_Cs.push_back(activations[numLayersNeuron-1][0]);
    
     //std::cout <<"1 num Det= " << epoch<< std::endl;
-    ////std::cout << "inputSignal= " << inputSignal[numLayersNeuron-1][0] <<std::endl;
-    //std::cout << "1 inputsignal_epoch= "<<inputSignal_Epochs[epoch][numLayersNeuron-1][0] << std::endl; 
+    //std::cout << "inputSignalLastLayer= " << inputSignal[numLayersNeuron-1] <<std::endl;
+    //std::cout << "inputsignal_epochLL= "<<inputSignal_Epochs[epoch][numLayersNeuron-1] << std::endl; 
+    //std::cout << "C_" << epoch << "= " << output_Cs[epoch] << std::endl;
     //std::cout << "1 inputsignal_epoch size= "<<inputSignal_Epochs.size() << std::endl; 
     ////std::cout << "activations= " << activations[numLayersNeuron-1][0] <<std::endl;
     //std::cout << "1 activation_epoch= " <<activations_Epochs[epoch][numLayersNeuron-1][0] << std::endl; 
@@ -116,9 +126,15 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
   }
   double HFCoeff(output_Cs[0]);
   std::vector<detType> seeds;
+  //std::vector<double> dEdC(NablaE_C(listDetsToTrain));
   for (int i=0; i < output_Cs.size(); ++i){
-    if (output_Cs[i] > 0.3*HFCoeff)
+    //std::cout << "HFCoeff= " << HFCoeff << std::endl;
+    std::cout << "C_" << i << "= " << output_Cs[i] << std::endl;
+    //std::cout << "yes or no" << "= " <<fabs(fabs(output_Cs[i])-0.2*fabs(HFCoeff))  << std::endl;
+    if (fabs(fabs(output_Cs[i])-0.4*fabs(HFCoeff)) > 1e-8){
+      //std::cout << "yes" << std::endl;
       seeds.push_back(listDetsToTrain[i]);
+    }
   }
   return seeds;
 }
@@ -195,10 +211,9 @@ std::vector<double> NeuralNetwork::NablaE_C(
     double normalizerCoeff(0.);
     for (int j=0; j < numDets; ++j){
       normalizerCoeff += output_Cs[j]*output_Cs[j];
-      dEdC_i += 2* output_Cs[i] * output_Cs[j] * H(listDetsToTrain[i], 
+      dEdC_i += 2 * output_Cs[j] * H(listDetsToTrain[i], 
                                                    listDetsToTrain[j]);
     }
-    std::cout << "normdE= " << normalizerCoeff << std::endl;
     dEdC_i -= 2*energy*output_Cs[i];
     dEdC_i /= normalizerCoeff;
     dEdC.push_back(dEdC_i);

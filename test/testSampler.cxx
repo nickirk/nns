@@ -6,7 +6,7 @@
 #include "../src/Sampler.hpp"
 using namespace std;
 int main(){
-  Basis basis(5,2);
+  Basis basis(10,3);
   Hamiltonian modelHam(0.5, 0.2, 0.2, basis);
   cout << "Basis size= " << basis.getSize() << endl;
   cout << "Hamiltonian size= " << modelHam.getSize() << endl;
@@ -26,7 +26,7 @@ int main(){
   //}
   //cout << "Diag= " << H.eigenvalues()  << endl;
   detType HF=basis.getDetByIndex(0);
-  Sampler sampler(modelHam, HF, basis, 4);
+  Sampler sampler(modelHam,  basis, 50,HF);
   vector<detType> detList;
   sampler.generateList(detList);
   for (int i=0; i<detList.size(); ++i){
