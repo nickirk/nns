@@ -26,6 +26,8 @@ class Hamiltonian{
     //What are these two functions for?
     int lowerPos(int i) const;
     int upperPos(int i) const;
+    void writeToFile(std::string);
+    void readFromFile(std::string);
   private:
     int size;
     double diagDelta;

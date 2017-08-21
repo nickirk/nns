@@ -14,17 +14,21 @@ void Sampler::generateList(std::vector<detType > &list) const{
   // if the number of target states is not an integer multiple of the number of
   // reference states, we have to round up the number of target states
   int numComp = numStates;
-  //std::cout << "size of list= " << list.size() << std::endl;
+  std::cout << "size of list= " << list.size() << std::endl;
   if(numStates%cDet.size()!=0) numComp = (numStates/cDet.size()+1)*cDet.size();
-  //std::cout << "size of numComp= " << numComp << std::endl;
+  std::cout << "size of numComp= " << numComp << std::endl;
   list = std::vector<detType >(numComp);
   detType buf;
-  for(size_t j=0;j<cDet.size();++j){
+  int numRef=cDet.size();
+  std::cout << "size of cDet= " << numRef << std::endl;
+  int numBatch=numComp/numRef;
+  for(size_t j=0;j<numRef;++j){
     // now, numStates/cDet.size() is always an integer
     buf = cDet[j];
-    for(int i=0;i<numComp/cDet.size();++i){
+    list[j] = buf;
+    for(int i=0;i<numBatch-1;++i){
       buf=getRandomDeterminant(buf);
-      list[i]=buf;
+      list[numRef+j*(numBatch-1)+i]=buf;
     }
   }
 }

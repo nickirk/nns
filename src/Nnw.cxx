@@ -34,13 +34,17 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, Hamiltonian const&H
 
 void NeuralNetwork::calcEnergy(std::vector<detType> const&listDetsToTrain){
   energy = 0.;
+  sign = 0;
+  int sign_i=0;
   double normalizerCoeff(0.);
   double Hij(0.);
   int numDets = listDetsToTrain.size();
   for (int i=0; i < numDets; ++i){
     normalizerCoeff += output_Cs[i] * output_Cs[i];
-    for (int j=0; j < numDets; ++j){
-      Hij = H(listDetsToTrain[i], listDetsToTrain[j]);
+    sign_i = (output_Cs[i]-0. < 1e-8)?-1:0; 
+    sign +=sign_i;
+    for (int j=i; j < numDets; ++j){
+      Hij = 2*H(listDetsToTrain[i], listDetsToTrain[j]);
       energy += output_Cs[i] * output_Cs[j] * Hij;
     }
   }

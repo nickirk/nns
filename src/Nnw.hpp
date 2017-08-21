@@ -23,8 +23,9 @@ class NeuralNetwork{
       Basis const &fullBasis_);
     std::vector<detType> train(std::vector<detType> const&listDetsToTrain, double eta);
     double getEnergy(){return energy;}
-    std::vector<double> getCoeff(){return output_Cs;}
+    int getSign(){return sign;}
   private:
+    int sign;
     std::vector<int> sizes;
     std::vector<VectorXd> biases;
     std::vector<MatrixXd> weights;

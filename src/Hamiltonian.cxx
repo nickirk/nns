@@ -9,6 +9,9 @@
 #include <vector>
 #include <random>
 #include <iostream>
+#include <fstream>
+#include <sstream>      // std::istringstream
+#include <string>
 #include <math.h>
 #include <algorithm>
 #include "Hamiltonian.hpp"
@@ -136,3 +139,29 @@ int Hamiltonian::upperPos(int const i) const{
   return std::distance(colVec.begin(),std::find(colVec.rbegin(),colVec.rend(),i).base());
 }
 
+void Hamiltonian::writeToFile(std::string Ham){
+  std::ofstream ham;
+  ham.open(Ham);
+  for (int i=0; i<getSparseSize(); ++i){
+    ham << valueVec[i] << " " << rowVec[i] << " " << colVec[i] <<std::endl;        
+  } 
+  ham.close();
+  return;
+}
+
+void Hamiltonian::readFromFile(std::string Ham){
+  rowVec.clear();
+  colVec.clear();
+  valueVec.clear();
+  std::ifstream ham(Ham);
+  std::string line;
+  while (std::getline(ham, line)) {
+    double value;
+    int row, col;
+    std::istringstream ss(line);
+    ss >> value >> row >> col;
+    valueVec.push_back(value);
+    rowVec.push_back(row);
+    colVec.push_back(col);
+  }	
+}
