@@ -14,8 +14,13 @@
 
 class Sampler{
 public:
-  Sampler(Hamiltonian const &H_, Basis const &fullBasis_, int numStates_, detType &HF):H(H_),fullBasis(fullBasis_),
+  Sampler(Hamiltonian const &H_, Basis const &fullBasis_, int numStates_, detType const &HF):H(H_),fullBasis(fullBasis_),
 											     numStates(numStates_),cDet(std::vector<detType >(1,HF)){}
+  Sampler(Hamiltonian const &H_, Basis const &fullBasis_, int numStates_, std::vector<detType > const &reference):H(H_),
+														  fullBasis(fullBasis_),
+														  numStates(numStates_),
+														  cDet(reference)
+  {};
   // two functionalities: get a random coupled determinant and get an array of 
   // random coupled determinants
   void generateList(std::vector<detType > &list) const;
