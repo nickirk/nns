@@ -44,7 +44,7 @@ int Basis::calcSize(int numOrb_, int numEle_){
 void Basis::createBasisDet(int offset, int numEle_){
   if (numEle_ == 0 ){
     detType tmpDet(numOrb,0);
-    for (int i = 0; i < combination.size(); ++i){
+    for (size_t i = 0; i < combination.size(); ++i){
       create(tmpDet,combination[i]);
     }
     indexBasis.push_back(indexOfDet++);
@@ -53,7 +53,7 @@ void Basis::createBasisDet(int offset, int numEle_){
     basis.push_back(tmpDet);
     return;
   }
-  for (int i = offset; i <= listOfOrbNum.size() - numEle_; ++i){
+  for (size_t i = offset; i <= listOfOrbNum.size() - numEle_; ++i){
     combination.push_back(listOfOrbNum[i]);
     createBasisDet(i+1, numEle_-1);
     combination.pop_back();

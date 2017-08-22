@@ -74,7 +74,7 @@ void Hamiltonian::multiplyMatrixVector(double *v, double *w){
     for(int i=0;i<size;++i){
       v[i]=0.0;
     }
-    for(int i=0;i<valueVec.size();++i){
+    for(size_t i=0;i<valueVec.size();++i){
       v[rowVec[i]]+=valueVec[i]*w[colVec[i]];
     }
   }
@@ -117,14 +117,14 @@ void Hamiltonian::initHamiltonian(){
 void Hamiltonian::sortH(){
 	int numEls = getSparseSize();
 	std::vector<gathered> buffer(numEls);
-	for(size_t i=0;i<numEls;++i){
+	for(int i=0;i<numEls;++i){
 		buffer[i].val = valueVec[i];
 		buffer[i].row = rowVec[i];
 		buffer[i].col = colVec[i];
 	}
 	std::sort(buffer.begin(),buffer.end(),[]
 			 (gathered const &a, gathered const &b){return a.col > b.col;});
-	for(size_t i=0;i<numEls;++i){
+	for(int i=0;i<numEls;++i){
 		valueVec[i]=buffer[i].val;
 		rowVec[i]=buffer[i].row;
 		colVec[i]=buffer[i].col;

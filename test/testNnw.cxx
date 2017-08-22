@@ -11,10 +11,10 @@ using namespace std;
 
 using namespace std;
 int main(){
-  int numStates(16);
-  int numEle(3);
+  int numStates(4);
+  int numEle(2);
   int numHidden(30);
-  bool readFromFile(1);
+  bool readFromFile(false);
   Basis basis(numStates,numEle);
   Hamiltonian modelHam(0.5, 0.3, 0.2, basis);
   if (readFromFile){
@@ -74,14 +74,14 @@ int main(){
   int count1(0);
   //test sampler;
   sampler.generateList(list); 
-  for (int i=0; i<list.size(); ++i){
+  for (size_t i=0; i<list.size(); ++i){
       cout<<"intCast= " << verbatimCast(list[i])<<endl;
     }
   while (true){
     //list = NNW.train(list, 0.1); 
     //cout << "seeds size= " << list.size() << endl;
     sampler.generateList(list); 
-    for (int i=0; i<list.size(); ++i){
+    for (size_t i=0; i<list.size(); ++i){
       cout<<"intCast= " << verbatimCast(list[i])<<endl;
     }
     lastAveEnergy = aveEnergy;
@@ -124,11 +124,11 @@ int main(){
       list = NNW.train(list, 0.08);
       sampler.setReference(list);
       cout << "size of seeds= " << list.size() << endl;
-      for (int i=0; i<list.size(); ++i){
+      for (size_t i=0; i<list.size(); ++i){
         cout<<"Seeds intCast= " << verbatimCast(list[i])<<endl;
       }
       if (list.size() == numDetsToTrain_){ 
-       numDetsToTrain_=int(numDetsToTrain_+=1);
+       numDetsToTrain_+=numDetsToTrain_;
        sampler.setNumStates(numDetsToTrain_);
       }
       energy = NNW.getEnergy();

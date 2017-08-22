@@ -10,10 +10,10 @@ BUILD=build
 TSTBUILD=build/test
 DDIR=.depend
 TSTDDIR=.depend/test
+DIRECTORIES=$(DDIR) $(BUILD) $(TSTDDIR) $(TSTBUILD)
 SOURCES=$(patsubst %,$(SRC)/%,$(SOURCEFILES)) $(patsubst %,$(TST)/%,$(TESTFILES))
 OBJECTS=$(patsubst %.cxx,$(BUILD)/%.o,$(SOURCEFILES)) 
 DEPENDENCIES=$(patsubst %.cxx,$(DDIR)/%.d,$(SOURCEFILES)) $(patsubst %.cxx,$(TSTDDIR)/%.d,$(TESTFILES))
-
 BTEST=basisTest
 NNWTEST=nnwTest
 STEST=samplerTest
@@ -25,17 +25,20 @@ STESTOBJECT=$(TSTBUILD)/testSampler.o
 ETESTOBJECT=$(TSTBUILD)/testEigen.o
 HTESTOBJECT=$(TSTBUILD)/testHam.o
 
-$(BUILD)/%.o: $(SRC)/%.cxx
+$(BUILD)/%.o: $(SRC)/%.cxx $(BUILD)
 	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -c $< -o $@
 
-$(DDIR)/%.d: $(SRC)/%.cxx
-	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -MM -MT $< -o $@
+$(DDIR)/%.d: $(SRC)/%.cxx $(DDIR)
+	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -MM $< -o $@
 
-$(TSTBUILD)/%.o: $(TST)/%.cxx
+$(TSTBUILD)/%.o: $(TST)/%.cxx $(TSTBUILD)
 	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -c $< -o $@
 
-$(TSTDDIR)/%.d: $(TST)/%.cxx
-	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -MM -MT $< -o $@
+$(TSTDDIR)/%.d: $(TST)/%.cxx $(TSTDDIR)
+	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -MM $< -o $@
+
+$(DIRECTORIES):
+	mkdir $@
 
 -include $(DEPENDENCIES)
 

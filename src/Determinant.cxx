@@ -41,7 +41,7 @@ void create(detType &det, int pos){
 
 std::vector<int> getOccupiedPositions(detType const &det) {
   std::vector<int> positions;
-  for (int i=0; i < det.size(); i++){
+  for (size_t i=0; i < det.size(); i++){
     if (det[i]) positions.push_back(i);
   }
   return positions;
