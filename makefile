@@ -25,34 +25,43 @@ STESTOBJECT=$(TSTBUILD)/testSampler.o
 ETESTOBJECT=$(TSTBUILD)/testEigen.o
 HTESTOBJECT=$(TSTBUILD)/testHam.o
 
-$(BUILD)/%.o: $(SRC)/%.cxx $(BUILD)
-	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -c $< -o $@
+$(DIRECTORIES):
+	mkdir $@
 
 $(DDIR)/%.d: $(SRC)/%.cxx $(DDIR)
+	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -MM $< -o $@
+
+$(BUILD)/%.o: $(SRC)/%.cxx
+	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -c src/$*.cxx -o $@
+
+$(TSTDDIR)/%.d: $(TST)/%.cxx $(TSTDDIR)
 	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -MM $< -o $@
 
 $(TSTBUILD)/%.o: $(TST)/%.cxx $(TSTBUILD)
 	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -c $< -o $@
 
-$(TSTDDIR)/%.d: $(TST)/%.cxx $(TSTDDIR)
-	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -MM $< -o $@
-
-$(DIRECTORIES):
-	mkdir $@
 
 -include $(DEPENDENCIES)
 
-testBasis: $(OBJECTS) $(BTESTOBJECT)
-	$(CXX) $(EIGEN_FLAGS) $(LDLFLAGS) -o $(BTEST) $(OBJECTS) $(BTESTOBJECT)
+$(TSTDDIR)/testBasis: $(OBJECTS) $(BTESTOBJECT) 
+	mkdir -p $(dir $@)
+	$(CXX)  $(LDLFLAGS) $^ -o $@ 
 
-testNnw: $(OBJECTS) $(NNWTESTOBJECT)
-	$(CXX) $(EIGEN_FLAGS) $(LDLFLAGS) -o $(NNWTEST) $(OBJECTS) $(NNWTESTOBJECT)
+$(TSTDDIR)/testNnw: $(OBJECTS) $(NNWTESTOBJECT)
+	mkdir -p $(dir $@)
+	$(CXX)  $(LDLFLAGS) $^ -o $@  
 
-testSampler: $(OBJECTS) $(STESTOBJECT)
-	$(CXX) $(EIGEN_FLAGS) $(LDLFLAGS) -o $(STEST) $(OBJECTS) $(STESTOBJECT)
+$(TSTDDIR)/testSampler: $(OBJECTS) $(STESTOBJECT)
+	mkdir -p $(dir $@)
+	$(CXX)  $(LDLFLAGS) $^ -o $@
 
-testEigen: $(OBJECTS) $(ETESTOBJECT)
-	$(CXX) $(EIGEN_FLAGS) $(LDLFLAGS) -o $(ETEST) $(OBJECTS) $(ETESTOBJECT)
+$(TSTDDIR)/testEigen: $(OBJECTS) $(ETESTOBJECT)
+	mkdir -p $(dir $@)
+	$(CXX)  $(LDLFLAGS) $^ -o $@
 
-testHam: $(OBJECTS) $(HTESTOBJECT)
-	$(CXX) $(EIGEN_FLAGS) $(LDLFLAGS) -o $(HTEST) $(OBJECTS) $(HTESTOBJECT)
+$(TSTDDIR)/testHam: $(OBJECTS) $(HTESTOBJECT)
+	mkdir -p $(dir $@)
+	$(CXX)  $(LDLFLAGS)  $^ -o $@
+                                            
+                                            
+                                           
