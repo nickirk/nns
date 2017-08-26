@@ -11,9 +11,9 @@ using namespace std;
 
 using namespace std;
 int main(){
-  int numStates(4);
-  int numEle(2);
-  int numHidden(30);
+  int numStates(16);
+  int numEle(3);
+  int numHidden(48);
   bool readFromFile(false);
   Basis basis(numStates,numEle);
   Hamiltonian modelHam(0.5, 0.3, 0.2, basis);
