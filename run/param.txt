@@ -1,0 +1,5 @@
+numStates=6
+numEle=3
+numHidden=30
+trainRate=0.01
+numDetsToTrain_=20
