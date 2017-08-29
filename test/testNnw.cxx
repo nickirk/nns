@@ -11,15 +11,15 @@ using namespace std;
 
 using namespace std;
 int main(){
-  int numStates(10);
-  cout << "input number of states=";
-  cin >> numStates;
-  int numEle(3);
-  cout << "input number of Ele=";
-  cin >> numEle;
-  int numHidden(20);
-  cout << "input number of hidden neurons=";
-  cin >> numHidden;
+  int numStates(6);
+  //cout << "input number of states=";
+  //cin >> numStates;
+  int numEle(2);
+  //cout << "input number of Ele=";
+  //cin >> numEle;
+  int numHidden(100);
+  //cout << "input number of hidden neurons=";
+  //cin >> numHidden;
   bool readFromFile(false);
   cout << "read Ham from file?(1/0) ";
   cin >> readFromFile;
@@ -93,10 +93,9 @@ int main(){
   while (true){
     //list = NNW.train(list, 0.1); 
     //cout << "seeds size= " << list.size() << endl;
-    sampler.generateList(list); 
-    for (size_t i=0; i<list.size(); ++i){
-      cout<<"intCast= " << verbatimCast(list[i])<<endl;
-    }
+    //for (size_t i=0; i<list.size(); ++i){
+    //  cout<<"intCast= " << verbatimCast(list[i])<<endl;
+    //}
     lastAveEnergy = aveEnergy;
     lastEnergy = energy;
     lastSign = sign;
@@ -104,7 +103,8 @@ int main(){
     energy = NNW.getEnergy();
     sign = NNW.getSign();
     count++;
-    if (count1 < 50){
+    sampler.generateList(list); 
+    if (count1 < 1000){
       totalenergy+=energy; 
       count1++;
       aveEnergy = totalenergy/count1;
@@ -115,6 +115,19 @@ int main(){
       aveEnergy = totalenergy/count1;
       totalenergy=0.;
       count1=0;
+      NNW.train(list, trainRate);
+      //sampler.setReference(list);
+      cout << "size of seeds= " << list.size() << endl;
+      for (size_t i=0; i<list.size(); ++i){
+        cout<<"Seeds intCast= " << verbatimCast(list[i])<<endl;
+      }
+      if (list.size() > int(1.2*numDetsToTrain_)){ 
+       numDetsToTrain_+= int(0.1*numDetsToTrain_);//numDetsToTrain_;
+       cout << "numDets= " << numDetsToTrain_<<endl;
+       sampler.setNumStates(numDetsToTrain_);
+       cout << "setNumStates= " << sampler.getNumStates() << endl;
+      }
+      sampler.generateList(list); 
     }
     cout << "Ave energy= " << aveEnergy<< endl;
     cout << "energy= " << energy<< endl;
@@ -130,10 +143,10 @@ int main(){
     //cout << "abs(energy - lastEnergy)= " << abs(energy - lastEnergy) << endl;
     //cout << "fabs(energy - lastEnergy)= " << fabs(energy - lastEnergy) << endl;
     //cout << "abs(lastAveEnergy - aveEnergy)= " << abs(energy - lastEnergy) << endl;
-    while (abs(lastAveEnergy - aveEnergy) < 0.0005 || abs(lastEnergy-energy) < 0.0001){
+    //while (abs(lastAveEnergy - aveEnergy) < 0.0005 || abs(lastEnergy-energy) < 0.0001){
     //while (abs(energy - lastEnergy) < 0.0001){
     //while (abs(sign-lastSign) > int(numDetsToTrain_*0.6) || abs(lastAveEnergy-aveEnergy) < 0.0005){
-    //while (false){
+    while (false){
       list = NNW.train(list, trainRate);
       sampler.setReference(list);
       cout << "size of seeds= " << list.size() << endl;
@@ -142,7 +155,9 @@ int main(){
       }
       if (list.size() == numDetsToTrain_){ 
        numDetsToTrain_+= 1;//numDetsToTrain_;
+       cout << "numDets= " << numDetsToTrain_<<endl;
        sampler.setNumStates(numDetsToTrain_);
+       cout << "setNumStates= " << sampler.getNumStates() << endl;
       }
       energy = NNW.getEnergy();
       lastSign = sign;

@@ -49,4 +49,6 @@ class NeuralNetwork{
 
 double Tanh_prime(double in);
 double Tanh(double in); 
+double Linear(double in);
+double Linear_prime(double in);
 #endif

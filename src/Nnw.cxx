@@ -22,12 +22,12 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, Hamiltonian const&H
     //e.g biases[0] represents the biases of neurons on the 1st layer and
     // weights[0] represents the weights of connections between the 0th and 1st
     // layers of neurons.
-    biases.push_back(VectorXd::Random(sizes[layer+1]));
+    biases.push_back(0.1*VectorXd::Random(sizes[layer+1]));
     nabla_biases.push_back(VectorXd::Zero(sizes[layer+1]));
     //Pay special attention to weights, it has sizes.size()-1 layers,
     //instead of sizes.size() layers. Especially when reference to which
     //layer, should be careful.
-    weights.push_back(MatrixXd::Random(sizes[layer+1], sizes[layer]));
+    weights.push_back(1./sizes[layer]*MatrixXd::Random(sizes[layer+1], sizes[layer]));
     nabla_weights.push_back(MatrixXd::Zero(sizes[layer+1], sizes[layer]));
   }
 }
@@ -94,6 +94,9 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
       //  std::cout << "inputSignal size= " << inputSignal.size() << std::endl;        
       //  std::cout << "inputSignal= " << inputSignal[layer] << std::endl;        
       //}
+      if (layer == numLayersNeuron-1)
+      activations[layer] = activations[layer].unaryExpr(&Linear);
+      else 
       activations[layer] = activations[layer].unaryExpr(&Tanh);
       //if (layer == numLayersNeuron-1){
       //  std::cout << "activation= " << activations[layer] << std::endl;        
@@ -134,8 +137,9 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
   for (int i=0; i < output_Cs.size(); ++i){
     //std::cout << "HFCoeff= " << HFCoeff << std::endl;
     std::cout << "C_" << i << "= " << output_Cs[i] << std::endl;
+    std::cout << "intCast= " << verbatimCast(listDetsToTrain[i]) << std::endl;
     //std::cout << "yes or no" << "= " <<fabs(fabs(output_Cs[i])-0.2*fabs(HFCoeff))  << std::endl;
-    if (fabs(fabs(output_Cs[i])-0.4*fabs(HFCoeff)) > 1e-8){
+    if (fabs(output_Cs[i])-0.5*fabs(HFCoeff) > 1e-8){
       //std::cout << "yes" << std::endl;
       seeds.push_back(listDetsToTrain[i]);
     }
@@ -164,7 +168,7 @@ void NeuralNetwork::backPropagate(
     //std::cout << "Output coeff size= " << output_Cs.size() << std::endl;
     deltaTheLastLayer = 
     dEdC[epoch]*inputSignal_Epochs[epoch][numLayersNeuron-1].unaryExpr(
-                                    &Tanh_prime);
+                                    &Linear_prime);
     //adding up all nabla_biases and nabla_weights, in the end use the average
     //of them to determine the final change of the weights and biases.
     //Treat them as Vectors and Matrices.
@@ -227,3 +231,5 @@ std::vector<double> NeuralNetwork::NablaE_C(
 
 double Tanh_prime(double in){return 1-tanh(in)*tanh(in);};
 double Tanh(double in){return tanh(in);};
+double Linear(double in) {return in;};
+double Linear_prime(double in){return 1;};
