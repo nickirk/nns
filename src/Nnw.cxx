@@ -27,7 +27,8 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, Hamiltonian const&H
     //Pay special attention to weights, it has sizes.size()-1 layers,
     //instead of sizes.size() layers. Especially when reference to which
     //layer, should be careful.
-    weights.push_back(1./sizes[layer]*MatrixXd::Random(sizes[layer+1], sizes[layer]));
+    weights.push_back(MatrixXd::Random(sizes[layer+1], sizes[layer]));
+    //weights.push_back(1./sizes[layer]*MatrixXd::Random(sizes[layer+1], sizes[layer]));
     nabla_weights.push_back(MatrixXd::Zero(sizes[layer+1], sizes[layer]));
   }
 }
@@ -43,13 +44,15 @@ void NeuralNetwork::calcEnergy(std::vector<detType> const&listDetsToTrain){
     normalizerCoeff += output_Cs[i] * output_Cs[i];
     sign_i = (output_Cs[i]-0. < 1e-8)?-1:0; 
     sign +=sign_i;
-    for (int j=i; j < numDets; ++j){
-      Hij = 2*H(listDetsToTrain[i], listDetsToTrain[j]);
+    for (int j=0; j < numDets; ++j){
+      Hij = H(listDetsToTrain[i], listDetsToTrain[j]);
       energy += output_Cs[i] * output_Cs[j] * Hij;
     }
   }
   //std::cout << "normE= " << normalizerCoeff << std::endl;
   energy /= normalizerCoeff;
+  std::cout << "energy=" << energy <<std::endl;
+
 }
 
 std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double eta){
@@ -95,7 +98,7 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
       //  std::cout << "inputSignal= " << inputSignal[layer] << std::endl;        
       //}
       if (layer == numLayersNeuron-1)
-      activations[layer] = activations[layer].unaryExpr(&Linear);
+      activations[layer] = activations[layer].unaryExpr(&Tanh);
       else 
       activations[layer] = activations[layer].unaryExpr(&Tanh);
       //if (layer == numLayersNeuron-1){
@@ -168,7 +171,7 @@ void NeuralNetwork::backPropagate(
     //std::cout << "Output coeff size= " << output_Cs.size() << std::endl;
     deltaTheLastLayer = 
     dEdC[epoch]*inputSignal_Epochs[epoch][numLayersNeuron-1].unaryExpr(
-                                    &Linear_prime);
+                                    &Tanh_prime);
     //adding up all nabla_biases and nabla_weights, in the end use the average
     //of them to determine the final change of the weights and biases.
     //Treat them as Vectors and Matrices.

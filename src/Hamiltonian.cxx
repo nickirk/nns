@@ -84,22 +84,22 @@ void Hamiltonian::initHamiltonian(){
   //offDiagNonZeroRatio sets how much percentage of the offdiag terms are non0
   //diagonal terms
   for (int i = 0; i < size; i++){
-    valueVec.push_back(0.0+diagDelta*pow(i,1.3));
+    valueVec.push_back(0.5+diagDelta*pow(i,1.3));
     rowVec.push_back(i);
     colVec.push_back(i);
   }
   
   std::random_device rng;
-  double const normalizer = static_cast<double>(rng.max());
-
+  std::mt19937 eng(rng());
+  std::uniform_real_distribution<> dist(0,1);
   //offdiagonal terms are generated sparsely and randomly
   for (int j = 0; j < size; j++){
     for (int i = j+1; i < size; i++){
-      double prob = rng()/normalizer;
+      double prob = dist(eng);
       //std::cout << prob << std::endl;
       if (prob < offDiagNonZeroRatio){
-        double fraction = rng()/normalizer;
-        double signProb = rng()/normalizer;
+        double fraction = dist(eng);
+        double signProb = dist(eng);
         double sign(1);
         if (signProb < 0.5) sign = -1;
         //std::cout << fraction << std::endl;

@@ -11,21 +11,21 @@ using namespace std;
 
 using namespace std;
 int main(){
-  int numStates(6);
+  int numStates(7);
   //cout << "input number of states=";
   //cin >> numStates;
   int numEle(2);
   //cout << "input number of Ele=";
   //cin >> numEle;
-  int numHidden(100);
+  int numHidden(40);
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
   bool readFromFile(false);
-  cout << "read Ham from file?(1/0) ";
-  cin >> readFromFile;
-  double trainRate(0.05);
-  cout << "input training rate=";
-  cin >> trainRate;
+  //cout << "read Ham from file?(1/0) ";
+  //cin >> readFromFile;
+  double trainRate(0.01);
+  //cout << "input training rate=";
+  //cin >> trainRate;
   Basis basis(numStates,numEle);
   Hamiltonian modelHam(0.5, 0.3, 0.2, basis);
   if (readFromFile){
@@ -53,24 +53,24 @@ int main(){
     cout << "writing eigen values to file" << endl;
     myfile << H.eigenvalues().real() << endl;
 
-    //cout << H.eigenvalues().real() << endl;
+    //cout << H << endl;
     myfile.close();
   } 
 
-  vector<int> size_NNW = {numStates, numHidden,1};
+  vector<int> size_NNW = {numStates, numHidden, 20,1};
   vector<detType> list;
-  //for (int i=0; i< basis.getSize(); ++i){
-  //  list.push_back(basis.getDetByIndex(i));
-  //  vector<int> pos=getOccupiedPositions(basis.getDetByIndex(i));
-  //  for (int j=0; j<pos.size(); j++){
-  //    cout << pos[j] << ",";
-  //  }
-  //  cout << endl;
-  //}
+  for (int i=0; i< basis.getSize(); ++i){
+    list.push_back(basis.getDetByIndex(i));
+    vector<int> pos=getOccupiedPositions(basis.getDetByIndex(i));
+    for (int j=0; j<pos.size(); j++){
+      cout << pos[j] << ",";
+    }
+    cout << endl;
+  }
   NeuralNetwork NNW(size_NNW, modelHam, basis);
   detType HF=basis.getDetByIndex(0);
   //list.push_back(HF); 
-  int numDetsToTrain_ = 100;
+  int numDetsToTrain_ = basis.getSize();
   cout << "numDetsToTrain= ";
   cin >> numDetsToTrain_;
   Sampler sampler(modelHam, basis, numDetsToTrain_, HF);
@@ -86,10 +86,10 @@ int main(){
   int count(0);
   int count1(0);
   //test sampler;
-  sampler.generateList(list); 
-  //for (size_t i=0; i<list.size(); ++i){
-  //    cout<<"intCast= " << verbatimCast(list[i])<<endl;
-  //  }
+  //sampler.generateList(list); 
+  for (size_t i=0; i<list.size(); ++i){
+      cout<<"intCast= " << verbatimCast(list[i])<<endl;
+    }
   while (true){
     //list = NNW.train(list, 0.1); 
     //cout << "seeds size= " << list.size() << endl;
@@ -103,8 +103,8 @@ int main(){
     energy = NNW.getEnergy();
     sign = NNW.getSign();
     count++;
-    sampler.generateList(list); 
-    if (count1 < 1000){
+    //sampler.generateList(list); 
+    if (count1 < 300){
       totalenergy+=energy; 
       count1++;
       aveEnergy = totalenergy/count1;
@@ -121,24 +121,23 @@ int main(){
       for (size_t i=0; i<list.size(); ++i){
         cout<<"Seeds intCast= " << verbatimCast(list[i])<<endl;
       }
-      if (list.size() > int(1.2*numDetsToTrain_)){ 
-       numDetsToTrain_+= int(0.1*numDetsToTrain_);//numDetsToTrain_;
-       cout << "numDets= " << numDetsToTrain_<<endl;
-       sampler.setNumStates(numDetsToTrain_);
-       cout << "setNumStates= " << sampler.getNumStates() << endl;
-      }
-      sampler.generateList(list); 
+      //if (list.size() > int(1.2*numDetsToTrain_)){ 
+      // numDetsToTrain_+= int(0.1*numDetsToTrain_);//numDetsToTrain_;
+      // cout << "numDets= " << numDetsToTrain_<<endl;
+      // sampler.setNumStates(numDetsToTrain_);
+      // cout << "setNumStates= " << sampler.getNumStates() << endl;
+      //}
     }
     cout << "Ave energy= " << aveEnergy<< endl;
     cout << "energy= " << energy<< endl;
     cout << "list size= " << list.size()<< endl;
-    cout << "sign = " << sign<< endl;
+    //cout << "sign = " << sign<< endl;
     myfile1 << count << " " << energy << " " << aveEnergy << endl;
     
 
     cout << "percentage of allowed sign change= " << int(numDetsToTrain_*0.4) << endl;
-    cout << "sign= " << sign << endl;
-    cout << "lastSign= " << lastSign << endl;
+    //cout << "sign= " << sign << endl;
+    //cout << "lastSign= " << lastSign << endl;
     cout << "number of sign changes= " << abs(sign-lastSign) << endl;
     //cout << "abs(energy - lastEnergy)= " << abs(energy - lastEnergy) << endl;
     //cout << "fabs(energy - lastEnergy)= " << fabs(energy - lastEnergy) << endl;

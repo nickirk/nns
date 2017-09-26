@@ -31,14 +31,14 @@ void Sampler::generateList(std::vector<detType > &list) const{
     random_integer = uni(rng); 
     buf = cDet[random_integer]; 
     for (int i(numRef); i < numStates; ++i){
-      std::cout << "random_integer= " << random_integer <<std::endl;
-      std::cout << "size of Ref= " << numRef <<std::endl;
-      std::cout << "size of Dets= " << numStates <<std::endl;
-      std::cout << "i= " << i <<std::endl;
-      std::cout << "intcast ref= " << verbatimCast(buf) << std::endl;
+      //std::cout << "random_integer= " << random_integer <<std::endl;
+      //std::cout << "size of Ref= " << numRef <<std::endl;
+      //std::cout << "size of Dets= " << numStates <<std::endl;
+      //std::cout << "i= " << i <<std::endl;
+      //std::cout << "intcast ref= " << verbatimCast(buf) << std::endl;
       buf = getRandomDeterminant(buf);
       list[i] = buf;
-      std::cout << "intcast new= " << verbatimCast(buf) << std::endl;
+      //std::cout << "intcast new= " << verbatimCast(buf) << std::endl;
     }
   }
   else if (numRef == numStates) list = cDet;
