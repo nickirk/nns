@@ -46,12 +46,23 @@ int main(){
       H(row,col) = value; 
       //cout <<"i= "<< i << endl ;
     }
+  auto eVals = H.eigenvalues().real();
+  double eMin = 0.0;
+  int pos = 0;
+  for(size_t i = 0; i < basis.getSize(); ++i){
+	  if(eVals(i)<eMin){
+		  pos = i;
+		  eMin = eVals(i);
+	  }
+  }
+  Eigen::EigenSolver<MatrixXd> eSolver(H);
+  auto eVector = eSolver.eigenvectors().col(pos);
 
   if(!readFromFile){
     ofstream myfile;
     myfile.open ("eigen.txt");
     cout << "writing eigen values to file" << endl;
-    myfile << H.eigenvalues().real() << endl;
+    myfile << eVals << endl;
 
     //cout << H << endl;
     myfile.close();
@@ -85,6 +96,7 @@ int main(){
   int lastSign(0);
   int count(0);
   int count1(0);
+  std::vector<double> coeffs;
   //test sampler;
   //sampler.generateList(list); 
   for (size_t i=0; i<list.size(); ++i){
@@ -133,8 +145,13 @@ int main(){
     cout << "list size= " << list.size()<< endl;
     //cout << "sign = " << sign<< endl;
     myfile1 << count << " " << energy << " " << aveEnergy << endl;
-    
+    coeffs = NNW.getCs();
 
+	if(count%300 == 0){
+		for(size_t i = 0; i < coeffs.size(); ++i){
+			cout << "Coeff on " << i << "\t" << coeffs[i] << ", exact " << eVector[i] << endl;
+		}
+	}
     cout << "percentage of allowed sign change= " << int(numDetsToTrain_*0.4) << endl;
     //cout << "sign= " << sign << endl;
     //cout << "lastSign= " << lastSign << endl;

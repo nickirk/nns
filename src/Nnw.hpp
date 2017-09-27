@@ -24,6 +24,7 @@ class NeuralNetwork{
     std::vector<detType> train(std::vector<detType> const&listDetsToTrain, double eta);
     double getEnergy(){return energy;}
     int getSign(){return sign;}
+    std::vector<double> getCs() const {return output_Cs;}
   private:
     int sign;
     std::vector<int> sizes;
