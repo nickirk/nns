@@ -22,7 +22,7 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, Hamiltonian const&H
     //e.g biases[0] represents the biases of neurons on the 1st layer and
     // weights[0] represents the weights of connections between the 0th and 1st
     // layers of neurons.
-    biases.push_back(0.1*VectorXd::Random(sizes[layer+1]));
+    biases.push_back(VectorXd::Random(sizes[layer+1])*0.1);
     nabla_biases.push_back(VectorXd::Zero(sizes[layer+1]));
     //Pay special attention to weights, it has sizes.size()-1 layers,
     //instead of sizes.size() layers. Especially when reference to which
@@ -139,8 +139,8 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
   //std::vector<double> dEdC(NablaE_C(listDetsToTrain));
   for (int i=0; i < output_Cs.size(); ++i){
     //std::cout << "HFCoeff= " << HFCoeff << std::endl;
-    std::cout << "C_" << i << "= " << output_Cs[i] << std::endl;
-    std::cout << "intCast= " << verbatimCast(listDetsToTrain[i]) << std::endl;
+    //std::cout << "C_" << i << "= " << output_Cs[i] << std::endl;
+    //std::cout << "intCast= " << verbatimCast(listDetsToTrain[i]) << std::endl;
     //std::cout << "yes or no" << "= " <<fabs(fabs(output_Cs[i])-0.2*fabs(HFCoeff))  << std::endl;
     if (fabs(output_Cs[i])-0.5*fabs(HFCoeff) > 1e-8){
       //std::cout << "yes" << std::endl;
