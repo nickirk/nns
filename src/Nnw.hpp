@@ -16,7 +16,6 @@
 #include "Basis.hpp"
 #include "Hamiltonian.hpp"
 //#include "Sampler.hpp"
-using namespace Eigen;
 class NeuralNetwork{
   public:
     NeuralNetwork(std::vector<int> const &sizes_, Hamiltonian const&H_,
@@ -28,11 +27,11 @@ class NeuralNetwork{
   private:
     int sign;
     std::vector<int> sizes;
-    std::vector<VectorXd> biases;
-    std::vector<MatrixXd> weights;
+    std::vector<Eigen::VectorXd> biases;
+    std::vector<Eigen::MatrixXd> weights;
     std::vector<double> output_Cs;
-    std::vector<VectorXd> nabla_biases;
-    std::vector<MatrixXd> nabla_weights;
+    std::vector<Eigen::VectorXd> nabla_biases;
+    std::vector<Eigen::MatrixXd> nabla_weights;
     //std::vector<detType> &listDetsToTrain;
     Hamiltonian const&H;
     Basis const&fullBasis;
@@ -42,8 +41,8 @@ class NeuralNetwork{
     //double feedForward(double activation_);
     void backPropagate(
            std::vector<detType> const &listDetsToTrain,
-           std::vector<std::vector<VectorXd>> const &inputSignal_Epochs,
-           std::vector<std::vector<VectorXd>> const &activations
+           std::vector<std::vector<Eigen::VectorXd>> const &inputSignal_Epochs,
+           std::vector<std::vector<Eigen::VectorXd>> const &activations
          );
     std::vector<double> NablaE_C(std::vector<detType> const &listDetsToTrain);
 };
