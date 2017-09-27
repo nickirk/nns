@@ -11,23 +11,23 @@ using namespace std;
 
 using namespace std;
 int main(){
-  int numStates(7);
+  int numStates(8);
   //cout << "input number of states=";
   //cin >> numStates;
-  int numEle(2);
+  int numEle(3);
   //cout << "input number of Ele=";
   //cin >> numEle;
-  int numHidden(40);
+  int numHidden(150);
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
   bool readFromFile(false);
   //cout << "read Ham from file?(1/0) ";
   //cin >> readFromFile;
-  double trainRate(0.01);
+  double trainRate(0.001);
   //cout << "input training rate=";
   //cin >> trainRate;
   Basis basis(numStates,numEle);
-  Hamiltonian modelHam(0.5, 0.3, 0.2, basis);
+  Hamiltonian modelHam(0.5, 0.3, 0.1, basis);
   if (readFromFile){
     modelHam.readFromFile("modelHam.txt");  
   }
@@ -57,7 +57,7 @@ int main(){
     myfile.close();
   } 
 
-  vector<int> size_NNW = {numStates, numHidden, 20,1};
+  vector<int> size_NNW = {numStates, numHidden,1};
   vector<detType> list;
   for (int i=0; i< basis.getSize(); ++i){
     list.push_back(basis.getDetByIndex(i));
@@ -117,10 +117,10 @@ int main(){
       count1=0;
       NNW.train(list, trainRate);
       //sampler.setReference(list);
-      cout << "size of seeds= " << list.size() << endl;
-      for (size_t i=0; i<list.size(); ++i){
-        cout<<"Seeds intCast= " << verbatimCast(list[i])<<endl;
-      }
+      //cout << "size of seeds= " << list.size() << endl;
+      //for (size_t i=0; i<list.size(); ++i){
+      //  cout<<"Seeds intCast= " << verbatimCast(list[i])<<endl;
+      //}
       //if (list.size() > int(1.2*numDetsToTrain_)){ 
       // numDetsToTrain_+= int(0.1*numDetsToTrain_);//numDetsToTrain_;
       // cout << "numDets= " << numDetsToTrain_<<endl;
@@ -144,7 +144,16 @@ int main(){
     //cout << "abs(lastAveEnergy - aveEnergy)= " << abs(energy - lastEnergy) << endl;
     //while (abs(lastAveEnergy - aveEnergy) < 0.0005 || abs(lastEnergy-energy) < 0.0001){
     //while (abs(energy - lastEnergy) < 0.0001){
-    //while (abs(sign-lastSign) > int(numDetsToTrain_*0.6) || abs(lastAveEnergy-aveEnergy) < 0.0005){
+    trainRate+=0.0001;
+    if (abs(sign-lastSign) > int(numDetsToTrain_*0.4)){
+      trainRate/=2.;
+      cout << "trainRate=" << trainRate << endl;
+    }
+    //if (abs(lastAveEnergy - aveEnergy) < 0.001){
+    //  trainRate+=0.002;
+    //  cout << "trainRatex2=" << trainRate << endl;
+    //}
+
     while (false){
       list = NNW.train(list, trainRate);
       sampler.setReference(list);
