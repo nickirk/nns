@@ -11,13 +11,13 @@ using namespace std;
 
 using namespace std;
 int main(){
-  int numStates(8);
+  int numStates(7);
   //cout << "input number of states=";
   //cin >> numStates;
-  int numEle(3);
+  int numEle(2);
   //cout << "input number of Ele=";
   //cin >> numEle;
-  int numHidden(150);
+  int numHidden(40);
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
   bool readFromFile(false);
@@ -57,7 +57,7 @@ int main(){
     myfile.close();
   } 
 
-  vector<int> size_NNW = {numStates, numHidden,1};
+  vector<int> size_NNW = {numStates, numHidden, 10, 1};
   vector<detType> list;
   for (int i=0; i< basis.getSize(); ++i){
     list.push_back(basis.getDetByIndex(i));
@@ -144,7 +144,7 @@ int main(){
     //cout << "abs(lastAveEnergy - aveEnergy)= " << abs(energy - lastEnergy) << endl;
     //while (abs(lastAveEnergy - aveEnergy) < 0.0005 || abs(lastEnergy-energy) < 0.0001){
     //while (abs(energy - lastEnergy) < 0.0001){
-    trainRate+=0.0001;
+    //trainRate+=0.0001;
     if (abs(sign-lastSign) > int(numDetsToTrain_*0.4)){
       trainRate/=2.;
       cout << "trainRate=" << trainRate << endl;
