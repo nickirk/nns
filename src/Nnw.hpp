@@ -23,6 +23,7 @@ class NeuralNetwork{
       Basis const &fullBasis_);
     std::vector<detType> train(std::vector<detType> const&listDetsToTrain, double eta);
     double getEnergy(){return energy;}
+  std::vector<double> getEnergyDerivative(std::vector<detType> const &list){return NablaE_C(list);}
     int getSign(){return sign;}
     std::vector<double> getCs() const {return output_Cs;}
   private:

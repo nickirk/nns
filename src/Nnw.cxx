@@ -23,7 +23,7 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, Hamiltonian const&H
     //e.g biases[0] represents the biases of neurons on the 1st layer and
     // weights[0] represents the weights of connections between the 0th and 1st
     // layers of neurons.
-    biases.push_back(VectorXd::Random(sizes[layer+1])*0.1);
+    biases.push_back(VectorXd::Random(sizes[layer+1]));
     nabla_biases.push_back(VectorXd::Zero(sizes[layer+1]));
     //Pay special attention to weights, it has sizes.size()-1 layers,
     //instead of sizes.size() layers. Especially when reference to which
@@ -52,7 +52,7 @@ void NeuralNetwork::calcEnergy(std::vector<detType> const&listDetsToTrain){
   }
   //std::cout << "normE= " << normalizerCoeff << std::endl;
   energy /= normalizerCoeff;
-  std::cout << "energy=" << energy <<std::endl;
+  //std::cout << "energy=" << energy <<std::endl;
 
 }
 
@@ -61,7 +61,7 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
   output_Cs.clear();
   //listDetsToTrain = listDetsToTrain_; 
   int numDets(listDetsToTrain.size());
-  std::vector<detType> listDetsToTrainFiltered;
+  //std::vector<detType> listDetsToTrainFiltered;
   std::vector<std::vector<VectorXd>> inputSignal_Epochs;
   std::vector<std::vector<VectorXd>> activations_Epochs;
   std::vector<VectorXd> inputSignal; 
@@ -154,7 +154,7 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
     //std::cout << "yes or no" << "= " <<fabs(fabs(output_Cs[i])-0.2*fabs(HFCoeff))  << std::endl;
     if (fabs(output_Cs[i])-0.5*fabs(HFCoeff) > 1e-8){
       //std::cout << "yes" << std::endl;
-      seeds.push_back(listDetsToTrainFiltered[i]);
+      seeds.push_back(listDetsToTrain[i]);
     }
   }
   return seeds;
@@ -208,6 +208,8 @@ void NeuralNetwork::backPropagate(
       deltaThisLayer = weights[layer+1].transpose() * deltaPreviousLayer; 
       //To achive elementwise multiply, form a diagonal vector.
       //deltaAsDiagonal = deltaThisLayer.asDiagonal();
+
+      //check if it right
       deltaThisLayer = deltaThisLayer.array()
          * inputSignal_Epochs[epoch][layer+1].unaryExpr(&Tanh_prime).array();
       //deltaThisLayer = deltaAsDiagonal * 

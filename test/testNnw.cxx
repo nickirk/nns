@@ -11,19 +11,19 @@ using namespace std;
 
 using namespace std;
 int main(){
-  int numStates(7);
+  int numStates(8);
   //cout << "input number of states=";
   //cin >> numStates;
-  int numEle(2);
+  int numEle(3);
   //cout << "input number of Ele=";
   //cin >> numEle;
-  int numHidden(40);
+  int numHidden(85);
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
   bool readFromFile(false);
   //cout << "read Ham from file?(1/0) ";
   //cin >> readFromFile;
-  double trainRate(0.001);
+  double trainRate(0.5);
   //cout << "input training rate=";
   //cin >> trainRate;
   Basis basis(numStates,numEle);
@@ -46,18 +46,19 @@ int main(){
       H(row,col) = value; 
       //cout <<"i= "<< i << endl ;
     }
-  auto eVals = H.eigenvalues().real();
+  Eigen::EigenSolver<MatrixXd> eSolver(H);
+  VectorXd eVals = eSolver.eigenvalues().real();
   double eMin = 0.0;
   int pos = 0;
   for(size_t i = 0; i < basis.getSize(); ++i){
 	  if(eVals(i)<eMin){
+              cout << eVals(i) << " " << i << endl;
 		  pos = i;
 		  eMin = eVals(i);
 	  }
   }
-  Eigen::EigenSolver<MatrixXd> eSolver(H);
-  auto eVector = eSolver.eigenvectors().col(pos);
-
+  VectorXcd eVector = eSolver.eigenvectors().col(pos);
+  //cout << eVector << endl;
   if(!readFromFile){
     ofstream myfile;
     myfile.open ("eigen.txt");
@@ -68,7 +69,7 @@ int main(){
     myfile.close();
   } 
 
-  vector<int> size_NNW = {numStates, numHidden, 10, 1};
+  vector<int> size_NNW = {numStates, numHidden, 5, 1};
   vector<detType> list;
   for (int i=0; i< basis.getSize(); ++i){
     list.push_back(basis.getDetByIndex(i));
@@ -140,18 +141,18 @@ int main(){
       // cout << "setNumStates= " << sampler.getNumStates() << endl;
       //}
     }
+    if(count%40 == 0){
     cout << "Ave energy= " << aveEnergy<< endl;
     cout << "energy= " << energy<< endl;
     cout << "list size= " << list.size()<< endl;
     //cout << "sign = " << sign<< endl;
     myfile1 << count << " " << energy << " " << aveEnergy << endl;
     coeffs = NNW.getCs();
+    std::vector<double> nablaE = NNW.getEnergyDerivative(list);
 
-	if(count%300 == 0){
-		for(size_t i = 0; i < coeffs.size(); ++i){
-			cout << "Coeff on " << i << "\t" << coeffs[i] << ", exact " << eVector[i] << endl;
-		}
-	}
+    for(size_t i = 0; i < coeffs.size(); ++i){
+      cout << "Coeff on " << i << "\t" << coeffs[i] << ", exact " << eVector(i) << ", dE " << nablaE[i]<< endl;
+    }
     cout << "percentage of allowed sign change= " << int(numDetsToTrain_*0.4) << endl;
     //cout << "sign= " << sign << endl;
     //cout << "lastSign= " << lastSign << endl;
@@ -161,7 +162,7 @@ int main(){
     //cout << "abs(lastAveEnergy - aveEnergy)= " << abs(energy - lastEnergy) << endl;
     //while (abs(lastAveEnergy - aveEnergy) < 0.0005 || abs(lastEnergy-energy) < 0.0001){
     //while (abs(energy - lastEnergy) < 0.0001){
-    //trainRate+=0.0001;
+    //trainRate+=0.001;
     if (abs(sign-lastSign) > int(numDetsToTrain_*0.4)){
       trainRate/=2.;
       cout << "trainRate=" << trainRate << endl;
@@ -170,7 +171,7 @@ int main(){
     //  trainRate+=0.002;
     //  cout << "trainRatex2=" << trainRate << endl;
     //}
-
+    }
     while (false){
       list = NNW.train(list, trainRate);
       sampler.setReference(list);
