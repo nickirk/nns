@@ -7,7 +7,7 @@
 #include "../src/Determinant.hpp"
 #include "../src/Hamiltonian.hpp"
 #include "../src/Sampler.hpp"
-using namespace std;
+using namespace Eigen;
 
 using namespace std;
 int main(){
@@ -17,7 +17,7 @@ int main(){
   int numEle(3);
   //cout << "input number of Ele=";
   //cin >> numEle;
-  int numHidden(85);
+  int numHidden(40);
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
   bool readFromFile(false);
@@ -69,7 +69,7 @@ int main(){
     myfile.close();
   } 
 
-  vector<int> size_NNW = {numStates, numHidden, 5, 1};
+  vector<int> size_NNW = {numStates, numHidden, 20,1};
   vector<detType> list;
   for (int i=0; i< basis.getSize(); ++i){
     list.push_back(basis.getDetByIndex(i));
@@ -103,7 +103,7 @@ int main(){
   for (size_t i=0; i<list.size(); ++i){
       cout<<"intCast= " << verbatimCast(list[i])<<endl;
     }
-  while (true){
+  while (count < 5000){
     //list = NNW.train(list, 0.1); 
     //cout << "seeds size= " << list.size() << endl;
     //for (size_t i=0; i<list.size(); ++i){
@@ -113,10 +113,10 @@ int main(){
     lastEnergy = energy;
     lastSign = sign;
     NNW.train(list, trainRate);
+    //sampler.generateList(list); 
     energy = NNW.getEnergy();
     sign = NNW.getSign();
     count++;
-    //sampler.generateList(list); 
     if (count1 < 300){
       totalenergy+=energy; 
       count1++;
@@ -141,7 +141,7 @@ int main(){
       // cout << "setNumStates= " << sampler.getNumStates() << endl;
       //}
     }
-    if(count%40 == 0){
+    if(count%1 == 0){
     cout << "Ave energy= " << aveEnergy<< endl;
     cout << "energy= " << energy<< endl;
     cout << "list size= " << list.size()<< endl;
@@ -149,9 +149,8 @@ int main(){
     myfile1 << count << " " << energy << " " << aveEnergy << endl;
     coeffs = NNW.getCs();
     std::vector<double> nablaE = NNW.getEnergyDerivative(list);
-
     for(size_t i = 0; i < coeffs.size(); ++i){
-      cout << "Coeff on " << i << "\t" << coeffs[i] << ", exact " << eVector(i) << ", dE " << nablaE[i]<< endl;
+      cout << "Coeff on " << i << "\t" << coeffs[i] << ", exact " << eVector(i) << ", dE " << nablaE[i]<<endl;
     }
     cout << "percentage of allowed sign change= " << int(numDetsToTrain_*0.4) << endl;
     //cout << "sign= " << sign << endl;
@@ -162,7 +161,7 @@ int main(){
     //cout << "abs(lastAveEnergy - aveEnergy)= " << abs(energy - lastEnergy) << endl;
     //while (abs(lastAveEnergy - aveEnergy) < 0.0005 || abs(lastEnergy-energy) < 0.0001){
     //while (abs(energy - lastEnergy) < 0.0001){
-    //trainRate+=0.001;
+    trainRate+=0.0001;
     if (abs(sign-lastSign) > int(numDetsToTrain_*0.4)){
       trainRate/=2.;
       cout << "trainRate=" << trainRate << endl;

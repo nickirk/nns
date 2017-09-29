@@ -84,7 +84,7 @@ void Hamiltonian::initHamiltonian(){
   //offDiagNonZeroRatio sets how much percentage of the offdiag terms are non0
   //diagonal terms
   for (int i = 0; i < size; i++){
-    valueVec.push_back(diagDelta*pow(i,1.3));
+    valueVec.push_back(-0.1-diagDelta*pow(i,1.3));
     rowVec.push_back(i);
     colVec.push_back(i);
   }
@@ -101,8 +101,8 @@ void Hamiltonian::initHamiltonian(){
         double fraction = dist(eng);
         double signProb = dist(eng);
         double sign(1);
-        if (signProb < 0.5) sign = -1;
-        //if (signProb < 1) sign = -1;
+        //if (signProb < 0.5) sign = -1;
+        if (signProb < 1) sign = -1;
         //std::cout << fraction << std::endl;
         valueVec.push_back(sign*diagDelta*offDiagMagntd*fraction);
         valueVec.push_back(sign*diagDelta*offDiagMagntd*fraction);
