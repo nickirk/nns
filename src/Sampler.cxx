@@ -6,6 +6,7 @@
  */
 #include <vector>
 #include <random>
+#include <algorithm>
 #include "Sampler.hpp"
 #include <iostream>
 
@@ -95,4 +96,9 @@ detType Sampler::getRandomDeterminant(detType const &startingPoint) const{
   // pick a random determinant from the temporary list
   int const chosen=static_cast<int>(rng()/normalizer*tempDets.size());
   return tempDets[chosen];
+}
+
+void Sampler::removeDuplicate(std::vector<detType> &list){
+ std::sort( list.begin(), list.end() );
+ list.erase( std::unique( list.begin(), list.end() ), list.end() );
 }

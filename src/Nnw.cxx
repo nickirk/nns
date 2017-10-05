@@ -94,8 +94,8 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
     coef=feedForward(listDetsToTrain[epoch])(0);
     prob=fabs(coef/coefPrev);
     coefPrev = coef;
-    if ((prob-1)>1.e-8 || (prandom-prob) < -1.e-8){
-    //if (true){
+    //if ((prob-1)>1.e-8 || (prandom-prob) < -1.e-8){
+    if (true){
       inputSignal_Epochs.push_back(inputSignal);
       activations_Epochs.push_back(activations);
       output_Cs.push_back(activations[numLayersNeuron-1][0]);

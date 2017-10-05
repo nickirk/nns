@@ -17,15 +17,15 @@ int main(){
   int numEle(3);
   //cout << "input number of Ele=";
   //cin >> numEle;
-  int numHidden(40);
+  int numHidden(30);
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
   bool readFromFile(false);
   //cout << "read Ham from file?(1/0) ";
   //cin >> readFromFile;
-  double trainRate(0.5);
-  //cout << "input training rate=";
-  //cin >> trainRate;
+  double trainRate(0.005);
+  cout << "input training rate=";
+  cin >> trainRate;
   Basis basis(numStates,numEle);
   Hamiltonian modelHam(0.5, 0.3, 0.1, basis);
   if (readFromFile){
@@ -69,7 +69,7 @@ int main(){
     myfile.close();
   } 
 
-  vector<int> size_NNW = {numStates, numHidden, 20,1};
+  vector<int> size_NNW = {numStates, numHidden, 2,1};
   vector<detType> list;
   for (int i=0; i< basis.getSize(); ++i){
     list.push_back(basis.getDetByIndex(i));
@@ -100,6 +100,7 @@ int main(){
   std::vector<double> coeffs;
   //test sampler;
   //sampler.generateList(list); 
+  //sampler.removeDuplicate(list);
   for (size_t i=0; i<list.size(); ++i){
       cout<<"intCast= " << verbatimCast(list[i])<<endl;
     }
@@ -114,6 +115,7 @@ int main(){
     lastSign = sign;
     NNW.train(list, trainRate);
     //sampler.generateList(list); 
+    //sampler.removeDuplicate(list);
     energy = NNW.getEnergy();
     sign = NNW.getSign();
     count++;

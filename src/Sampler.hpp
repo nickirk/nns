@@ -30,6 +30,7 @@ public:
   // set the starting point
   void setReference(std::vector<detType > const &list){cDet = list;}
   void setNumStates(int newNumStates){numStates = newNumStates;}
+  void removeDuplicate(std::vector<detType> &list);
   int getNumStates()const {return numStates;}
 private:
   // Hamiltonian
