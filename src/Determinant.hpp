@@ -19,4 +19,5 @@ void annihilate(detType &det, int pos);
 std::vector<int> getOccupiedPositions(detType const &det);
 int verbatimCast(detType const & det);
 bool operator == (detType const &a, detType const &b);
+bool operator < (detType const &lhs, detType const &rhs);
 #endif
