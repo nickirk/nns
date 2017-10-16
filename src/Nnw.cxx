@@ -13,7 +13,8 @@
 #include "Nnw.hpp"
 //using namespace Eigen;
 NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, Hamiltonian const&H_,
-  Basis const&fullBasis_):sizes(sizes_), H(H_), fullBasis(fullBasis_){
+  Basis const&fullBasis_) :
+		sign {0}, sizes(sizes_), H(H_), fullBasis(fullBasis_) {
   energy = 0;
   int numLayersNeuron = sizes.size();
   int numLayersBiasesWeights = sizes.size()-1;
@@ -39,24 +40,20 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, Hamiltonian const&H
   }
 }
 void NeuralNetwork::calcLocalEnergy(std::vector<detType> const&listDetsToTrain){
-  sampleEnergy = 0.;
-  double localEnergy(0.);
+  sampleEnergy = 0.0;
+  double localEnergy{0.};
   sign = 0;
-  int sign_i=0;
-  double normalizerCoeff(0.);
-  double Hij(0.);
+  int sign_i{0};
+  double normalizerCoeff{0.};
+  double Hij{0.};
   int numDets = output_Cs.size();
-  int row, col;
-  double coeff(0.);
+  double coeff{0.};
   for (int i=0; i < numDets; ++i){
     localEnergy =0.;
-    int lower = H.lowerPos(i);
-    int upper = H.upperPos(i);
-    for (int j=lower; j <upper; ++j){
       //if (i==j) continue;
-      H.sparseAccess(j,row,col,Hij);
+      Hij = H.getMatrixElement(fullBasis.getDetByIndex(i), fullBasis.getDetByIndex(i));
       //std::cout << "row=" << row << std::endl;
-      coeff = feedForward(fullBasis.getDetByIndex(row))(0);
+      coeff = feedForward(fullBasis.getDetByIndex(i))(0);
       localEnergy+=Hij *coeff / output_Cs[i];
     }
   sampleEnergy+=localEnergy;
@@ -77,7 +74,7 @@ void NeuralNetwork::calcEnergy(std::vector<detType> const&listDetsToTrain){
     sign_i = (output_Cs[i]-0. < 1e-8)?-1:0; 
     sign +=sign_i;
     for (int j=0; j < numDets; ++j){
-      Hij = H(listDetsToTrain[i], listDetsToTrain[j]);
+      Hij = H.getMatrixElement(listDetsToTrain[i], listDetsToTrain[j]);
       energy += output_Cs[i] * output_Cs[j] * Hij;
     }
   }
