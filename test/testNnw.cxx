@@ -17,46 +17,35 @@ int main(){
   int numEle(3);
   //cout << "input number of Ele=";
   //cin >> numEle;
-<<<<<<< HEAD
   int numHidden(10);
-=======
-  int numHidden(8);
   int numHidden1(3);
   vector<int> size_NNW = {numStates, numHidden, numHidden1,1};
->>>>>>> 458b200fce5135657d84e6356ca25b1b67cb0f89
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
-  bool readFromFile(false);
-  cout << "read Ham from file?(1/0) ";
-  cin >> readFromFile;
+  bool readFromFile{false};
   double trainRate(0.005);
   cout << "input training rate=";
   cin >> trainRate;
   Basis basis(numStates,numEle);
-  Hamiltonian modelHam(0.5, 1.2, 0.3, basis);
-  if (readFromFile){
-    modelHam.readFromFile("modelHam.txt");  
-  }
-  else{
-    modelHam.writeToFile("modelHam.txt");
-  }
+  Hamiltonian modelHam(numStates);
+  double U{4}, t{-1};
+  modelHam = generateHubbard(numStates, U, t);
   cout << "Basis size= " << basis.getSize() << endl;
-  cout << "Hamiltonian size= " << modelHam.getSize() << endl;
+  //cout << "Hamiltonian size= " << modelHam.getSize() << endl;
   cout << "print out Ham element" << endl;
 
   Eigen::MatrixXd H(Eigen::MatrixXd::Zero(basis.getSize(),basis.getSize()));
-  int row, col;
-  double value;
-  for (int i(0); i<modelHam.getSparseSize(); ++i){
-      modelHam.sparseAccess(i, row, col, value);
-      H(row,col) = value; 
+  for (int i(0); i<basis.getSize(); ++i){
+	  for(int j(0); j<basis.getSize(); ++j){
+	  H(i,j) = modelHam(basis.getDetByIndex(i),basis.getDetByIndex(j));
       //cout <<"i= "<< i << endl ;
+	  }
     }
   Eigen::EigenSolver<MatrixXd> eSolver(H);
   VectorXd eVals = eSolver.eigenvalues().real();
   double eMin = 0.0;
   int pos = 0;
-  for(size_t i = 0; i < basis.getSize(); ++i){
+  for(int i = 0; i < basis.getSize(); ++i){
 	  if((eVals(i)-eMin)<1e-8){
               cout << eVals(i) << " " << i << endl;
 		  pos = i;
@@ -79,21 +68,12 @@ int main(){
     myfilevec.open ("eigenvec.txt");
     cout << "writing eigen vec to file" << endl;
     myfilevec << eVector << endl;
-
-<<<<<<< HEAD
-  
-  vector<int> size_NNW = {numStates, numHidden,1};
-=======
-    //cout << H << endl;
-    myfilevec.close();
-  } 
->>>>>>> 458b200fce5135657d84e6356ca25b1b67cb0f89
+  }
   vector<detType> list;
   for (int i=0; i< basis.getSize(); ++i){
     list.push_back(basis.getDetByIndex(i));
     vector<int> pos=getOccupiedPositions(basis.getDetByIndex(i));
-<<<<<<< HEAD
-    for (int j=0; j<pos.size(); j++){
+    for (size_t j=0; j<pos.size(); j++){
       cout << pos[j] << ",";
     }
     cout << endl;
@@ -103,14 +83,6 @@ int main(){
   for(int i = 0; i< list.size(); ++i){
     std::cout<<"intCast= "<<verbatimCast(list[i])<<std::endl;
   }
-
-=======
-    //for (int j=0; j<pos.size(); j++){
-    //  cout << pos[j] << ",";
-    //}
-  //  cout << endl;
-  }
->>>>>>> 458b200fce5135657d84e6356ca25b1b67cb0f89
   NeuralNetwork NNW(size_NNW, modelHam, basis);
   detType HF=basis.getDetByIndex(0);
   //list.push_back(HF); 
@@ -123,26 +95,17 @@ int main(){
   double aveEnergy(0.);
   double totalenergy(0.);
   double energy(0.);
-  double lastEnergy(0.);
-  double lastAveEnergy(0.);
   int sign(0);
   int lastSign(0);
   int count(0);
   int count1(0);
   std::vector<double> coeffs;
   //test sampler;
-<<<<<<< HEAD
-  //sampler.generateList(list); 
-  //for (size_t i=0; i<list.size(); ++i){
-  //    cout<<"intCast= " << verbatimCast(list[i])<<endl;
-  //  }
-=======
   sampler.generateList(list); 
   sampler.removeDuplicate(list);
   for (size_t i=0; i<list.size(); ++i){
       cout<<"intCast= " << verbatimCast(list[i])<<endl;
     }
->>>>>>> 458b200fce5135657d84e6356ca25b1b67cb0f89
   while (true){
     //list = NNW.train(list, 0.1); 
     //cout << "seeds size= " << list.size() << endl;
@@ -160,12 +123,7 @@ int main(){
     energy = NNW.getEnergy();
     sign = NNW.getSign();
     count++;
-<<<<<<< HEAD
-    //sampler.generateList(list); 
-    if (count1 < 1000){
-=======
     if (count1 < 50){
->>>>>>> 458b200fce5135657d84e6356ca25b1b67cb0f89
       totalenergy+=energy; 
       count1++;
       aveEnergy = totalenergy/count1;
@@ -175,24 +133,6 @@ int main(){
       count1++;
       aveEnergy = totalenergy/count1;
       totalenergy=0.;
-<<<<<<< HEAD
-      count1=0;
-      NNW.train(list, trainRate);
-      /*
-      sampler.setReference(list);
-      cout << "size of seeds= " << list.size() << endl;
-      for (size_t i=0; i<list.size(); ++i){
-        cout<<"Seeds intCast= " << verbatimCast(list[i])<<endl;
-      }
-      if (list.size() > int(1.2*numDetsToTrain_)){ 
-       numDetsToTrain_+= int(0.1*numDetsToTrain_);//numDetsToTrain_;
-       cout << "numDets= " << numDetsToTrain_<<endl;
-       sampler.setNumStates(numDetsToTrain_);
-       cout << "setNumStates= " << sampler.getNumStates() << endl;
-      }
-      sampler.generateList(list); 
-      */
-=======
       //count1=0;
       list=NNW.train(list, trainRate);
       //NNW.train(list, trainRate);
@@ -217,7 +157,6 @@ int main(){
     std::vector<double> nablaE = NNW.getEnergyDerivative(list);
     for(size_t i = 0; i < coeffs.size(); ++i){
       cout << "Coeff on " << i << "\t" << coeffs[i] << ", exact " << eVector(i) << ", dE " << nablaE[i]<<endl;
->>>>>>> 458b200fce5135657d84e6356ca25b1b67cb0f89
     }
     int allowedNumChangeSign = int(numDetsToTrain_*0.1);
     cout << "percentage of allowed sign change= " <<  allowedNumChangeSign<< endl;
