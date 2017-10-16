@@ -11,23 +11,25 @@ using namespace Eigen;
 
 using namespace std;
 int main(){
-  int numStates(8);
+  int numStates(10);
   //cout << "input number of states=";
   //cin >> numStates;
   int numEle(3);
   //cout << "input number of Ele=";
   //cin >> numEle;
-  int numHidden(30);
+  int numHidden(8);
+  int numHidden1(3);
+  vector<int> size_NNW = {numStates, numHidden, numHidden1,1};
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
   bool readFromFile(false);
-  //cout << "read Ham from file?(1/0) ";
-  //cin >> readFromFile;
+  cout << "read Ham from file?(1/0) ";
+  cin >> readFromFile;
   double trainRate(0.005);
   cout << "input training rate=";
   cin >> trainRate;
   Basis basis(numStates,numEle);
-  Hamiltonian modelHam(0.5, 0.3, 0.1, basis);
+  Hamiltonian modelHam(0.5, 1.2, 0.3, basis);
   if (readFromFile){
     modelHam.readFromFile("modelHam.txt");  
   }
@@ -51,7 +53,7 @@ int main(){
   double eMin = 0.0;
   int pos = 0;
   for(size_t i = 0; i < basis.getSize(); ++i){
-	  if(eVals(i)<eMin){
+	  if((eVals(i)-eMin)<1e-8){
               cout << eVals(i) << " " << i << endl;
 		  pos = i;
 		  eMin = eVals(i);
@@ -68,16 +70,24 @@ int main(){
     //cout << H << endl;
     myfile.close();
   } 
+  if(!readFromFile){
+    ofstream myfilevec;
+    myfilevec.open ("eigenvec.txt");
+    cout << "writing eigen vec to file" << endl;
+    myfilevec << eVector << endl;
 
-  vector<int> size_NNW = {numStates, numHidden, 2,1};
+    //cout << H << endl;
+    myfilevec.close();
+  } 
+
   vector<detType> list;
   for (int i=0; i< basis.getSize(); ++i){
     list.push_back(basis.getDetByIndex(i));
     vector<int> pos=getOccupiedPositions(basis.getDetByIndex(i));
-    for (int j=0; j<pos.size(); j++){
-      cout << pos[j] << ",";
-    }
-    cout << endl;
+    //for (int j=0; j<pos.size(); j++){
+    //  cout << pos[j] << ",";
+    //}
+  //  cout << endl;
   }
   NeuralNetwork NNW(size_NNW, modelHam, basis);
   detType HF=basis.getDetByIndex(0);
@@ -99,12 +109,12 @@ int main(){
   int count1(0);
   std::vector<double> coeffs;
   //test sampler;
-  //sampler.generateList(list); 
-  //sampler.removeDuplicate(list);
+  sampler.generateList(list); 
+  sampler.removeDuplicate(list);
   for (size_t i=0; i<list.size(); ++i){
       cout<<"intCast= " << verbatimCast(list[i])<<endl;
     }
-  while (count < 5000){
+  while (true){
     //list = NNW.train(list, 0.1); 
     //cout << "seeds size= " << list.size() << endl;
     //for (size_t i=0; i<list.size(); ++i){
@@ -113,13 +123,15 @@ int main(){
     lastAveEnergy = aveEnergy;
     lastEnergy = energy;
     lastSign = sign;
-    NNW.train(list, trainRate);
-    //sampler.generateList(list); 
-    //sampler.removeDuplicate(list);
+    list=NNW.train(list, trainRate);
+    //NNW.train(list, trainRate);
+    sampler.setReference(list);
+    sampler.generateList(list); 
+    sampler.removeDuplicate(list);
     energy = NNW.getEnergy();
     sign = NNW.getSign();
     count++;
-    if (count1 < 300){
+    if (count1 < 50){
       totalenergy+=energy; 
       count1++;
       aveEnergy = totalenergy/count1;
@@ -129,9 +141,12 @@ int main(){
       count1++;
       aveEnergy = totalenergy/count1;
       totalenergy=0.;
-      count1=0;
-      NNW.train(list, trainRate);
-      //sampler.setReference(list);
+      //count1=0;
+      list=NNW.train(list, trainRate);
+      //NNW.train(list, trainRate);
+      sampler.setReference(list);
+      sampler.generateList(list); 
+      sampler.removeDuplicate(list);
       //cout << "size of seeds= " << list.size() << endl;
       //for (size_t i=0; i<list.size(); ++i){
       //  cout<<"Seeds intCast= " << verbatimCast(list[i])<<endl;
@@ -144,28 +159,30 @@ int main(){
       //}
     }
     if(count%1 == 0){
-    cout << "Ave energy= " << aveEnergy<< endl;
-    cout << "energy= " << energy<< endl;
-    cout << "list size= " << list.size()<< endl;
     //cout << "sign = " << sign<< endl;
-    myfile1 << count << " " << energy << " " << aveEnergy << endl;
+    myfile1 << count << " " << energy << " " << NNW.getSampleEnergy() << " " << aveEnergy << endl;
     coeffs = NNW.getCs();
     std::vector<double> nablaE = NNW.getEnergyDerivative(list);
     for(size_t i = 0; i < coeffs.size(); ++i){
       cout << "Coeff on " << i << "\t" << coeffs[i] << ", exact " << eVector(i) << ", dE " << nablaE[i]<<endl;
     }
-    cout << "percentage of allowed sign change= " << int(numDetsToTrain_*0.4) << endl;
+    int allowedNumChangeSign = int(numDetsToTrain_*0.1);
+    cout << "percentage of allowed sign change= " <<  allowedNumChangeSign<< endl;
     //cout << "sign= " << sign << endl;
     //cout << "lastSign= " << lastSign << endl;
     cout << "number of sign changes= " << abs(sign-lastSign) << endl;
+    cout << "Ave energy= " << aveEnergy<< endl;
+    cout << "energy= " << energy<< endl;
+    cout << "Exact energy= " << eMin<< endl;
+    cout << "list size= " << list.size()<< endl;
     //cout << "abs(energy - lastEnergy)= " << abs(energy - lastEnergy) << endl;
     //cout << "fabs(energy - lastEnergy)= " << fabs(energy - lastEnergy) << endl;
     //cout << "abs(lastAveEnergy - aveEnergy)= " << abs(energy - lastEnergy) << endl;
     //while (abs(lastAveEnergy - aveEnergy) < 0.0005 || abs(lastEnergy-energy) < 0.0001){
     //while (abs(energy - lastEnergy) < 0.0001){
-    trainRate+=0.0001;
-    if (abs(sign-lastSign) > int(numDetsToTrain_*0.4)){
-      trainRate/=2.;
+    trainRate*=1.01;
+    if (abs(sign-lastSign) > allowedNumChangeSign){
+      trainRate*=0.7;
       cout << "trainRate=" << trainRate << endl;
     }
     //if (abs(lastAveEnergy - aveEnergy) < 0.001){

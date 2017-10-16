@@ -22,6 +22,7 @@ class NeuralNetwork{
       Basis const &fullBasis_);
     std::vector<detType> train(std::vector<detType> const&listDetsToTrain, double eta);
     double getEnergy(){return energy;}
+    double getSampleEnergy(){return sampleEnergy;}
     std::vector<double> getEnergyDerivative(std::vector<detType> const &list){return NablaE_C(list);}
     int getSign(){return sign;}
     std::vector<double> getCs() const {return output_Cs;}
@@ -40,7 +41,9 @@ class NeuralNetwork{
     Hamiltonian const&H;
     Basis const&fullBasis;
     double energy;
+    double sampleEnergy;
     void calcEnergy(std::vector<detType> const &listDetsToTrain);
+    void calcLocalEnergy(std::vector<detType> const &listDetsToTrain);
     //std::vector<detType> train(std::vector<detType> &listDetsToTrain_, double eta);
     //double feedForward(double activation_);
     void backPropagate(

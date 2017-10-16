@@ -64,7 +64,10 @@ detType Sampler::getRandomDeterminant(detType const &startingPoint) const{
   // here, we need the sorted representation. This is best done in the Hamiltonian class
   int lower = H.lowerPos(j);
   int upper = H.upperPos(j);
+  std::random_device rd;
   std::random_device rng;
+  int random_integer;
+  std::mt19937 rng1(rd());    // random-number engine used (Mersenne-Twister in this case)
   int row = -1;
   int col = -1;
   double const normalizer = static_cast<double>(rng.max());
@@ -76,22 +79,30 @@ detType Sampler::getRandomDeterminant(detType const &startingPoint) const{
     if (row == j) continue;
     K+=dblAbs(value);
   }
+  int N=upper-lower; //number of connected determinants besides itself
+  std::uniform_int_distribution<int> uni(lower, upper-1); // guaranteed unbiased
+  random_integer = uni(rng1); 
+  //std::cout << "N=" << N << std::endl;
+  //std::cout << "random=" << random_integer << std::endl;
   while(tempDets.size() == 0){
-    for(int i=lower;i<upper;++i){
+      random_integer = uni(rng1); 
+    //for(int i=lower;i<upper;++i){
       p=rng()/normalizer;
       // get all coupled determinants and accept them into the temporary list
       // with probability K_ij/K
-      H.sparseAccess(i,row,col,value);
+      H.sparseAccess(random_integer,row,col,value);
       if (row == j) continue;
       //std::cout<<"Choosing "<<dblAbs(value)/K<<std::endl;
-      if(p<dblAbs(value)/K){
+      //if(p<dblAbs(value)/K){
+      if (p<1){
+      //if(p<1./N){
 	// here, we need the reverse of intcast, i.e. the conversion of the index
 	// to the determinant. It shall just return lookuptable(i) for a given index i
 	// (lookuptable contains the determinants for conversion to int)
 	tempDets.push_back(fullBasis.getDetByIndex(row));
 	//std::cout << "pushed back " << fullBasis.getIndexByDet(tempDets.back()) << std::endl;
       }
-    }
+   //}
   }
   // pick a random determinant from the temporary list
   int const chosen=static_cast<int>(rng()/normalizer*tempDets.size());

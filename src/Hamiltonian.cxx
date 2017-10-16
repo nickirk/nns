@@ -84,7 +84,7 @@ void Hamiltonian::initHamiltonian(){
   //offDiagNonZeroRatio sets how much percentage of the offdiag terms are non0
   //diagonal terms
   for (int i = 0; i < size; i++){
-    valueVec.push_back(-0.1-diagDelta*pow(i,1.3));
+    valueVec.push_back(-1.023-diagDelta*pow(i,1.5));
     rowVec.push_back(i);
     colVec.push_back(i);
   }
