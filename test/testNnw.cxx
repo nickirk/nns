@@ -11,7 +11,7 @@ using namespace std;
 
 using namespace std;
 int main(){
-  int numStates(7);
+  int numStates(3);
   //cout << "input number of states=";
   //cin >> numStates;
   int numEle(2);
@@ -47,27 +47,25 @@ int main(){
       //cout <<"i= "<< i << endl ;
     }
   auto eVals = H.eigenvalues().real();
-  double eMin = 0.0;
-  int pos = 0;
+  double eMin{0.0};
+  int pos{0};
   for(size_t i = 0; i < basis.getSize(); ++i){
 	  if(eVals(i)<eMin){
 		  pos = i;
 		  eMin = eVals(i);
 	  }
   }
-  Eigen::EigenSolver<MatrixXd> eSolver(H);
+  Eigen::EigenSolver<Eigen::MatrixXd> eSolver(H);
   auto eVector = eSolver.eigenvectors().col(pos);
-
+  cout << "original value " << eVector << endl;
   if(!readFromFile){
-    ofstream myfile;
-    myfile.open ("eigen.txt");
+    ofstream myfile("tst.txt");
+    //myfile.open ("eigen.txt");
     cout << "writing eigen values to file" << endl;
-    myfile << eVals << endl;
+    myfile << eVals <<  endl;
 
-    //cout << H << endl;
     myfile.close();
-  } 
-
+  }
   vector<int> size_NNW = {numStates, numHidden, 10, 1};
   vector<detType> list;
   for (int i=0; i< basis.getSize(); ++i){
