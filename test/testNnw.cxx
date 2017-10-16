@@ -17,7 +17,7 @@ int main(){
   int numEle(2);
   //cout << "input number of Ele=";
   //cin >> numEle;
-  int numHidden(100);
+  int numHidden(10);
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
   bool readFromFile(false);
@@ -57,16 +57,23 @@ int main(){
     myfile.close();
   } 
 
+  
   vector<int> size_NNW = {numStates, numHidden,1};
   vector<detType> list;
-  //for (int i=0; i< basis.getSize(); ++i){
-  //  list.push_back(basis.getDetByIndex(i));
-  //  vector<int> pos=getOccupiedPositions(basis.getDetByIndex(i));
-  //  for (int j=0; j<pos.size(); j++){
-  //    cout << pos[j] << ",";
-  //  }
-  //  cout << endl;
-  //}
+  for (int i=0; i< basis.getSize(); ++i){
+    list.push_back(basis.getDetByIndex(i));
+    vector<int> pos=getOccupiedPositions(basis.getDetByIndex(i));
+    for (int j=0; j<pos.size(); j++){
+      cout << pos[j] << ",";
+    }
+    cout << endl;
+  }
+
+  std::cout<<"Listsize= "<<list.size()<<std::endl;
+  for(int i = 0; i< list.size(); ++i){
+    std::cout<<"intCast= "<<verbatimCast(list[i])<<std::endl;
+  }
+
   NeuralNetwork NNW(size_NNW, modelHam, basis);
   detType HF=basis.getDetByIndex(0);
   //list.push_back(HF); 
@@ -86,7 +93,7 @@ int main(){
   int count(0);
   int count1(0);
   //test sampler;
-  sampler.generateList(list); 
+  //sampler.generateList(list); 
   //for (size_t i=0; i<list.size(); ++i){
   //    cout<<"intCast= " << verbatimCast(list[i])<<endl;
   //  }
@@ -103,7 +110,7 @@ int main(){
     energy = NNW.getEnergy();
     sign = NNW.getSign();
     count++;
-    sampler.generateList(list); 
+    //sampler.generateList(list); 
     if (count1 < 1000){
       totalenergy+=energy; 
       count1++;
@@ -116,7 +123,8 @@ int main(){
       totalenergy=0.;
       count1=0;
       NNW.train(list, trainRate);
-      //sampler.setReference(list);
+      /*
+      sampler.setReference(list);
       cout << "size of seeds= " << list.size() << endl;
       for (size_t i=0; i<list.size(); ++i){
         cout<<"Seeds intCast= " << verbatimCast(list[i])<<endl;
@@ -128,6 +136,7 @@ int main(){
        cout << "setNumStates= " << sampler.getNumStates() << endl;
       }
       sampler.generateList(list); 
+      */
     }
     cout << "Ave energy= " << aveEnergy<< endl;
     cout << "energy= " << energy<< endl;

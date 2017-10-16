@@ -95,9 +95,9 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
       //  std::cout << "inputSignal= " << inputSignal[layer] << std::endl;        
       //}
       if (layer == numLayersNeuron-1)
-      activations[layer] = activations[layer].unaryExpr(&Linear);
-      else 
       activations[layer] = activations[layer].unaryExpr(&Tanh);
+      else 
+      activations[layer] = activations[layer].unaryExpr(&Linear);
       //if (layer == numLayersNeuron-1){
       //  std::cout << "activation= " << activations[layer] << std::endl;        
       //}
@@ -137,7 +137,7 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
   for (int i=0; i < output_Cs.size(); ++i){
     //std::cout << "HFCoeff= " << HFCoeff << std::endl;
     std::cout << "C_" << i << "= " << output_Cs[i] << std::endl;
-    std::cout << "intCast= " << verbatimCast(listDetsToTrain[i]) << std::endl;
+    //std::cout << "intCast= " << verbatimCast(listDetsToTrain[i]) << std::endl;
     //std::cout << "yes or no" << "= " <<fabs(fabs(output_Cs[i])-0.2*fabs(HFCoeff))  << std::endl;
     if (fabs(output_Cs[i])-0.5*fabs(HFCoeff) > 1e-8){
       //std::cout << "yes" << std::endl;
@@ -168,7 +168,7 @@ void NeuralNetwork::backPropagate(
     //std::cout << "Output coeff size= " << output_Cs.size() << std::endl;
     deltaTheLastLayer = 
     dEdC[epoch]*inputSignal_Epochs[epoch][numLayersNeuron-1].unaryExpr(
-                                    &Linear_prime);
+                                    &Tanh_prime);
     //adding up all nabla_biases and nabla_weights, in the end use the average
     //of them to determine the final change of the weights and biases.
     //Treat them as Vectors and Matrices.
@@ -196,7 +196,7 @@ void NeuralNetwork::backPropagate(
       //To achive elementwise multiply, form a diagonal vector.
       //deltaAsDiagonal = deltaThisLayer.asDiagonal();
       deltaThisLayer = deltaThisLayer.array()
-         * inputSignal_Epochs[epoch][layer+1].unaryExpr(&Tanh_prime).array();
+         * inputSignal_Epochs[epoch][layer+1].unaryExpr(&Linear_prime).array();
       //deltaThisLayer = deltaAsDiagonal * 
       // VectorXd::Ones(deltaThisLayer.size());
       deltaAllLayers.push_back(deltaThisLayer);
