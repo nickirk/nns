@@ -3,7 +3,7 @@ LDFLAGS=-std=c++11 -g -Wall
 EIGEN_PATH=lib/eigen/
 EIGEN_FLAGS=-I$(EIGEN_PATH)
 SOURCEFILES=Sampler.cxx Nnw.cxx Basis.cxx Hamiltonian.cxx Determinant.cxx
-TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx
+TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx testEigen.cxx
 SRC=src
 TST=test
 BUILD=build
@@ -50,13 +50,13 @@ testBasis: $(OBJECTS) $(BTESTOBJECT)
 testNnw: $(OBJECTS) $(NNWTESTOBJECT)
 	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
 
-$(TSTDDIR)/testSampler: $(OBJECTS) $(STESTOBJECT)
+testSampler: $(OBJECTS) $(STESTOBJECT)
 	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
 
-$(TSTDDIR)/testEigen: $(OBJECTS) $(ETESTOBJECT)
+testEigen: $(OBJECTS) $(ETESTOBJECT)
 	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
 
-$(TSTDDIR)/testHam: $(OBJECTS) $(HTESTOBJECT)
+testHam: $(OBJECTS) $(HTESTOBJECT)
 	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
                                             
                                             

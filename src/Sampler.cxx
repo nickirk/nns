@@ -6,7 +6,9 @@
  */
 #include <vector>
 #include <random>
+#include <algorithm>
 #include "Sampler.hpp"
+#include "Determinant.hpp"
 #include <iostream>
 
 void Sampler::generateList(std::vector<detType > &list) const{
@@ -25,20 +27,20 @@ void Sampler::generateList(std::vector<detType > &list) const{
     for (int i(0); i<numRef; ++i){
       list[i] = cDet[i];
     }
-    int random_integer;
+    int random_integer{0};
     std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
     std::uniform_int_distribution<int> uni(0,numRef-1); // guaranteed unbiased
     random_integer = uni(rng); 
     buf = cDet[random_integer]; 
     for (int i(numRef); i < numStates; ++i){
-      std::cout << "random_integer= " << random_integer <<std::endl;
-      std::cout << "size of Ref= " << numRef <<std::endl;
-      std::cout << "size of Dets= " << numStates <<std::endl;
-      std::cout << "i= " << i <<std::endl;
-      std::cout << "intcast ref= " << verbatimCast(buf) << std::endl;
+      //std::cout << "random_integer= " << random_integer <<std::endl;
+      //std::cout << "size of Ref= " << numRef <<std::endl;
+      //std::cout << "size of Dets= " << numStates <<std::endl;
+      //std::cout << "i= " << i <<std::endl;
+      //std::cout << "intcast ref= " << verbatimCast(buf) << std::endl;
       buf = getRandomDeterminant(buf);
       list[i] = buf;
-      std::cout << "intcast new= " << verbatimCast(buf) << std::endl;
+      //std::cout << "intcast new= " << verbatimCast(buf) << std::endl;
     }
   }
   else if (numRef == numStates) list = cDet;
@@ -55,44 +57,12 @@ void Sampler::generateList(std::vector<detType > &list) const{
   //}
 }
 
+void Sampler::removeDuplicate(std::vector<detType> &list){
+ std::sort( list.begin(), list.end() );
+ list.erase( std::unique( list.begin(), list.end() ), list.end() );
+}
+
 detType Sampler::getRandomDeterminant(detType const &startingPoint) const{
-  std::vector<detType > tempDets(0);
-  // first, convert the determinant to an index
-  int j = fullBasis.getIndexByDet(startingPoint);
-  // get the range that corresponds to this index' row
-  // here, we need the sorted representation. This is best done in the Hamiltonian class
-  int lower = H.lowerPos(j);
-  int upper = H.upperPos(j);
-  std::random_device rng;
-  int row = -1;
-  int col = -1;
-  double const normalizer = static_cast<double>(rng.max());
-  double value,p;
-  double K=0.0;
-  // compute the normalization sum_j |K_ij|
-  for(int i=lower;i<upper;++i){
-    H.sparseAccess(i,row,col,value);
-    if (row == j) continue;
-    K+=dblAbs(value);
-  }
-  while(tempDets.size() == 0){
-    for(int i=lower;i<upper;++i){
-      p=rng()/normalizer;
-      // get all coupled determinants and accept them into the temporary list
-      // with probability K_ij/K
-      H.sparseAccess(i,row,col,value);
-      if (row == j) continue;
-      //std::cout<<"Choosing "<<dblAbs(value)/K<<std::endl;
-      if(p<dblAbs(value)/K){
-	// here, we need the reverse of intcast, i.e. the conversion of the index
-	// to the determinant. It shall just return lookuptable(i) for a given index i
-	// (lookuptable contains the determinants for conversion to int)
-	tempDets.push_back(fullBasis.getDetByIndex(row));
-	//std::cout << "pushed back " << fullBasis.getIndexByDet(tempDets.back()) << std::endl;
-      }
-    }
-  }
-  // pick a random determinant from the temporary list
-  int const chosen=static_cast<int>(rng()/normalizer*tempDets.size());
-  return tempDets[chosen];
+	double p{0};
+	return getRandomCoupledState(startingPoint, p);
 }

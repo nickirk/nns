@@ -58,3 +58,8 @@ int verbatimCast(detType const & det){
 }
 
 bool operator==(detType const& a, detType const& b) { return verbatimCast(a) == verbatimCast(b);}
+
+bool operator < (detType const& lhs, detType const& rhs)
+{
+  return verbatimCast(lhs) < verbatimCast(rhs);
+}

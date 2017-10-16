@@ -1,45 +1,27 @@
-/*
- * Hamiltonian.hpp
- * Copyright (c) 2017
- * Author: Ke Liao and Kai Guther
- * All rights reserved
- */
+#ifndef HAMILTONIAN_CLASS
+#define HAMILTONIAN_CLASS
 
-#ifndef Hamiltonian_DEFINED
-#define Hamiltonian_DEFINED
-#include <vector>
 #include "Determinant.hpp"
-#include "Basis.hpp"
 
-
-// type of the determiants
 class Hamiltonian{
-  public:
-    Hamiltonian(double diagDelta_, double offDiagMagntd_, double
-		offDiagNonZeroRatio_, Basis const & basis_);
-    int getSize() const;
-    int getSparseSize() const;
-    void sparseAccess(int pos, int &row, int &col, double &value) const;
-    double  operator () (detType const &i, detType const &j) const;
-    double  operator () (int const i, int const j) const;
-    void multiplyMatrixVector(double *v, double *w);
-    //What are these two functions for?
-    int lowerPos(int i) const;
-    int upperPos(int i) const;
-    void writeToFile(std::string);
-    void readFromFile(std::string);
-  private:
-    int size;
-    double diagDelta;
-    double offDiagMagntd;
-
-    double offDiagNonZeroRatio;
-    std::vector<int> rowVec, colVec;
-    std::vector<double> valueVec;
-    void initHamiltonian();
-    void sortH();
-    double lookupValue(int const &i, int const &j);
-    Basis const& basis;
+ public:
+  Hamiltonian(){}
+  //dimension is the dimension of the single-particle hilbert space
+  explicit Hamiltonian(int dimension):d(dimension),oneBodyEntries(std::vector<double>(d*d,0.0)),twoBodyEntries(std::vector<double>(d*d*d*d,0.0)){}
+  void setMatrixElement(int r, int s, double newEntry);
+  void setMatrixElement(int p, int q, int r, int s, double newEntry);
+  double getMatrixElement(detType const &alpha, detType const &beta)const;
+  void printMatrix(int N);
+ private:
+  int d;
+  //these are the coefficients of the second quantized hamiltonian
+  std::vector<double> oneBodyEntries;
+  std::vector<double> twoBodyEntries;
 };
+
+detType getRandomCoupledState(detType const &source, double &p);
+//basically counts the number of particles between annihilatorIndex and creatorIndex in alpha, yielding the sign of a^\dagger_i a_j (alpha) in the canonical operator ordering
+int getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex);
+Hamiltonian generateHubbard(int dim, double U, double t);
 
 #endif
