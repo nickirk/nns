@@ -19,11 +19,9 @@ cout << "type of eVector= " << typeid(eVector).name() << endl;
 cout << "type of eVector1= " << typeid(eVector1).name() << endl;
 auto eigenValue=es.eigenvalues();
 
-while (true){
 cout << "eVector= " << eVector << endl;
 cout << "eVector1= " << eVector1 << endl;
 cout << "eigenValues= " << eigenValue << endl;
-}
 }
 
 

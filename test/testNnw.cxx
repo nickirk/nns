@@ -112,8 +112,6 @@ int main(){
     //for (size_t i=0; i<list.size(); ++i){
     //  cout<<"intCast= " << verbatimCast(list[i])<<endl;
     //}
-    lastAveEnergy = aveEnergy;
-    lastEnergy = energy;
     lastSign = sign;
     list=NNW.train(list, trainRate);
     //NNW.train(list, trainRate);

@@ -7,7 +7,7 @@ class Hamiltonian{
  public:
   Hamiltonian(){}
   //dimension is the dimension of the single-particle Hilbert space
-  explicit Hamiltonian(int dimension):d(dimension),oneBodyEntries(std::vector<double>(d*d,0.0)),twoBodyEntries(std::vector<double>(d*d*d*d,0.0)){}
+  explicit Hamiltonian(int dimension):d(2*dimension),oneBodyEntries(std::vector<double>(d*d,0.0)),twoBodyEntries(std::vector<double>(d*d*d*d,0.0)){}
   void setMatrixElement(int r, int s, double newEntry);
   void setMatrixElement(int p, int q, int r, int s, double newEntry);
   double operator()(detType const &alpha, detType const &beta) const{return getMatrixElement(alpha, beta);}
