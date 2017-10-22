@@ -13,8 +13,7 @@
 #include "Nnw.hpp"
 //using namespace Eigen;
 NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, Hamiltonian const&H_,
-  Basis const&fullBasis_) :
-		sign {0}, sampleEnergy{0.0}, sizes(sizes_), H(H_), fullBasis(fullBasis_) {
+  Basis const&fullBasis_):sizes(sizes_), H(H_), fullBasis(fullBasis_){
   energy = 0;
   int numLayersNeuron = sizes.size();
   int numLayersBiasesWeights = sizes.size()-1;
@@ -39,28 +38,34 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, Hamiltonian const&H
     nabla_weights.push_back(Eigen::MatrixXd::Zero(sizes[layer+1], sizes[layer]));
   }
 }
+/*
 void NeuralNetwork::calcLocalEnergy(std::vector<detType> const&listDetsToTrain){
-  sampleEnergy = 0.0;
-  double localEnergy{0.};
+  sampleEnergy = 0.;
+  double localEnergy(0.);
   sign = 0;
-  int sign_i{0};
-  double normalizerCoeff{0.};
-  double Hij{0.};
+  int sign_i=0;
+  double normalizerCoeff(0.);
+  double Hij(0.);
   int numDets = output_Cs.size();
-  double coeff{0.};
+  int row, col;
+  double coeff(0.);
   for (int i=0; i < numDets; ++i){
     localEnergy =0.;
+    int lower = H.lowerPos(i);
+    int upper = H.upperPos(i);
+    for (int j=lower; j <upper; ++j){
       //if (i==j) continue;
-      Hij = H(fullBasis.getDetByIndex(i), fullBasis.getDetByIndex(i));
+      H.sparseAccess(j,row,col,Hij);
       //std::cout << "row=" << row << std::endl;
-      coeff = feedForward(fullBasis.getDetByIndex(i))(0);
+      coeff = feedForward(fullBasis.getDetByIndex(row))(0);
       localEnergy+=Hij *coeff / output_Cs[i];
-      sampleEnergy+=localEnergy;
+    }
+  sampleEnergy+=localEnergy;
   }
   sampleEnergy/=numDets;
   std::cout << "local Energy=" << sampleEnergy << std::endl;
 }
-
+*/
 void NeuralNetwork::calcEnergy(std::vector<detType> const&listDetsToTrain){
   energy = 0.;
   sign = 0;
@@ -99,46 +104,6 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
     nabla_biases[layer] *= 0.; 
     nabla_weights[layer] *=0.;
   } 
-  for (int epoch=0; epoch < numDets; ++epoch){
-    //initial input layer
-    int numStates = listDetsToTrain[epoch].size();
-    for (int state=0; state<numStates; ++state){
-      activations[0][state] = listDetsToTrain[epoch][state]?1.0:0.0;
-      inputSignal[0][state] = listDetsToTrain[epoch][state]?1.0:0.0;
-    }
-    //activations[0] = Eigen::Map<Eigen::VectorXd>(listDetsToTrain[epoch].data());
-    for (int layer=1; layer < numLayersNeuron; ++layer){
-      //Here the 0th layer of weights correspond to the connections between
-      //the 0th and 1st layer. Here layer refers to the Neuron layer. When use 
-      //it to refer the Biases and weights' layer, we need conversion.
-      //std::cout << weights[layer-1] << std::endl;
-      //std::cout << activations[layer-1] << std::endl;
-      activations[layer] = weights[layer-1]*activations[layer-1]+biases[layer-1];
-      inputSignal[layer] = activations[layer];
-      //if (layer == numLayersNeuron-1){
-      //  std::cout << "inputSignal act= " << activations[layer] << std::endl;        
-      //  std::cout << "inputSignal size= " << inputSignal.size() << std::endl;        
-      //  std::cout << "inputSignal= " << inputSignal[layer] << std::endl;        
-      //}
-      if (layer == numLayersNeuron-1){
-      activations[layer] = activations[layer].unaryExpr(&Tanh);}
-      else{
-      activations[layer] = activations[layer].unaryExpr(&Linear);}
-      //if (layer == numLayersNeuron-1){
-      //  std::cout << "activation= " << activations[layer] << std::endl;        
-      //}
-    }
-    inputSignal_Epochs.push_back(inputSignal);
-    activations_Epochs.push_back(activations);
-    output_Cs.push_back(activations[numLayersNeuron-1][0]);
-  }
-    //std::cout <<"1 num Det= " << epoch<< std::endl;
-    //std::cout << "inputSignalLastLayer= " << inputSignal[numLayersNeuron-1] <<std::endl;
-    //std::cout << "inputsignal_epochLL= "<<inputSignal_Epochs[epoch][numLayersNeuron-1] << std::endl; 
-    //std::cout << "C_" << epoch << "= " << output_Cs[epoch] << std::endl;
-    //std::cout << "1 inputsignal_epoch size= "<<inputSignal_Epochs.size() << std::endl; 
-    ////std::cout << "activations= " << activations[numLayersNeuron-1][0] <<std::endl;
-    //std::cout << "1 activation_epoch= " <<activations_Epochs[epoch][numLayersNeuron-1][0] << std::endl; 
 
   double prandom(0.);
   std::random_device rng;
@@ -156,7 +121,7 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
     coef=feedForward(listDetsToTrain[epoch])(0);
     prob=fabs(coef/coefPrev);
     coefPrev = coef;
-   // if ((prob-1)>1.e-8 || (prandom-prob) < -1.e-8){
+    //if ((prob-1)>1.e-8 || (prandom-prob) < -1.e-8){
     if (true){
       inputSignal_Epochs.push_back(inputSignal);
       activations_Epochs.push_back(activations);
@@ -167,7 +132,7 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
   
   //calculating variational energy
   calcEnergy(listDetsToTrainFiltered); 
-  calcLocalEnergy(listDetsToTrainFiltered); 
+  //calcLocalEnergy(listDetsToTrainFiltered); 
   backPropagate(listDetsToTrainFiltered, inputSignal_Epochs, activations_Epochs); 
   //update weights and biases
   //0th layer is the input layer,
@@ -177,7 +142,7 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
     biases[layer] -= eta / numDets * nabla_biases[layer];
     weights[layer] -= eta / numDets * nabla_weights[layer];
   }
-  //double HFCoeff(output_Cs[0]);
+  //double HFCoeff(output_Cs.back());
   double HFCoeff(0.);
   double max(0);
   for (int i=0; i < output_Cs.size(); ++i){
@@ -216,7 +181,7 @@ Eigen::VectorXd NeuralNetwork::feedForward(detType const& det){
     //  std::cout << "inputSignal= " << inputSignal[layer] << std::endl;        
     //}
     if (layer == numLayersNeuron-1)
-    activations[layer] = activations[layer].unaryExpr(&Linear);
+    activations[layer] = activations[layer].unaryExpr(&Tanh);
     else 
     activations[layer] = activations[layer].unaryExpr(&Tanh);
     //if (layer == numLayersNeuron-1){
@@ -276,7 +241,7 @@ void NeuralNetwork::backPropagate(
 
       //check if it right
       deltaThisLayer = deltaThisLayer.array()
-         * inputSignal_Epochs[epoch][layer+1].unaryExpr(&Linear_prime).array();
+         * inputSignal_Epochs[epoch][layer+1].unaryExpr(&Tanh_prime).array();
       //deltaThisLayer = deltaAsDiagonal * 
       // VectorXd::Ones(deltaThisLayer.size());
       deltaAllLayers.push_back(deltaThisLayer);

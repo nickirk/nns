@@ -43,7 +43,7 @@ class NeuralNetwork{
     double energy;
     double sampleEnergy;
     void calcEnergy(std::vector<detType> const &listDetsToTrain);
-    void calcLocalEnergy(std::vector<detType> const &listDetsToTrain);
+    //void calcLocalEnergy(std::vector<detType> const &listDetsToTrain);
     //std::vector<detType> train(std::vector<detType> &listDetsToTrain_, double eta);
     //double feedForward(double activation_);
     void backPropagate(

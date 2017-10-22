@@ -59,7 +59,8 @@ void Sampler::generateList(std::vector<detType > &list) const{
 
 void Sampler::removeDuplicate(std::vector<detType> &list){
  std::sort( list.begin(), list.end() );
- list.erase( std::unique( list.begin(), list.end() ), list.end() );
+ auto it=std::unique( list.begin(), list.end() );
+ list.erase( it, list.end() );
 }
 
 detType Sampler::getRandomDeterminant(detType const &startingPoint) const{
