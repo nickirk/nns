@@ -11,24 +11,27 @@ using namespace Eigen;
 
 using namespace std;
 int main(){
-  int numStates(10);
-  //cout << "input number of states=";
-  //cin >> numStates;
-  int numEle(3);
-  //cout << "input number of Ele=";
-  //cin >> numEle;
+  int numSites(6);
+  int numStates(2*numSites);
+  cout << "input number of sites=";
+  cin >> numSites;
+  int numEle(4);
+  cout << "input number of Ele=";
+  cin >> numEle;
   int numHidden(10);
   int numHidden1(3);
   vector<int> size_NNW = {numStates, numHidden, numHidden1,1};
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
   bool readFromFile{false};
+  cout << "input readFromFile=";
+  cin >> readFromFile;
   double trainRate(0.005);
   cout << "input training rate=";
   cin >> trainRate;
   Basis basis(numStates,numEle);
   Hamiltonian modelHam(numStates);
-  double U{4}, t{-1};
+  double U{-4}, t{-1};
   modelHam = generateHubbard(numStates, U, t);
   cout << "Basis size= " << basis.getSize() << endl;
   //cout << "Hamiltonian size= " << modelHam.getSize() << endl;
@@ -156,7 +159,7 @@ int main(){
     for(size_t i = 0; i < coeffs.size(); ++i){
       cout << "Coeff on " << i << "\t" << coeffs[i] << ", exact " << eVector(i) << ", dE " << nablaE[i]<<endl;
     }
-    int allowedNumChangeSign = int(numDetsToTrain_*0.1);
+    int allowedNumChangeSign = int(basis.getSize()*0.1);
     cout << "percentage of allowed sign change= " <<  allowedNumChangeSign<< endl;
     //cout << "sign= " << sign << endl;
     //cout << "lastSign= " << lastSign << endl;
@@ -170,7 +173,7 @@ int main(){
     //cout << "abs(lastAveEnergy - aveEnergy)= " << abs(energy - lastEnergy) << endl;
     //while (abs(lastAveEnergy - aveEnergy) < 0.0005 || abs(lastEnergy-energy) < 0.0001){
     //while (abs(energy - lastEnergy) < 0.0001){
-    trainRate*=1.01;
+    trainRate+=0.0001;
     if (abs(sign-lastSign) > allowedNumChangeSign){
       trainRate*=0.7;
       cout << "trainRate=" << trainRate << endl;
