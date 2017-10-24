@@ -29,9 +29,10 @@ public:
 	int pos;
 };
 
-class coeffSizeError{
+class sizeMismatchError{
 public:
-	coeffSizeError(){};
+	sizeMismatchError(int a,int b):sizeA(a),sizeB(b){};
+	int sizeA, sizeB;
 };
 
 #endif /* ERRORS_HPP_ */

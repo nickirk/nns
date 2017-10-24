@@ -29,7 +29,12 @@ void Hamiltonian::setMatrixElement(int p, int q, int r, int s, double newEntry){
 
 double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
   if(static_cast<int>(alpha.size())!=d || d!=static_cast<int>(beta.size())){
-    return 0.0;
+	if(alpha.size()==beta.size()){
+		throw sizeMismatchError(d,alpha.size());
+	}
+	else{
+		throw sizeMismatchError(alpha.size(),beta.size());
+	}
   }
   std::vector<int> excitations;
   std::vector<int> holes;

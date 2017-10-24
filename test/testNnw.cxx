@@ -37,11 +37,9 @@ int main(){
   Eigen::EigenSolver<MatrixXd> eSolver(H);
   VectorXd eVals = eSolver.eigenvalues().real();
   double eMin = 0.0;
-  int pos = 0;
   for(int i = 0; i < basis.getSize(); ++i){
 	  if((eVals(i)-eMin)<1e-8){
               cout << eVals(i) << " " << i << endl;
-		  pos = i;
 		  eMin = eVals(i);
 	  }
   }
@@ -57,7 +55,6 @@ int main(){
   vector<detType> list;
   for (int i=0; i< basis.getSize(); ++i){
     list.push_back(basis.getDetByIndex(i));
-    vector<int> pos=getOccupiedPositions(basis.getDetByIndex(i));
   }
 
   // Set up the Nnw

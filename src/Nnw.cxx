@@ -270,7 +270,7 @@ std::vector<Eigen::VectorXd> NeuralNetwork::NablaE_C(
   int numDets = listDetsToTrain.size();
   // If the input list does have a different size than the number of trained coefficients,
   // throw a corresponding error
-  if(numDets != static_cast<int>(output_Cs.size())) throw coeffSizeError();
+  if(numDets != static_cast<int>(output_Cs.size())) throw sizeMismatchError(numDets,output_Cs.size());
   for (int i=0; i < numDets; ++i){
     Eigen::Vector2d dEdC_i=Eigen::Vector2d::Zero();
     std::complex<double> A(0.,0.);
