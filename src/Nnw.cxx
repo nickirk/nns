@@ -16,7 +16,7 @@
 NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, Hamiltonian const&H_,
   Basis const&fullBasis_):sizes(sizes_), H(H_), fullBasis(fullBasis_){
   energy = 0;
-  momentumDamping = 0.9;
+  momentumDamping = 0.8;
   momentum = true;
   int numLayersNeuron = sizes.size();
   int numLayersBiasesWeights = sizes.size()-1;
@@ -135,16 +135,16 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
     if(momentum){
       g_biases[layer] = ((nabla_biases[layer].array() 
                             * nabla_biasesPrev[layer].array()) > 1e-8).select(
-                            (g_biasesPrev[layer].array()+0.01).matrix(), g_biasesPrev[layer]*0.95);
+                            (g_biasesPrev[layer].array()*1.05).matrix(), g_biasesPrev[layer]*0.95);
       g_weights[layer] = ((nabla_weights[layer].array()
                        * nabla_weightsPrev[layer].array()) > 1e-8).select(
-                         (g_weightsPrev[layer].array()+0.5).matrix(), g_weightsPrev[layer]* 0.95);
+                         (g_weightsPrev[layer].array()*1.05).matrix(), g_weightsPrev[layer]* 0.95);
       nabla_biases[layer] = (nabla_biases[layer].array() * g_biases[layer].array()).matrix();
       nabla_weights[layer] = (nabla_weights[layer].array() * g_weights[layer].array()).matrix();
     }
     nabla_biases[layer] = -eta / numDets * nabla_biases[layer];
     nabla_weights[layer] = -eta / numDets * nabla_weights[layer]; 
-    if (momentum){
+    if (!momentum){
       nabla_biases[layer] += momentumDamping * nabla_biasesPrev[layer];
       nabla_weights[layer] += momentumDamping * nabla_weightsPrev[layer]; 
     }
@@ -191,7 +191,7 @@ Eigen::VectorXd NeuralNetwork::feedForward(detType const& det){
     //  std::cout << "inputSignal= " << inputSignal[layer] << std::endl;        
     //}
     if (layer == numLayersNeuron-1)
-    activations[layer] = activations[layer].unaryExpr(&Gaussian);
+    activations[layer] = activations[layer].unaryExpr(&Tanh);
     else 
     activations[layer] = activations[layer].unaryExpr(&Tanh);
     //if (layer == numLayersNeuron-1){
@@ -221,7 +221,7 @@ void NeuralNetwork::backPropagate(
     //std::cout << "Output coeff size= " << output_Cs.size() << std::endl;
     deltaTheLastLayer = 
     (dEdC[epoch].array() * 
-    inputSignal_Epochs[epoch][numLayersNeuron-1].unaryExpr(&Gaussian_prime).array()).matrix();
+    inputSignal_Epochs[epoch][numLayersNeuron-1].unaryExpr(&Tanh_prime).array()).matrix();
     //adding up all nabla_biases and nabla_weights, in the end use the average
     //of them to determine the final change of the weights and biases.
     //Treat them as Vectors and Matrices.
