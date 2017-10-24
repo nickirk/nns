@@ -19,7 +19,6 @@ int main(){
   cout << "input number of Ele=";
   cin >> numEle;
   int numHidden(15);
-  int numHidden1(3);
   vector<int> size_NNW = {numStates, numHidden, 2};
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
@@ -85,7 +84,7 @@ int main(){
   }
 
   std::cout<<"Listsize= "<<list.size()<<std::endl;
-  for(int i = 0; i< list.size(); ++i){
+  for(size_t i = 0; i< list.size(); ++i){
     std::cout<<"intCast= "<<verbatimCast(list[i])<<std::endl;
   }
   NeuralNetwork NNW(size_NNW, modelHam, basis);
@@ -201,7 +200,7 @@ int main(){
       for (size_t i=0; i<list.size(); ++i){
         cout<<"Seeds intCast= " << verbatimCast(list[i])<<endl;
       }
-      if (list.size() == numDetsToTrain_){ 
+      if (static_cast<int>(list.size()) == numDetsToTrain_){
        numDetsToTrain_+= 1;//numDetsToTrain_;
        cout << "numDets= " << numDetsToTrain_<<endl;
        sampler.setNumStates(numDetsToTrain_);

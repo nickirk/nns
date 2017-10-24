@@ -18,7 +18,6 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, Hamiltonian const&H
   energy = 0;
   momentumDamping = 0.8;
   momentum = true;
-  int numLayersNeuron = sizes.size();
   int numLayersBiasesWeights = sizes.size()-1;
   activations.push_back(Eigen::VectorXd::Zero(sizes[0]));
   inputSignal.push_back(Eigen::VectorXd::Zero(sizes[0]));
@@ -45,7 +44,7 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, Hamiltonian const&H
     g_weightsPrev.push_back(Eigen::MatrixXd::Ones(sizes[layer+1], sizes[layer]));
   }
   nabla_weightsPrev = nabla_weights;
-  nabla_biasesPrev = nabla_biasesPrev;
+  nabla_biasesPrev = nabla_biases;
 }
 /*
 void NeuralNetwork::calcLocalEnergy(std::vector<detType> const&listDetsToTrain){
@@ -92,11 +91,10 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
     nabla_biases[layer] *= 0.; 
     nabla_weights[layer] *=0.;
   } 
-
-  double prandom(0.);
+  double prandom{0.0};
   std::random_device rng;
   double const normalizer = static_cast<double>(rng.max());
-  double prob(1.);
+  double prob{1.0};
   double coef(0.);
   double coefPrev = feedForward(listDetsToTrain[0])(0);
   inputSignal_Epochs.push_back(inputSignal);
@@ -154,12 +152,12 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
   //double HFCoeff(output_Cs.back());
   double probAmp(0.);
   double max(0);
-  for (int i=0; i < output_Cs.size(); ++i){
+  for (size_t i=0; i < output_Cs.size(); ++i){
     probAmp = pow(output_Cs[i][0],2)-pow(output_Cs[i][1],2); //probility amplitude
     if (fabs(probAmp) -fabs(max) > 1e-8) max = probAmp;
   }
   std::vector<detType> seeds;
-  for (int i=0; i < output_Cs.size(); ++i){
+  for (size_t i=0; i < output_Cs.size(); ++i){
     probAmp = pow(output_Cs[i][0],2)+pow(output_Cs[i][1],2); //probility amplitude
     if (fabs(probAmp)-0.1*fabs(max) > 1e-8){
       seeds.push_back(listDetsToTrain[i]);
@@ -267,7 +265,6 @@ void NeuralNetwork::backPropagate(
 void NeuralNetwork::calcEnergy(std::vector<detType> const&listDetsToTrain){
   energy = 0;
   sign = 0;
-  int sign_i=0;
   normalizerCoeff=0.;
   std::complex<double> normalizerCoeffComplex(0.,0.);
   double Hij(0.);

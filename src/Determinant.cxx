@@ -12,7 +12,7 @@
 #include "Determinant.hpp"
 
 void annihilate(detType &det, int pos){
-  if (pos > det.size() || pos < 0){
+  if (pos > static_cast<int>(det.size()) || pos < 0){
     std::cerr << "Error! Annihilate outside of range! "; 
     throw outOfRangeError(pos);
   }
@@ -26,7 +26,7 @@ void annihilate(detType &det, int pos){
 }
 
 void create(detType &det, int pos){
-  if (pos > det.size() || pos < 0){
+  if (pos > static_cast<int>(det.size()) || pos < 0){
     std::cerr << "Error! Create outside of range! "; 
     throw outOfRangeError(pos);
   }

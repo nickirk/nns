@@ -28,7 +28,7 @@ void Hamiltonian::setMatrixElement(int p, int q, int r, int s, double newEntry){
 //---------------------------------------------------------------------------------------------------//
 
 double Hamiltonian::getMatrixElement(detType const &alpha, detType const &beta) const{
-  if(alpha.size()!=d || d!=beta.size()){
+  if(static_cast<int>(alpha.size())!=d || d!=static_cast<int>(beta.size())){
     return 0.0;
   }
   std::vector<int> excitations;
