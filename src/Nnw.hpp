@@ -24,7 +24,7 @@ class NeuralNetwork{
       Basis const &fullBasis_);
     std::vector<detType> train(std::vector<detType> const&listDetsToTrain, double eta);
     double getEnergy(){return energy;}
-    std::vector<Eigen::VectorXd> getCs() const {return output_Cs;}
+    std::vector<Eigen::VectorXd> getCs() const {return outputCs;}
     double calcEnergy(std::vector<detType> const &listDetsToTrain) const;
     Eigen::VectorXd feedForward(detType const& det);
   private:
@@ -33,17 +33,17 @@ class NeuralNetwork{
     std::vector<int> sizes;
     std::vector<Eigen::VectorXd> biases;
     std::vector<Eigen::MatrixXd> weights;
-    std::vector<Eigen::VectorXd> output_Cs;
+    std::vector<Eigen::VectorXd> outputCs;
     std::vector<Eigen::VectorXd> inputSignal; 
     std::vector<Eigen::VectorXd> activations; 
-    std::vector<Eigen::VectorXd> nabla_biases;
-    std::vector<Eigen::MatrixXd> nabla_weights;
-    std::vector<Eigen::VectorXd> nabla_biasesPrev;
-    std::vector<Eigen::MatrixXd> nabla_weightsPrev;
-    std::vector<Eigen::VectorXd> g_biases;
-    std::vector<Eigen::MatrixXd> g_weights;
-    std::vector<Eigen::VectorXd> g_biasesPrev;
-    std::vector<Eigen::MatrixXd> g_weightsPrev;
+    std::vector<Eigen::VectorXd> nablaBiases;
+    std::vector<Eigen::MatrixXd> nablaWeights;
+    std::vector<Eigen::VectorXd> nablaBiasesPrev;
+    std::vector<Eigen::MatrixXd> nablaWeightsPrev;
+    std::vector<Eigen::VectorXd> gFactorBiases;
+    std::vector<Eigen::MatrixXd> gFactorWeights;
+    std::vector<Eigen::VectorXd> gFactorBiasesPrev;
+    std::vector<Eigen::MatrixXd> gFactorWeightsPrev;
     //std::vector<detType> &listDetsToTrain;
     Hamiltonian const&H;
     Basis const&fullBasis;
@@ -54,7 +54,7 @@ class NeuralNetwork{
     //double feedForward(double activation_);
     void backPropagate(
            std::vector<detType> const &listDetsToTrain,
-           std::vector<std::vector<Eigen::VectorXd>> const &inputSignal_Epochs,
+           std::vector<std::vector<Eigen::VectorXd>> const &inputSignalEpochs,
            std::vector<std::vector<Eigen::VectorXd>> const &activations
          );
     std::vector<Eigen::VectorXd> NablaE_C(std::vector<detType> const &listDetsToTrain);
