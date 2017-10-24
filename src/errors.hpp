@@ -29,4 +29,9 @@ public:
 	int pos;
 };
 
+class coeffSizeError{
+public:
+	coeffSizeError(){};
+};
+
 #endif /* ERRORS_HPP_ */

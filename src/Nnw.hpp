@@ -24,12 +24,10 @@ class NeuralNetwork{
       Basis const &fullBasis_);
     std::vector<detType> train(std::vector<detType> const&listDetsToTrain, double eta);
     double getEnergy(){return energy;}
-    std::vector<Eigen::VectorXd> getEnergyDerivative(std::vector<detType> const &list){return NablaE_C(list);}
-    int getSign(){return sign;}
     std::vector<Eigen::VectorXd> getCs() const {return output_Cs;}
+    double calcEnergy(std::vector<detType> const &listDetsToTrain) const;
     Eigen::VectorXd feedForward(detType const& det);
   private:
-    int sign;
     double momentumDamping;
     bool momentum;
     std::vector<int> sizes;
@@ -50,8 +48,7 @@ class NeuralNetwork{
     Hamiltonian const&H;
     Basis const&fullBasis;
     double energy;
-    double normalizerCoeff;
-    void calcEnergy(std::vector<detType> const &listDetsToTrain);
+    mutable double normalizerCoeff;
     //void calcLocalEnergy(std::vector<detType> const &listDetsToTrain);
     //std::vector<detType> train(std::vector<detType> &listDetsToTrain_, double eta);
     //double feedForward(double activation_);

@@ -27,7 +27,7 @@ void Hamiltonian::setMatrixElement(int p, int q, int r, int s, double newEntry){
 
 //---------------------------------------------------------------------------------------------------//
 
-double Hamiltonian::getMatrixElement(detType const &alpha, detType const &beta) const{
+double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
   if(static_cast<int>(alpha.size())!=d || d!=static_cast<int>(beta.size())){
     return 0.0;
   }
@@ -208,7 +208,7 @@ Hamiltonian generateHubbard(int dim, double U, double t){
   Hamiltonian H(dim);
   for(int i=0;i<dim-1;i+=2){
     //Hubbard interaction
-    H.setMatrixElement(i,i+1,i,i+1,-U);
+    H.setMatrixElement(i,i+1,i,i+1,U);
   }
   for(int i=0;i<dim-2;++i){
     //hopping, excluding the pbc term
