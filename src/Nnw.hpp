@@ -17,7 +17,6 @@
 #include "Determinant.hpp"
 #include "Basis.hpp"
 #include "Hamiltonian.hpp"
-#include "Evaluator.hpp"
 #include "State.hpp"
 //#include "Sampler.hpp"
 const std::complex<double> ii(0.,1.);
@@ -25,7 +24,7 @@ class NeuralNetwork{
   public:
     NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF);
     std::vector<detType> train(std::vector<detType> const&listDetsToTrain, double eta);
-    double getEnergy(){return energy;}
+    double getEnergy(){return cf->calc(outputState);}
     State getState() const {return outputState;}
     double calcEnergy(std::vector<detType> const &listDetsToTrain) const;
     Eigen::VectorXd feedForward(detType const& det);
@@ -50,7 +49,6 @@ class NeuralNetwork{
     std::vector<Eigen::VectorXd> gFactorBiasesPrev;
     std::vector<Eigen::MatrixXd> gFactorWeightsPrev;
     CostFunction const *cf;
-    double energy;
     void backPropagate(
            std::vector<std::vector<Eigen::VectorXd>> const &inputSignal_Epochs,
            std::vector<std::vector<Eigen::VectorXd>> const &activations

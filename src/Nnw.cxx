@@ -48,8 +48,6 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const 
 
   // Assign the output state and the evaluator to 0
   outputState = State();
-  // Initialize the energy with NaN, so we see if there is a problem
-  energy = 0.0/0.0;
 }
 
 std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double eta){
@@ -190,9 +188,7 @@ void NeuralNetwork::backPropagate(
   int numLayersNeuron(sizes.size());
   int numLayersBiasesWeights(sizes.size()-1);
   // catch here
-  Evaluator cfWrapper(*cf, outputState);
-  std::vector<Eigen::VectorXd> dEdC(cfWrapper.nabla());
-  energy = cfWrapper();
+  std::vector<Eigen::VectorXd> dEdC(cf->nabla(outputState));
   for (int epoch=0; epoch < numDets; ++epoch){
     Eigen::VectorXd deltaTheLastLayer;
     //std::cout <<"num Det= " << epoch<< std::endl;

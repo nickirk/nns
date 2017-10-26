@@ -9,8 +9,8 @@
 #include <vector>
 #include <complex>
 
-void EnergyCF::calc(State const &input) const{
-  energy=0.0;
+double EnergyCF::evaluate(State const &input) const{
+  double energyVal{0.0};
   normalizerCoeff=0.0;
   std::complex<double> normalizerCoeffComplex(0.,0.);
   double Hij(0.);
@@ -27,16 +27,17 @@ void EnergyCF::calc(State const &input) const{
       imag = input.getCoeff(j)[1];
       std::complex<double> c_j(real, imag);
       Hij = H(input.getDet(i), input.getDet(j));
-      energy += std::real(std::conj(c_i) * c_j * Hij);
+      energyVal += std::real(std::conj(c_i) * c_j * Hij);
     }
   }
   //std::cout << "normE= " << normalizerCoeff << std::endl;
   normalizerCoeff = std::real(normalizerCoeffComplex);
-  energy /= normalizerCoeff;
+  energyVal /= normalizerCoeff;
+  return energyVal;
 }
 
 std::vector<coeffType> EnergyCF::nabla(State const &input) const{
-  calc(input);
+  energy = evaluate(input);
   std::vector<Eigen::VectorXd> dEdC;
   int numDets = input.size();
   for (int i=0; i < numDets; ++i){

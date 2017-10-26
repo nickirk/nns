@@ -9,7 +9,6 @@
 #include "../src/Hamiltonian.hpp"
 #include "../src/CostFunction.hpp"
 #include "../src/EnergyCF.hpp"
-#include "../src/Evaluator.hpp"
 #include "../src/Determinant.hpp"
 
 int main(){
@@ -30,9 +29,8 @@ int main(){
 	HFArr[0] = D1;
 	HFArr[1] = D2;
 	State HF(HFArr,TwoCoeffs);
-	Evaluator cfWrapper(eCF, HF);
-	std::vector<coeffType > dE = cfWrapper.nabla();
-	std::cout << "Energy " << cfWrapper() << std::endl;
+	std::vector<coeffType > dE = eCF.nabla(HF);
+	std::cout << "Energy " << eCF.calc(HF) << std::endl;
 	std::cout << "Derivative " << dE[0] << std::endl;
 }
 

@@ -17,14 +17,13 @@
 class EnergyCF: public CostFunction{
 public:
 	explicit EnergyCF(Hamiltonian const &H_):CostFunction(),H(H_),energy(0.0),normalizerCoeff(0.0){};
-	friend class Evaluator;
+	std::vector<coeffType > nabla(State const &input) const;
+	double calc(State const &input) const {return energy;}
 private:
 	Hamiltonian const& H;
 	mutable double energy;
 	mutable double normalizerCoeff;
-	std::vector<coeffType > nabla(State const &input) const;
-	void calc(State const &input) const;
-	double getValue() const{return energy;}
+	double evaluate(State const &input) const;
 };
 
 
