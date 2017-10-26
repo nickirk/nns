@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
+#include "../src/EnergyCF.hpp"
 #include "../src/Nnw.hpp"
 #include "../src/Basis.hpp"
 #include "../src/Determinant.hpp"
@@ -59,7 +60,8 @@ int main(){
 
   // Set up the Nnw
   std::cout<<"Listsize= "<<list.size()<<std::endl;
-  NeuralNetwork NNW(size_NNW, modelHam, basis);
+  EnergyCF eCF(modelHam);
+  NeuralNetwork NNW(size_NNW, eCF);
   detType HF=basis.getDetByIndex(0);
   ofstream myfile1;
   myfile1.open ("energy.txt");

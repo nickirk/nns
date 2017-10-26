@@ -13,27 +13,30 @@
 #include <math.h>
 #include <complex>
 #include <Eigen/Dense>
+#include "CostFunction.hpp"
 #include "Determinant.hpp"
 #include "Basis.hpp"
 #include "Hamiltonian.hpp"
+#include "Evaluator.hpp"
+#include "State.hpp"
 //#include "Sampler.hpp"
 const std::complex<double> ii(0.,1.);
 class NeuralNetwork{
   public:
-    NeuralNetwork(std::vector<int> const &sizes_, Hamiltonian const&H_,
-      Basis const &fullBasis_);
+    NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF);
     std::vector<detType> train(std::vector<detType> const&listDetsToTrain, double eta);
     double getEnergy(){return energy;}
-    std::vector<Eigen::VectorXd> getCs() const {return output_Cs;}
+    State getState() const {return outputState;}
     double calcEnergy(std::vector<detType> const &listDetsToTrain) const;
     Eigen::VectorXd feedForward(detType const& det);
+    void setCostFunction(CostFunction const &externalCF) {cf = &externalCF;}
   private:
     double momentumDamping;
     bool momentum;
+    State outputState;
     std::vector<int> sizes;
     std::vector<Eigen::VectorXd> biases;
     std::vector<Eigen::MatrixXd> weights;
-    std::vector<Eigen::VectorXd> output_Cs;
     std::vector<Eigen::VectorXd> inputSignal; 
     std::vector<Eigen::VectorXd> activations; 
     std::vector<Eigen::VectorXd> nabla_biases;
@@ -44,16 +47,9 @@ class NeuralNetwork{
     std::vector<Eigen::MatrixXd> g_weights;
     std::vector<Eigen::VectorXd> g_biasesPrev;
     std::vector<Eigen::MatrixXd> g_weightsPrev;
-    //std::vector<detType> &listDetsToTrain;
-    Hamiltonian const&H;
-    Basis const&fullBasis;
+    CostFunction const *cf;
     double energy;
-    mutable double normalizerCoeff;
-    //void calcLocalEnergy(std::vector<detType> const &listDetsToTrain);
-    //std::vector<detType> train(std::vector<detType> &listDetsToTrain_, double eta);
-    //double feedForward(double activation_);
     void backPropagate(
-           std::vector<detType> const &listDetsToTrain,
            std::vector<std::vector<Eigen::VectorXd>> const &inputSignal_Epochs,
            std::vector<std::vector<Eigen::VectorXd>> const &activations
          );

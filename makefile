@@ -2,8 +2,8 @@ CXX=g++
 LDFLAGS=-std=c++11 -g -Wall
 EIGEN_PATH=lib/eigen/
 EIGEN_FLAGS=-I$(EIGEN_PATH)
-SOURCEFILES=Sampler.cxx Nnw.cxx Basis.cxx Hamiltonian.cxx Determinant.cxx
-TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx
+SOURCEFILES=Sampler.cxx Nnw.cxx Basis.cxx Hamiltonian.cxx Determinant.cxx EnergyCF.cxx
+TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx
 SRC=src
 TST=test
 BUILD=build
@@ -20,12 +20,14 @@ ALGTEST=algTest
 STEST=samplerTest
 HTEST=hamTest
 ETEST=eigenTest
+CFTEST=cfTest
 BTESTOBJECT=$(TSTBUILD)/testBasis.o
 NNWTESTOBJECT=$(TSTBUILD)/testNnw.o
 ALGTESTOBJECT=$(TSTBUILD)/testAlg.o
 STESTOBJECT=$(TSTBUILD)/testSampler.o
 ETESTOBJECT=$(TSTBUILD)/testEigen.o
 HTESTOBJECT=$(TSTBUILD)/testHam.o
+CFTESTOBJECT=$(TSTBUILD)/testCF.o
 TESTBASISEXEC=build/test/testBasis
 
 $(DIRECTORIES):
@@ -40,7 +42,7 @@ $(BUILD)/%.o: $(SRC)/%.cxx
 $(TSTDDIR)/%.d: $(TST)/%.cxx $(TSTDDIR)
 	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -MM $< -o $@
 
-$(TSTBUILD)/%.o: $(TST)/%.cxx $(TSTBUILD)
+$(TSTBUILD)/%.o: $(TST)/%.cxx
 	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -c $< -o $@
 
 
@@ -63,6 +65,9 @@ testEigen: $(OBJECTS) $(ETESTOBJECT)
 
 testHam: $(OBJECTS) $(HTESTOBJECT)
 	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
+	
+testCF: $(OBJECTS) $(CFTESTOBJECT)
+	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@
                                             
                                             
                                            

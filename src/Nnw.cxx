@@ -11,12 +11,11 @@
 #include <Eigen/Dense>
 #include <Eigen/Core>
 #include <complex>
+#include "State.hpp"
 #include "Nnw.hpp"
 #include "errors.hpp"
 //using namespace Eigen;
-NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, Hamiltonian const&H_,
-  Basis const&fullBasis_):sizes(sizes_), H(H_), fullBasis(fullBasis_),normalizerCoeff(0.0){
-  energy = 0;
+NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF):sizes(sizes_), cf(&externalCF){
   momentumDamping = 0.8;
   momentum = true;
   int numLayersBiasesWeights = sizes.size()-1;
@@ -46,10 +45,16 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, Hamiltonian const&H
   }
   nabla_weightsPrev = nabla_weights;
   nabla_biasesPrev = nabla_biases;
+
+  // Assign the output state and the evaluator to 0
+  outputState = State();
+  // Initialize the energy with NaN, so we see if there is a problem
+  energy = 0.0/0.0;
 }
 
 std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double eta){
   //clear the output_Cs vector for each new training
+  std::vector<coeffType > output_Cs;
   output_Cs.clear();
   //listDetsToTrain = listDetsToTrain_; 
   int numDets(listDetsToTrain.size());
@@ -90,13 +95,23 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
   }
   
   //calculating variational energy
-  energy = calcEnergy(listDetsToTrainFiltered);
   //calcLocalEnergy(listDetsToTrainFiltered); 
   nabla_weightsPrev = nabla_weights;
   nabla_biasesPrev = nabla_biases;
+  // State generation fails if number of determinants and coefficients are not equal
+  try{
+    outputState = State(listDetsToTrainFiltered, output_Cs);
+  }
+  catch(sizeMismatchError const &ex){
+	  // If the two are not equal in size, shrink them
+	  int mSize = (listDetsToTrainFiltered.size() > output_Cs.size())?output_Cs.size():listDetsToTrain.size();
+	  output_Cs.resize(mSize);
+	  listDetsToTrainFiltered.resize(mSize);
+	  outputState = State(listDetsToTrainFiltered,output_Cs);
+  }
   //g_weightsPrev = g_weights;
   //g_biasesPrev = g_biases;
-  backPropagate(listDetsToTrainFiltered, inputSignal_Epochs, activations_Epochs); 
+  backPropagate(inputSignal_Epochs, activations_Epochs);
   //update weights and biases
   //0th layer is the input layer,
   //the biases should not change.
@@ -173,15 +188,16 @@ Eigen::VectorXd NeuralNetwork::feedForward(detType const& det){
 }
 
 void NeuralNetwork::backPropagate(
-       std::vector<detType> const& listDetsToTrain,
        std::vector<std::vector<Eigen::VectorXd>> const &inputSignal_Epochs,
        std::vector<std::vector<Eigen::VectorXd>> const &activations_Epochs
      ){
-  int numDets = listDetsToTrain.size();
+  int numDets = outputState.size();
   int numLayersNeuron(sizes.size());
   int numLayersBiasesWeights(sizes.size()-1);
   // catch here
-  std::vector<Eigen::VectorXd> dEdC(NablaE_C(listDetsToTrain));
+  Evaluator cfWrapper(*cf, outputState);
+  std::vector<Eigen::VectorXd> dEdC(cfWrapper.nabla());
+  energy = cfWrapper();
   for (int epoch=0; epoch < numDets; ++epoch){
     Eigen::VectorXd deltaTheLastLayer;
     //std::cout <<"num Det= " << epoch<< std::endl;
@@ -234,59 +250,6 @@ void NeuralNetwork::backPropagate(
       nabla_weights[layer] += deltaThisLayer * activations_Epochs[epoch][layer].transpose();
     }
   }
-}
-
-double NeuralNetwork::calcEnergy(std::vector<detType> const&listDetsToTrain) const{
-  double energyVal{0.0};
-  normalizerCoeff=0.;
-  std::complex<double> normalizerCoeffComplex(0.,0.);
-  double Hij(0.);
-  int numDets = output_Cs.size();
-  double real(0.), imag(0.);
-  for (int i=0; i < numDets; ++i){
-    real = output_Cs[i][0];
-    imag = output_Cs[i][1];
-    std::complex<double> c_i(real, imag);
-    normalizerCoeffComplex += fabs (std::conj(c_i)  * c_i);
-    //sign_i = (output_Cs[i]-0. < 1e-8)?-1:0; 
-    for (int j=0; j < numDets; ++j){
-      real = output_Cs[j][0];
-      imag = output_Cs[j][1];
-      std::complex<double> c_j(real, imag);
-      Hij = H(listDetsToTrain[i], listDetsToTrain[j]);
-      energyVal += std::real(std::conj(c_i) * c_j * Hij);
-    }
-  }
-  //std::cout << "normE= " << normalizerCoeff << std::endl;
-  normalizerCoeff = std::real(normalizerCoeffComplex);
-  energyVal /= normalizerCoeff;
-  return energyVal;
-}
-
-std::vector<Eigen::VectorXd> NeuralNetwork::NablaE_C(
-                     std::vector<detType> const&listDetsToTrain                        
-                    ){
-  std::vector<Eigen::VectorXd> dEdC;
-  int numDets = listDetsToTrain.size();
-  // If the input list does have a different size than the number of trained coefficients,
-  // throw a corresponding error
-  if(numDets != static_cast<int>(output_Cs.size())) throw sizeMismatchError(numDets,output_Cs.size());
-  for (int i=0; i < numDets; ++i){
-    Eigen::Vector2d dEdC_i=Eigen::Vector2d::Zero();
-    std::complex<double> A(0.,0.);
-    for (int j=0; j < numDets; ++j){
-      std::complex<double> c_j(output_Cs[j][0], output_Cs[j][1]);
-      A += c_j * H(listDetsToTrain[i], 
-                        listDetsToTrain[j]);
-    }
-    std::complex<double> c_i(output_Cs[i][0], output_Cs[i][1]);
-    A -=  energy * c_i;
-    A /= normalizerCoeff;
-    dEdC_i[0] = 2. * std::real( A*std::conj(1.));
-    dEdC_i[1] = 2. * std::real( A*std::conj(1. * ii));
-    dEdC.push_back(dEdC_i);
-  }
-  return dEdC;
 }
 
 double Tanh_prime(double in){return 1-tanh(in)*tanh(in);};
