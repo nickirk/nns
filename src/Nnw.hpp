@@ -24,8 +24,8 @@ class NeuralNetwork{
       Basis const &fullBasis_);
     std::vector<detType> train(std::vector<detType> const&listDetsToTrain, double eta);
     double getEnergy(){return energy;}
+    double getSampleEnergy(){return sampleEnergy;}
     std::vector<Eigen::VectorXd> getCs() const {return outputCs;}
-    double calcEnergy(std::vector<detType> const &listDetsToTrain) const;
     Eigen::VectorXd feedForward(detType const& det);
   private:
     double momentumDamping;
@@ -48,10 +48,13 @@ class NeuralNetwork{
     Hamiltonian const&H;
     Basis const&fullBasis;
     double energy;
+    double sampleEnergy;
     mutable double normalizerCoeff;
     //void calcLocalEnergy(std::vector<detType> const &listDetsToTrain);
     //std::vector<detType> train(std::vector<detType> &listDetsToTrain_, double eta);
     //double feedForward(double activation_);
+    double calcEnergy(std::vector<detType> const &listDetsToTrain) ;
+    double calcSampleEnergy(std::vector<detType> const &listDetsToTrain) ;
     void backPropagate(
            std::vector<detType> const &listDetsToTrain,
            std::vector<std::vector<Eigen::VectorXd>> const &inputSignalEpochs,
@@ -66,6 +69,8 @@ double Linear(double in);
 double Linear_prime(double in);
 double Gaussian(double in);
 double Gaussian_prime(double in);
+double GaussianAntiSym(double in);
+double GaussianAntiSym_prime(double in);
 double Sigmoid(double in);
 double Sigmoid_prime(double in);
 #endif

@@ -11,20 +11,15 @@ using namespace Eigen;
 
 using namespace std;
 int main(){
-  int numSites(6);
-  cout << "input number of sites=";
-  cin >> numSites;
+  int numSites(5);
   int numStates(2*numSites);
-  int numEle(4);
-  cout << "input number of Ele=";
-  cin >> numEle;
-  int numHidden(15);
+  int numEle(3);
+  int numHidden(8*numSites);
+  int numHidden1(3);
   vector<int> size_NNW = {numStates, numHidden, 2};
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
   bool readFromFile{false};
-  cout << "input readFromFile=";
-  cin >> readFromFile;
   double trainRate(0.005);
   cout << "input training rate=";
   cin >> trainRate;
@@ -32,26 +27,27 @@ int main(){
   Hamiltonian modelHam(numStates);
   double U{4}, t{-1};
   modelHam = generateHubbard(numStates, U, t);
+  
   cout << "Basis size= " << basis.getSize() << endl;
   //cout << "Hamiltonian size= " << modelHam.getSize() << endl;
   cout << "print out Ham element" << endl;
 
   Eigen::MatrixXd H(Eigen::MatrixXd::Zero(basis.getSize(),basis.getSize()));
+  double sumRow(0.);
   for (int i(0); i<basis.getSize(); ++i){
+          sumRow =0.;
 	  for(int j(0); j<basis.getSize(); ++j){
 	  H(i,j) = modelHam(basis.getDetByIndex(i),basis.getDetByIndex(j));
-          cout << H(i,j) << " " ;
-//"H( "<< i << "," << j << ")=" <<
+          sumRow += H(i,j); 
 	  }
-     cout << endl;
-    }
+  }
   Eigen::EigenSolver<MatrixXd> eSolver(H);
   VectorXd eVals = eSolver.eigenvalues().real();
   double eMin = 0.0;
   int pos = 0;
   for(int i = 0; i < basis.getSize(); ++i){
 	  if((eVals(i)-eMin)<1e-8){
-              cout << eVals(i) << " " << i << endl;
+              cout << "eigenVal="  << eVals(i) << " " << i << endl;
 		  pos = i;
 		  eMin = eVals(i);
 	  }
@@ -105,11 +101,16 @@ int main(){
   int count1(0);
   std::vector<Eigen::VectorXd> coeffs;
   //test sampler;
-  sampler.generateList(list); 
-  sampler.removeDuplicate(list);
+  //sampler.generateList(list); 
+  //sampler.removeDuplicate(list);
   //for (size_t i=0; i<list.size(); ++i){
   //    cout<<"intCast= " << verbatimCast(list[i])<<endl;
   //  }
+  double maxEnergy(0.);
+  double energySquare(0.);
+  double variance(0.);
+  double variancePrev(0.);
+  double sampleEnergy(0.);
   while (true){
     //list = NNW.train(list, 0.1); 
     //cout << "seeds size= " << list.size() << endl;
@@ -117,35 +118,50 @@ int main(){
     //  cout<<"intCast= " << verbatimCast(list[i])<<endl;
     //}
     lastSign = sign;
-    list=NNW.train(list, trainRate);
-    //NNW.train(list, trainRate);
-    sampler.setReference(list);
+    NNW.train(list, trainRate);
+    //list=NNW.train(list, trainRate);
+    //sampler.setReference(list);
     //cout << "Ref list size= " << list.size()<< endl;
     //for (size_t i=0; i<list.size(); ++i){
     //  cout<<"Ref intCast= " << verbatimCast(list[i])<<endl;
     //}
-    sampler.generateList(list); 
-    sampler.removeDuplicate(list);
-    cout << "New list size= " << list.size()<< endl;
+    //sampler.generateList(list); 
+    //sampler.removeDuplicate(list);
+    //cout << "New list size= " << list.size()<< endl;
     //for (size_t i=0; i<list.size(); ++i){
     //  cout<<"New intCast= " << verbatimCast(list[i])<<endl;
     //}
-    //energy = NNW.getEnergy();
+    energy = NNW.getEnergy();
+    sampleEnergy = NNW.getSampleEnergy();
     //sign = NNW.getSign();
     count++;
-    if (count1 < 50){
+    double aveCount = 300;
+    if (count1 < aveCount){
       totalenergy+=energy; 
+      energySquare += pow(energy,2);
       count1++;
-      aveEnergy = totalenergy/double(count1);
+      if (energy > maxEnergy) maxEnergy = energy;
+      if (count1 == aveCount-1){
+        //if (maxEnergy - aveEnergy > 1) trainRate*=0.5;
+       }
+      //trainRate+=0.001;
     }
     else{
+      variancePrev = variance;
       totalenergy+=energy; 
       count1++;
       aveEnergy = totalenergy/double(count1);
       totalenergy=0.;
-      //count1=0;
-      //list=NNW.train(list, trainRate);
+      aveEnergy = totalenergy/double(count1);
+      variance = energySquare - totalenergy*aveEnergy;
+      variance /= aveCount;
+      variance += pow(aveEnergy,2);
+      variance = sqrt(variance);
+      count1=0;
+      //if (variance - variancePrev > 1e-8) trainRate*=0.5;
+      //else trainRate*=1.08;
       //NNW.train(list, trainRate);
+      //list=NNW.train(list, trainRate);
       //sampler.setReference(list);
       //sampler.generateList(list); 
       //sampler.removeDuplicate(list);
@@ -162,12 +178,11 @@ int main(){
     }
     if(count%1 == 0){
     //cout << "sign = " << sign<< endl;
-    myfile1 << count << " " << energy << " " <<   " " << aveEnergy<< endl;
+    myfile1 << count << " " << energy << " " << sampleEnergy <<  " " << aveEnergy<< endl;
     coeffs = NNW.getCs();
-    std::vector<Eigen::VectorXd> nablaE = NNW.getEnergyDerivative(list);
     for(size_t i = 0; i < coeffs.size(); ++i){
       cout << "Coeff on " << i << "\t" << "(" << pow(coeffs[i][0],2)+pow(coeffs[i][1],2)<<")"
-     << ", exact " << eVector(i) << ", dE " << nablaE[i][0] << ", " << nablaE[i][1]<<endl;
+     << ", exact " << eVector(i)  <<endl;
     }
     int allowedNumChangeSign = int(basis.getSize()*0.1);
     cout << "percentage of allowed sign change= " <<  allowedNumChangeSign<< endl;
@@ -208,7 +223,6 @@ int main(){
       }
       energy = NNW.getEnergy();
       lastSign = sign;
-      sign = NNW.getSign();
       sampler.generateList(list);
       cout << "sign = " << sign<< endl;
       //totalenergy+=energy; 

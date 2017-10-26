@@ -20,6 +20,7 @@ class Hamiltonian{
 };
 
 detType getRandomCoupledState(detType const &source, double &p);
+std::vector<detType> getCoupledStates(detType const &source);
 //basically counts the number of particles between annihilatorIndex and creatorIndex in alpha, yielding the sign of a^\dagger_i a_j (alpha) in the canonical operator ordering
 int getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex);
 Hamiltonian generateHubbard(int dim, double U, double t);
