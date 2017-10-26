@@ -29,6 +29,7 @@ class NeuralNetwork{
     double calcEnergy(std::vector<detType> const &listDetsToTrain) const;
     Eigen::VectorXd feedForward(detType const& det);
     void setCostFunction(CostFunction const &externalCF) {cf = &externalCF;}
+    CostFunction const* getCostFunction() const {return cf;}
   private:
     double momentumDamping;
     bool momentum;
@@ -55,6 +56,8 @@ class NeuralNetwork{
          );
     std::vector<Eigen::VectorXd> NablaE_C(std::vector<detType> const &listDetsToTrain);
 };
+
+void preTrain(NeuralNetwork &network, State const &target, double trainRate);
 
 double Tanh_prime(double in);
 double Tanh(double in); 

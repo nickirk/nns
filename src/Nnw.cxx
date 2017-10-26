@@ -14,6 +14,7 @@
 #include "State.hpp"
 #include "Nnw.hpp"
 #include "errors.hpp"
+#include "NormCF.hpp"
 //using namespace Eigen;
 NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF):sizes(sizes_), cf(&externalCF){
   momentumDamping = 0.8;
@@ -130,7 +131,6 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
     biases[layer] += nablaBiases[layer];
     weights[layer] += nablaWeights[layer];
   }
-  //double HFCoeff(outputCs.back());
   double probAmp(0.);
   double max(0);
   for (size_t i=0; i < outputCs.size(); ++i){
@@ -241,6 +241,26 @@ void NeuralNetwork::backPropagate(
       nablaWeights[layer] += deltaThisLayer * activations_Epochs[epoch][layer].transpose();
     }
   }
+}
+
+void preTrain(NeuralNetwork &network, State const &target, double trainRate){
+// Trains the network to represent some state target
+// We first backup the current cost function
+	CostFunction const *backupCF = network.getCostFunction();
+// Then, set the cost function to the L2-distance to target
+	NormCF stateDistance(target);
+	network.setCostFunction(stateDistance);
+// Set up an initial list of determinants to train
+// Caveat: All determinants not present in the state do not matter
+// i.e. their coefficients are treated as unknown
+	std::vector<detType > list = target.getDets();
+// Train the network
+	int const maxTrainCount = 1000;
+	for(int i = 0; i < maxTrainCount;++i){
+		network.train(list, trainRate);
+		std::cout<<"Distance " << network.getEnergy() << std::endl;
+	}
+	network.setCostFunction(*backupCF);
 }
 
 double Tanh_prime(double in){return 1-tanh(in)*tanh(in);};
