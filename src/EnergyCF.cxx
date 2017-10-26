@@ -17,15 +17,11 @@ double EnergyCF::evaluate(State const &input) const{
   int numDets = input.size();
   double real(0.), imag(0.);
   for (int i=0; i < numDets; ++i){
-    real = input.getCoeff(i)[0];
-    imag = input.getCoeff(i)[1];
-    std::complex<double> c_i(real, imag);
+    coeffType c_i=input.getCoeff(i);
     normalizerCoeffComplex += fabs (std::conj(c_i)  * c_i);
     //sign_i = (output_Cs[i]-0. < 1e-8)?-1:0;
     for (int j=0; j < numDets; ++j){
-      real = input.getCoeff(j)[0];
-      imag = input.getCoeff(j)[1];
-      std::complex<double> c_j(real, imag);
+      coeffType c_j = input.getCoeff(j);
       Hij = H(input.getDet(i), input.getDet(j));
       energyVal += std::real(std::conj(c_i) * c_j * Hij);
     }
@@ -36,7 +32,7 @@ double EnergyCF::evaluate(State const &input) const{
   return energyVal;
 }
 
-std::vector<coeffType> EnergyCF::nabla(State const &input) const{
+std::vector<Eigen::VectorXd> EnergyCF::nabla(State const &input) const{
   energy = evaluate(input);
   std::vector<Eigen::VectorXd> dEdC;
   int numDets = input.size();
@@ -44,11 +40,11 @@ std::vector<coeffType> EnergyCF::nabla(State const &input) const{
     Eigen::Vector2d dEdC_i=Eigen::Vector2d::Zero();
     std::complex<double> A(0.,0.);
     for (int j=0; j < numDets; ++j){
-      std::complex<double> c_j(input.getCoeff(j)[0], input.getCoeff(j)[1]);
+      coeffType c_j=input.getCoeff(j);
       A += c_j * H(input.getDet(i),
                         input.getDet(j));
     }
-    std::complex<double> c_i(input.getCoeff(i)[0], input.getCoeff(i)[1]);
+    coeffType c_i = input.getCoeff(i);
     A -=  energy * c_i;
     A /= normalizerCoeff;
     dEdC_i[0] = 2. * std::real( A*std::conj(1.));

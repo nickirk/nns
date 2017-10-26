@@ -16,6 +16,6 @@
 //using coeffType = std::complex<double>;
 // Only keep it as long as nececcary in this stage
 // Typedef for coefficients
-using coeffType = Eigen::VectorXd;
+using coeffType = std::complex<double>;
 
 #endif /* SRC_COEFFTYPE_HPP_ */

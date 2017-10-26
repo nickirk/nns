@@ -103,8 +103,8 @@ int main(){
   int count1(0);
   std::vector<Eigen::VectorXd> coeffs;
   //test sampler;
-  //sampler.generateList(list); 
-  //sampler.removeDuplicate(list);
+  sampler.generateList(list); 
+  sampler.removeDuplicate(list);
   //for (size_t i=0; i<list.size(); ++i){
   //    cout<<"intCast= " << verbatimCast(list[i])<<endl;
   //  }
@@ -120,9 +120,9 @@ int main(){
     //  cout<<"intCast= " << verbatimCast(list[i])<<endl;
     //}
     lastSign = sign;
-    NNW.train(list, trainRate);
-    //list=NNW.train(list, trainRate);
-    //sampler.setReference(list);
+    //NNW.train(list, trainRate);
+    list=NNW.train(list, trainRate);
+    sampler.setReference(list);
     //cout << "Ref list size= " << list.size()<< endl;
     //for (size_t i=0; i<list.size(); ++i){
     //  cout<<"Ref intCast= " << verbatimCast(list[i])<<endl;
@@ -132,7 +132,7 @@ int main(){
     cout << "New list size= " << list.size()<< endl;
     energy = NNW.getEnergy();
     count++;
-    double aveCount = 300;
+    double aveCount = 100;
     if (count1 < aveCount){
       totalenergy+=energy; 
       energySquare += pow(energy,2);
