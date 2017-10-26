@@ -39,14 +39,16 @@ class NeuralNetwork{
     std::vector<Eigen::MatrixXd> weights;
     std::vector<Eigen::VectorXd> inputSignal; 
     std::vector<Eigen::VectorXd> activations; 
-    std::vector<Eigen::VectorXd> nabla_biases;
-    std::vector<Eigen::MatrixXd> nabla_weights;
-    std::vector<Eigen::VectorXd> nabla_biasesPrev;
-    std::vector<Eigen::MatrixXd> nabla_weightsPrev;
-    std::vector<Eigen::VectorXd> g_biases;
-    std::vector<Eigen::MatrixXd> g_weights;
-    std::vector<Eigen::VectorXd> g_biasesPrev;
-    std::vector<Eigen::MatrixXd> g_weightsPrev;
+    std::vector<Eigen::VectorXd> nablaBiases;
+    std::vector<Eigen::MatrixXd> nablaWeights;
+    std::vector<Eigen::VectorXd> nablaBiasesPrev;
+    std::vector<Eigen::MatrixXd> nablaWeightsPrev;
+    std::vector<Eigen::VectorXd> gBiasesPrev;
+    std::vector<Eigen::MatrixXd> gWeightsPrev;
+    std::vector<Eigen::VectorXd> gFactorBiases;
+    std::vector<Eigen::MatrixXd> gFactorWeights;
+    std::vector<Eigen::VectorXd> gFactorBiasesPrev;
+    std::vector<Eigen::MatrixXd> gFactorWeightsPrev;
     CostFunction const *cf;
     double energy;
     void backPropagate(

@@ -43,8 +43,8 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const 
     gFactorWeights.push_back(Eigen::MatrixXd::Ones(sizes[layer+1], sizes[layer]));
     gFactorWeightsPrev.push_back(Eigen::MatrixXd::Ones(sizes[layer+1], sizes[layer]));
   }
-  nabla_weightsPrev = nabla_weights;
-  nabla_biasesPrev = nabla_biases;
+  nablaWeightsPrev = nablaWeights;
+  nablaBiasesPrev = nablaBiases;
 
   // Assign the output state and the evaluator to 0
   outputState = State();
@@ -53,14 +53,11 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const 
 }
 
 std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double eta){
-  //clear the output_Cs vector for each new training
-  std::vector<coeffType > output_Cs;
-  output_Cs.clear();
+// The coefficients are stored in scope of the train method and then stored into the state
+  std::vector<coeffType > outputCs;
   nablaWeightsPrev = nablaWeights;
   nablaBiasesPrev = nablaBiases;
-  //listDetsToTrain = listDetsToTrain_; 
   int numDets(listDetsToTrain.size());
-  //std::vector<detType> listDetsToTrainFiltered;
   std::vector<std::vector<Eigen::VectorXd>> inputSignal_Epochs;
   std::vector<std::vector<Eigen::VectorXd>> activations_Epochs;
   std::vector<detType> listDetsToTrainFiltered;
@@ -70,7 +67,7 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
   for (int layer=0; layer < numLayersBiasesWeights; ++layer){
     nablaBiases[layer] *= 0.; 
     nablaWeights[layer] *=0.;
-  } 
+  }
   double prandom{0.0};
   std::random_device rng;
   double const normalizer = static_cast<double>(rng.max());
@@ -100,17 +97,15 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
   //calcLocalEnergy(listDetsToTrainFiltered); 
   // State generation fails if number of determinants and coefficients are not equal
   try{
-    outputState = State(listDetsToTrainFiltered, output_Cs);
+    outputState = State(listDetsToTrainFiltered, outputCs);
   }
   catch(sizeMismatchError const &ex){
 	  // If the two are not equal in size, shrink them
-	  int mSize = (listDetsToTrainFiltered.size() > output_Cs.size())?output_Cs.size():listDetsToTrain.size();
-	  output_Cs.resize(mSize);
+	  int mSize = (listDetsToTrainFiltered.size() > outputCs.size())?outputCs.size():listDetsToTrain.size();
+	  outputCs.resize(mSize);
 	  listDetsToTrainFiltered.resize(mSize);
-	  outputState = State(listDetsToTrainFiltered,output_Cs);
+	  outputState = State(listDetsToTrainFiltered,outputCs);
   }
-  //g_weightsPrev = g_weights;
-  //g_biasesPrev = g_biases;
   backPropagate(inputSignal_Epochs, activations_Epochs);
   //update weights and biases
   //0th layer is the input layer,
