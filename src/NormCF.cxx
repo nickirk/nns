@@ -14,10 +14,10 @@ std::vector<coeffType > NormCF::nabla(State const &input) const{
 	for(size_t i=0;i<input.size();++i){
 		coeffType buf;
 		buf = Eigen::VectorXd::Zero(2);
-		for(size_t i=0;i<input.size();++i){
-			buf += (input.getCoeff(i) - psi.getCoeff(i));
+		for(size_t j=0;j<input.size();++j){
+			buf += (input.getCoeff(j) - psi.getCoeff(j));
 		}
-		cfBuf[i] = buf;
+		cfBuf[i] = 2*buf;
 	}
 	return cfBuf;
 }
