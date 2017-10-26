@@ -7,6 +7,7 @@
 #include "../src/Determinant.hpp"
 #include "../src/Hamiltonian.hpp"
 #include "../src/Sampler.hpp"
+#include "../src/EnergyCF.hpp"
 using namespace Eigen;
 
 using namespace std;
@@ -83,7 +84,8 @@ int main(){
   for(size_t i = 0; i< list.size(); ++i){
     std::cout<<"intCast= "<<verbatimCast(list[i])<<std::endl;
   }
-  NeuralNetwork NNW(size_NNW, modelHam, basis);
+  EnergyCF eCF(modelHam);
+  NeuralNetwork NNW(size_NNW, eCF);
   detType HF=basis.getDetByIndex(0);
   //list.push_back(HF); 
   int numDetsToTrain_ = basis.getSize();
@@ -125,15 +127,10 @@ int main(){
     //for (size_t i=0; i<list.size(); ++i){
     //  cout<<"Ref intCast= " << verbatimCast(list[i])<<endl;
     //}
-    //sampler.generateList(list); 
-    //sampler.removeDuplicate(list);
-    //cout << "New list size= " << list.size()<< endl;
-    //for (size_t i=0; i<list.size(); ++i){
-    //  cout<<"New intCast= " << verbatimCast(list[i])<<endl;
-    //}
+    sampler.generateList(list); 
+    sampler.removeDuplicate(list);
+    cout << "New list size= " << list.size()<< endl;
     energy = NNW.getEnergy();
-    sampleEnergy = NNW.getSampleEnergy();
-    //sign = NNW.getSign();
     count++;
     double aveCount = 300;
     if (count1 < aveCount){
@@ -152,38 +149,10 @@ int main(){
       count1++;
       aveEnergy = totalenergy/double(count1);
       totalenergy=0.;
-      aveEnergy = totalenergy/double(count1);
-      variance = energySquare - totalenergy*aveEnergy;
-      variance /= aveCount;
-      variance += pow(aveEnergy,2);
-      variance = sqrt(variance);
-      count1=0;
-      //if (variance - variancePrev > 1e-8) trainRate*=0.5;
-      //else trainRate*=1.08;
-      //NNW.train(list, trainRate);
-      //list=NNW.train(list, trainRate);
-      //sampler.setReference(list);
-      //sampler.generateList(list); 
-      //sampler.removeDuplicate(list);
-      //cout << "size of seeds= " << list.size() << endl;
-      //for (size_t i=0; i<list.size(); ++i){
-      //  cout<<"Seeds intCast= " << verbatimCast(list[i])<<endl;
-      //}
-      //if (list.size() > int(1.2*numDetsToTrain_)){ 
-      // numDetsToTrain_+= int(0.1*numDetsToTrain_);//numDetsToTrain_;
-      // cout << "numDets= " << numDetsToTrain_<<endl;
-      // sampler.setNumStates(numDetsToTrain_);
-      // cout << "setNumStates= " << sampler.getNumStates() << endl;
-      //}
     }
     if(count%1 == 0){
     //cout << "sign = " << sign<< endl;
-    myfile1 << count << " " << energy << " " << sampleEnergy <<  " " << aveEnergy<< endl;
-    coeffs = NNW.getCs();
-    for(size_t i = 0; i < coeffs.size(); ++i){
-      cout << "Coeff on " << i << "\t" << "(" << pow(coeffs[i][0],2)+pow(coeffs[i][1],2)<<")"
-     << ", exact " << eVector(i)  <<endl;
-    }
+    myfile1 << count << " " << energy << " " <<   " " << aveEnergy<< endl;
     int allowedNumChangeSign = int(basis.getSize()*0.1);
     cout << "percentage of allowed sign change= " <<  allowedNumChangeSign<< endl;
     //cout << "sign= " << sign << endl;
@@ -207,27 +176,6 @@ int main(){
     //  trainRate+=0.002;
     //  cout << "trainRatex2=" << trainRate << endl;
     //}
-    }
-    while (false){
-      list = NNW.train(list, trainRate);
-      sampler.setReference(list);
-      cout << "size of seeds= " << list.size() << endl;
-      for (size_t i=0; i<list.size(); ++i){
-        cout<<"Seeds intCast= " << verbatimCast(list[i])<<endl;
-      }
-      if (static_cast<int>(list.size()) == numDetsToTrain_){
-       numDetsToTrain_+= 1;//numDetsToTrain_;
-       cout << "numDets= " << numDetsToTrain_<<endl;
-       sampler.setNumStates(numDetsToTrain_);
-       cout << "setNumStates= " << sampler.getNumStates() << endl;
-      }
-      energy = NNW.getEnergy();
-      lastSign = sign;
-      sampler.generateList(list);
-      cout << "sign = " << sign<< endl;
-      //totalenergy+=energy; 
-      count++;
-      aveEnergy = energy/double(count);
     }
   }
   myfile1.close();

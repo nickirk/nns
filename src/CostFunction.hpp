@@ -1,0 +1,26 @@
+/*
+ * CostFunction.cxx
+ *
+ *  Created on: Oct 25, 2017
+ *      Author: Ke Liao, Kai Guther
+ */
+
+#ifndef COST_FUNCTION_DEFINED
+#define COST_FUNCTION_DEFINED
+
+#include "State.hpp"
+#include "CoeffType.hpp"
+
+// Abstract base class for cost functions
+
+class CostFunction{
+public:
+	CostFunction(){};
+	virtual ~CostFunction(){};
+// Two functions have to be present in a cost function: The function itself (calc) and its derivative
+// (nabla)
+	virtual std::vector<coeffType > nabla(State const &input) const = 0;
+	virtual double calc(State const &input) const = 0;
+};
+
+#endif

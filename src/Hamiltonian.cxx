@@ -136,8 +136,6 @@ detType getRandomCoupledState(detType const &source,  double &pGet){
   double const normalization=static_cast<double>(rng.max());
   int const d=source.size();
   detType target=source;
-
-
   //for hubbard
   //hubbard one-particle basis: 1(up), 1(down), 2(up), ..., L(up), L(down)
   std::vector<int> spawnLeft, spawnRight;
@@ -243,7 +241,7 @@ Hamiltonian generateHubbard(int dim, double U, double t){
   Hamiltonian H(dim);
   for(int i=0;i<dim-1;i+=2){
     //Hubbard interaction
-    H.setMatrixElement(i,i+1,i,i+1,U);
+    H.setMatrixElement(i,i+1,i,i+1,-U);
   }
   for(int i=0;i<dim-2;++i){
     //hopping, excluding the pbc term
