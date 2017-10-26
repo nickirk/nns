@@ -12,13 +12,13 @@ using namespace Eigen;
 
 using namespace std;
 int main(){
-  int numSites(3);
+  int numSites(4);
   int numStates(2*numSites);
   int numEle(3);
-  int numHidden(15);
+  int numHidden(10);
   vector<int> size_NNW = {numStates, numHidden, 2};
   bool readFromFile{false};
-  double trainRate(0.005);
+  double trainRate(0.5);
   Basis basis(numStates,numEle);
   Hamiltonian modelHam(numStates);
   double U{4}, t{-1};
@@ -72,7 +72,7 @@ int main(){
   int lastSign(0);
   int count1(0);
   std::vector<Eigen::VectorXd> coeffs;
-  int const maxCount = 7000;
+  int const maxCount = 100000;
   for(int count = 0; count < maxCount; ++count){
     lastSign = sign;
     NNW.train(list, trainRate);
