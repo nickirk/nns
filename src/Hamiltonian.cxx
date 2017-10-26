@@ -99,8 +99,39 @@ double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
 }
 
 //---------------------------------------------------------------------------------------------------//
+std::vector<detType> getCoupledStates(detType const &source){
+  int const d=source.size();
+  std::vector<detType> coupledList;
+  std::vector<int> spawnLeft, spawnRight;
+  for(int i=0;i<d;++i){
+    //search all sites from which one can hop to the left/right
+    if(source[i]){
+      if(source[(i+2)%d]==0){
+	spawnRight.push_back(i);
+      }
+      if(source[(i-2+d)%d]==0){
+	spawnLeft.push_back(i);
+      }
+    }
+  }
+  detType targetTmp=source;
+  for (unsigned int i=0; i<spawnLeft.size(); ++i){
+    targetTmp=source;
+    annihilate(targetTmp,spawnLeft[i]);
+    create(targetTmp,(spawnLeft[i]-2+d)%d);
+    coupledList.push_back(targetTmp);
+  }
+  for (unsigned int i=0; i<spawnRight.size(); ++i){
+    targetTmp=source;
+    annihilate(targetTmp,spawnRight[i]);
+    create(targetTmp,(spawnRight[i]+2)%d);
+    coupledList.push_back(targetTmp);
+  }
+  int const numSpawn=spawnLeft.size()+spawnRight.size();
+  return coupledList;
+}
 
-detType getRandomCoupledState(detType const &source, double &pGet){
+detType getRandomCoupledState(detType const &source,  double &pGet){
   std::random_device rng;
   double const normalization=static_cast<double>(rng.max());
   int const d=source.size();
@@ -138,7 +169,6 @@ detType getRandomCoupledState(detType const &source, double &pGet){
     annihilate(target,newPos);
     create(target,(newPos-2+d)%d);
   }
-
   //for ab-initio
   /*
   std::vector<int> holes, exc;

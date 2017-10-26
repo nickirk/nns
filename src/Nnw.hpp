@@ -24,9 +24,15 @@ class NeuralNetwork{
   public:
     NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF);
     std::vector<detType> train(std::vector<detType> const&listDetsToTrain, double eta);
+<<<<<<< HEAD
+    double getEnergy(){return energy;}
+    double getSampleEnergy(){return sampleEnergy;}
+    std::vector<Eigen::VectorXd> getCs() const {return outputCs;}
+=======
     double getEnergy(){return cf->calc(outputState);}
     State getState() const {return outputState;}
     double calcEnergy(std::vector<detType> const &listDetsToTrain) const;
+>>>>>>> d2941487ec46c77e9f49fe042b13f03e3cc4b21f
     Eigen::VectorXd feedForward(detType const& det);
     void setCostFunction(CostFunction const &externalCF) {cf = &externalCF;}
     CostFunction const* getCostFunction() const {return cf;}
@@ -65,6 +71,8 @@ double Linear(double in);
 double Linear_prime(double in);
 double Gaussian(double in);
 double Gaussian_prime(double in);
+double GaussianAntiSym(double in);
+double GaussianAntiSym_prime(double in);
 double Sigmoid(double in);
 double Sigmoid_prime(double in);
 #endif

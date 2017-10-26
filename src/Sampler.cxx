@@ -19,7 +19,7 @@ void Sampler::generateList(std::vector<detType > &list) const{
   list = std::vector<detType >(numStates);
   detType buf;
   int numRef=cDet.size();
-  std::random_device rd;     // only used once to initialise (seed) engine
+  int random_integer(0);
   //std::cout << "size of list= " << list.size() << std::endl;
   //if(numStates%cDet.size()!=0) numComp = (numStates/cDet.size()+1)*cDet.size();
   //std::cout << "size of numComp= " << numComp << std::endl;
@@ -27,12 +27,11 @@ void Sampler::generateList(std::vector<detType > &list) const{
     for (int i(0); i<numRef; ++i){
       list[i] = cDet[i];
     }
-    int random_integer{0};
-    std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
-    std::uniform_int_distribution<int> uni(0,numRef-1); // guaranteed unbiased
-    random_integer = uni(rng); 
-    buf = cDet[random_integer]; 
     for (int i(numRef); i < numStates; ++i){
+      std::random_device rng;     // only used once to initialise (seed) engine
+      double const normalization=static_cast<double>(rng.max());
+      random_integer=static_cast<int>(rng()/normalization*(numRef-1));
+      buf = cDet[random_integer]; 
       //std::cout << "random_integer= " << random_integer <<std::endl;
       //std::cout << "size of Ref= " << numRef <<std::endl;
       //std::cout << "size of Dets= " << numStates <<std::endl;
