@@ -10,22 +10,23 @@
 #include "CoeffType.hpp"
 
 std::vector<coeffType > NormCF::nabla(State const &input) const{
-	calced = false;
-	double buf{0.0};
-	for(int i=0;i<input.size();++i){
-		coeffType tmp = (input.getCoeff(i) - psi.getCoeff(i));
-		buf += tmp.sum();
+	std::vector<coeffType > cfBuf(input.size());
+	for(size_t i=0;i<input.size();++i){
+		coeffType buf;
+		buf = Eigen::VectorXd::Zero(2);
+		for(size_t j=0;j<input.size();++j){
+			buf += (input.getCoeff(j) - psi.getCoeff(j));
+		}
+		cfBuf[i] = 2*buf;
 	}
-	return 2*buf;
+	return cfBuf;
 }
 
 double NormCF::calc(State const &input) const{
 	double buf{0.0};
-	for(int i=0;i<input.size();++i){
+	for(size_t i=0;i<input.size();++i){
 		coeffType tmp = input.getCoeff(i) - psi.getCoeff(i);
-		coeffType ctmp = tmp;
-		ctmp[1] = -ctmp[1];
-		buf += ctmp*tmp;
+		buf += pow(tmp[0],2) + pow(tmp[1],2);
 	}
 	return buf;
 }

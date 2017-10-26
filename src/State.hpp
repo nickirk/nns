@@ -24,6 +24,7 @@ public:
 	};
 	detType getDet(int i) const{return dets[i];}
 	coeffType getCoeff(int i) const{return coeffs[i];}
+	std::vector<detType> getDets() const {return dets;}
 	size_t size()const{return dets.size();}
 private:
 	std::vector<detType > dets;
