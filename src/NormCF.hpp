@@ -17,7 +17,7 @@
 class NormCF: public CostFunction{
 public:
 	explicit NormCF(State const &psi_):psi(psi_){};
-	std::vector<coeffType > nabla(State const &input) const;
+	std::vector<Eigen::VectorXd > nabla(State const &input) const;
 	double calc(State const &input) const;
 	double getValue(State const &input) const{return calc(input);}
 private:

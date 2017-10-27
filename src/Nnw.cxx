@@ -84,7 +84,7 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
     //initial input layer
     feedForward(listDetsToTrain[epoch]);
     coeff = coeffType(activations[numLayersNeuron-1][0], activations[numLayersNeuron-1][1]); 
-    prob=fabs(coeff)/fabs(coeffPrev);
+    prob=norm(coeff)/norm(coeffPrev);
     prandom=rng()/normalizer;
     coeffPrev = coeff;
     //if ((prob-1)>1.e-8 || (prandom-prob) < -1.e-8){
@@ -182,7 +182,7 @@ void NeuralNetwork::backPropagate(
   int numLayersNeuron(sizes.size());
   int numLayersBiasesWeights(sizes.size()-1);
   // catch here
-  std::vector<Eigen::VectorXd> dEdC(cf->nabla(outputState));
+  std::vector<Eigen::VectorXd> dEdC = cf->nabla(outputState);
   for (int epoch=0; epoch < numDets; ++epoch){
     Eigen::VectorXd deltaTheLastLayer;
     deltaTheLastLayer = 

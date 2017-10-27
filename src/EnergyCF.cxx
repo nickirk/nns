@@ -37,7 +37,7 @@ std::vector<Eigen::VectorXd> EnergyCF::nabla(State const &input) const{
   std::vector<Eigen::VectorXd> dEdC;
   int numDets = input.size();
   for (int i=0; i < numDets; ++i){
-    Eigen::Vector2d dEdC_i=Eigen::Vector2d::Zero();
+    Eigen::VectorXd dEdC_i=Eigen::VectorXd::Zero(2);
     std::complex<double> A(0.,0.);
     for (int j=0; j < numDets; ++j){
       coeffType c_j=input.getCoeff(j);
