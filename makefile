@@ -74,5 +74,6 @@ testCF: $(OBJECTS) $(CFTESTOBJECT)
 testPT: $(OBJECTS) $(PTTESTOBJECT)
 	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@
                                             
-                                            
+clean:
+	rm -r $(BUILD)/*                          
                                            
