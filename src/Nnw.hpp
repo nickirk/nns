@@ -23,7 +23,7 @@ const std::complex<double> ii(0.,1.);
 class NeuralNetwork{
   public:
     NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF);
-    std::vector<detType> train(std::vector<detType> const&listDetsToTrain, double eta);
+    std::vector<detType> train(std::vector<detType> const&listDetsToTrain, double eta, double epsilon);
     double getEnergy(){return cf->calc(outputState);}
     State getState() const {return outputState;}
     double calcEnergy(std::vector<detType> const &listDetsToTrain) const;
@@ -33,6 +33,7 @@ class NeuralNetwork{
   private:
     double momentumDamping;
     bool momentum;
+    double epsilon;
     State outputState;
     std::vector<int> sizes;
     std::vector<Eigen::VectorXd> biases;

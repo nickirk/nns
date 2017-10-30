@@ -18,7 +18,8 @@ class EnergyCF: public CostFunction{
 public:
 	explicit EnergyCF(Hamiltonian const &H_):CostFunction(),H(H_),energy(0.0),normalizerCoeff(0.0){};
 	std::vector<Eigen::VectorXd> nabla(State const &input) const;
-	double calc(State const &input) const {return energy;}
+	double calc(State const &input) const {return energy;};
+        double getNormalizer(){return normalizerCoeff;};
 private:
 	Hamiltonian const& H;
 	mutable double energy;

@@ -19,6 +19,7 @@
 NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF):sizes(sizes_), cf(&externalCF){
   momentumDamping = 0.8;
   momentum = true;
+  epsilon = 0.5;
   int numLayersBiasesWeights = sizes.size()-1;
   activations.push_back(Eigen::VectorXd::Zero(sizes[0]));
   inputSignal.push_back(Eigen::VectorXd::Zero(sizes[0]));
@@ -51,7 +52,7 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const 
   outputState = State();
 }
 
-std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double eta){
+std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double eta, double epsilon){
 // The coefficients are stored in scope of the train method and then stored into the state
   std::vector<coeffType > outputCs;
   nablaWeightsPrev = nablaWeights;
@@ -138,13 +139,13 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
   double probAmp(0.);
   double max(0);
   for (size_t i=0; i < outputCs.size(); ++i){
-    probAmp = std::real(std::conj(outputCs[i])*outputCs[i]); //probility amplitude
+    probAmp = std::norm(outputCs[i]); //probility amplitude
     if (fabs(probAmp) -fabs(max) > 1e-8) max = probAmp;
   }
   std::vector<detType> seeds;
   for (size_t i=0; i < outputCs.size(); ++i){
-    probAmp = std::real(std::conj(outputCs[i])*outputCs[i]); //probility amplitude
-    if (fabs(probAmp)-0.1*fabs(max) > 1e-8){
+    probAmp = std::norm(outputCs[i]); //probility amplitude
+    if (fabs(probAmp)-epsilon*fabs(max) > 1e-8){
       seeds.push_back(listDetsToTrain[i]);
     }
   }
@@ -167,7 +168,7 @@ Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) {
     activations[layer] = weights[layer-1]*activations[layer-1]+biases[layer-1];
     inputSignal[layer] = activations[layer];
     if (layer == numLayersNeuron-1)
-    activations[layer] = activations[layer].unaryExpr(&Tanh);
+    activations[layer] = activations[layer].unaryExpr(&Linear);
     else 
     activations[layer] = activations[layer].unaryExpr(&Tanh);
   }
@@ -187,7 +188,7 @@ void NeuralNetwork::backPropagate(
     Eigen::VectorXd deltaTheLastLayer;
     deltaTheLastLayer = 
     (dEdC[epoch].array() * 
-    inputSignal_Epochs[epoch][numLayersNeuron-1].unaryExpr(&Tanh_prime).array()).matrix();
+    inputSignal_Epochs[epoch][numLayersNeuron-1].unaryExpr(&Linear_prime).array()).matrix();
     //adding up all nablaBiases and nablaWeights, in the end use the average
     //of them to determine the final change of the weights and biases.
     //Treat them as Vectors and Matrices.
@@ -230,7 +231,7 @@ void NeuralNetwork::backPropagate(
   }
 }
 
-void preTrain(NeuralNetwork &network, State const &target, double trainRate){
+void preTrain(NeuralNetwork &network, State const &target, double trainRate, double epsilon){
 // Trains the network to represent some state target
 // We first backup the current cost function
 	CostFunction const *backupCF = network.getCostFunction();
@@ -244,7 +245,7 @@ void preTrain(NeuralNetwork &network, State const &target, double trainRate){
 // Train the network
 	int const maxTrainCount = 1000;
 	for(int i = 0; i < maxTrainCount;++i){
-		network.train(list, trainRate);
+		network.train(list, trainRate, epsilon);
 		std::cout<<"Distance " << network.getEnergy() << std::endl;
 	}
 	network.setCostFunction(*backupCF);
