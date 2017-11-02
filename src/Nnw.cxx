@@ -17,7 +17,7 @@
 #include "NormCF.hpp"
 //using namespace Eigen;
 NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF):sizes(sizes_), cf(&externalCF){
-  momentumDamping = 0.8;
+  momentumDamping = 0.6;
   momentum = true;
   epsilon = 0.5;
   int numLayersBiasesWeights = sizes.size()-1;
@@ -54,13 +54,17 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const 
 
 std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double eta, double epsilon){
 // The coefficients are stored in scope of the train method and then stored into the state
-  std::vector<coeffType > outputCs;
   nablaWeightsPrev = nablaWeights;
   nablaBiasesPrev = nablaBiases;
   int numDets(listDetsToTrain.size());
-  std::vector<std::vector<Eigen::VectorXd>> inputSignal_Epochs;
-  std::vector<std::vector<Eigen::VectorXd>> activations_Epochs;
+  std::vector<std::vector<Eigen::VectorXd>> inputSignalEpochs;
+  std::vector<std::vector<Eigen::VectorXd>> activationsEpochs;
   std::vector<detType> listDetsToTrainFiltered;
+  std::vector<coeffType > outputCs;
+  std::vector<std::vector<coeffType>> coupledOutputCsEpochs;
+  std::vector<coeffType> coupledOutputCs;
+  std::vector<std::vector<detType>> coupledDetsEpochs;
+  std::vector<detType> coupledDets;
   int numLayersNeuron(sizes.size());
   int numLayersBiasesWeights(sizes.size()-1);
   //reset nablaWeights and nablaBiases to 0 values;
@@ -73,16 +77,35 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
   double const normalizer = static_cast<double>(rng.max());
   double prob{1.0};
   //feed the first det to NNW and get the coeff. 
-  feedForward(listDetsToTrain[0]);
+  coupledDets = getCoupledStates(listDetsToTrain[0]);
+  coupledDetsEpochs.push_back(coupledDets);
+  coeffType coupledCoeff;
+  for (size_t i=0; i<coupledDets.size(); ++i){
+    feedForward(coupledDets[i]);
+    coupledCoeff=coeffType(activations[numLayersNeuron-1][0],
+                           activations[numLayersNeuron-1][1]);
+    coupledOutputCs.push_back(coupledCoeff);
+  }
+  coupledOutputCsEpochs.push_back(coupledOutputCs);
   //activations and inputSignal have been updated.
+  feedForward(listDetsToTrain[0]);
   coeffType coeff(activations[numLayersNeuron-1][0], activations[numLayersNeuron-1][1]);
   coeffType coeffPrev =coeff;
-  inputSignal_Epochs.push_back(inputSignal);
-  activations_Epochs.push_back(activations);
+  inputSignalEpochs.push_back(inputSignal);
+  activationsEpochs.push_back(activations);
   outputCs.push_back(coeff);
   listDetsToTrainFiltered.push_back(listDetsToTrain[0]);
   for (int epoch=1; epoch < numDets; ++epoch){
     //initial input layer
+    coupledOutputCs.clear();
+    coupledDets.clear();
+    coupledDets = getCoupledStates(listDetsToTrain[epoch]);
+    for (size_t i=0; i<coupledDets.size(); ++i){
+      feedForward(coupledDets[i]);
+      coupledCoeff=coeffType(activations[numLayersNeuron-1][0],
+                             activations[numLayersNeuron-1][1]);
+      coupledOutputCs.push_back(coupledCoeff);
+    }
     feedForward(listDetsToTrain[epoch]);
     coeff = coeffType(activations[numLayersNeuron-1][0], activations[numLayersNeuron-1][1]); 
     prob=norm(coeff)/norm(coeffPrev);
@@ -90,27 +113,31 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
     coeffPrev = coeff;
     //if ((prob-1)>1.e-8 || (prandom-prob) < -1.e-8){
     if (true){
-      inputSignal_Epochs.push_back(inputSignal);
-      activations_Epochs.push_back(activations);
+      inputSignalEpochs.push_back(inputSignal);
+      activationsEpochs.push_back(activations);
       outputCs.push_back(coeff);
+      coupledDetsEpochs.push_back(coupledDets);
+      coupledOutputCsEpochs.push_back(coupledOutputCs);
       listDetsToTrainFiltered.push_back(listDetsToTrain[epoch]);
     } 
   }
   
-  //calculating variational energy
-  //calcLocalEnergy(listDetsToTrainFiltered); 
   // State generation fails if number of determinants and coefficients are not equal
+  
   try{
-    outputState = State(listDetsToTrainFiltered, outputCs);
+    outputState = State(listDetsToTrainFiltered, outputCs, coupledDetsEpochs, coupledOutputCsEpochs);
   }
   catch(sizeMismatchError const &ex){
+          // Check if outputCs and coupledOutputCsEpochs have the same size.
 	  // If the two are not equal in size, shrink them
 	  int mSize = (listDetsToTrainFiltered.size() > outputCs.size())?outputCs.size():listDetsToTrain.size();
 	  outputCs.resize(mSize);
 	  listDetsToTrainFiltered.resize(mSize);
-	  outputState = State(listDetsToTrainFiltered,outputCs);
+	  outputState = State(listDetsToTrainFiltered,outputCs, coupledDetsEpochs,
+                              coupledOutputCsEpochs);
   }
-  backPropagate(inputSignal_Epochs, activations_Epochs);
+ 
+  backPropagate(inputSignalEpochs, activationsEpochs);
   //update weights and biases
   //0th layer is the input layer,
   //the biases should not change.
@@ -120,10 +147,10 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
     if(momentum){
       gFactorBiases[layer] = ((nablaBiases[layer].array() 
                             * nablaBiasesPrev[layer].array()) > 1e-8).select(
-                            (gFactorBiasesPrev[layer].array()+0.05).matrix(), gFactorBiasesPrev[layer]*0.95);
+                            (gFactorBiasesPrev[layer].array()*1.05).matrix(), gFactorBiasesPrev[layer]*0.95);
       gFactorWeights[layer] = ((nablaWeights[layer].array()
                        * nablaWeightsPrev[layer].array()) > 1e-8).select(
-                         (gFactorWeightsPrev[layer].array()+0.05).matrix(), gFactorWeightsPrev[layer]* 0.95);
+                         (gFactorWeightsPrev[layer].array()*1.05).matrix(), gFactorWeightsPrev[layer]* 0.95);
       nablaBiases[layer] = (nablaBiases[layer].array() * gFactorBiases[layer].array()).matrix();
       nablaWeights[layer] = (nablaWeights[layer].array() * gFactorWeights[layer].array()).matrix();
     }
@@ -176,8 +203,8 @@ Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) {
 }
 
 void NeuralNetwork::backPropagate(
-       std::vector<std::vector<Eigen::VectorXd>> const &inputSignal_Epochs,
-       std::vector<std::vector<Eigen::VectorXd>> const &activations_Epochs
+       std::vector<std::vector<Eigen::VectorXd>> const &inputSignalEpochs,
+       std::vector<std::vector<Eigen::VectorXd>> const &activationsEpochs
      ){
   int numDets = outputState.size();
   int numLayersNeuron(sizes.size());
@@ -188,7 +215,7 @@ void NeuralNetwork::backPropagate(
     Eigen::VectorXd deltaTheLastLayer;
     deltaTheLastLayer = 
     (dEdC[epoch].array() * 
-    inputSignal_Epochs[epoch][numLayersNeuron-1].unaryExpr(&Linear_prime).array()).matrix();
+    inputSignalEpochs[epoch][numLayersNeuron-1].unaryExpr(&Linear_prime).array()).matrix();
     //adding up all nablaBiases and nablaWeights, in the end use the average
     //of them to determine the final change of the weights and biases.
     //Treat them as Vectors and Matrices.
@@ -198,7 +225,7 @@ void NeuralNetwork::backPropagate(
     deltaAllLayers.push_back(deltaTheLastLayer);
     nablaBiases[numLayersBiasesWeights-1] += deltaTheLastLayer;
     nablaWeights[numLayersBiasesWeights-1] += 
-      deltaTheLastLayer * activations_Epochs[epoch][numLayersNeuron-2].transpose();
+      deltaTheLastLayer * activationsEpochs[epoch][numLayersNeuron-2].transpose();
     for (int layer=numLayersBiasesWeights-2; layer >= 0; --layer){
       //Calculating the error from the second last layer to
       //the 1st layer (0th layer is the input neurons, have no biases.)
@@ -218,7 +245,7 @@ void NeuralNetwork::backPropagate(
 
       //check if it right
       deltaThisLayer = deltaThisLayer.array()
-         * inputSignal_Epochs[epoch][layer+1].unaryExpr(&Tanh_prime).array();
+         * inputSignalEpochs[epoch][layer+1].unaryExpr(&Tanh_prime).array();
       //deltaThisLayer = deltaAsDiagonal * 
       // VectorXd::Ones(deltaThisLayer.size());
       deltaAllLayers.push_back(deltaThisLayer);
@@ -226,7 +253,7 @@ void NeuralNetwork::backPropagate(
       //get a weight matrix. \partial C/\partial w^{l}_{jk} = a^{l-1}_k \delta_j^l 
       //the layer here refers to the lth layer of Biases and weights, so for
       //activation layer refers to the l-1th layer.
-      nablaWeights[layer] += deltaThisLayer * activations_Epochs[epoch][layer].transpose();
+      nablaWeights[layer] += deltaThisLayer * activationsEpochs[epoch][layer].transpose();
     }
   }
 }

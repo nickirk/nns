@@ -8,6 +8,7 @@
 #include "EnergyCF.hpp"
 #include <vector>
 #include <complex>
+#include <iostream>
 
 double EnergyCF::evaluate(State const &input) const{
   double energyVal{0.0};
@@ -18,12 +19,18 @@ double EnergyCF::evaluate(State const &input) const{
   double real(0.), imag(0.);
   for (int i=0; i < numDets; ++i){
     coeffType c_i=input.getCoeff(i);
+    std::vector<coeffType> coupledC_j = input.getCoupledCoeffs(i);
+    std::vector<detType> coupledDets = input.getCoupledDets(i);
     normalizerCoeffComplex += fabs (std::conj(c_i)  * c_i);
     //sign_i = (output_Cs[i]-0. < 1e-8)?-1:0;
-    for (int j=0; j < numDets; ++j){
-      coeffType c_j = input.getCoeff(j);
-      Hij = H(input.getDet(i), input.getDet(j));
-      energyVal += std::real(std::conj(c_i) * c_j * Hij);
+    Hij = H(input.getDet(i), input.getDet(i));
+    energyVal += std::real(std::conj(c_i) * c_i * Hij);
+    for (size_t j=0; j < coupledC_j.size(); ++j){
+      //coeffType c_j = input.getCoeff(j);
+      //std::cout << "det_" << j << "=" << coupledDets[j].size() << std::endl;
+      //std::cout << "det_" << i << "=" << input.getDet(i).size() << std::endl;
+      Hij = H(input.getDet(i), coupledDets[j]);
+      energyVal += std::real(std::conj(c_i) * coupledC_j[j] * Hij);
     }
   }
   //std::cout << "normE= " << normalizerCoeff << std::endl;
@@ -39,12 +46,14 @@ std::vector<Eigen::VectorXd> EnergyCF::nabla(State const &input) const{
   for (int i=0; i < numDets; ++i){
     Eigen::VectorXd dEdC_i=Eigen::VectorXd::Zero(2);
     std::complex<double> A(0.,0.);
-    for (int j=0; j < numDets; ++j){
-      coeffType c_j=input.getCoeff(j);
-      A += c_j * H(input.getDet(i),
-                        input.getDet(j));
-    }
     coeffType c_i = input.getCoeff(i);
+    std::vector<coeffType> coupledC_j = input.getCoupledCoeffs(i);
+    std::vector<detType> coupledDets = input.getCoupledDets(i);
+    A += c_i * H(input.getDet(i), input.getDet(i));
+    for (size_t j=0; j < coupledDets.size(); ++j){
+      A += coupledC_j[j] * H(input.getDet(i),
+                        coupledDets[j]);
+    }
     A -=  energy * c_i;
     A /= normalizerCoeff;
     dEdC_i[0] = 2. * std::real( A*std::conj(1.));

@@ -52,7 +52,7 @@ class NeuralNetwork{
     std::vector<Eigen::MatrixXd> gFactorWeightsPrev;
     CostFunction const *cf;
     void backPropagate(
-           std::vector<std::vector<Eigen::VectorXd>> const &inputSignal_Epochs,
+           std::vector<std::vector<Eigen::VectorXd>> const &inputSignalEpochs,
            std::vector<std::vector<Eigen::VectorXd>> const &activations
          );
     std::vector<Eigen::VectorXd> NablaE_C(std::vector<detType> const &listDetsToTrain);

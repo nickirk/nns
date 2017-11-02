@@ -18,6 +18,7 @@ void Sampler::generateList(std::vector<detType > &list) const{
   //int numComp = numStates;
   list = std::vector<detType >(numStates);
   detType buf;
+  detType bufPrev;
   int numRef=cDet.size();
   int random_integer(0);
   //std::cout << "size of list= " << list.size() << std::endl;
@@ -27,18 +28,22 @@ void Sampler::generateList(std::vector<detType > &list) const{
     for (int i(0); i<numRef; ++i){
       list[i] = cDet[i];
     }
+    std::random_device rng;     // only used once to initialise (seed) engine
+    double const normalization=static_cast<double>(rng.max());
+    random_integer=static_cast<int>(rng()/normalization*(numRef-1));
+    buf = cDet[random_integer]; 
+    bufPrev = buf;
     for (int i(numRef); i < numStates; ++i){
-      std::random_device rng;     // only used once to initialise (seed) engine
-      double const normalization=static_cast<double>(rng.max());
-      random_integer=static_cast<int>(rng()/normalization*(numRef-1));
-      buf = cDet[random_integer]; 
       //std::cout << "random_integer= " << random_integer <<std::endl;
       //std::cout << "size of Ref= " << numRef <<std::endl;
       //std::cout << "size of Dets= " << numStates <<std::endl;
       //std::cout << "i= " << i <<std::endl;
       //std::cout << "intcast ref= " << verbatimCast(buf) << std::endl;
-      buf = getRandomDeterminant(buf);
+      while (verbatimCast(bufPrev)==verbatimCast(buf)){
+        buf = getRandomDeterminant(buf);
+      }
       list[i] = buf;
+      bufPrev = buf;
       //std::cout << "intcast new= " << verbatimCast(buf) << std::endl;
     }
   }

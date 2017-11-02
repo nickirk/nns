@@ -12,12 +12,12 @@ using namespace Eigen;
 
 using namespace std;
 int main(){
-  int numSites(5);
+  int numSites(6);
   int numStates(2*numSites);
-  int numEle(4);
+  int numEle(6);
   int numHidden(8*numSites);
   int numHidden1(3);
-  vector<int> size_NNW = {numStates, numHidden, 2};
+  vector<int> size_NNW = {numStates, numHidden, 10, 2};
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
   bool readFromFile{false};
@@ -32,7 +32,7 @@ int main(){
   cout << "Basis size= " << basis.getSize() << endl;
   //cout << "Hamiltonian size= " << modelHam.getSize() << endl;
   cout << "print out Ham element" << endl;
-
+  /*
   Eigen::MatrixXd H(Eigen::MatrixXd::Zero(basis.getSize(),basis.getSize()));
   double sumRow(0.);
   for (int i(0); i<basis.getSize(); ++i){
@@ -72,6 +72,7 @@ int main(){
       myfilevec << verbatimCast(basis.getDetByIndex(i)) << " " << eVector(i).real() << endl;
     }
   }
+ */
   vector<detType> list;
   ofstream detsIntcast; 
   detsIntcast.open("intCast.txt");
@@ -103,6 +104,11 @@ int main(){
   int count1(0);
   std::vector<Eigen::VectorXd> coeffs;
   //test sampler;
+  // set reference list Dets
+  vector<detType> refDets;
+  refDets.push_back({1,0,0,1,1,0,0,1,1,0,0,1});
+  refDets.push_back({0,1,1,0,0,1,1,0,0,1,1,0});
+  sampler.setReference(refDets);
   sampler.generateList(list); 
   sampler.removeDuplicate(list);
   //for (size_t i=0; i<list.size(); ++i){
@@ -113,7 +119,7 @@ int main(){
   double variance(0.);
   double variancePrev(0.);
   double sampleEnergy(0.);
-  double epsilon(0.1);
+  double epsilon(0.05);
   double aveEnergyPrev(0.);
   double energyPrev(0.);
   int refSize(0);
@@ -125,9 +131,9 @@ int main(){
     //  cout<<"intCast= " << verbatimCast(list[i])<<endl;
     //}
     lastSign = sign;
-    //NNW.train(list, trainRate);
-    list=NNW.train(list, trainRate, epsilon);
-    sampler.setReference(list);
+    NNW.train(list, trainRate, epsilon);
+    //list=NNW.train(list, trainRate, epsilon);
+    //sampler.setReference(list);
     refSize = list.size();
     cout << "Ref list size= " << list.size()<< endl;
     //for (size_t i=0; i<list.size(); ++i){
@@ -139,7 +145,7 @@ int main(){
     listSize = list.size();
     energy = NNW.getEnergy();
     count++;
-    double aveCount = 50;
+    double aveCount = 1000;
     if (count1 < aveCount){
       totalenergy+=energy; 
       energySquare += pow(energy,2);
@@ -150,19 +156,23 @@ int main(){
       //trainRate+=0.001;
     }
     else{
+      list=NNW.train(list, trainRate, epsilon);
+      sampler.setReference(list);
+      sampler.generateList(list); 
+      sampler.removeDuplicate(list);
       variancePrev = variance;
       aveEnergy = totalenergy/double(count1);
       if (fabs(aveEnergy - aveEnergyPrev) < 0.05) {
-        numDetsToTrain_ += 5;
-        sampler.setNumStates(numDetsToTrain_+1);
+        //numDetsToTrain_ += 5;
+        //sampler.setNumStates(numDetsToTrain_+1);
       }
-      if((refSize*1.0)/listSize < 0.5) {
-        //epsilon *=0.8;
-        trainRate *= 0.95;
-      }
+      //if((refSize*1.0)/listSize < 0.5) {
+      //  epsilon *=0.8;
+      //  trainRate *= 0.95;
+      //}
       //else trainRate *=1.05;
       totalenergy=0.;
-      count1 = 0.;
+      //count1 = 0.;
       energyPrev = energy;
       cout << "epsilon= " << epsilon << endl;
     }
@@ -184,7 +194,7 @@ int main(){
     cout << "number of sign changes= " << abs(sign-lastSign) << endl;
     cout << "Ave energy= " << aveEnergy<< endl;
     cout << "energy= " << energy<< endl;
-    cout << "Exact energy= " << eMin<< endl;
+    //cout << "Exact energy= " << eMin<< endl;
     cout << "list size= " << list.size()<< endl;
     //cout << "abs(energy - lastEnergy)= " << abs(energy - lastEnergy) << endl;
     //cout << "fabs(energy - lastEnergy)= " << fabs(energy - lastEnergy) << endl;
