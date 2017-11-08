@@ -24,7 +24,7 @@ public:
   // two functionalities: get a random coupled determinant and get an array of 
   // random coupled determinants
   void generateList(std::vector<detType > &list) const;
-  detType getRandomDeterminant(detType const &startingPoint) const;
+  detType getRandomConnection(detType const &startingPoint) const;
   // for ab-initio: introduce an overload of generateList for ab-initio hamiltonians
 
   // set the starting point
@@ -42,4 +42,5 @@ private:
 
 inline double dblAbs(double x){if(x>0) return x;return -x;}
 void removeDuplicate(std::vector<detType> &list);
+detType getRandomDeterminant(int const &numSpinUp, int const &numSpinDown, int const &numStates);
 #endif

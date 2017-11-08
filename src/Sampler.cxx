@@ -24,18 +24,23 @@ void Sampler::generateList(std::vector<detType > &list) const{
   //std::cout << "size of list= " << list.size() << std::endl;
   //if(numStates%cDet.size()!=0) numComp = (numStates/cDet.size()+1)*cDet.size();
   //std::cout << "size of numComp= " << numComp << std::endl;
+  std::random_device rd;     // only used once to initialise (seed) engine
+  std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+  std::uniform_int_distribution<int> uni(0,numRef-1); // guaranteed unbiased
+
   if (numRef < numStates) {
     for (int i(0); i<numRef; ++i){
       list[i] = cDet[i];
     }
-    std::random_device rng;     // only used once to initialise (seed) engine
-    double const normalization=static_cast<double>(rng.max());
-    random_integer=static_cast<int>(rng()/normalization*(numRef-1));
+    //std::random_device rng;     // only used once to initialise (seed) engine
+    //double const normalization=static_cast<double>(rng.max());
+    //random_integer=static_cast<int>(rng()/normalization*(numRef-1));
+    random_integer = uni(rng);
     buf = cDet[random_integer]; 
     bufPrev = buf;
     for (int i(numRef); i < numStates; ++i){
       while (verbatimCast(bufPrev)==verbatimCast(buf)){
-        buf = getRandomDeterminant(buf);
+        buf = getRandomConnection(buf);
       }
       list[i] = buf;
       bufPrev = buf;
@@ -55,7 +60,7 @@ void Sampler::generateList(std::vector<detType > &list) const{
 }
 
 
-detType Sampler::getRandomDeterminant(detType const &startingPoint) const{
+detType Sampler::getRandomConnection(detType const &startingPoint) const{
 	double p{0};
 	return getRandomCoupledState(startingPoint, p);
 }
@@ -64,4 +69,51 @@ void removeDuplicate(std::vector<detType> &list){
  std::sort( list.begin(), list.end() );
  auto it=std::unique( list.begin(), list.end() );
  list.erase( it, list.end() );
+}
+
+detType getRandomDeterminant(int const &numSpinUp, int const &numSpinDown,
+                             int  const &numStates){ 
+  detType randomDet(numStates, 0);  
+  //int numSpinUp = (numEle%2) ? numEle/2 : (numEle+1)/2;
+  std::vector<int> possibleSpinUpStates;
+  for (int i(0);i<(numStates/2); ++i){
+    possibleSpinUpStates.push_back(i*2);
+  }
+  //int numSpinDown = numEle - numSpinUp;
+  std::vector<int> possibleSpinDownStates;
+  for (int i(0);i<(numStates/2); ++i){
+    possibleSpinDownStates.push_back(i*2+1);
+  }
+  int random_integer(0);
+  //std::vector<int> selectedSpinUpStates;
+  std::random_device rd;     // only used once to initialise (seed) engine
+  std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+  std::uniform_int_distribution<int> uni(0,possibleSpinUpStates.size()-1); // guaranteed unbiased
+  for (int i(0); i<numSpinUp; ++i){
+    //std::random_device rng;     // only used once to initialise (seed) engine
+    //double const normalization=static_cast<double>(rng.max());
+    //random_integer=static_cast<int>(rng()/normalization*(possibleSpinUpStates.size()-1));
+    //std::cout << "size =" << possibleSpinUpStates.size() << std::endl;
+    //selectedSpinUpStates.push_back(possibleSpinUpStates[random_integer]); 
+    std::uniform_int_distribution<int> uni(0,possibleSpinUpStates.size()-1); // guaranteed unbiased
+    random_integer=uni(rng);
+    create(randomDet,possibleSpinUpStates[random_integer]);
+    //std::cout << "random int =" << random_integer << std::endl;
+    //std::cout << "possibleSpinUpStates[random_integer] =" << possibleSpinUpStates[random_integer]<< std::endl;
+    //std::cout << "intCast after create=" <<verbatimCast(randomDet) <<std::endl;
+    possibleSpinUpStates.erase(possibleSpinUpStates.begin()+random_integer);
+  }
+  //std::vector<int> selectedSpinDownStates;
+  for (int i(0); i<numSpinDown; ++i){
+    std::uniform_int_distribution<int> uni(0,possibleSpinDownStates.size()-1); // guaranteed unbiased
+    random_integer=uni(rng);
+    //selectedSpinDownStates.push_back(possibleSpinDownStates[random_integer]); 
+    create(randomDet,possibleSpinDownStates[random_integer]);
+    //std::cout << "size =" << possibleSpinDownStates.size() << std::endl;
+    //std::cout << "random int =" << random_integer << std::endl;
+    //std::cout << "possibleSpinDownStates[random_integer] =" << possibleSpinDownStates[random_integer]<< std::endl;
+    //std::cout << "intCast after create=" <<verbatimCast(randomDet) <<std::endl;
+    possibleSpinDownStates.erase(possibleSpinDownStates.begin()+random_integer);
+  }
+  return randomDet; 
 }
