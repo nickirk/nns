@@ -34,21 +34,14 @@ void Sampler::generateList(std::vector<detType > &list) const{
     buf = cDet[random_integer]; 
     bufPrev = buf;
     for (int i(numRef); i < numStates; ++i){
-      //std::cout << "random_integer= " << random_integer <<std::endl;
-      //std::cout << "size of Ref= " << numRef <<std::endl;
-      //std::cout << "size of Dets= " << numStates <<std::endl;
-      //std::cout << "i= " << i <<std::endl;
-      //std::cout << "intcast ref= " << verbatimCast(buf) << std::endl;
       while (verbatimCast(bufPrev)==verbatimCast(buf)){
         buf = getRandomDeterminant(buf);
       }
       list[i] = buf;
       bufPrev = buf;
-      //std::cout << "intcast new= " << verbatimCast(buf) << std::endl;
     }
   }
   else if (numRef == numStates) list = cDet;
-  //std::cout << "size of cDet= " << numRef << std::endl;
   //int numBatch=numComp/numRef;
   //for(size_t j=0;j<numRef;++j){
   //  // now, numStates/cDet.size() is always an integer
@@ -61,13 +54,14 @@ void Sampler::generateList(std::vector<detType > &list) const{
   //}
 }
 
-void Sampler::removeDuplicate(std::vector<detType> &list){
- std::sort( list.begin(), list.end() );
- auto it=std::unique( list.begin(), list.end() );
- list.erase( it, list.end() );
-}
 
 detType Sampler::getRandomDeterminant(detType const &startingPoint) const{
 	double p{0};
 	return getRandomCoupledState(startingPoint, p);
+}
+
+void removeDuplicate(std::vector<detType> &list){
+ std::sort( list.begin(), list.end() );
+ auto it=std::unique( list.begin(), list.end() );
+ list.erase( it, list.end() );
 }
