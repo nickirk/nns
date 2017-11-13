@@ -14,21 +14,21 @@ using namespace std;
 int main(){
   int numSites(8);
   int numStates(2*numSites);
-  int numEle(8);
-  int spinUp(4);
-  int spinDown(4);
-  int numHidden(10*numSites);
+  int numEle(6);
+  int spinUp(3);
+  int spinDown(3);
+  int numHidden(12*numSites);
   int numHidden1(3);
-  vector<int> size_NNW = {numStates, numHidden, 2};
+  vector<int> size_NNW = {numStates, numHidden,2};
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
   bool readFromFile{false};
-  double trainRate(0.005);
+  double trainRate(1.5);
   cout << "input training rate=";
   cin >> trainRate;
   Basis basis(numStates,numEle);
   Hamiltonian modelHam(numStates);
-  double U{4}, t{-1};
+  double U{4.}, t{-1};
   modelHam = generateHubbard(numStates, U, t);
   
   cout << "Basis size= " << basis.getSize() << endl;
@@ -94,8 +94,9 @@ int main(){
   EnergyEstimator eCF(modelHam);
   NeuralNetwork NNW(size_NNW, eCF);
   detType HF=basis.getDetByIndex(0);
+  //cout << "HF intCast=" << verbatimCast(HF) << endl;
   //list.push_back(HF); 
-  int numDetsToTrain_ = basis.getSize();
+  int numDetsToTrain_ = 1000;//basis.getSize();
   cout << "numDetsToTrain= ";
   cin >> numDetsToTrain_;
   Sampler sampler(modelHam, basis, numDetsToTrain_, HF);
@@ -118,14 +119,13 @@ int main(){
   sampler.generateList(list); 
   removeDuplicate(list);
   //for (size_t i=0; i<list.size(); ++i){
-  //    cout<<"intCast= " << verbatimCast(list[i])<<endl;
   //  }
   double maxEnergy(0.);
   double energySquare(0.);
   double variance(0.);
   double variancePrev(0.);
   double sampleEnergy(0.);
-  double epsilon(0.05);
+  double epsilon(0.3);
   double aveEnergyPrev(0.);
   double energyPrev(0.);
   int refSize(0);
@@ -136,14 +136,10 @@ int main(){
   while (true){
     //list = NNW.train(list, 0.1); 
     //cout << "seeds size= " << list.size() << endl;
-    //for (size_t i=0; i<list.size(); ++i){
-    //  cout<<"intCast= " << verbatimCast(list[i])<<endl;
-    //}
-    lastSign = sign;
-    NNW.train(list, trainRate, epsilon);
+    //NNW.train(list, trainRate, epsilon);
     //list=NNW.train(list, trainRate, epsilon);
     //sampler.setReference(list);
-    refSize = list.size();
+    //refSize = list.size();
     //for (size_t i=0; i<list.size(); ++i){
     //  cout<<"Ref intCast= " << verbatimCast(list[i])<<endl;
     //}
@@ -152,37 +148,40 @@ int main(){
     listSize = list.size();
     energy = NNW.getEnergy();
     count++;
-    double aveCount = 2000;
+    double aveCount = 10;
     if (count1 < aveCount){
-      totalenergy+=energy; 
-      energySquare += pow(energy,2);
-      if (count1 > aveCount-50){
-        listRef=NNW.train(list, trainRate, 0.95);
-        cout << "listRef size=" << listRef.size() << endl;
-        cout << "listRefTotal size=" << listRefTotal.size() << endl;
-        listRefTotal.reserve( listRefTotal.size() + listRef.size() ); // preallocate memory
-        listRefTotal.insert( listRefTotal.end(), listRef.begin(), listRef.end() );
-        cout << "listRefTotal size before=" << listRefTotal.size() << endl;
-        removeDuplicate(listRef);
-        cout << "listRefTotal size after=" << listRefTotal.size() << endl;
-        //if (maxEnergy - aveEnergy > 1) trainRate*=0.5;
-       }
-      if (count1 == aveCount-1){
-        sampler.setReference(listRefTotal);
-        sampler.generateList(list); 
-      }
+      NNW.train(list, trainRate, epsilon);
+      sampler.generateList(list); 
+      removeDuplicate(list);
+      cout << "New list size= " << list.size()<< endl;
+      cout << "epsilon= " << epsilon << endl;
+      cout << "U= " << U << endl;
+      //if (count1 > aveCount-50){
+      //  listRef=NNW.train(list, trainRate, 0.95);
+      //  listRefTotal.reserve( listRefTotal.size() + listRef.size() ); // preallocate memory
+      //  listRefTotal.insert( listRefTotal.end(), listRef.begin(), listRef.end() );
+      //  removeDuplicate(listRef);
+      //  //if (maxEnergy - aveEnergy > 1) trainRate*=0.5;
+      // }
+      //if (count1 == aveCount-1){
+      //  sampler.setReference(listRefTotal);
+      //  sampler.generateList(list); 
+      //}
       count1++;
       //trainRate+=0.001;
     }
     else{
+      if(U<4){
+        U+=0.01;
+        modelHam = generateHubbard(numStates, U, t);
+      }
       list=NNW.train(list, trainRate, epsilon);
       cout << "Ref list size= " << list.size()<< endl;
       sampler.setReference(list);
       sampler.generateList(list); 
       removeDuplicate(list);
       cout << "New list size= " << list.size()<< endl;
-      variancePrev = variance;
-      aveEnergy = totalenergy/double(count1);
+      count1=0;
       if (fabs(aveEnergy - aveEnergyPrev) < 0.05) {
         //numDetsToTrain_ += 5;
         //sampler.setNumStates(numDetsToTrain_+1);
@@ -192,10 +191,12 @@ int main(){
       //  trainRate *= 0.95;
       //}
       //else trainRate *=1.05;
-      totalenergy=0.;
       //count1 = 0.;
       energyPrev = energy;
+      if (epsilon > 0.05)
+        epsilon -= 0.005;
       cout << "epsilon= " << epsilon << endl;
+      
     }
     if(count%1 == 0){
     //cout << "sign = " << sign<< endl;
@@ -205,7 +206,9 @@ int main(){
     outputC.open("coeff.txt");
     for(size_t s=0; s<states.size(); ++s){
       outputC << verbatimCast(states.getDet(s)) << " " << sqrt(norm(states.getCoeff(s)))/sqrt(normalizer) << endl; 
+     cout << "C_" << s << "= " << states.getCoeff(s) << endl;
     }
+    cout << "normalizer=" << normalizer << endl;
     outputC.close();
     myfile1 << count << " " << energy << " " <<   " " << aveEnergy<< endl;
     int allowedNumChangeSign = int(basis.getSize()*0.1);

@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 #include <math.h>
+#include <cmath>
 #include <random>
 #include <Eigen/Dense>
 #include <Eigen/Core>
@@ -154,8 +155,10 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
       nablaBiases[layer] = (nablaBiases[layer].array() * gFactorBiases[layer].array()).matrix();
       nablaWeights[layer] = (nablaWeights[layer].array() * gFactorWeights[layer].array()).matrix();
     }
-    nablaBiases[layer] = -eta/numDets  * nablaBiases[layer];
-    nablaWeights[layer] = -eta/numDets  * nablaWeights[layer]; 
+    //nablaBiases[layer] = -eta/numDets  * nablaBiases[layer];
+    //nablaWeights[layer] = -eta/numDets  * nablaWeights[layer]; 
+    nablaBiases[layer] = -eta  * nablaBiases[layer];
+    nablaWeights[layer] = -eta  * nablaWeights[layer]; 
     if (momentum){
       nablaBiases[layer] += momentumDamping * nablaBiasesPrev[layer];
       nablaWeights[layer] += momentumDamping * nablaWeightsPrev[layer]; 
@@ -169,11 +172,19 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
     probAmp = std::norm(outputCs[i]); //probility amplitude
     if (fabs(probAmp) -fabs(max) > 1e-8) max = probAmp;
   }
+  std::random_device rngd;
+  double const normalizerd = static_cast<double>(rngd.max());
   std::vector<detType> seeds;
+  detType seedPrev;
+  seeds.push_back(listDetsToTrain[0]);
+  double cPrev = std::norm(outputCs[0]);
   for (size_t i=0; i < outputCs.size(); ++i){
     probAmp = std::norm(outputCs[i]); //probility amplitude
+    double prandom=rngd()/normalizerd;
     if (fabs(probAmp)-epsilon*fabs(max) > 1e-8){
-      seeds.push_back(listDetsToTrain[i]);
+    //if (prandom-probAmp<-1e-8){
+      seeds.push_back(listDetsToTrainFiltered[i]);
+      cPrev = std::norm(outputCs[i]);
     }
   }
   return seeds;
@@ -282,6 +293,10 @@ double Tanh_prime(double in){return 1-tanh(in)*tanh(in);};
 double Tanh(double in){return tanh(in);};
 double Linear(double in) {return in;};
 double Linear_prime(double in){return 1;};
+double Rectifier(double in){return (in<-1e-8)?0.01*in:in;};
+double Rectifier_prime(double in){return (in<-1e-8)?0.01:1.;};
+double Arcsinh(double in){return std::asinh(in);};
+double Arcsinh_prime(double in){return 1./sqrt(1.+ in*in);};
 double Gaussian(double in){return exp(-pow(in,2));};
 double Gaussian_prime(double in){return -2*in*Gaussian(in);};
 double GaussianAntiSym(double in){

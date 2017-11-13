@@ -16,7 +16,8 @@ void Sampler::generateList(std::vector<detType > &list) const{
   // if the number of target states is not an integer multiple of the number of
   // reference states, we have to round up the number of target states
   //int numComp = numStates;
-  list = std::vector<detType >(numStates);
+  //list = std::vector<detType >(numStates);
+  list.clear();
   detType buf;
   detType bufPrev;
   int numRef=cDet.size();
@@ -27,23 +28,44 @@ void Sampler::generateList(std::vector<detType > &list) const{
   std::random_device rd;     // only used once to initialise (seed) engine
   std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
   std::uniform_int_distribution<int> uni(0,numRef-1); // guaranteed unbiased
-
+  std::random_device rngd;
+  double const normalizerd = static_cast<double>(rngd.max());
   if (numRef < numStates) {
     for (int i(0); i<numRef; ++i){
-      list[i] = cDet[i];
+      list.push_back(cDet[i]);
     }
     //std::random_device rng;     // only used once to initialise (seed) engine
     //double const normalization=static_cast<double>(rng.max());
     //random_integer=static_cast<int>(rng()/normalization*(numRef-1));
+    //for (int i(numRef); i < numStates; ++i){
+   double prandom=rngd()/normalizerd;
+   if (prandom-0.8 < -1e-8){
     random_integer = uni(rng);
     buf = cDet[random_integer]; 
+   }
+   else{
+    buf = getRandomDeterminant(3,3,16);
+   }
     bufPrev = buf;
-    for (int i(numRef); i < numStates; ++i){
-      while (verbatimCast(bufPrev)==verbatimCast(buf)){
-        buf = getRandomConnection(buf);
+    while (list.size() < numStates){
+      prandom=rngd()/normalizerd;
+      if (prandom-1. < -1e-8){
+      //if (true){
+        //for (int depth(0);  depth < 4; depth++){ 
+          while (verbatimCast(bufPrev)==verbatimCast(buf) ){
+            buf = bufPrev;
+            buf = getRandomConnection(buf);
+          }
+          list.push_back(buf);
+          bufPrev = buf;
+        //}
       }
-      list[i] = buf;
-      bufPrev = buf;
+      else {
+        buf = getRandomDeterminant(3,3,16);
+        //std::cout << "random det intCast=" << verbatimCast(buf) << std::endl;
+        list.push_back(buf);
+      }
+      //list[i] = buf;
     }
   }
   else if (numRef == numStates) list = cDet;
