@@ -6,7 +6,7 @@
 #include "../src/Nnw.hpp"
 #include "../src/Basis.hpp"
 #include "../src/Determinant.hpp"
-#include "../src/Hamiltonian.hpp"
+#include "../src/FermionicHamiltonian.hpp"
 #include "../src/Sampler.hpp"
 using namespace Eigen;
 
@@ -20,9 +20,9 @@ int main(){
   bool readFromFile{false};
   double trainRate(0.5);
   Basis basis(numStates,numEle);
-  Hamiltonian modelHam(numStates);
+  FermionicHamiltonian modelHam(numStates);
   double U{4}, t{-1};
-  modelHam = generateHubbard(numStates, U, t);
+  modelHam = generateFermiHubbard(numStates, U, t);
   cout << "Basis size= " << basis.getSize() << endl;
   cout << "print out Ham element" << endl;
 

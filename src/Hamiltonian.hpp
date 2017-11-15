@@ -12,6 +12,8 @@ class Hamiltonian{
   void setMatrixElement(int p, int q, int r, int s, double newEntry);
   double operator()(detType const &alpha, detType const &beta) const;
   void printMatrix(int N);
+  virtual int getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex) const =0;
+  virtual ~Hamiltonian(){};
  private:
   int d;
   //these are the coefficients of the second quantized hamiltonian
@@ -23,6 +25,5 @@ detType getRandomCoupledState(detType const &source, double &p);
 std::vector<detType> getCoupledStates(detType const &source);
 //basically counts the number of particles between annihilatorIndex and creatorIndex in alpha, yielding the sign of a^\dagger_i a_j (alpha) in the canonical operator ordering
 int getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex);
-Hamiltonian generateHubbard(int dim, double U, double t);
 
 #endif
