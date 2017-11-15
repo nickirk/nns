@@ -21,7 +21,7 @@ double EnergyEstimator::evaluate(State const &input) const{
     coeffType c_i=input.getCoeff(i);
     std::vector<coeffType> coupledC_j = input.getCoupledCoeffs(i);
     std::vector<detType> coupledDets = input.getCoupledDets(i);
-    normalizerCoeffComplex += fabs (std::conj(c_i)  * c_i);
+    normalizerCoeffComplex += std::norm(c_i);
     //sign_i = (output_Cs[i]-0. < 1e-8)?-1:0;
     Hij = H(input.getDet(i), input.getDet(i));
     energyVal += std::real(std::conj(c_i) * c_i * Hij);

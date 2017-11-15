@@ -23,11 +23,11 @@ const std::complex<double> ii(0.,1.);
 class NeuralNetwork{
   public:
     NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF);
-    std::vector<detType> train(std::vector<detType> const&listDetsToTrain, double eta, double epsilon);
+    void train(std::vector<detType> const&listDetsToTrain, double eta, double epsilon);
     double getEnergy(){return cf->calc(outputState);}
     State getState() const {return outputState;}
     double calcEnergy(std::vector<detType> const &listDetsToTrain) const;
-    Eigen::VectorXd feedForward(detType const& det) ;
+    Eigen::VectorXd feedForward(detType const& det) const;
     void setCostFunction(CostFunction const &externalCF) {cf = &externalCF;}
     CostFunction const* getCostFunction() const {return cf;}
   private:
@@ -38,8 +38,8 @@ class NeuralNetwork{
     std::vector<int> sizes;
     std::vector<Eigen::VectorXd> biases;
     std::vector<Eigen::MatrixXd> weights;
-    std::vector<Eigen::VectorXd> inputSignal; 
-    std::vector<Eigen::VectorXd> activations; 
+    mutable std::vector<Eigen::VectorXd> inputSignal; 
+    mutable std::vector<Eigen::VectorXd> activations; 
     std::vector<Eigen::VectorXd> nablaBiases;
     std::vector<Eigen::MatrixXd> nablaWeights;
     std::vector<Eigen::VectorXd> nablaBiasesPrev;
@@ -60,10 +60,15 @@ class NeuralNetwork{
 
 void preTrain(NeuralNetwork &network, State const &target, double trainRate);
 
+double NormalDistribution(double dummy);
 double Tanh_prime(double in);
 double Tanh(double in); 
 double Linear(double in);
 double Linear_prime(double in);
+double Rectifier(double in);
+double Rectifier_prime(double in);
+double Arcsinh(double in);
+double Arcsinh_prime(double in);
 double Gaussian(double in);
 double Gaussian_prime(double in);
 double GaussianAntiSym(double in);

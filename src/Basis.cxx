@@ -16,13 +16,27 @@
 #include "Determinant.hpp"
 
 
-Basis::Basis(int numOrb_, int numEle_){
-  numEle = numEle_;
-  numOrb = numOrb_; 
+Basis::Basis(std::vector<int> const &spinConfig){
+  numEle = spinConfig[0]+spinConfig[1];
+  numOrb = spinConfig[2]; 
   indexOfDet = 0;
-  size = calcSize(numOrb_, numEle_);
   for (int i= 0; i < numOrb; ++i) {listOfOrbNum.push_back(i);}
-  createBasisDet(0, numEle_);
+  createBasisDet(0, numEle);
+  std::vector<detType> basisNew;
+  int numSpinUp(0);
+  int numSpinDown(0);
+  for (size_t s(0); s<basis.size(); s++){
+    numSpinDown=0;
+    numSpinUp=0;
+    for (int i(0);i<(numOrb/2); ++i){
+	numSpinUp+= (basis[s][2*i])?1:0;
+	numSpinDown+= (basis[s][2*i+1])?1:0;
+    }
+    if ((numSpinUp == spinConfig[0]) & (numSpinDown == spinConfig[1])) 
+      basisNew.push_back(basis[s]);
+  }
+  size = basisNew.size();
+  basis=basisNew;
 }
 
 int Basis::getSize() const {return size;}
