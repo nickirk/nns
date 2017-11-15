@@ -19,7 +19,7 @@
 //using namespace Eigen;
 NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF):sizes(sizes_), cf(&externalCF){
   momentumDamping = 0.6;
-  momentum = true;
+  momentum = false;
   epsilon = 0.5;
   int numLayersBiasesWeights = sizes.size()-1;
   activations.push_back(Eigen::VectorXd::Zero(sizes[0]));
@@ -148,10 +148,10 @@ void NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double et
     if(momentum){
       gFactorBiases[layer] = ((nablaBiases[layer].array() 
                             * nablaBiasesPrev[layer].array()) > 1e-8).select(
-                            (gFactorBiasesPrev[layer].array()*1.05).matrix(), gFactorBiasesPrev[layer]*0.95);
+                            (gFactorBiasesPrev[layer].array()+0.05).matrix(), gFactorBiasesPrev[layer]*0.95);
       gFactorWeights[layer] = ((nablaWeights[layer].array()
                        * nablaWeightsPrev[layer].array()) > 1e-8).select(
-                         (gFactorWeightsPrev[layer].array()*1.05).matrix(), gFactorWeightsPrev[layer]* 0.95);
+                         (gFactorWeightsPrev[layer].array()+0.05).matrix(), gFactorWeightsPrev[layer]* 0.95);
       nablaBiases[layer] = (nablaBiases[layer].array() * gFactorBiases[layer].array()).matrix();
       nablaWeights[layer] = (nablaWeights[layer].array() * gFactorWeights[layer].array()).matrix();
     }

@@ -5,7 +5,7 @@
 #include "../src/Nnw.hpp"
 #include "../src/Basis.hpp"
 #include "../src/Determinant.hpp"
-#include "../src/Hamiltonian.hpp"
+#include "../src/FermionicHamiltonian.hpp"
 #include "../src/Sampler.hpp"
 #include "../src/EnergyEstimator.hpp"
 #include "../src/EnergyCF.hpp"
@@ -13,11 +13,11 @@ using namespace Eigen;
 
 using namespace std;
 int main(){
-  int numSites(8);
+  int numSites(5);
   int numStates(2*numSites);
-  int numEle(8);
-  int spinUp(8);
-  int spinDown(0);
+  int numEle(6);
+  int spinUp(3);
+  int spinDown(3);
   vector<int> spinConfig{spinUp, spinDown, numStates};
   int numHidden(10*numSites);
   int numHidden1(3);
@@ -29,9 +29,9 @@ int main(){
   cout << "input training rate=";
   cin >> trainRate;
   Basis basis(spinConfig);
-  Hamiltonian modelHam(numStates);
+  FermionicHamiltonian modelHam(numStates);
   double U{4.}, t{-1};
-  modelHam = generateHubbard(numStates, U, t);
+  modelHam = generateFermiHubbard(numStates, U, t);
   
   cout << "Basis size= " << basis.getSize() << endl;
   //cout << "Hamiltonian size= " << modelHam.getSize() << endl;
@@ -94,7 +94,7 @@ int main(){
     double aveCount = 10;
     if(U<3.999){
       U+=0.001;
-      modelHam = generateHubbard(numStates, U, t);
+      modelHam = generateFermiHubbard(numStates, U, t);
     }
     energyPrev = energy;
     if (epsilon > 0.05)

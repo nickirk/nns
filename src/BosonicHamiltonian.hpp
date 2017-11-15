@@ -12,7 +12,7 @@
 
 class BosonicHamiltonian: public Hamiltonian {
 public:
-	BosonicHamiltonian(int dimension):Hamiltonian(d){};
+	BosonicHamiltonian(int dimension):Hamiltonian(dimension){};
 	virtual ~BosonicHamiltonian();
 	int getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex) const{return 1;}
 };
