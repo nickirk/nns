@@ -8,8 +8,8 @@ reread
 EOF
 #gnuplot plotEnergy.gp
 cat > plotCoeff.gp << EOF
-#set yrange [0:0.14]
-plot "intEigenVec.txt" u 1:(\$2**2), "coeff.txt" u 1:(\$2**2)
+#set xrange [0:65000]
+plot  "coeff.txt" u 1:(\$2**2)
 pause 1
 reread
 EOF

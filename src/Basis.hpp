@@ -15,7 +15,7 @@
 
 class Basis{
   public:
-    Basis(int numOrb_, int numEle_);
+    Basis(std::vector<int> const &spinConfig);
     int getSize() const;
     detType getDetByIndex(int index) const;
     int getIndexByDet(detType const & det_) const;

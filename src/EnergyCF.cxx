@@ -18,7 +18,7 @@ double EnergyCF::evaluate(State const &input) const{
   double real(0.), imag(0.);
   for (int i=0; i < numDets; ++i){
     coeffType c_i=input.getCoeff(i);
-    normalizerCoeffComplex += fabs (std::conj(c_i)  * c_i);
+    normalizerCoeffComplex += std::norm(c_i);
     //sign_i = (output_Cs[i]-0. < 1e-8)?-1:0;
     for (int j=0; j < numDets; ++j){
       coeffType c_j = input.getCoeff(j);

@@ -33,14 +33,14 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const 
     activations.push_back(Eigen::VectorXd::Zero(sizes[layer+1]));
     inputSignal.push_back(Eigen::VectorXd::Zero(sizes[layer+1]));
     
-    biases.push_back(Eigen::VectorXd::Random(sizes[layer+1]));
+    biases.push_back(Eigen::VectorXd::Random(sizes[layer+1]).unaryExpr(&NormalDistribution));
     nablaBiases.push_back(Eigen::VectorXd::Zero(sizes[layer+1]));
     gFactorBiases.push_back(Eigen::VectorXd::Ones(sizes[layer+1]));
     gFactorBiasesPrev.push_back(Eigen::VectorXd::Ones(sizes[layer+1]));
     //Pay special attention to weights, it has sizes.size()-1 layers,
     //instead of sizes.size() layers. Especially when reference to which
     //layer, should be careful.
-    weights.push_back(Eigen::MatrixXd::Random(sizes[layer+1], sizes[layer]));
+    weights.push_back(Eigen::MatrixXd::Random(sizes[layer+1], sizes[layer]).unaryExpr(&NormalDistribution));
     //weights.push_back(1./sizes[layer]*MatrixXd::Random(sizes[layer+1], sizes[layer]));
     nablaWeights.push_back(Eigen::MatrixXd::Zero(sizes[layer+1], sizes[layer]));
     gFactorWeights.push_back(Eigen::MatrixXd::Ones(sizes[layer+1], sizes[layer]));
@@ -53,7 +53,7 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const 
   outputState = State();
 }
 
-std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double eta, double epsilon){
+void NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double eta, double epsilon){
 // The coefficients are stored in scope of the train method and then stored into the state
   nablaWeightsPrev = nablaWeights;
   nablaBiasesPrev = nablaBiases;
@@ -166,31 +166,31 @@ std::vector<detType> NeuralNetwork::train(std::vector<detType> const &listDetsTo
     biases[layer] += nablaBiases[layer];
     weights[layer] += nablaWeights[layer];
   }
-  double probAmp(0.);
-  double max(0);
-  for (size_t i=0; i < outputCs.size(); ++i){
-    probAmp = std::norm(outputCs[i]); //probility amplitude
-    if (fabs(probAmp) -fabs(max) > 1e-8) max = probAmp;
-  }
-  std::random_device rngd;
-  double const normalizerd = static_cast<double>(rngd.max());
-  std::vector<detType> seeds;
-  detType seedPrev;
-  seeds.push_back(listDetsToTrain[0]);
-  double cPrev = std::norm(outputCs[0]);
-  for (size_t i=0; i < outputCs.size(); ++i){
-    probAmp = std::norm(outputCs[i]); //probility amplitude
-    double prandom=rngd()/normalizerd;
-    if (fabs(probAmp)-epsilon*fabs(max) > 1e-8){
-    //if (prandom-probAmp<-1e-8){
-      seeds.push_back(listDetsToTrainFiltered[i]);
-      cPrev = std::norm(outputCs[i]);
-    }
-  }
-  return seeds;
+  //double probAmp(0.);
+  //double max(0);
+  //for (size_t i=0; i < outputCs.size(); ++i){
+  //  probAmp = std::norm(outputCs[i]); //probility amplitude
+  //  if (fabs(probAmp) -fabs(max) > 1e-8) max = probAmp;
+  //}
+  //std::random_device rngd;
+  //double const normalizerd = static_cast<double>(rngd.max());
+  //std::vector<detType> seeds;
+  //detType seedPrev;
+  //seeds.push_back(listDetsToTrain[0]);
+  //double cPrev = std::norm(outputCs[0]);
+  //for (size_t i=0; i < outputCs.size(); ++i){
+  //  probAmp = std::norm(outputCs[i]); //probility amplitude
+  //  double prandom=rngd()/normalizerd;
+  //  if (fabs(probAmp)-epsilon*fabs(max) > 1e-8){
+  //  //if (prandom-probAmp<-1e-8){
+  //    seeds.push_back(listDetsToTrainFiltered[i]);
+  //    cPrev = std::norm(outputCs[i]);
+  //  }
+  //}
+  //return seeds;
 }
 
-Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) {
+Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const{
   int numStates=det.size();
   int numLayersNeuron(sizes.size());
   for (int state=0; state<numStates; ++state){
@@ -289,6 +289,13 @@ void preTrain(NeuralNetwork &network, State const &target, double trainRate, dou
 	network.setCostFunction(*backupCF);
 }
 
+double NormalDistribution(double dummy)
+{
+  int numNeuron=16;
+  static std::mt19937 rng;
+  static std::normal_distribution<> nd(0.,1./sqrt(numNeuron));
+  return nd(rng);
+}
 double Tanh_prime(double in){return 1-tanh(in)*tanh(in);};
 double Tanh(double in){return tanh(in);};
 double Linear(double in) {return in;};
