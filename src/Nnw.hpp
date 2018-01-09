@@ -36,20 +36,24 @@ class NeuralNetwork{
     double epsilon;
     State outputState;
     std::vector<int> sizes;
-    std::vector<Eigen::VectorXd> biases;
-    std::vector<Eigen::MatrixXd> weights;
+    Eigen::VectorXd NNP;
+    double *adNNP;
+    Eigen::VectorXd nablaNNP;
+    double *adNablaNNP;
     mutable std::vector<Eigen::VectorXd> inputSignal; 
     mutable std::vector<Eigen::VectorXd> activations; 
-    std::vector<Eigen::VectorXd> nablaBiases;
-    std::vector<Eigen::MatrixXd> nablaWeights;
-    std::vector<Eigen::VectorXd> nablaBiasesPrev;
-    std::vector<Eigen::MatrixXd> nablaWeightsPrev;
-    std::vector<Eigen::VectorXd> gBiasesPrev;
-    std::vector<Eigen::MatrixXd> gWeightsPrev;
-    std::vector<Eigen::VectorXd> gFactorBiases;
-    std::vector<Eigen::MatrixXd> gFactorWeights;
-    std::vector<Eigen::VectorXd> gFactorBiasesPrev;
-    std::vector<Eigen::MatrixXd> gFactorWeightsPrev;
+    std::vector<Eigen::Map<Eigen::VectorXd>> biases;
+    std::vector<Eigen::Map<Eigen::MatrixXd>> bweights;
+    std::vector<Eigen::Map<Eigen::VectorXd>> nablaBiases;
+    std::vector<Eigen::Map<Eigen::MatrixXd>> nablaWeights;
+    //std::vector<Eigen::VectorXd> nablaBiasesPrev;
+    //std::vector<Eigen::MatrixXd> nablaWeightsPrev;
+    //std::vector<Eigen::VectorXd> gBiasesPrev;
+    //std::vector<Eigen::MatrixXd> gWeightsPrev;
+    //std::vector<Eigen::VectorXd> gFactorBiases;
+    //std::vector<Eigen::MatrixXd> gFactorWeights;
+    //std::vector<Eigen::VectorXd> gFactorBiasesPrev;
+    //std::vector<Eigen::MatrixXd> gFactorWeightsPrev;
     CostFunction const *cf;
     void backPropagate(
            std::vector<std::vector<Eigen::VectorXd>> const &inputSignalEpochs,

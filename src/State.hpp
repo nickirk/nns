@@ -34,6 +34,7 @@ public:
 	};
 	detType getDet(int i) const{return dets[i];}
 	coeffType getCoeff(int i) const{return coeffs[i];}
+	std::vector<coeffType> getAllCoeff() const{return coeffs;}
 	std::vector<detType> getDets() const {return dets;}
         std::vector<coeffType> getCoupledCoeffs(int i) const{return coupledCoeffs[i];}
         std::vector<detType> getCoupledDets(int i) const{return coupledDets[i];}

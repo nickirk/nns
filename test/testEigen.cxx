@@ -8,11 +8,21 @@ int main(){
   VectorXd v(9);
   v << 1,2,3,4,5,6,7,8,9;
   double *pv = &v(0);
-  Map<MatrixXd> m(pv+1,2,2);
-  cout << "m=" << m << endl;
-  v(2)=-1; 
-  cout << "After m=" << m << endl;
+  vector<Map<MatrixXd>> M;
+  for(int i(0); i<2; ++i){
+    Map<MatrixXd> m(pv+i,2,2);
+    M.push_back(m);
+  }
+  M[0](0,0)=-1;
+  M[1](0,0)=-3;
+  cout << "v=" << endl;
+  cout << v << endl;
+  v(1)=-2;
+  v(3)=-100;
+  cout << M[0] << endl;
+  cout << M[1] << endl;
 }
+
 
 
 

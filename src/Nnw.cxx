@@ -18,20 +18,23 @@
 #include "NormCF.hpp"
 //using namespace Eigen;
 NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF):sizes(sizes_), cf(&externalCF){
-  momentumDamping = 0.6;
-  momentum = false;
-  epsilon = 0.5;
+  //momentumDamping = 0.6;
+  //momentum = false;
+  //epsilon = 0.5;
   int numLayersBiasesWeights = sizes.size()-1;
   //calculate the size of the array:
   int numPara(0);
   for (int layer(0); layer<numLayersBiasesWeights; ++layer){
     numPara+=sizes[layer]*sizes[layer+1]+sizes[layer];
   }
-  Eigen::VectorXd NNP = Eigen::VectorXd::Ones(NNP);
-  Eigen::VectorXd nablaNNP = Eigen::VectorXd::Zero(NNP);
+  NNP = Eigen::VectorXd::Ones(NNP);
   //get the address of NNP
-  double *adNNP = &NNP(0);
+  adNNP = &NNP(0);
+  nablaNNP = Eigen::VectorXd::Zero(NNP);
+  //get the address of nablaNNP
+  adNablaNNP = &nablaNNP(0);
   //map parameters to matrices and initalize them with normal distribution.
+  //map nablaPara to matrices and vectors with 0.
   int startPoint=0;
   for (int layer(0); layer<numLayersBiasesWeights; ++layer){
     //Pay special attention to weights, it has sizes.size()-1 layers,
@@ -42,14 +45,22 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const 
     // weights[0] represents the weights of connections between the 0th and 1st
     // layers of neurons.
     Eigen::Map<Eigen::MatrixXd> weightsTmp(adNNP+startPoint,sizes[layer+1],sizes[layer])
+    //NNP is modified here.
     weightsTmp /= weightsTmp.size();
     weightsTmp = weightsTmp.unaryExpr(&NormalDistribution);
     weights.push_back(weightsTmp);
+    nablaWeights.push_back(
+      Eigen::Map<Eigen::MatrixXd>(adNablaNNP+startPoint, sizes[layer+1],
+      sizes[layer])
+    );
     startPoint+=sizes[layer]*sizes[layer+1];
     Eigen::Map<Eigen::VectorXd> biaseTmp(adNNP+startPoint,sizes[layer+1]); 
     biaseTmp /= biaseTmp.size();
     biaseTmp = biaseTmp.unaryExpr(&NormalDistribution);
     biases.push_back(biaseTmp);
+    nablaWeights.push_back(
+      Eigen::Map<Eigen::VectorXd>(adNablaNNP+startPoint, sizes[layer+1]);
+    );
     startPoint+=sizes[layer]*sizes[layer+1]+sizes[layer];
   }
 
@@ -61,16 +72,14 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const 
     activations.push_back(Eigen::VectorXd::Zero(sizes[layer+1]));
     inputSignal.push_back(Eigen::VectorXd::Zero(sizes[layer+1]));
     
-    nablaBiases.push_back(Eigen::VectorXd::Zero(sizes[layer+1]));
     gFactorBiases.push_back(Eigen::VectorXd::Ones(sizes[layer+1]));
     gFactorBiasesPrev.push_back(Eigen::VectorXd::Ones(sizes[layer+1]));
 
-    nablaWeights.push_back(Eigen::MatrixXd::Zero(sizes[layer+1], sizes[layer]));
     gFactorWeights.push_back(Eigen::MatrixXd::Ones(sizes[layer+1], sizes[layer]));
     gFactorWeightsPrev.push_back(Eigen::MatrixXd::Ones(sizes[layer+1], sizes[layer]));
   }
-  nablaWeightsPrev = nablaWeights;
-  nablaBiasesPrev = nablaBiases;
+  //nablaWeightsPrev = nablaWeights;
+  //nablaBiasesPrev = nablaBiases;
 
   // Assign the output state and the evaluator to 0
   outputState = State();
@@ -78,8 +87,8 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const 
 
 void NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double eta, double epsilon){
 // The coefficients are stored in scope of the train method and then stored into the state
-  nablaWeightsPrev = nablaWeights;
-  nablaBiasesPrev = nablaBiases;
+  //nablaWeightsPrev = nablaWeights;
+  //nablaBiasesPrev = nablaBiases;
   int numDets(listDetsToTrain.size());
   std::vector<std::vector<Eigen::VectorXd>> inputSignalEpochs;
   std::vector<std::vector<Eigen::VectorXd>> activationsEpochs;
@@ -92,10 +101,11 @@ void NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double et
   int numLayersNeuron(sizes.size());
   int numLayersBiasesWeights(sizes.size()-1);
   //reset nablaWeights and nablaBiases to 0 values;
-  for (int layer=0; layer < numLayersBiasesWeights; ++layer){
-    nablaBiases[layer] *= 0.; 
-    nablaWeights[layer] *=0.;
-  }
+  nablaPara *= 0.;
+  //for (int layer=0; layer < numLayersBiasesWeights; ++layer){
+  //  nablaBiases[layer] *= 0.; 
+  //  nablaWeights[layer] *=0.;
+  //}
   double prandom{0.0};
   std::random_device rng;
   double const normalizer = static_cast<double>(rng.max());
@@ -166,9 +176,9 @@ void NeuralNetwork::updateParameters(int method){
   //method corresponds to
   // 0: Stochastic gradiend desend
   // 1: Stochastic reconfiguration
-  //reset nablaWeights and nablaBiases to 0 values;
+  Eigen::VectorXd generlisedForce=backPropagate(inputSignalEpochs, activationsEpochs);
   if (method == 0){
-    backPropagate(inputSignalEpochs, activationsEpochs);
+    NNP -= eta * generlisedForce;
     //update weights and biases
     //0th layer is the input layer,
     //the biases should not change.
@@ -202,10 +212,9 @@ void NeuralNetwork::updateParameters(int method){
   }
   //Stochastic reconfiguration
   else {
-    backPropagate(inputSignalEpochs, activationsEpochs, 0);
-    //store dEdw
-    //
-    backPropagate(inputSignalEpochs, activationsEpochs, 1);
+    Eigen::MatrixXd dCdw=backPropagateSR(inputSignalEpochs, activationsEpochs);
+    constructSMatrix(dCdw);
+     
     //store dCdw
     //
     
@@ -252,6 +261,7 @@ Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const{
     //Here the 0th layer of weights correspond to the connections between
     //the 0th and 1st layer. Here layer refers to the Neuron layer. When use 
     //it to refer the Biases and weights' layer, we need conversion.
+    //map the para into layered structure.
     activations[layer] = weights[layer-1]*activations[layer-1]+biases[layer-1];
     inputSignal[layer] = activations[layer];
     if (layer == numLayersNeuron-1)
@@ -262,7 +272,7 @@ Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const{
   return activations[numLayersNeuron-1];
 }
 
-void NeuralNetwork::backPropagate(
+Eigen::VectorXd NeuralNetwork::backPropagate(
        std::vector<std::vector<Eigen::VectorXd>> const &inputSignalEpochs,
        std::vector<std::vector<Eigen::VectorXd>> const &activationsEpochs,
      ){
@@ -271,10 +281,11 @@ void NeuralNetwork::backPropagate(
   int numLayersBiasesWeights(sizes.size()-1);
   // catch here
   //everytime the backPropagate is called, we should reset nabla* to zero.
-  for (int layer=0; layer < numLayersBiasesWeights; ++layer){
-    nablaBiases[layer] *= 0.; 
-    nablaWeights[layer] *=0.;
-  }
+  nablaNNP *= 0.;
+  //for (int layer=0; layer < numLayersBiasesWeights; ++layer){
+  //  nablaBiases[layer] *= 0.; 
+  //  nablaWeights[layer] *=0.;
+  //}
   std::vector<Eigen::VectorXd> dEdC = cf->nabla(outputState);
   for (int epoch=0; epoch < numDets; ++epoch){
     Eigen::VectorXd deltaTheLastLayer;
@@ -304,6 +315,7 @@ void NeuralNetwork::backPropagate(
       //on the lth layer neurons, where weights_{l, l-1} corresponds to the 
       //connections between the lth and l-1 th layers of neurons. Notice
       // .* means elementwise multiply.
+      
       deltaThisLayer = weights[layer+1].transpose() * deltaPreviousLayer; 
       //To achive elementwise multiply, form a diagonal vector.
       //deltaAsDiagonal = deltaThisLayer.asDiagonal();
@@ -321,9 +333,10 @@ void NeuralNetwork::backPropagate(
       nablaWeights[layer] += deltaThisLayer * activationsEpochs[epoch][layer].transpose();
     }
   }
+  return nablaNNP;
 }
 
-void NeuralNetwork::backPropagateSR(
+Eigen::MatrixXd NeuralNetwork::backPropagateSR(
        std::vector<std::vector<Eigen::VectorXd>> const &inputSignalEpochs,
        std::vector<std::vector<Eigen::VectorXd>> const &activationsEpochs,
      ){
@@ -340,10 +353,12 @@ void NeuralNetwork::backPropagateSR(
   //create w_k|--C_i matrix
   Eigen::MatrixXd dCdw(numPara,numDets);
   for (int epoch(0); epoch < numDets; ++epoch){
-    for (int layer=0; layer < numLayersBiasesWeights; ++layer){
-      nablaBiases[layer] *= 0.; 
-      nablaWeights[layer] *=0.;
-    }
+    //reset nablaNNP to 0
+    nablaNNP *= 0.;
+    //for (int layer=0; layer < numLayersBiasesWeights; ++layer){
+    //  nablaBiases[layer] *= 0.; 
+    //  nablaWeights[layer] *=0.;
+    //}
     Eigen::VectorXd deltaTheLastLayer;
     deltaTheLastLayer = 
     (dEdC[epoch].array() * 
@@ -390,21 +405,10 @@ void NeuralNetwork::backPropagateSR(
       nablaWeights[layer] = deltaThisLayer * activationsEpochs[epoch][layer].transpose();
       //reshape nablaWeights into a vector
     }
-    //define a vector of the length of numPara
-    Eigen::VectorXd colI(numPara);
-    int startPoint(0);
-    //fill this vector with the parameters from the first layer to last layer
-    //Note the order is important!
-    for (int layer(0); layer<numLayersBiasesWeights;++layer){
-      colI.segment(startPoint, nablaWeights[layer].size()) 
-        << Eigen::Map<Eigen::VectorXd>(nablaWeights[layer],nablaWeights[layer].size());
-      startPoint+=nablaWeights[layer].size();
-      colI.segment(startPoint, nablaBiases[layer].size()) << nablaBiases[layer];
-      startPoint+=nablaBiases[layer].size();
-    }
     //fill up the dCdw matrix
-    dCdw.col(epoch) << colI; 
+    dCdw.col(epoch) << nablaNNP; 
   }
+  return dCdw;
 }
 
 void preTrain(NeuralNetwork &network, State const &target, double trainRate, double epsilon){
