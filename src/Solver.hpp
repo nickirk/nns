@@ -17,7 +17,7 @@ public:
 	void setGamma(double eta){gamma = eta;}
 	Eigen::VectorXd update(Eigen::VectorXd const &w, Eigen::VectorXd const &force) const;
 	Eigen::VectorXd update(Eigen::VectorXd const &w, Eigen::VectorXd const &force,
-						   Eigen::VectorXd const &ci, Eigen::MatrixXd const &dcdw) const;
+						   Eigen::VectorXcd const &ci, Eigen::MatrixXcd const &dcdw) const;
 private:
 	double gamma;
 };

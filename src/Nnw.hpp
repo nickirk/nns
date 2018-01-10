@@ -37,30 +37,28 @@ class NeuralNetwork{
     double epsilon;
     State outputState;
     std::vector<int> sizes;
+    int numNNP;
     Eigen::VectorXd NNP;
     double *adNNP;
     Eigen::VectorXd nablaNNP;
     double *adNablaNNP;
+    std::vector<std::vector<Eigen::VectorXd>> inputSignalEpochs;
+    std::vector<std::vector<Eigen::VectorXd>> activationsEpochs;
     mutable std::vector<Eigen::VectorXd> inputSignal; 
     mutable std::vector<Eigen::VectorXd> activations; 
     std::vector<Eigen::Map<Eigen::VectorXd>> biases;
-    std::vector<Eigen::Map<Eigen::MatrixXd>> bweights;
+    std::vector<Eigen::Map<Eigen::MatrixXd>> weights;
     std::vector<Eigen::Map<Eigen::VectorXd>> nablaBiases;
     std::vector<Eigen::Map<Eigen::MatrixXd>> nablaWeights;
-    //std::vector<Eigen::VectorXd> nablaBiasesPrev;
-    //std::vector<Eigen::MatrixXd> nablaWeightsPrev;
-    //std::vector<Eigen::VectorXd> gBiasesPrev;
-    //std::vector<Eigen::MatrixXd> gWeightsPrev;
-    //std::vector<Eigen::VectorXd> gFactorBiases;
-    //std::vector<Eigen::MatrixXd> gFactorWeights;
-    //std::vector<Eigen::VectorXd> gFactorBiasesPrev;
-    //std::vector<Eigen::MatrixXd> gFactorWeightsPrev;
     CostFunction const *cf;
     Solver sl;
-    void backPropagate(
+    Eigen::VectorXd backPropagate(
            std::vector<std::vector<Eigen::VectorXd>> const &inputSignalEpochs,
-           std::vector<std::vector<Eigen::VectorXd>> const &activations,
-           int method
+           std::vector<std::vector<Eigen::VectorXd>> const &activationsEpochs
+         );
+    Eigen::MatrixXcd backPropagateSR(
+           std::vector<std::vector<Eigen::VectorXd>> const &inputSignalEpochs,
+           std::vector<std::vector<Eigen::VectorXd>> const &activationsEpochs
          );
     void updateParameters(int method);
     std::vector<Eigen::VectorXd> NablaE_C(std::vector<detType> const &listDetsToTrain);

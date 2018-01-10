@@ -19,12 +19,12 @@ Eigen::VectorXd Solver::update(Eigen::VectorXd const &w, Eigen::VectorXd const &
 }
 
 Eigen::VectorXd Solver::update(Eigen::VectorXd const &w, Eigen::VectorXd const &force,
-					   Eigen::VectorXd const &ci, Eigen::MatrixXd const &dcdw) const{
+					   Eigen::VectorXcd const &ci, Eigen::MatrixXcd const &dcdw) const{
 	Eigen::MatrixXd s, okokp;
-	Eigen::VectorXd ok;
+	Eigen::VectorXcd ok;
 	double normalizer = ci.norm();
-	ok = w.conjugate()*dcdw/normalizer;
+	ok = dcdw*w.conjugate()/normalizer;
 	okokp = dcdw.conjugate()*dcdw/normalizer;
-	s = okokp - ok.adjoint()*ok;
+	s = (okokp - ok*ok.adjoint()).real();
 	return w-gamma*s.inverse()*force;
 }
