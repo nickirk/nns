@@ -18,6 +18,7 @@
 #include "Basis.hpp"
 #include "Hamiltonian.hpp"
 #include "State.hpp"
+#include "Solver.hpp"
 //#include "Sampler.hpp"
 const std::complex<double> ii(0.,1.);
 class NeuralNetwork{
@@ -55,10 +56,11 @@ class NeuralNetwork{
     //std::vector<Eigen::VectorXd> gFactorBiasesPrev;
     //std::vector<Eigen::MatrixXd> gFactorWeightsPrev;
     CostFunction const *cf;
+    Solver sl;
     void backPropagate(
            std::vector<std::vector<Eigen::VectorXd>> const &inputSignalEpochs,
-           std::vector<std::vector<Eigen::VectorXd>> const &activations
-           int method;
+           std::vector<std::vector<Eigen::VectorXd>> const &activations,
+           int method
          );
     void updateParameters(int method);
     std::vector<Eigen::VectorXd> NablaE_C(std::vector<detType> const &listDetsToTrain);

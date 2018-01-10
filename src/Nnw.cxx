@@ -17,7 +17,7 @@
 #include "errors.hpp"
 #include "NormCF.hpp"
 //using namespace Eigen;
-NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF):sizes(sizes_), cf(&externalCF){
+NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF):sizes(sizes_), cf(&externalCF), sl(Solver(1)){
   //momentumDamping = 0.6;
   //momentum = false;
   //epsilon = 0.5;
@@ -106,6 +106,8 @@ void NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double et
   //  nablaBiases[layer] *= 0.; 
   //  nablaWeights[layer] *=0.;
   //}
+
+  sl.setGamma(eta);
   double prandom{0.0};
   std::random_device rng;
   double const normalizer = static_cast<double>(rng.max());
@@ -178,7 +180,7 @@ void NeuralNetwork::updateParameters(int method){
   // 1: Stochastic reconfiguration
   Eigen::VectorXd generlisedForce=backPropagate(inputSignalEpochs, activationsEpochs);
   if (method == 0){
-    NNP -= eta * generlisedForce;
+    NNP = sl.update(NNP,generlisedForce);
     //update weights and biases
     //0th layer is the input layer,
     //the biases should not change.
@@ -213,7 +215,8 @@ void NeuralNetwork::updateParameters(int method){
   //Stochastic reconfiguration
   else {
     Eigen::MatrixXd dCdw=backPropagateSR(inputSignalEpochs, activationsEpochs);
-    constructSMatrix(dCdw);
+    Eigen::VectorXd ci = Eigen::Map<Eigen::VectorXd>(&(outputState.getAllCoeff()[0]),outputState.size());
+    NNP = sl.update(NNP,generlisedForce,ci,dCdw);
      
     //store dCdw
     //
