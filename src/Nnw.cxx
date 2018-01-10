@@ -340,73 +340,76 @@ Eigen::MatrixXd NeuralNetwork::backPropagateSR(
        std::vector<std::vector<Eigen::VectorXd>> const &inputSignalEpochs,
        std::vector<std::vector<Eigen::VectorXd>> const &activationsEpochs,
      ){
+//This step produce a complex matrix dCdw. It is done via the same backPropagate
+//algorithm, with dEdC set to a vector of (1,1) (real part) and a vector of (1,-1)
+//(imaginary part). 
   int numDets = outputState.size();
   int numLayersNeuron(sizes.size());
   int numLayersBiasesWeights(sizes.size()-1);
-  // catch here
-  //everytime the backPropagate is called, we should reset nabla* to zero.
-  //for (int layer=0; layer < numLayersBiasesWeights; ++layer){
-  //  nablaBiases[layer] *= 0.; 
-  //  nablaWeights[layer] *=0.;
-  //}
-  std::vector<Eigen::VectorXd> dEdC(numDets,Eigen::VectorXd::ones(2));
-  //create w_k|--C_i matrix
-  Eigen::MatrixXd dCdw(numPara,numDets);
-  for (int epoch(0); epoch < numDets; ++epoch){
-    //reset nablaNNP to 0
-    nablaNNP *= 0.;
-    //for (int layer=0; layer < numLayersBiasesWeights; ++layer){
-    //  nablaBiases[layer] *= 0.; 
-    //  nablaWeights[layer] *=0.;
-    //}
-    Eigen::VectorXd deltaTheLastLayer;
-    deltaTheLastLayer = 
-    (dEdC[epoch].array() * 
-    inputSignalEpochs[epoch][numLayersNeuron-1].unaryExpr(&Linear_prime).array()).matrix();
-    //adding up all nablaBiases and nablaWeights, in the end use the average
-    //of them to determine the final change of the weights and biases.
-    //Treat them as Vectors and Matrices.
-    //Starting from the last layer of neuron and backpropagate the error.
-    //nablaWeights have the same structure as weights, only numLayers-2 layers.
-    std::vector<Eigen::VectorXd> deltaAllLayers;
-    deltaAllLayers.push_back(deltaTheLastLayer);
-    nablaBiases[numLayersBiasesWeights-1] += deltaTheLastLayer;
-    nablaWeights[numLayersBiasesWeights-1] += 
-      deltaTheLastLayer * activationsEpochs[epoch][numLayersNeuron-2].transpose();
-    for (int layer=numLayersBiasesWeights-2; layer >= 0; --layer){
-      //Calculating the error from the second last layer to
-      //the 1st layer (0th layer is the input neurons, have no biases.)
-      //Remember weights have only 0th -- numLayers-2 layers.
-      Eigen::VectorXd deltaPreviousLayer=deltaAllLayers[numLayersBiasesWeights-2-layer];
-      Eigen::VectorXd deltaThisLayer;
-      //MatrixXd deltaAsDiagonal;
-      //\delta_l = ((weights_{l+1, l}^T\delta^{l+1})) .* tanh'(z^l);
-      //where ^T means transpose, l means lth layer, tanh' means the derivative
-      //of tanh and z^l= tanh(weights_{l,l-1}activations^{l-1}) is the input signal 
-      //on the lth layer neurons, where weights_{l, l-1} corresponds to the 
-      //connections between the lth and l-1 th layers of neurons. Notice
-      // .* means elementwise multiply.
-      deltaThisLayer = weights[layer+1].transpose() * deltaPreviousLayer; 
-      //To achive elementwise multiply, form a diagonal vector.
-      //deltaAsDiagonal = deltaThisLayer.asDiagonal();
+  //Herei, not like in backPropagate, 
+  //the dEdC is just a parameter, doesn't mean dEdC itself.
+  Eigen::Vector2d dedc;
+  for (int i(-1); i <=1; i+=2){
+    dedc << 1, i;
+    std::vector<Eigen::VectorXd> dEdC(numDets,Eigen::VectorXd::ones(2));
+    //create w_k|--C_i matrix
+    Eigen::MatrixXcd dCdw(numPara,numDets);
+    for (int epoch(0); epoch < numDets; ++epoch){
+      //reset nablaNNP to 0
+      nablaNNP *= 0.;
+      //for (int layer=0; layer < numLayersBiasesWeights; ++layer){
+      //  nablaBiases[layer] *= 0.; 
+      //  nablaWeights[layer] *=0.;
+      //}
+      Eigen::VectorXd deltaTheLastLayer;
+      deltaTheLastLayer = 
+      (dEdC[epoch].array() * 
+      inputSignalEpochs[epoch][numLayersNeuron-1].unaryExpr(&Linear_prime).array()).matrix();
+      //adding up all nablaBiases and nablaWeights, in the end use the average
+      //of them to determine the final change of the weights and biases.
+      //Treat them as Vectors and Matrices.
+      //Starting from the last layer of neuron and backpropagate the error.
+      //nablaWeights have the same structure as weights, only numLayers-2 layers.
+      std::vector<Eigen::VectorXd> deltaAllLayers;
+      deltaAllLayers.push_back(deltaTheLastLayer);
+      nablaBiases[numLayersBiasesWeights-1] += deltaTheLastLayer;
+      nablaWeights[numLayersBiasesWeights-1] += 
+        deltaTheLastLayer * activationsEpochs[epoch][numLayersNeuron-2].transpose();
+      for (int layer=numLayersBiasesWeights-2; layer >= 0; --layer){
+        //Calculating the error from the second last layer to
+        //the 1st layer (0th layer is the input neurons, have no biases.)
+        //Remember weights have only 0th -- numLayers-2 layers.
+        Eigen::VectorXd deltaPreviousLayer=deltaAllLayers[numLayersBiasesWeights-2-layer];
+        Eigen::VectorXd deltaThisLayer;
+        //MatrixXd deltaAsDiagonal;
+        //\delta_l = ((weights_{l+1, l}^T\delta^{l+1})) .* tanh'(z^l);
+        //where ^T means transpose, l means lth layer, tanh' means the derivative
+        //of tanh and z^l= tanh(weights_{l,l-1}activations^{l-1}) is the input signal 
+        //on the lth layer neurons, where weights_{l, l-1} corresponds to the 
+        //connections between the lth and l-1 th layers of neurons. Notice
+        // .* means elementwise multiply.
+        deltaThisLayer = weights[layer+1].transpose() * deltaPreviousLayer; 
+        //To achive elementwise multiply, form a diagonal vector.
+        //deltaAsDiagonal = deltaThisLayer.asDiagonal();
 
-      //check if it right
-      deltaThisLayer = deltaThisLayer.array()
-         * inputSignalEpochs[epoch][layer+1].unaryExpr(&Tanh_prime).array();
-      //deltaThisLayer = deltaAsDiagonal * 
-      // VectorXd::Ones(deltaThisLayer.size());
-      deltaAllLayers.push_back(deltaThisLayer);
-      //combine all nablaWeights and nablaBiases to a single vector
-      nablaBiases[layer] = deltaThisLayer;
-      //get a weight matrix. \partial C/\partial w^{l}_{jk} = a^{l-1}_k \delta_j^l 
-      //the layer here refers to the lth layer of Biases and weights, so for
-      //activation layer refers to the l-1th layer.
-      //reshape matrix into a vector
-      nablaWeights[layer] = deltaThisLayer * activationsEpochs[epoch][layer].transpose();
-      //reshape nablaWeights into a vector
+        //check if it right
+        deltaThisLayer = deltaThisLayer.array()
+           * inputSignalEpochs[epoch][layer+1].unaryExpr(&Tanh_prime).array();
+        //deltaThisLayer = deltaAsDiagonal * 
+        // VectorXd::Ones(deltaThisLayer.size());
+        deltaAllLayers.push_back(deltaThisLayer);
+        //combine all nablaWeights and nablaBiases to a single vector
+        nablaBiases[layer] = deltaThisLayer;
+        //get a weight matrix. \partial C/\partial w^{l}_{jk} = a^{l-1}_k \delta_j^l 
+        //the layer here refers to the lth layer of Biases and weights, so for
+        //activation layer refers to the l-1th layer.
+        //reshape matrix into a vector
+        nablaWeights[layer] = deltaThisLayer * activationsEpochs[epoch][layer].transpose();
+        //reshape nablaWeights into a vector
+      }
+      //fill up the dCdw matrix
+      dCdw.col(epoch) << nablaNNP; 
     }
-    //fill up the dCdw matrix
-    dCdw.col(epoch) << nablaNNP; 
   }
   return dCdw;
 }
