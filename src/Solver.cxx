@@ -24,7 +24,7 @@ Eigen::VectorXd Solver::update(Eigen::VectorXd const &w, Eigen::VectorXd const &
 	Eigen::VectorXd ok;
 	double normalizer = ci.norm();
 	ok = w.conjugate()*dcdw/normalizer;
-	okokp = dcdw.conjugate()*dcdw/normalizer;
+	okokp = dcdw.adjoint()*dcdw/normalizer;
 	s = okokp - ok.adjoint()*ok;
 	return w-gamma*s.inverse()*force;
 }
