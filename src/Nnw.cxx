@@ -18,15 +18,15 @@
 #include "NormCF.hpp"
 #include "Solver.hpp"
 //using namespace Eigen;
-NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF):sizes(sizes_), cf(&externalCF), sl(Solver(1)){
+NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF):sizes(sizes_), cf(&externalCF), sl(Solver(0.5)){
   momentumDamping = 0.6;
   momentum = false;
-  epsilon = 0.5;
+  iteration = 0;
   int numLayersBiasesWeights = sizes.size()-1;
   //calculate the size of the array:
   numNNP=0;
   for (int layer(0); layer<numLayersBiasesWeights; ++layer){
-    numNNP+=sizes[layer]*sizes[layer+1]+sizes[layer];
+    numNNP+=sizes[layer]*sizes[layer+1]+sizes[layer+1];
   }
   NNP = Eigen::VectorXd::Ones(numNNP);
   //get the address of NNP
@@ -47,7 +47,7 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const 
     // layers of neurons.
     Eigen::Map<Eigen::MatrixXd> weightsTmp(adNNP+startPoint,sizes[layer+1],sizes[layer]);
     //NNP is modified here.
-    weightsTmp /= weightsTmp.size();
+    //weightsTmp /= weightsTmp.size();
     weightsTmp = weightsTmp.unaryExpr(&NormalDistribution);
     weights.push_back(weightsTmp);
     nablaWeights.push_back(
@@ -56,13 +56,13 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const 
     );
     startPoint+=sizes[layer]*sizes[layer+1];
     Eigen::Map<Eigen::VectorXd> biaseTmp(adNNP+startPoint,sizes[layer+1]); 
-    biaseTmp /= biaseTmp.size();
+    //biaseTmp /= biaseTmp.size();
     biaseTmp = biaseTmp.unaryExpr(&NormalDistribution);
     biases.push_back(biaseTmp);
     nablaBiases.push_back(
       Eigen::Map<Eigen::VectorXd>(adNablaNNP+startPoint, sizes[layer+1])
     );
-    startPoint+=sizes[layer]*sizes[layer+1]+sizes[layer];
+    startPoint+=sizes[layer+1];
   }
 
   //initial activity signals. 
@@ -87,7 +87,7 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const 
   outputState = State();
 }
 
-void NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double eta, double epsilon){
+void NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double eta, int iteration){
 // The coefficients are stored in scope of the train method and then stored into the state
   //nablaWeightsPrev = nablaWeights;
   //nablaBiasesPrev = nablaBiases;
@@ -182,15 +182,17 @@ void NeuralNetwork::updateParameters(int method){
   // 1: Stochastic reconfiguration
   Eigen::VectorXd generlisedForce=backPropagate(inputSignalEpochs, activationsEpochs);
   if (method == 0){
-    NNP = sl.update(NNP,generlisedForce);
+    sl.update(NNP,generlisedForce);
     //update weights and biases
   }
   //Stochastic reconfiguration
   else {
     Eigen::MatrixXcd dCdw=backPropagateSR(inputSignalEpochs, activationsEpochs);
+    //std::cout << "dCdw=" << std::endl;
+    //std::cout << dCdw    << std::endl; 
     std::vector<coeffType> outputCs = outputState.getAllCoeff();
     Eigen::Map<Eigen::VectorXcd> ci(&(outputCs[0]),outputCs.size());
-    NNP = sl.update(NNP,generlisedForce,ci,dCdw);
+    sl.update(NNP,generlisedForce,ci,dCdw, iteration);
   }
 }
 
@@ -310,8 +312,8 @@ Eigen::MatrixXcd NeuralNetwork::backPropagateSR( std::vector<std::vector<Eigen::
       //nablaWeights have the same structure as weights, only numLayers-2 layers.
       std::vector<Eigen::VectorXd> deltaAllLayers;
       deltaAllLayers.push_back(deltaTheLastLayer);
-      nablaBiases[numLayersBiasesWeights-1] += deltaTheLastLayer;
-      nablaWeights[numLayersBiasesWeights-1] += 
+      nablaBiases[numLayersBiasesWeights-1] = deltaTheLastLayer;
+      nablaWeights[numLayersBiasesWeights-1] = 
         deltaTheLastLayer * activationsEpochs[epoch][numLayersNeuron-2].transpose();
       for (int layer=numLayersBiasesWeights-2; layer >= 0; --layer){
         //Calculating the error from the second last layer to
@@ -339,13 +341,13 @@ Eigen::MatrixXcd NeuralNetwork::backPropagateSR( std::vector<std::vector<Eigen::
       //fill up the dCdwTmp matrix column by column. Column index is C_i, row index is w_k
       dCdwTmp.col(epoch) << nablaNNP; 
     }
-  if (i==0) dCdw.real()=dCdwTmp;
-  if (i==1) dCdw.imag()=dCdwTmp;
+    if (i==0) dCdw.real()=dCdwTmp;
+    if (i==1) dCdw.imag()=dCdwTmp;
   }
   return dCdw;
 }
 
-void preTrain(NeuralNetwork &network, State const &target, double trainRate, double epsilon){
+void preTrain(NeuralNetwork &network, State const &target, double trainRate, int iteration){
 // Trains the network to represent some state target
 // We first backup the current cost function
 	CostFunction const *backupCF = network.getCostFunction();
@@ -359,7 +361,7 @@ void preTrain(NeuralNetwork &network, State const &target, double trainRate, dou
 // Train the network
 	int const maxTrainCount = 1000;
 	for(int i = 0; i < maxTrainCount;++i){
-		network.train(list, trainRate, epsilon);
+		network.train(list, trainRate, iteration);
 		std::cout<<"Distance " << network.getEnergy() << std::endl;
 	}
 	network.setCostFunction(*backupCF);

@@ -15,9 +15,9 @@ public:
 	explicit Solver(double eta);
 	~Solver();
 	void setGamma(double eta){gamma = eta;}
-	Eigen::VectorXd update(Eigen::VectorXd const &w, Eigen::VectorXd const &force) const;
-	Eigen::VectorXd update(Eigen::VectorXd const &w, Eigen::VectorXd const &force,
-						   Eigen::VectorXcd const &ci, Eigen::MatrixXcd const &dcdw) const;
+	void update(Eigen::VectorXd  &w, Eigen::VectorXd const &force) const;
+	void update(Eigen::VectorXd  &w, Eigen::VectorXd const &force,
+						   Eigen::VectorXcd const &ci, Eigen::MatrixXcd const &dcdw, int const &iteration) const;
 private:
 	double gamma;
 };

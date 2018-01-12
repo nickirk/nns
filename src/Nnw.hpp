@@ -24,7 +24,7 @@ const std::complex<double> ii(0.,1.);
 class NeuralNetwork{
   public:
     NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF);
-    void train(std::vector<detType> const&listDetsToTrain, double eta, double epsilon);
+    void train(std::vector<detType> const&listDetsToTrain, double eta, int iteration);
     double getEnergy(){return cf->calc(outputState);}
     State getState() const {return outputState;}
     double calcEnergy(std::vector<detType> const &listDetsToTrain) const;
@@ -34,7 +34,7 @@ class NeuralNetwork{
   private:
     double momentumDamping;
     bool momentum;
-    double epsilon;
+    int iteration;
     State outputState;
     std::vector<int> sizes;
     int numNNP;
@@ -64,7 +64,7 @@ class NeuralNetwork{
     std::vector<Eigen::VectorXd> NablaE_C(std::vector<detType> const &listDetsToTrain);
 };
 
-void preTrain(NeuralNetwork &network, State const &target, double trainRate);
+void preTrain(NeuralNetwork &network, State const &target, int iteration);
 
 double NormalDistribution(double dummy);
 double Tanh_prime(double in);

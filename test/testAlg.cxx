@@ -13,15 +13,15 @@ using namespace Eigen;
 
 using namespace std;
 int main(){
-  int numSites(5);
+  int numSites(8);
   int numStates(2*numSites);
   int numEle(6);
   int spinUp(3);
   int spinDown(3);
   vector<int> spinConfig{spinUp, spinDown, numStates};
-  int numHidden(10*numSites);
-  int numHidden1(3);
-  vector<int> size_NNW = {numStates, numHidden,2};
+  int numHidden(4*numSites);
+  int numHidden1(2*numSites);
+  vector<int> size_NNW = {numStates, numHidden, 2};
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
   bool readFromFile{false};
@@ -85,8 +85,8 @@ int main(){
   vector<detType> listRef;
   vector<detType> listRefPrev;
   vector<detType> listRefTotal;
-  while (true){
-    NNW.train(list, trainRate, epsilon);
+  for(int l(0); l<10000; ++l){
+    NNW.train(list, trainRate, l);
     sampler.diffuse(list, spinConfig); 
     listSize = list.size();
     energy = NNW.getEnergy();
@@ -99,17 +99,17 @@ int main(){
     energyPrev = energy;
     if (epsilon > 0.05)
       epsilon -= 0.001;
-    if(count%5 == 0){
+    if(count%1 == 0){
       State states=NNW.getState();
       double normalizer=eCF.getNormalizer();
-      ofstream outputC;
-      outputC.open("coeff.txt");
-      for(size_t s=0; s<states.size(); ++s){
-        outputC << verbatimCast(states.getDet(s)) << " " << sqrt(norm(states.getCoeff(s)))/sqrt(normalizer) << endl; 
-       //cout << "C_" << s << "= " << states.getCoeff(s) << endl;
-      }
+      //ofstream outputC;
+      //outputC.open("coeff.txt");
+      //for(size_t s=0; s<states.size(); ++s){
+      //  outputC << verbatimCast(states.getDet(s)) << " " << sqrt(norm(states.getCoeff(s)))/sqrt(normalizer) << endl; 
+      //  cout << "C_" << s << "= " << states.getCoeff(s) << endl;
+      //}
+      //outputC.close();
       cout << "normalizer=" << normalizer << endl;
-      outputC.close();
       myfile1 << count << " " << energy << " " <<   " " << aveEnergy<< endl;
       int allowedNumChangeSign = int(basis.getSize()*0.1);
       cout << "energy= " << energy<< endl;

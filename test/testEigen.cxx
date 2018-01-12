@@ -21,6 +21,9 @@ int main(){
   v(3)=-100;
   cout << M[0] << endl;
   cout << M[1] << endl;
+  v(4) +=100;
+  cout << M[0] << endl;
+  cout << M[1] << endl;
 }
 
 
