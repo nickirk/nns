@@ -15,13 +15,13 @@ using namespace std;
 int main(){
   int numSites(8);
   int numStates(2*numSites);
-  int numEle(6);
-  int spinUp(3);
-  int spinDown(3);
+  int numEle(4);
+  int spinUp(2);
+  int spinDown(2);
   vector<int> spinConfig{spinUp, spinDown, numStates};
-  int numHidden(4*numSites);
+  int numHidden(10*numSites);
   int numHidden1(2*numSites);
-  vector<int> size_NNW = {numStates, numHidden, 2};
+  vector<int> size_NNW = {numStates, numHidden,numHidden1, 2};
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
   bool readFromFile{false};
@@ -55,11 +55,11 @@ int main(){
   //cout << "HF intCast=" << verbatimCast(HF) << endl;
   //list.push_back(HF); 
   int numDetsToTrain_ = basis.getSize();
-  cout << "numDetsToTrain= ";
-  cin >> numDetsToTrain_;
+  //cout << "numDetsToTrain= ";
+  //cin >> numDetsToTrain_;
   Sampler sampler(modelHam, basis, NNW, numDetsToTrain_, HF);
   ofstream myfile1;
-  myfile1.open ("energy.txt");
+  myfile1.open ("energy_mom20.txt");
   double aveEnergy(0.);
   double totalenergy(0.);
   double energy(0.);
@@ -87,7 +87,7 @@ int main(){
   vector<detType> listRefTotal;
   for(int l(0); l<10000; ++l){
     NNW.train(list, trainRate, l);
-    sampler.diffuse(list, spinConfig); 
+    //sampler.diffuse(list, spinConfig); 
     listSize = list.size();
     energy = NNW.getEnergy();
     count++;

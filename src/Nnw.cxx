@@ -18,9 +18,16 @@
 #include "NormCF.hpp"
 #include "Solver.hpp"
 //using namespace Eigen;
-NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF):sizes(sizes_), cf(&externalCF), sl(Solver(0.5)){
+NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, 
+CostFunction const &externalCF):sizes(sizes_), cf(&externalCF), sl(Solver(0.5)){
   momentumDamping = 0.6;
   momentum = false;
+  //initial para for Nesterov's accelerated gradient descent
+  lamdaS1 = 0.;
+  lamdaS =0.;
+  gammaS = 0.;
+  gammaS1 = 0.;
+  learningRate = 0.;
   iteration = 0;
   int numLayersBiasesWeights = sizes.size()-1;
   //calculate the size of the array:
@@ -28,7 +35,11 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const 
   for (int layer(0); layer<numLayersBiasesWeights; ++layer){
     numNNP+=sizes[layer]*sizes[layer+1]+sizes[layer+1];
   }
+  yS = Eigen::VectorXd::Zero(numNNP);
+  yS1 = Eigen::VectorXd::Zero(numNNP);
+  Egz2 = Eigen::VectorXd::Zero(numNNP);
   NNP = Eigen::VectorXd::Ones(numNNP);
+  generlisedForcePrev = Eigen::VectorXd::Zero(numNNP);
   //get the address of NNP
   adNNP = &NNP(0);
   nablaNNP = Eigen::VectorXd::Zero(numNNP);
@@ -45,7 +56,8 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const 
     //e.g biases[0] represents the biases of neurons on the 1st layer and
     // weights[0] represents the weights of connections between the 0th and 1st
     // layers of neurons.
-    Eigen::Map<Eigen::MatrixXd> weightsTmp(adNNP+startPoint,sizes[layer+1],sizes[layer]);
+    Eigen::Map<Eigen::MatrixXd> weightsTmp(adNNP+startPoint,sizes[layer+1],
+		                           sizes[layer]);
     //NNP is modified here.
     //weightsTmp /= weightsTmp.size();
     weightsTmp = weightsTmp.unaryExpr(&NormalDistribution);
@@ -87,10 +99,12 @@ NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, CostFunction const 
   outputState = State();
 }
 
-void NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double eta, int iteration){
+void NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double eta, int iteration_){
 // The coefficients are stored in scope of the train method and then stored into the state
   //nablaWeightsPrev = nablaWeights;
   //nablaBiasesPrev = nablaBiases;
+  learningRate = eta;
+  iteration  = iteration_;
   int numDets(listDetsToTrain.size());
   std::vector<detType> listDetsToTrainFiltered;
   std::vector<coeffType > outputCs;
@@ -172,7 +186,7 @@ void NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double et
                               coupledOutputCsEpochs);
   }
 
-  updateParameters(0);
+  updateParameters(2);
 
 }
 
@@ -180,19 +194,60 @@ void NeuralNetwork::updateParameters(int method){
   //method corresponds to
   // 0: Stochastic gradiend desend
   // 1: Stochastic reconfiguration
+  // 2: Nesterov's Accelerated Gradient Descent
   Eigen::VectorXd generlisedForce=backPropagate(inputSignalEpochs, activationsEpochs);
   if (method == 0){
     sl.update(NNP,generlisedForce);
     //update weights and biases
   }
   //Stochastic reconfiguration
-  else {
+  else if (method == 1){
     Eigen::MatrixXcd dCdw=backPropagateSR(inputSignalEpochs, activationsEpochs);
-    //std::cout << "dCdw=" << std::endl;
-    //std::cout << dCdw    << std::endl; 
     std::vector<coeffType> outputCs = outputState.getAllCoeff();
     Eigen::Map<Eigen::VectorXcd> ci(&(outputCs[0]),outputCs.size());
     sl.update(NNP,generlisedForce,ci,dCdw, iteration);
+  }
+  else if (method ==2){
+     lamdaS1 = (1+std::sqrt(1+4*lamdaS*lamdaS))/2.;
+     gammaS = (1-lamdaS)/(lamdaS1)*std::exp(-1./1000*iteration);
+     //std::cout << "here" << std::endl;
+     std::cout << "generlisedForce" << std::endl;
+     std::cout << generlisedForce << std::endl;
+     //std::cout << "gammaS="<< gammaS << std::endl;
+     //double rho=0.5*std::exp(-1./10*iteration);
+     //Egz2 += rho*Egz2.matrix() + (1-rho)*generlisedForce.array().square().matrix();
+     //Egz2 += Eigen::VectorXd::Ones(numNNP)*1e-4;
+     //Eigen::VectorXd RMS = (Egz2).array().sqrt();
+     //Eigen::VectorXd tau = learningRate * RMS.array().inverse();
+     yS1 = NNP - learningRate * generlisedForce;
+     //yS1 = (NNP.array() -  tau.array() * generlisedForce.array()).matrix();
+     if (iteration == 0) yS=yS1;
+     NNP = (1-gammaS)*yS1 + gammaS*yS;
+     lamdaS = lamdaS1;
+     yS = yS1; 
+     std::cout << "gammaS" << std::endl;
+     std::cout << gammaS << std::endl;
+     std::cout << "lamdaS" << std::endl;
+     std::cout << lamdaS << std::endl;
+     //std::cout << "Egz2" << std::endl;
+     //std::cout << Egz2 << std::endl;
+  }
+  else if (method == 3){
+    if (iteration==0) generlisedForcePrev = generlisedForce;
+    std::cout << generlisedForce-generlisedForcePrev << std::endl;
+    std::cout << "generlisedForcePrev" << iteration << std::endl;
+    double beta = (generlisedForce.transpose()*(generlisedForce-generlisedForcePrev)/
+                  (generlisedForcePrev.transpose()*generlisedForcePrev))(0);
+    std::cout << (generlisedForce.transpose()*(generlisedForce-generlisedForcePrev)/
+           (generlisedForcePrev.transpose()*generlisedForcePrev)) <<std::endl;
+    std::cout << "beta=" << beta << std::endl;
+    generlisedForce += beta*generlisedForcePrev; 
+    Eigen::MatrixXcd dCdw=backPropagateSR(inputSignalEpochs, activationsEpochs);
+    std::vector<coeffType> outputCs = outputState.getAllCoeff();
+    Eigen::Map<Eigen::VectorXcd> ci(&(outputCs[0]),outputCs.size());
+    //sl.update(NNP,generlisedForce,ci,dCdw, iteration);
+    NNP -= learningRate * generlisedForce;
+    generlisedForcePrev = generlisedForce;
   }
 }
 
