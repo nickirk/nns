@@ -60,7 +60,7 @@ void Sampler::diffuse(std::vector<detType> &list, std::vector<int> const& spinCo
    lastLayerActivation = NNW.feedForward(buf);
    c_j=coeffType(lastLayerActivation[0], lastLayerActivation[1]);
    //getRandomCoupledState(buf,probUnbias);
-   if (prandom - std::norm(c_j/c_i)<-1e-8){
+   if (prandom - std::pow(std::norm(c_j),2)/std::pow(std::norm(c_i),2)<-1e-8){
      list[i]=buf;
    }
  }

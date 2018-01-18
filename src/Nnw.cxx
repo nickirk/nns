@@ -209,19 +209,20 @@ void NeuralNetwork::updateParameters(int method){
   }
   else if (method ==2){
      lamdaS1 = (1+std::sqrt(1+4*lamdaS*lamdaS))/2.;
-     gammaS = (1-lamdaS)/(lamdaS1)*std::exp(-1./1000*iteration);
+     gammaS = (1-lamdaS)/(lamdaS1);//*std::exp(-1./100*iteration);
      //std::cout << "here" << std::endl;
-     std::cout << "generlisedForce" << std::endl;
-     std::cout << generlisedForce << std::endl;
+     //std::cout << "generlisedForce" << std::endl;
+     //std::cout << generlisedForce << std::endl;
      //std::cout << "gammaS="<< gammaS << std::endl;
-     //double rho=0.5*std::exp(-1./10*iteration);
-     //Egz2 += rho*Egz2.matrix() + (1-rho)*generlisedForce.array().square().matrix();
-     //Egz2 += Eigen::VectorXd::Ones(numNNP)*1e-4;
-     //Eigen::VectorXd RMS = (Egz2).array().sqrt();
-     //Eigen::VectorXd tau = learningRate * RMS.array().inverse();
-     yS1 = NNP - learningRate * generlisedForce;
-     //yS1 = (NNP.array() -  tau.array() * generlisedForce.array()).matrix();
+     double rho=0.9;//*std::exp(-1./100*iteration);
+     Egz2 = rho*Egz2.matrix() + (1-rho)*generlisedForce.array().square().matrix();
+     Egz2 += Eigen::VectorXd::Ones(numNNP)*1e-4;
+     Eigen::VectorXd RMS = (Egz2).array().sqrt();
+     Eigen::VectorXd tau = learningRate * RMS.array().inverse();
+     //yS1 = NNP - learningRate * generlisedForce;
+     yS1 = (NNP.array() -  tau.array() * generlisedForce.array()).matrix();
      if (iteration == 0) yS=yS1;
+     //if (iteration == 300) gammaS = 0.5;
      NNP = (1-gammaS)*yS1 + gammaS*yS;
      lamdaS = lamdaS1;
      yS = yS1; 
@@ -229,8 +230,8 @@ void NeuralNetwork::updateParameters(int method){
      std::cout << gammaS << std::endl;
      std::cout << "lamdaS" << std::endl;
      std::cout << lamdaS << std::endl;
-     //std::cout << "Egz2" << std::endl;
-     //std::cout << Egz2 << std::endl;
+     std::cout << "tau" << std::endl;
+     std::cout << tau << std::endl;
   }
   else if (method == 3){
     if (iteration==0) generlisedForcePrev = generlisedForce;

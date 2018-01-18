@@ -31,6 +31,8 @@ class NeuralNetwork{
     Eigen::VectorXd feedForward(detType const& det) const;
     void setCostFunction(CostFunction const &externalCF) {cf = &externalCF;}
     CostFunction const* getCostFunction() const {return cf;}
+    Eigen::Map<Eigen::MatrixXd> getWeights(int layer) const {return weights[layer];}
+    Eigen::Map<Eigen::VectorXd> getBiases(int layer) const {return biases[layer];}
   private:
     double momentumDamping;
     bool momentum;
