@@ -20,7 +20,7 @@ int main(){
   int spinDown(4);
   vector<int> spinConfig{spinUp, spinDown, numStates};
   int numHidden(40*numSites);
-  int numHidden1(2*numSites);
+  //int numHidden1(2*numSites);
   vector<int> size_NNW = {numStates, numHidden, 2};
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
@@ -28,7 +28,9 @@ int main(){
   double trainRate(1.5);
   cout << "input training rate=";
   cin >> trainRate;
+  //generate basis, the basis class constructor takes in the spin configurations.
   Basis basis(spinConfig);
+  //generate hamiltonian
   FermionicHamiltonian modelHam(numStates);
   double U{4.}, t{-1};
   modelHam = generateFermiHubbard(numStates, U, t);
@@ -40,6 +42,11 @@ int main(){
   ofstream detsIntcast; 
 
   detsIntcast.open("intCast.txt");
+  //in the diffuse scheme, we start with all the determinants in the basis
+  //but this is not necessary. Because in the end we will diffuse them and
+  //add random determinants.
+  //IntCast just to cast the determinant into a integer number so that 
+  //we can see if anything is going wrong with the basis.
   for (int i=0; i< basis.getSize(); ++i){
     list.push_back(basis.getDetByIndex(i));
     detsIntcast << verbatimCast(basis.getDetByIndex(i)) << endl;
@@ -49,34 +56,35 @@ int main(){
   //for(size_t i = 0; i< list.size(); ++i){
   //  std::cout<<"intCast= "<<verbatimCast(list[i])<<std::endl;
   //}
+  //---------------------------------------------------//
+
+  //define a energy estimator. We can explore more cost functions than just the 
+  //energy in the future. That's why we make it a child class of the cost function.
   EnergyEstimator eCF(modelHam);
+  //Neural network takes in the size and the cost function.
   NeuralNetwork NNW(size_NNW, eCF);
-  detType HF=basis.getDetByIndex(0);
-  //cout << "HF intCast=" << verbatimCast(HF) << endl;
-  //list.push_back(HF); 
+  // numDetsToTrain_ is the total number you want to keep in the list 
+  // during the training process. By default it is the whole Hilbert space.
+  // But for a stochastic diffuse process, much less is needed. One should 
+  // test to see how many is suitable for different systems.
   int numDetsToTrain_ = basis.getSize();
   cout << "numDetsToTrain= ";
   cin >> numDetsToTrain_;
+
+  //currently, the diffuse process is implemented within the sampler class.
   Sampler sampler(modelHam, basis, NNW, numDetsToTrain_, HF);
+  //write energy into this file so that we can plot the energy with the plotEn.sh script
   ofstream myfile1;
   myfile1.open ("energy_RMSprop_amp.txt");
-  double aveEnergy(0.);
   double totalenergy(0.);
   double energy(0.);
-  int sign(0);
-  int lastSign(0);
   int count(0);
   int count1(0);
   std::vector<Eigen::VectorXd> coeffs;
   //test sampler;
   // set reference list Dets
+  // there might be unused variables.
   vector<detType> refDets;
-  //refDets.push_back({1,0,0,1,1,0,0,1,1,0,0,1});
-  //refDets.push_back({0,1,1,0,0,1,1,0,0,1,1,0});
-  //sampler.setReference(refDets);
-  //sampler.initialiseList(list, spinConfig); 
-  //for (size_t i=0; i<list.size(); ++i){
-  //  }
   double epsilon(0.3);
   double aveEnergyPrev(0.);
   double energyPrev(0.);
@@ -92,6 +100,8 @@ int main(){
     energy = NNW.getEnergy();
     count++;
     double aveCount = 10;
+  //I have tried the adabatic increasing the U to target U, hoping
+  //to make the proble easier. But we need to investigate it more.
     if(U<3.999){
       U+=0.001;
       modelHam = generateFermiHubbard(numStates, U, t);
