@@ -12,14 +12,17 @@ using namespace Eigen;
 
 using namespace std;
 int main(){
-  int numSites(4);
+  int numSites(8);
   int numStates(2*numSites);
-  int numEle(3);
+  int numEle(8);
+  int spinUp(4);
+  int spinDown(4);
   int numHidden(10);
   vector<int> size_NNW = {numStates, numHidden, 2};
   bool readFromFile{false};
   double trainRate(0.5);
-  Basis basis(numStates,numEle);
+  vector<int> spinConfig{spinUp, spinDown, numStates};
+  Basis basis(spinConfig);
   FermionicHamiltonian modelHam(numStates);
   double U{4}, t{-1};
   modelHam = generateFermiHubbard(numStates, U, t);

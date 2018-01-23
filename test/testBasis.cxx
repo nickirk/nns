@@ -6,7 +6,13 @@
 using namespace std;
 
 int main(){
-  Basis basis(8,4);
+  int numSites(8);
+  int numStates(2*numSites);
+  int numEle(8);
+  int spinUp(4);
+  int spinDown(4);
+  vector<int> spinConfig{spinUp, spinDown, numStates};
+  Basis basis(spinConfig);
   cout << "size= " << basis.getSize() << endl;
   for (int i=0; i < basis.getSize(); ++i){
     detType det;

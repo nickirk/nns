@@ -3,7 +3,6 @@
 1. Exploring the possibility to use neural network to represent wavefunction and compute ground state energy in ab-initio systems;
 2. Targeting strongly correlated systems (static correlations)
 3. Exploring sampling scheme similar to DMC.
-4. Implement stochastic reconfiguration 
 ## Methods
 
 Based on stochastic gradient descend, stochastically choose determinants 
@@ -43,16 +42,6 @@ using back-propagation algorithm. $`t`$ is the training number.
 
 7. Going back to 1 and repeat the steps for $`M (t=0,1,2,...,M)`$ times (or until $`\delta_i^{(t)}<\epsilon`$ where $`\epsilon`$ is the tolerance).
 
-## Structure of the code
-
-```C++
-class Hamiltonian {setting };
-class Basis {constructing the basis};
-class Sampler {sampling wavefunctions with determinants}
-class NNW {neural network, back-propagation algorithm}
-template 
-getDets(){}
-```
 
 ## Naming of Variables
 
@@ -62,4 +51,18 @@ getDets(){}
 - Instances of classes and types are named in camelCase, preferably according to the class name they are an instance of. (Parser parser, int maxIterations)
 - Mathematical objects, such as numbers and tensors, may additionally be named according to the mathematical symbol nomenclature (int n, Tensor<> Vabij).
 - Acronyms should be treated as a normal word. (FtodLoader, not FTODLoader)
+
+##Doing test
+The test files are under the test directory. In principle, each implemented functionality should have a test file and pass the test. 
+
+To test the solver algorithm, use testAlg.cxx . 
+If there is no build directory in the project, create it first:
+```
+mkdir build/test
+```
+Use
+```
+make testAlg
+```
+to compile. Normally, the tests are done in the run directory.
 

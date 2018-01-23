@@ -6,8 +6,20 @@
 #include "../src/Hamiltonian.hpp"
 using namespace std;
 int main(){
-  Basis basis(5,2);
-  Hamiltonian modelHam(0.5, 0.2, 0.2, basis);
+  int numSites(8);
+  int numStates(2*numSites);
+  int numEle(8);
+  int spinUp(4);
+  int spinDown(4);
+  vector<int> spinConfig{spinUp, spinDown, numStates};
+  //cout << "input number of hidden neurons=";
+  //cin >> numHidden;
+  bool readFromFile{false};
+  double trainRate(1.5);
+  cout << "input training rate=";
+  cin >> trainRate;
+  Basis basis(spinConfig);
+  FermionicHamiltonian modelHam(numStates);
   cout << "Basis size= " << basis.getSize() << endl;
   cout << "Hamiltonian size= " << modelHam.getSize() << endl;
   cout << "print out Ham element" << endl;
