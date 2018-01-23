@@ -209,12 +209,8 @@ void NeuralNetwork::updateParameters(int method){
   }
   else if (method ==2){
      lamdaS1 = (1+std::sqrt(1+4*lamdaS*lamdaS))/2.;
-     gammaS = (1-lamdaS)/(lamdaS1);//*std::exp(-1./100*iteration);
-     //std::cout << "here" << std::endl;
-     //std::cout << "generlisedForce" << std::endl;
-     //std::cout << generlisedForce << std::endl;
-     //std::cout << "gammaS="<< gammaS << std::endl;
-     double rho=0.9;//*std::exp(-1./100*iteration);
+     gammaS = (1-lamdaS)/(lamdaS1)*std::exp(-1./500*iteration);
+     double rho=0.5*std::exp(-1./300*iteration);
      Egz2 = rho*Egz2.matrix() + (1-rho)*generlisedForce.array().square().matrix();
      Egz2 += Eigen::VectorXd::Ones(numNNP)*1e-4;
      Eigen::VectorXd RMS = (Egz2).array().sqrt();
