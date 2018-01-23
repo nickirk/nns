@@ -33,23 +33,30 @@ where the prime on the $`j`$ index means sum over the determinants which are con
 ```math
 \delta_i^{(t)}=\frac{\partial E}{\partial W_i^{(t)}}
 ```
+
 using back-propagation algorithm. $`t`$ is the training number.
 The derivatives should also be computed from the Metropolis sampling. Note that the above derivative of energy wrt parameter should be a real number.
 We also notice that we can write
+
 ```math
 E(\{W_i\})=E(\{C_i(\{W_k\})\})
 ```
+
 so we can write the derivative as a sum
+
 ```math
 \frac{\partial E}{\partial W_i}=\sum_j\left(\frac{\partial E}{\partial C^*_j}\frac{\partial C_j^*}{\partial W_i}+\frac{\partial E}{\partial C_j}\frac{\partial C_j}{\partial W_i}\right)\\
 =\sum_j\left(2Re(\frac{\partial E}{\partial C_j^*})\frac{\partial Re(C_j^*)}{\partial W_i}+2 Imag(\frac{\partial E}{\partial C_j^*}\frac{\partial Imag(C_j^*)}{\partial W_i})\right)
 ```
+
 where
+
 ```math
 \frac{\partial E}{\partial C_j^*}=\frac{\partial <\Psi|H|\Psi>/<\Psi|\Psi>}{\partial C_j^*}\\
 =\frac{\sum_iC_iH_{ji}-EC_j}{\sum_i|C_i|^2}\\
 =\left<\frac{H_{ji}-E\delta_{ij}}{C^*_i}\right>_M
 ```
+
 5. Updating the connection weights between neurons $`W_i^{(t+1)}=W_i^{(t)}-\alpha \delta_i^{(t)}`$. (More solvers can be used instead of simple gradient descend. Will add more in the future).
 
 6. Going back to 1 and repeat the steps for $`M (t=0,1,2,...,M)`$ times (or until $`\delta_i^{(t)}<\epsilon`$ where $`\epsilon`$ is the tolerance). Or simple the energy converges.
