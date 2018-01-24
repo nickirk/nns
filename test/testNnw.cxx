@@ -7,6 +7,7 @@
 #include "../src/Determinant.hpp"
 #include "../src/FermionicHamiltonian.hpp"
 #include "../src/ListGen.hpp"
+#include "../src/MarkovSampler.hpp"
 #include "../src/EnergyEstimator.hpp"
 #include "../src/EnergyCF.hpp"
 #include "../src/Trainer.hpp"
@@ -33,7 +34,7 @@ int main(){
   //cout << "HF intCast=" << verbatimCast(HF) << endl;
   //list.push_back(HF);
   int numDetsToTrain_{20};
-  ListGen sampler(modelHam, basis, numDetsToTrain_, HF,NNW);
+  MarkovSampler sampler(modelHam, basis, numDetsToTrain_, HF,NNW);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
   double energy{0.0};
@@ -44,6 +45,6 @@ int main(){
     energy = ev.getE();
     std::cout<<"Energy "<<energy<<std::endl;
     // update the list of determinants used in the sampler
-    sampler.diffuse(list,spinConfig);
+    //sampler.diffuse(list,spinConfig);
   }
 }

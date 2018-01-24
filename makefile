@@ -3,7 +3,7 @@ LDFLAGS=-std=c++11 -g -Wall
 EIGEN_PATH=lib/eigen/
 EIGEN_FLAGS=-I$(EIGEN_PATH)
 SOURCEFILES=Sampler.cxx Nnw.cxx Basis.cxx Hamiltonian.cxx Determinant.cxx EnergyCF.cxx NormCF.cxx EnergyEstimator.cxx FermionicHamiltonian.cxx BosonicHamiltonian.cxx Solver.cxx Trainer.cxx MarkovSampler.cxx ListGen.cxx
-TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx
+TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testRandom.cxx
 SRC=src
 TST=test
 BUILD=build
@@ -30,6 +30,7 @@ ETESTOBJECT=$(TSTBUILD)/testEigen.o
 HTESTOBJECT=$(TSTBUILD)/testHam.o
 CFTESTOBJECT=$(TSTBUILD)/testCF.o
 PTTESTOBJECT=$(TSTBUILD)/testPreTrain.o
+RNGTESTOBJECT=$(TSTBUILD)/testRandom.o
 TESTBASISEXEC=build/test/testBasis
 
 $(DIRECTORIES):
@@ -72,6 +73,8 @@ testCF: $(OBJECTS) $(CFTESTOBJECT)
 	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@
 	
 testPT: $(OBJECTS) $(PTTESTOBJECT)
+	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@
+testRandom: $(RNGTESTOBJECT)
 	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@
                                             
 clean:
