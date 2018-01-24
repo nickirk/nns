@@ -37,6 +37,7 @@ class NeuralNetwork{
     double momentumDamping;
     bool momentum;
     int iteration;
+// variables for RMSprop
     double lamdaS1;
     double lamdaS;
     double gammaS;
@@ -45,6 +46,15 @@ class NeuralNetwork{
     Eigen::VectorXd yS;
     Eigen::VectorXd yS1;
     Eigen::VectorXd Egz2;
+//----------------------
+//variables for ADAM
+    double beta1;
+    double beta2;
+    Eigen::VectorXd m;
+    Eigen::VectorXd v;
+    Eigen::VectorXd m1;
+    Eigen::VectorXd v1;
+///---------------------
     State outputState;
     std::vector<int> sizes;
     int numNNP;

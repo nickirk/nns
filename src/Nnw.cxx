@@ -27,6 +27,10 @@ CostFunction const &externalCF):sizes(sizes_), cf(&externalCF), sl(Solver(0.5)){
   lamdaS =0.;
   gammaS = 0.;
   gammaS1 = 0.;
+  //-----------------
+  //initial para for ADAM
+  beta1=0.9;
+  beta2=0.999;
   learningRate = 0.;
   iteration = 0;
   int numLayersBiasesWeights = sizes.size()-1;
@@ -38,6 +42,10 @@ CostFunction const &externalCF):sizes(sizes_), cf(&externalCF), sl(Solver(0.5)){
   yS = Eigen::VectorXd::Zero(numNNP);
   yS1 = Eigen::VectorXd::Zero(numNNP);
   Egz2 = Eigen::VectorXd::Zero(numNNP);
+  m  = Eigen::VectorXd::Zero(numNNP);
+  m1  = Eigen::VectorXd::Zero(numNNP);
+  v  = Eigen::VectorXd::Zero(numNNP);
+  v1  = Eigen::VectorXd::Zero(numNNP);
   NNP = Eigen::VectorXd::Ones(numNNP);
   generlisedForcePrev = Eigen::VectorXd::Zero(numNNP);
   //get the address of NNP
@@ -186,7 +194,7 @@ void NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double et
                               coupledOutputCsEpochs);
   }
 
-  updateParameters(2);
+  updateParameters(3);
 
 }
 
@@ -194,7 +202,9 @@ void NeuralNetwork::updateParameters(int method){
   //method corresponds to
   // 0: Stochastic gradiend desend
   // 1: Stochastic reconfiguration
-  // 2: Nesterov's Accelerated Gradient Descent
+  // 2: Nesterov's Accelerated Gradient Descent + RMSprop
+  // 3: Adam
+  // 4: attempted Conjugate gradient
   Eigen::VectorXd generlisedForce=backPropagate(inputSignalEpochs, activationsEpochs);
   if (method == 0){
     sl.update(NNP,generlisedForce);
@@ -209,11 +219,7 @@ void NeuralNetwork::updateParameters(int method){
   }
   else if (method ==2){
      lamdaS1 = (1+std::sqrt(1+4*lamdaS*lamdaS))/2.;
-     gammaS = (1-lamdaS)/(lamdaS1);//*std::exp(-1./100*iteration);
-     //std::cout << "here" << std::endl;
-     //std::cout << "generlisedForce" << std::endl;
-     //std::cout << generlisedForce << std::endl;
-     //std::cout << "gammaS="<< gammaS << std::endl;
+     gammaS = (1-lamdaS)/(lamdaS1)*std::exp(-1./100*iteration);
      double rho=0.9;//*std::exp(-1./100*iteration);
      Egz2 = rho*Egz2.matrix() + (1-rho)*generlisedForce.array().square().matrix();
      Egz2 += Eigen::VectorXd::Ones(numNNP)*1e-4;
@@ -233,7 +239,21 @@ void NeuralNetwork::updateParameters(int method){
      std::cout << "tau" << std::endl;
      std::cout << tau << std::endl;
   }
-  else if (method == 3){
+  else if (method ==3 ){
+    m1 = beta1*m + (1-beta1)*generlisedForce; 
+    v1 = beta2*v + (1-beta2)*generlisedForce.array().square().matrix(); 
+    m = m1;
+    v = v1;
+    m1 = m1/(1-std::pow(beta1,iteration+1));
+    v1 = v1/(1-std::pow(beta2,iteration+1));
+    //std::cout << "iteration=" << iteration << std::endl;
+    //std::cout << "m1=" << std::endl;
+    //std::cout << m1 << std::endl;
+    //std::cout << "v1=" << std::endl;
+    //std::cout << v1 << std::endl;
+    NNP -= learningRate * (m1.array()/(v1.array().sqrt()+1e-8)).matrix();
+  }
+  else if (method == 4){
     if (iteration==0) generlisedForcePrev = generlisedForce;
     std::cout << generlisedForce-generlisedForcePrev << std::endl;
     std::cout << "generlisedForcePrev" << iteration << std::endl;

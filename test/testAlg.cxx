@@ -15,11 +15,11 @@ using namespace std;
 int main(){
   int numSites(8);
   int numStates(2*numSites);
-  int numEle(8);
   int spinUp(4);
   int spinDown(4);
+  
   vector<int> spinConfig{spinUp, spinDown, numStates};
-  int numHidden(40*numSites);
+  int numHidden(10*numSites);
   //int numHidden1(2*numSites);
   vector<int> size_NNW = {numStates, numHidden, 2};
   //cout << "input number of hidden neurons=";
@@ -32,7 +32,7 @@ int main(){
   Basis basis(spinConfig);
   //generate hamiltonian
   FermionicHamiltonian modelHam(numStates);
-  double U{4.}, t{-1};
+  double U{2.}, t{-1};
   modelHam = generateFermiHubbard(numStates, U, t);
   
   cout << "Basis size= " << basis.getSize() << endl;
@@ -70,25 +70,25 @@ int main(){
   int numDetsToTrain_ = basis.getSize();
   cout << "numDetsToTrain= ";
   cin >> numDetsToTrain_;
+  string energyFile;
+  cout << "energy file name=";
+  cin >> energyFile;
 
   //currently, the diffuse process is implemented within the sampler class.
+  detType HF=list[0];
   Sampler sampler(modelHam, basis, NNW, numDetsToTrain_, HF);
   //write energy into this file so that we can plot the energy with the plotEn.sh script
   ofstream myfile1;
-  myfile1.open ("energy_RMSprop_amp.txt");
-  double totalenergy(0.);
+  myfile1.open (energyFile);
   double energy(0.);
   int count(0);
-  int count1(0);
   std::vector<Eigen::VectorXd> coeffs;
   //test sampler;
   // set reference list Dets
   // there might be unused variables.
   vector<detType> refDets;
   double epsilon(0.3);
-  double aveEnergyPrev(0.);
   double energyPrev(0.);
-  int refSize(0);
   int listSize(0);
   vector<detType> listRef;
   vector<detType> listRefPrev;
@@ -99,10 +99,9 @@ int main(){
     listSize = list.size();
     energy = NNW.getEnergy();
     count++;
-    double aveCount = 10;
   //I have tried the adabatic increasing the U to target U, hoping
   //to make the proble easier. But we need to investigate it more.
-    if(U<3.999){
+    if(U<1.999){
       U+=0.001;
       modelHam = generateFermiHubbard(numStates, U, t);
     }
@@ -120,7 +119,7 @@ int main(){
       }
       outputC.close();
       cout << "normalizer=" << normalizer << endl;
-      myfile1 << count << " " << energy << " " <<   " " << aveEnergy<< endl;
+      myfile1 << count << " " << energy << endl;
       ofstream bias0;
       bias0.open ("bias0.txt");
       bias0 << NNW.getBiases(0) << endl;
@@ -133,10 +132,6 @@ int main(){
       //cout << "weight 0=" << endl;
       //cout << NNW.getWeights(0) << endl;
       cout << "U= " << U << endl;
-      if (abs(sign-lastSign) > allowedNumChangeSign){
-        trainRate*=0.90;
-        cout << "trainRate=" << trainRate << endl;
-      }
     }
   }
   myfile1.close();
