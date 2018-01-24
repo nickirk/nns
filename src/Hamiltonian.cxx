@@ -128,7 +128,6 @@ std::vector<detType> getCoupledStates(detType const &source){
     create(targetTmp,(spawnRight[i]+2)%d);
     coupledList.push_back(targetTmp);
   }
-  int const numSpawn=spawnLeft.size()+spawnRight.size();
   return coupledList;
 }
 

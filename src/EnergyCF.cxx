@@ -15,7 +15,6 @@ double EnergyCF::evaluate(State const &input) const{
   std::complex<double> normalizerCoeffComplex(0.,0.);
   double Hij(0.);
   int numDets = input.size();
-  double real(0.), imag(0.);
   for (int i=0; i < numDets; ++i){
     coeffType c_i=input.getCoeff(i);
     normalizerCoeffComplex += std::norm(c_i);

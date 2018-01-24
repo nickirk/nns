@@ -27,7 +27,6 @@ CostFunction const &externalCF):sizes(sizes_), cf(&externalCF), sl(Solver(0.5)){
   lamdaS =0.;
   gammaS = 0.;
   gammaS1 = 0.;
-  learningRate = 0.;
   iteration = 0;
   int numLayersBiasesWeights = sizes.size()-1;
   //calculate the size of the array:
@@ -94,22 +93,27 @@ CostFunction const &externalCF):sizes(sizes_), cf(&externalCF), sl(Solver(0.5)){
   }
   //nablaWeightsPrev = nablaWeights;
   //nablaBiasesPrev = nablaBiases;
-
-  // Assign the output state and the evaluator to 0
-  outputState = State();
 }
 
-void NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double eta, int iteration_){
+//---------------------------------------------------------------------------------------------------//
+
+/*
+void NeuralNetwork::train(Sampler const &msampler, double eta, int iteration_){
 // The coefficients are stored in scope of the train method and then stored into the state
   //nablaWeightsPrev = nablaWeights;
   //nablaBiasesPrev = nablaBiases;
   learningRate = eta;
   iteration  = iteration_;
-  int numDets(listDetsToTrain.size());
-  std::vector<detType> listDetsToTrainFiltered;
-  std::vector<coeffType > outputCs;
+  int numDets(msampler.getNumDets());
+  //These temporaries store the information on:
+  // the sampled determinants
+  std::vector<detType> listDetsToTrainFiltered(numDets);
+  // their coefficients
+  std::vector<coeffType > outputCs(numDets);
+  // the coefficients of the coupled determinants
   std::vector<std::vector<coeffType>> coupledOutputCsEpochs;
   std::vector<coeffType> coupledOutputCs;
+  // and the coupled determinants
   std::vector<std::vector<detType>> coupledDetsEpochs;
   std::vector<detType> coupledDets;
   int numLayersNeuron(sizes.size());
@@ -126,7 +130,10 @@ void NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double et
   double const normalizer = static_cast<double>(rng.max());
   double prob{1.0};
   //feed the first det to NNW and get the coeff. 
-  coupledDets = getCoupledStates(listDetsToTrain[0]);
+  for(int i=0; i < numDets; ++i){
+	  outputCs[i]=sampleNextCoeff(this,msampler,listDetsToTrainFiltered[i]);
+  }
+  coupledDets = msampler.state();
   coupledDetsEpochs.push_back(coupledDets);
   coeffType coupledCoeff;
   for (size_t i=0; i<coupledDets.size(); ++i){
@@ -170,6 +177,7 @@ void NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double et
       listDetsToTrainFiltered.push_back(listDetsToTrain[epoch]);
     } 
   }
+
   
   // State generation fails if number of determinants and coefficients are not equal
   
@@ -179,7 +187,7 @@ void NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double et
   catch(sizeMismatchError const &ex){
           // Check if outputCs and coupledOutputCsEpochs have the same size.
 	  // If the two are not equal in size, shrink them
-	  int mSize = (listDetsToTrainFiltered.size() > outputCs.size())?outputCs.size():listDetsToTrain.size();
+	  int mSize = (listDetsToTrainFiltered.size() > outputCs.size())?outputCs.size():listDetsToTrainFiltered.size();
 	  outputCs.resize(mSize);
 	  listDetsToTrainFiltered.resize(mSize);
 	  outputState = State(listDetsToTrainFiltered,outputCs, coupledDetsEpochs,
@@ -189,20 +197,47 @@ void NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double et
   updateParameters(2);
 
 }
+*/
+//---------------------------------------------------------------------------------------------------//
 
-void NeuralNetwork::updateParameters(int method){
+coeffType NeuralNetwork::getCoeff(detType const &det) const{
+	//Run the network
+	feedForward(det);
+	// Apparently, we want to store the current state of the network
+	inputSignalEpochs.push_back(inputSignal);
+	activationsEpochs.push_back(activations);
+	// and extract the coefficient from the last layer
+	return outputLayer();
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+std::vector<coeffType > NeuralNetwork::getCoupledCoeffs(detType const &det,
+		std::vector<detType > &coupledDets) const{
+	coupledDets = getCoupledStates(det);
+	std::vector<coeffType > coupledCoeffs(coupledDets.size());
+	for(size_t i=0; coupledDets.size(); ++i){
+		feedForward(coupledDets[i]);
+		coupledCoeffs[i] = outputLayer();
+	}
+	return coupledCoeffs;
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+void NeuralNetwork::updateParameters(int method, State const &outputState, double learningRate){
   //method corresponds to
   // 0: Stochastic gradiend desend
   // 1: Stochastic reconfiguration
   // 2: Nesterov's Accelerated Gradient Descent
-  Eigen::VectorXd generlisedForce=backPropagate(inputSignalEpochs, activationsEpochs);
+  Eigen::VectorXd generlisedForce=backPropagate(inputSignalEpochs, activationsEpochs, outputState);
   if (method == 0){
     sl.update(NNP,generlisedForce);
     //update weights and biases
   }
   //Stochastic reconfiguration
   else if (method == 1){
-    Eigen::MatrixXcd dCdw=backPropagateSR(inputSignalEpochs, activationsEpochs);
+    Eigen::MatrixXcd dCdw=backPropagateSR(inputSignalEpochs, activationsEpochs, outputState);
     std::vector<coeffType> outputCs = outputState.getAllCoeff();
     Eigen::Map<Eigen::VectorXcd> ci(&(outputCs[0]),outputCs.size());
     sl.update(NNP,generlisedForce,ci,dCdw, iteration);
@@ -243,14 +278,20 @@ void NeuralNetwork::updateParameters(int method){
            (generlisedForcePrev.transpose()*generlisedForcePrev)) <<std::endl;
     std::cout << "beta=" << beta << std::endl;
     generlisedForce += beta*generlisedForcePrev; 
-    Eigen::MatrixXcd dCdw=backPropagateSR(inputSignalEpochs, activationsEpochs);
+    Eigen::MatrixXcd dCdw=backPropagateSR(inputSignalEpochs, activationsEpochs, outputState);
     std::vector<coeffType> outputCs = outputState.getAllCoeff();
     Eigen::Map<Eigen::VectorXcd> ci(&(outputCs[0]),outputCs.size());
     //sl.update(NNP,generlisedForce,ci,dCdw, iteration);
     NNP -= learningRate * generlisedForce;
     generlisedForcePrev = generlisedForce;
   }
+
+  //Eventually clear the cache
+  inputSignalEpochs.clear();
+  activationsEpochs.clear();
 }
+
+//---------------------------------------------------------------------------------------------------//
 
 Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const{
   int numStates=det.size();
@@ -274,10 +315,12 @@ Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const{
   return activations[numLayersNeuron-1];
 }
 
+//---------------------------------------------------------------------------------------------------//
 
 Eigen::VectorXd NeuralNetwork::backPropagate(
        std::vector<std::vector<Eigen::VectorXd>> const &inputSignalEpochs,
-       std::vector<std::vector<Eigen::VectorXd>> const &activationsEpochs
+       std::vector<std::vector<Eigen::VectorXd>> const &activationsEpochs,
+	   State const &outputState
      ){
   int numDets = outputState.size();
   int numLayersNeuron(sizes.size());
@@ -331,8 +374,11 @@ Eigen::VectorXd NeuralNetwork::backPropagate(
   return nablaNNP;
 }
 
+//---------------------------------------------------------------------------------------------------//
+
 Eigen::MatrixXcd NeuralNetwork::backPropagateSR( std::vector<std::vector<Eigen::VectorXd>> const &inputSignalEpochs,
-       std::vector<std::vector<Eigen::VectorXd>> const &activationsEpochs){
+       std::vector<std::vector<Eigen::VectorXd>> const &activationsEpochs,
+	   State const &outputState){
 //This step produce a complex matrix dCdw. It is done via the same backPropagate
 //algorithm, with dEdC set to a vector of (1,0) (real part) and a vector of (0,1)
 //(imaginary part). 
@@ -403,25 +449,7 @@ Eigen::MatrixXcd NeuralNetwork::backPropagateSR( std::vector<std::vector<Eigen::
   return dCdw;
 }
 
-void preTrain(NeuralNetwork &network, State const &target, double trainRate, int iteration){
-// Trains the network to represent some state target
-// We first backup the current cost function
-	CostFunction const *backupCF = network.getCostFunction();
-// Then, set the cost function to the L2-distance to target
-	NormCF stateDistance(target);
-	network.setCostFunction(stateDistance);
-// Set up an initial list of determinants to train
-// Caveat: All determinants not present in the state do not matter
-// i.e. their coefficients are treated as unknown
-	std::vector<detType > list = target.getDets();
-// Train the network
-	int const maxTrainCount = 1000;
-	for(int i = 0; i < maxTrainCount;++i){
-		network.train(list, trainRate, iteration);
-		std::cout<<"Distance " << network.getEnergy() << std::endl;
-	}
-	network.setCostFunction(*backupCF);
-}
+//---------------------------------------------------------------------------------------------------//
 
 double NormalDistribution(double input)
 {
@@ -430,6 +458,8 @@ double NormalDistribution(double input)
   static std::normal_distribution<> nd(0.,input);
   return nd(rng);
 }
+
+//---------------------------------------------------------------------------------------------------//
 
 double Tanh_prime(double in){return 1-tanh(in)*tanh(in);};
 double Tanh(double in){return tanh(in);};

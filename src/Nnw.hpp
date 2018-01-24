@@ -19,16 +19,16 @@
 #include "Hamiltonian.hpp"
 #include "State.hpp"
 #include "Solver.hpp"
-//#include "Sampler.hpp"
+
 const std::complex<double> ii(0.,1.);
 class NeuralNetwork{
   public:
     NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF);
-    void train(std::vector<detType> const&listDetsToTrain, double eta, int iteration_);
-    double getEnergy(){return cf->calc(outputState);}
-    State getState() const {return outputState;}
-    double calcEnergy(std::vector<detType> const &listDetsToTrain) const;
+    coeffType getCoeff(detType const &det) const;
+    std::vector<coeffType > getCoupledCoeffs(detType const &det,
+    		std::vector<detType > &coupledDets) const;
     Eigen::VectorXd feedForward(detType const& det) const;
+    void updateParameters(int method, State const &outputState, double learningRate);
     void setCostFunction(CostFunction const &externalCF) {cf = &externalCF;}
     CostFunction const* getCostFunction() const {return cf;}
     Eigen::Map<Eigen::MatrixXd> getWeights(int layer) const {return weights[layer];}
@@ -41,11 +41,9 @@ class NeuralNetwork{
     double lamdaS;
     double gammaS;
     double gammaS1;
-    double learningRate;
     Eigen::VectorXd yS;
     Eigen::VectorXd yS1;
     Eigen::VectorXd Egz2;
-    State outputState;
     std::vector<int> sizes;
     int numNNP;
     Eigen::VectorXd NNP;
@@ -53,8 +51,10 @@ class NeuralNetwork{
     double *adNNP;
     Eigen::VectorXd nablaNNP;
     double *adNablaNNP;
-    std::vector<std::vector<Eigen::VectorXd>> inputSignalEpochs;
-    std::vector<std::vector<Eigen::VectorXd>> activationsEpochs;
+    //These four are cache variables that are used to store the state of the network
+    //They are potentially very memory expensive, we want to get rid of them first
+    mutable std::vector<std::vector<Eigen::VectorXd>> inputSignalEpochs;
+    mutable std::vector<std::vector<Eigen::VectorXd>> activationsEpochs;
     mutable std::vector<Eigen::VectorXd> inputSignal; 
     mutable std::vector<Eigen::VectorXd> activations; 
     std::vector<Eigen::Map<Eigen::VectorXd>> biases;
@@ -65,17 +65,18 @@ class NeuralNetwork{
     Solver sl;
     Eigen::VectorXd backPropagate(
            std::vector<std::vector<Eigen::VectorXd>> const &inputSignalEpochs,
-           std::vector<std::vector<Eigen::VectorXd>> const &activationsEpochs
+           std::vector<std::vector<Eigen::VectorXd>> const &activationsEpochs,
+		   State const &outputState
          );
     Eigen::MatrixXcd backPropagateSR(
            std::vector<std::vector<Eigen::VectorXd>> const &inputSignalEpochs,
-           std::vector<std::vector<Eigen::VectorXd>> const &activationsEpochs
+           std::vector<std::vector<Eigen::VectorXd>> const &activationsEpochs,
+		   State const &outputState
          );
-    void updateParameters(int method);
     std::vector<Eigen::VectorXd> NablaE_C(std::vector<detType> const &listDetsToTrain);
+    coeffType outputLayer() const {	size_t numLayers{sizes.size()};
+    	return coeffType(activations[numLayers-1][0],activations[numLayers-1][1]);}
 };
-
-void preTrain(NeuralNetwork &network, State const &target, int iteration);
 
 double NormalDistribution(double dummy);
 double Tanh_prime(double in);

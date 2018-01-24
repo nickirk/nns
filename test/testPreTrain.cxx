@@ -6,7 +6,7 @@
  */
 
 #include "../src/Nnw.hpp"
-#include "../src/Hamiltonian.hpp"
+#include "../src/FermionicHamiltonian.hpp"
 #include "../src/EnergyCF.hpp"
 #include "../src/State.hpp"
 #include "../src/Determinant.hpp"
@@ -16,7 +16,7 @@
 int main(){
 	int numSites{3}, numStates{2*numSites};;
 	double U{4}, t{-1};
-	Hamiltonian modelHam = generateHubbard(numStates,U,t);
+	FermionicHamiltonian modelHam = generateFermiHubbard(numStates,U,t);
 	EnergyCF eCF(modelHam);
 // Two types of coefficients: 0 and 1 in the target state
 	coeffType coeffZero = Eigen::VectorXd::Zero(2);

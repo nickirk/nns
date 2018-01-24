@@ -8,7 +8,6 @@
 #include "EnergyEstimator.hpp"
 #include <vector>
 #include <complex>
-#include <iostream>
 
 double EnergyEstimator::evaluate(State const &input) const{
   double energyVal{0.0};
@@ -16,7 +15,6 @@ double EnergyEstimator::evaluate(State const &input) const{
   std::complex<double> normalizerCoeffComplex(0.,0.);
   double Hij(0.);
   int numDets = input.size();
-  double real(0.), imag(0.);
   for (int i=0; i < numDets; ++i){
     coeffType c_i=input.getCoeff(i);
     std::vector<coeffType> coupledC_j = input.getCoupledCoeffs(i);
@@ -37,8 +35,8 @@ double EnergyEstimator::evaluate(State const &input) const{
 
 std::vector<Eigen::VectorXd> EnergyEstimator::nabla(State const &input) const{
   energy = evaluate(input);
-  std::vector<Eigen::VectorXd> dEdC;
   int numDets = input.size();
+  std::vector<Eigen::VectorXd> dEdC(numDets);
   for (int i=0; i < numDets; ++i){
     Eigen::VectorXd dEdC_i=Eigen::VectorXd::Zero(2);
     std::complex<double> A(0.,0.);
@@ -54,7 +52,7 @@ std::vector<Eigen::VectorXd> EnergyEstimator::nabla(State const &input) const{
     A /= normalizerCoeff;
     dEdC_i[0] = 2. * std::real( A*std::conj(1.));
     dEdC_i[1] = 2. * std::real( A*std::conj(std::complex<double>(0.0,1.0)));
-    dEdC.push_back(dEdC_i);
+    dEdC[i]=(dEdC_i);
   }
   return dEdC;
 }

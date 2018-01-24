@@ -6,9 +6,10 @@
 #include "../src/Basis.hpp"
 #include "../src/Determinant.hpp"
 #include "../src/FermionicHamiltonian.hpp"
-#include "../src/Sampler.hpp"
+#include "../src/ListGen.hpp"
 #include "../src/EnergyEstimator.hpp"
 #include "../src/EnergyCF.hpp"
+#include "../src/Trainer.hpp"
 using namespace Eigen;
 
 using namespace std;
@@ -57,7 +58,10 @@ int main(){
   int numDetsToTrain_ = basis.getSize();
   cout << "numDetsToTrain= ";
   cin >> numDetsToTrain_;
-  Sampler sampler(modelHam, basis, NNW, numDetsToTrain_, HF);
+  ListGen sampler(modelHam, basis, numDetsToTrain_, HF,NNW);
+  //sampler.diffuse(list,spinConfig);
+  //Setup the trainer
+  Trainer ev(NNW,sampler);
   ofstream myfile1;
   myfile1.open ("energy_RMSprop_amp.txt");
   double aveEnergy(0.);
@@ -70,7 +74,7 @@ int main(){
   std::vector<Eigen::VectorXd> coeffs;
   //test sampler;
   // set reference list Dets
-  vector<detType> refDets;
+  //vector<detType> refDets;
   //refDets.push_back({1,0,0,1,1,0,0,1,1,0,0,1});
   //refDets.push_back({0,1,1,0,0,1,1,0,0,1,1,0});
   //sampler.setReference(refDets);
@@ -86,10 +90,14 @@ int main(){
   vector<detType> listRefPrev;
   vector<detType> listRefTotal;
   for(int l(0); l<10000; ++l){
-    NNW.train(list, trainRate, l);
-    sampler.diffuse(list, spinConfig); 
+    ev.train(trainRate);
     listSize = list.size();
-    energy = NNW.getEnergy();
+
+    // get the new energy
+    energy = ev.getE();
+
+    // update the list of determinants used in the sampler
+    sampler.diffuse(list,spinConfig);
     count++;
     double aveCount = 10;
     if(U<3.999){
@@ -100,7 +108,7 @@ int main(){
     if (epsilon > 0.05)
       epsilon -= 0.001;
     if(count%1 == 0){
-      State states=NNW.getState();
+      State states=ev.getState();
       double normalizer=eCF.getNormalizer();
       ofstream outputC;
       outputC.open("coeff.txt");

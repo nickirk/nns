@@ -11,38 +11,34 @@
 #include "Determinant.hpp"
 #include "Basis.hpp"
 #include "Hamiltonian.hpp"
+#include "CoeffType.hpp"
 #include "Nnw.hpp"
 
 class Sampler{
 public:
-  Sampler(Hamiltonian const &H_, Basis const &fullBasis_, NeuralNetwork const &NNW_, int numDets_, detType const &HF):H(H_),fullBasis(fullBasis_),NNW(NNW_),
-											     numDets(numDets_),cDet(std::vector<detType >(1,HF)){}
-  Sampler(Hamiltonian const &H_, Basis const &fullBasis_, NeuralNetwork const &NNW_, int numDets_, std::vector<detType > const &reference):H(H_),
-														  fullBasis(fullBasis_),
-														  NNW(NNW_),
-														  numDets(numDets_),
-														  cDet(reference)
-  {};
-  // two functionalities: get a random coupled determinant and get an array of 
-  // random coupled determinants
-  void generateList(std::vector<detType > &list) const;
+  Sampler(Hamiltonian const &H_, Basis const &fullBasis_, int numDets_, detType const &HF):H(H_),fullBasis(fullBasis_),
+											     numDets(numDets_),cDet(HF){}
+  virtual ~Sampler(){};
+  // and functionalities: get a random coupled determinant
   detType getRandomConnection(detType const &startingPoint) const;
-  void initialiseList(std::vector<detType> &list, std::vector<int> const& spinConfig);
-  void diffuse(std::vector<detType> &list, std::vector<int> const& spinConfig);
-  // for ab-initio: introduce an overload of generateList for ab-initio hamiltonians
-
+  virtual detType getDet() const{return cDet;}
+  // This function only exists for compatibility with the markov implementation
+  virtual void iterate(coeffType &cI, detType &dI, NeuralNetwork const &NNW) const
+  	 	 {dI=getRandomConnection(cDet);cI=NNW.getCoeff(dI);}
   // set the starting point
-  void setReference(std::vector<detType > const &list){cDet = list;}
+  void setReference(detType const &start){cDet = start;}
   void setNumDets(int newNumDets){numDets = newNumDets;}
   int getNumDets()const {return numDets;}
 private:
   // Hamiltonian
   Hamiltonian const &H;
+  // and the corresponding basis
   Basis const &fullBasis;
-  NeuralNetwork const &NNW;
-  int numDets;
-  // this is the reference space in terms of determinants
-  std::vector<detType > cDet;
+protected:
+  // Number of states to sample
+  size_t numDets;
+  // this is the current sample in terms of determinants
+  detType cDet;
 };
 
 inline double dblAbs(double x){if(x>0) return x;return -x;}
