@@ -30,7 +30,7 @@ void MarkovSampler::iterate(coeffType &cI, detType &dI) const{
 		detType tmp{getRandomCoupledState(cDet,p)};
 		// And its coefficient
 		coeffType tmpCoeff{NNW.getCoeff(tmp)};
-		if(uni(rng) < std::fabs(tmpCoeff/lastCoeff)){
+		if(uni(rng) < std::pow(std::fabs(tmpCoeff/lastCoeff),2)){
 			// With probability cJ/cI, accept the move
 			cDet = tmp;
 			lastCoeff = tmpCoeff;
