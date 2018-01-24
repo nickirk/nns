@@ -16,9 +16,13 @@ ListGen::ListGen(Hamiltonian const &H_, Basis const &fullBasis_, int numDets_, d
 ListGen::~ListGen() {
 }
 
-void ListGen::iterate(coeffType &cI, detType &dI, NeuralNetwork const &NNW) const{
+void ListGen::iterate(coeffType &cI, detType &dI) const{
+	// Fetch the next entry from the pre-arranged list
 	dI = getDet();
+	// Get its coefficient
 	cI = NNW.getCoeff(dI);
+	// Dont forget to cache the state
+	NNW.cacheNetworkState();
 }
 
 detType ListGen::getDet() const{

@@ -203,11 +203,20 @@ void NeuralNetwork::train(Sampler const &msampler, double eta, int iteration_){
 coeffType NeuralNetwork::getCoeff(detType const &det) const{
 	//Run the network
 	feedForward(det);
-	// Apparently, we want to store the current state of the network
-	inputSignalEpochs.push_back(inputSignal);
-	activationsEpochs.push_back(activations);
 	// and extract the coefficient from the last layer
 	return outputLayer();
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+void NeuralNetwork::cacheNetworkState() const{
+	inputSignalEpochs.push_back(inputSignal);
+	activationsEpochs.push_back(activations);
+}
+
+void NeuralNetwork::updateStateCache() const{
+	inputSignalEpochs.back()=inputSignal;
+	activationsEpochs.back()=activations;
 }
 
 //---------------------------------------------------------------------------------------------------//

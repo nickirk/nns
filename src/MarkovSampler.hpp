@@ -14,11 +14,14 @@
 
 class MarkovSampler: public Sampler {
 public:
-	MarkovSampler(Hamiltonian const &H_, Basis const &fullBasis_, int numDets_, detType const &HF):
-			Sampler(H_,fullBasis_,numDets_,HF){};
+	MarkovSampler(Hamiltonian const &H_, Basis const &fullBasis_, int numDets_, detType const &HF, NeuralNetwork const &NNW_):
+			Sampler(H_,fullBasis_,numDets_,HF),NNW(NNW_),lastCoeff(NNW_.getCoeff(HF)){};
 	virtual ~MarkovSampler();
 	//Do a markov step
-	void iterate(coeffType &cI, detType &dI, NeuralNetwork const &NNW) const;
+	void iterate(coeffType &cI, detType &dI) const;
+private:
+	NeuralNetwork const &NNW;
+	mutable coeffType lastCoeff;
 };
 
 #endif /* SRC_MARKOVSAMPLER_HPP_ */

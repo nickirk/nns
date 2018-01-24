@@ -32,10 +32,13 @@ void Trainer::train(double learningRate){
 	//Get the first coefficient + determinant
 	sampledDets[0] = msampler.getDet();
 	sampledCoeffs[0] = NNW.getCoeff(sampledDets[0]);
+	// This is a bit sloppy: We want to store the current state of the network for later
+	// evaluation
+	NNW.cacheNetworkState();
 	// And now, for the chosen number of samples, get the respective determinants and
 	// coefficients
 	for(int i=1; i < numDets; ++i){
-		msampler.iterate(sampledCoeffs[i],sampledDets[i],NNW);
+		msampler.iterate(sampledCoeffs[i],sampledDets[i]);
 	}
 	State inputState(sampledDets,sampledCoeffs,coupledDets,coupledCoeffs);
 	NNW.updateParameters(method,inputState,learningRate);

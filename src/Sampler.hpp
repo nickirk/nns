@@ -23,8 +23,12 @@ public:
   detType getRandomConnection(detType const &startingPoint) const;
   virtual detType getDet() const{return cDet;}
   // This function only exists for compatibility with the markov implementation
-  virtual void iterate(coeffType &cI, detType &dI, NeuralNetwork const &NNW) const
-  	 	 {dI=getRandomConnection(cDet);cI=NNW.getCoeff(dI);}
+  virtual void iterate(coeffType &cI, detType &dI) const{
+	  dI=getRandomConnection(cDet);
+	  // WARNING: The default sampler does not take the coefficients into account
+	  // IT HENCE CANNOT NOT OUTPUT THEM, they default to 0 and have to be set independently
+	  cI = coeffType();
+  }
   // set the starting point
   void setReference(detType const &start){cDet = start;}
   void setNumDets(int newNumDets){numDets = newNumDets;}
@@ -38,7 +42,7 @@ protected:
   // Number of states to sample
   size_t numDets;
   // this is the current sample in terms of determinants
-  detType cDet;
+  mutable detType cDet;
 };
 
 inline double dblAbs(double x){if(x>0) return x;return -x;}
