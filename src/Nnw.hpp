@@ -29,7 +29,7 @@ class NeuralNetwork{
     std::vector<coeffType > getCoupledCoeffs(detType const &det,
     		std::vector<detType > &coupledDets) const;
     Eigen::VectorXd feedForward(detType const& det) const;
-    void updateParameters(int method, State const &outputState, double learningRate);
+    void updateParameters(int method, State const &outputState, double learningRate, int iteration);
     void setCostFunction(CostFunction const &externalCF) {cf = &externalCF;}
     // These are for storing the networks state - this is very dangerous and expensive
     // cacheNetworkState appends the current activations to the cache
@@ -42,7 +42,6 @@ class NeuralNetwork{
   private:
     double momentumDamping;
     bool momentum;
-    int iteration;
     double lamdaS1;
     double lamdaS;
     double gammaS;
@@ -51,6 +50,15 @@ class NeuralNetwork{
     Eigen::VectorXd yS1;
     Eigen::VectorXd Egz2;
     std::vector<int> sizes;
+   //----------------------
+   //variables for ADAM
+   double beta1;
+   double beta2;
+   Eigen::VectorXd m;
+   Eigen::VectorXd v;
+   Eigen::VectorXd m1;
+   Eigen::VectorXd v1;
+   //---------------------
     int numNNP;
     Eigen::VectorXd NNP;
     Eigen::VectorXd generlisedForcePrev;

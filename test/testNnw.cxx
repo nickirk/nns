@@ -15,14 +15,14 @@ using namespace Eigen;
 
 using namespace std;
 int main(){
-  int numSites(8);
+  int numSites(6);
   int numStates(2*numSites);
-  int spinUp(4);
-  int spinDown(4);
+  int spinUp(3);
+  int spinDown(3);
   vector<int> spinConfig{spinUp, spinDown, numStates};
   int numHidden(40*numSites);
   vector<int> size_NNW = {numStates, numHidden, 2};
-  double trainRate(0.01);
+  double trainRate(0.1);
   Basis basis(spinConfig);
   FermionicHamiltonian modelHam(numStates);
   double U{4.}, t{-1};
@@ -33,14 +33,14 @@ int main(){
   detType HF=basis.getDetByIndex(0);
   //cout << "HF intCast=" << verbatimCast(HF) << endl;
   //list.push_back(HF);
-  int numDetsToTrain_{20};
+  int numDetsToTrain_{200};
   MarkovSampler sampler(modelHam, basis, numDetsToTrain_, HF,NNW);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
   double energy{0.0};
   Trainer ev(NNW,sampler);
   for(int l(0); l<10000; ++l){
-    ev.train(trainRate);
+    ev.train(trainRate,2);
     // get the new energy
     energy = ev.getE();
     std::cout<<"Energy "<<energy<<std::endl;

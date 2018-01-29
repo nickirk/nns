@@ -22,6 +22,7 @@ public:
   // and functionalities: get a random coupled determinant
   detType getRandomConnection(detType const &startingPoint) const;
   virtual detType getDet() const{return cDet;}
+  virtual detType getDet(int i) const{return cDet;};
   // This function only exists for compatibility with the markov implementation
   virtual void iterate(coeffType &cI, detType &dI) const{
 	  dI=getRandomConnection(cDet);
@@ -32,7 +33,7 @@ public:
   // set the starting point
   void setReference(detType const &start){cDet = start;}
   void setNumDets(int newNumDets){numDets = newNumDets;}
-  int getNumDets()const {return numDets;}
+  virtual int getNumDets()const {return numDets;}
 private:
   // Hamiltonian
   Hamiltonian const &H;

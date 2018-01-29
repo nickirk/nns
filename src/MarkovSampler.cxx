@@ -19,7 +19,7 @@ void MarkovSampler::iterate(coeffType &cI, detType &dI) const{
 
 	// This is tricky, we need to cache the network state
 	// but we don't know, which one at this point
-	NNW.cacheNetworkState();
+	// NNW.cacheNetworkState();
 	// set up the rng
 	std::random_device rd;     // only used once to initialise (seed) engine
 	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
@@ -35,7 +35,7 @@ void MarkovSampler::iterate(coeffType &cI, detType &dI) const{
 			cDet = tmp;
 			lastCoeff = tmpCoeff;
 			// We stored the state before, but the wrong one. Correct this
-			NNW.updateStateCache();
+			NNW.cacheNetworkState();
 			break;
 		}
 	}

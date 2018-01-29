@@ -16,9 +16,10 @@ class ListGen : public Sampler{
 public:
 	ListGen(Hamiltonian const &H_, Basis const &fullBasis_, int numDets_, detType const &HF, NeuralNetwork const &NNW);
 	virtual ~ListGen();
-	void iterate(coeffType &cI, detType &dI) const;
+	//void iterate(coeffType &cI, detType &dI) const;
 	void diffuse(std::vector<detType> &list, std::vector<int> const& spinConfig);
-	detType getDet() const;
+	detType getDet(int i) const;
+        int getNumDets() const;
 private:
 	NeuralNetwork const &NNW;
 	std::vector<detType > diffuseList;
