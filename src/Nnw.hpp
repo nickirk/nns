@@ -34,6 +34,7 @@ class NeuralNetwork{
     // These are for storing the networks state - this is very dangerous and expensive
     // cacheNetworkState appends the current activations to the cache
     void cacheNetworkState() const;
+    void repCachedNetworkState() const;
     // updateStateCache updates the last cached values with the current activations
     void updateStateCache() const;
     CostFunction const* getCostFunction() const {return cf;}

@@ -15,12 +15,14 @@
 
 class Basis{
   public:
-    Basis(std::vector<int> const &spinConfig);
+    Basis(std::vector<int> const &spinConfig_);
     int getSize() const;
     detType getDetByIndex(int index) const;
     int getIndexByDet(detType const & det_) const;
+    std::vector<int > getSpinConfig() const {return spinConfig;};
   private:
     int numEle;
+    std::vector<int> spinConfig;
     int numOrb;
     int size;
     int indexOfDet;

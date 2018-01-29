@@ -8,7 +8,7 @@
 #include "Trainer.hpp"
 #include <iostream>
 
-Trainer::Trainer(NeuralNetwork &NNW_, Sampler const &msampler_):NNW(NNW_), msampler(msampler_) {
+Trainer::Trainer(NeuralNetwork &NNW_, Sampler  &msampler_):NNW(NNW_), msampler(msampler_) {
 	int numDets{msampler.getNumDets()};
 	sampledDets.resize(numDets);
 	sampledCoeffs.resize(numDets);
@@ -33,28 +33,35 @@ void Trainer::train(double learningRate, int method, int iteration){
         coupledDetsEpoch.clear();
 	sampledDets.resize(numDets);
 	sampledCoeffs.resize(numDets);
-        std::cout << "difflistsize=" << numDets << std::endl;
 	//Get the first coefficient + determinant
-	//sampledDets[0] = msampler.getDet();
-	//sampledCoeffs[0] = NNW.getCoeff(sampledDets[0]);
+	sampledDets[0] = msampler.getDet();
+	sampledCoeffs[0] = NNW.getCoeff(sampledDets[0]);
 	// This is a bit sloppy: We want to store the current state of the network for later
 	// evaluation
-	//NNW.cacheNetworkState();
+	NNW.cacheNetworkState();
+        std::vector<detType > coupledDets = getCoupledStates(sampledDets[0]); 
+	std::vector<coeffType > coupledCoeffs(coupledDets.size());
+	for(size_t i=0; i < coupledDets.size(); ++i){
+	  coupledCoeffs[i]=NNW.getCoeff(coupledDets[i]);
+	}
+        coupledCoeffsEpoch.push_back(coupledCoeffs);
+        coupledDetsEpoch.push_back(coupledDets);
 	// And now, for the chosen number of samples, get the respective determinants and
 	// coefficients
-	for(int i=0; i < numDets; ++i){
-	  //msampler.iterate(sampledCoeffs[i],sampledDets[i]);
-	  sampledDets[i] =  msampler.getDet(i);
-	  sampledCoeffs[i] =  NNW.getCoeff(sampledDets[i]);
-          NNW.cacheNetworkState();
-          std::vector<detType > coupledDets = getCoupledStates(sampledDets[i]); 
-	  std::vector<coeffType > coupledCoeffs(coupledDets.size());
-	  for(size_t i=0; i < coupledDets.size(); ++i){
-	  	coupledCoeffs[i]=NNW.getCoeff(coupledDets[i]);
+	for(int i=1; i < numDets; ++i){
+	  msampler.iterate(sampledCoeffs[i],sampledDets[i]);
+          coupledDets = getCoupledStates(sampledDets[i]); 
+	  coupledCoeffs.resize(coupledDets.size());
+	  //sampledDets[i] =  msampler.getDet(i);
+	  //sampledCoeffs[i] =  NNW.getCoeff(sampledDets[i]);
+          //NNW.cacheNetworkState();
+	  for(size_t j=0; j < coupledDets.size(); ++j){
+	  	coupledCoeffs[j]=NNW.getCoeff(coupledDets[j]);
 	  }
           coupledCoeffsEpoch.push_back(coupledCoeffs);
           coupledDetsEpoch.push_back(coupledDets);
 	}
+        //msampler.setReference(sampledDets[numDets-1]);
 	State inputState(sampledDets,sampledCoeffs,coupledDetsEpoch,coupledCoeffsEpoch);
 	NNW.updateParameters(method,inputState,learningRate,iteration);
 }

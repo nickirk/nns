@@ -37,9 +37,9 @@ public:
 private:
   // Hamiltonian
   Hamiltonian const &H;
+protected:
   // and the corresponding basis
   Basis const &fullBasis;
-protected:
   // Number of states to sample
   size_t numDets;
   // this is the current sample in terms of determinants

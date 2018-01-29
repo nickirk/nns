@@ -15,7 +15,7 @@
 
 class Trainer {
 public:
-	Trainer(NeuralNetwork &NNW_, Sampler const &msampler);
+	Trainer(NeuralNetwork &NNW_, Sampler &msampler);
 	void train(double learningRate, int method, int iteration);
 	void getNextCoeff(coeffType &cI, detType &dI);
 	double getE() const;
@@ -23,7 +23,7 @@ public:
 	virtual ~Trainer();
 private:
 	NeuralNetwork &NNW;
-	Sampler const &msampler;
+	Sampler &msampler;
 
 	// containers for
 	// the sampled determinants

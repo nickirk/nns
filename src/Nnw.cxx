@@ -89,119 +89,14 @@ CostFunction const &externalCF):sizes(sizes_), cf(&externalCF), sl(Solver(0.5)){
   //initial activity signals. 
   activations.push_back(Eigen::VectorXd::Zero(sizes[0]));
   inputSignal.push_back(Eigen::VectorXd::Zero(sizes[0]));
-  //listDetsToTrain.push_back(fullBasis.getDetByIndex(0));
   for (int layer=0; layer < numLayersBiasesWeights; ++layer){
     activations.push_back(Eigen::VectorXd::Zero(sizes[layer+1]));
     inputSignal.push_back(Eigen::VectorXd::Zero(sizes[layer+1]));
   }
-  //nablaWeightsPrev = nablaWeights;
-  //nablaBiasesPrev = nablaBiases;
 }
 
 //---------------------------------------------------------------------------------------------------//
 
-/*
-void NeuralNetwork::train(Sampler const &msampler, double eta, int iteration_){
-// The coefficients are stored in scope of the train method and then stored into the state
-  //nablaWeightsPrev = nablaWeights;
-  //nablaBiasesPrev = nablaBiases;
-  learningRate = eta;
-  iteration  = iteration_;
-  int numDets(msampler.getNumDets());
-  //These temporaries store the information on:
-  // the sampled determinants
-  std::vector<detType> listDetsToTrainFiltered(numDets);
-  // their coefficients
-  std::vector<coeffType > outputCs(numDets);
-  // the coefficients of the coupled determinants
-  std::vector<std::vector<coeffType>> coupledOutputCsEpochs;
-  std::vector<coeffType> coupledOutputCs;
-  // and the coupled determinants
-  std::vector<std::vector<detType>> coupledDetsEpochs;
-  std::vector<detType> coupledDets;
-  int numLayersNeuron(sizes.size());
-  int numLayersBiasesWeights(sizes.size()-1);
-  //reset nablaWeights and nablaBiases to 0 values;
-  nablaNNP *= 0.;
-  //clear input signals in each training.
-  inputSignalEpochs.clear();
-  activationsEpochs.clear();
-
-  sl.setGamma(eta);
-  double prandom{0.0};
-  std::random_device rng;
-  double const normalizer = static_cast<double>(rng.max());
-  double prob{1.0};
-  //feed the first det to NNW and get the coeff. 
-  for(int i=0; i < numDets; ++i){
-	  outputCs[i]=sampleNextCoeff(this,msampler,listDetsToTrainFiltered[i]);
-  }
-  coupledDets = msampler.state();
-  coupledDetsEpochs.push_back(coupledDets);
-  coeffType coupledCoeff;
-  for (size_t i=0; i<coupledDets.size(); ++i){
-    feedForward(coupledDets[i]);
-    coupledCoeff=coeffType(activations[numLayersNeuron-1][0],
-                           activations[numLayersNeuron-1][1]);
-    coupledOutputCs.push_back(coupledCoeff);
-  }
-  coupledOutputCsEpochs.push_back(coupledOutputCs);
-  //activations and inputSignal have been updated.
-  feedForward(listDetsToTrain[0]);
-  coeffType coeff(activations[numLayersNeuron-1][0], activations[numLayersNeuron-1][1]);
-  coeffType coeffPrev =coeff;
-  inputSignalEpochs.push_back(inputSignal);
-  activationsEpochs.push_back(activations);
-  outputCs.push_back(coeff);
-  listDetsToTrainFiltered.push_back(listDetsToTrain[0]);
-  for (int epoch=1; epoch < numDets; ++epoch){
-    //initial input layer
-    coupledOutputCs.clear();
-    coupledDets.clear();
-    coupledDets = getCoupledStates(listDetsToTrain[epoch]);
-    for (size_t i=0; i<coupledDets.size(); ++i){
-      feedForward(coupledDets[i]);
-      coupledCoeff=coeffType(activations[numLayersNeuron-1][0],
-                             activations[numLayersNeuron-1][1]);
-      coupledOutputCs.push_back(coupledCoeff);
-    }
-    feedForward(listDetsToTrain[epoch]);
-    coeff = coeffType(activations[numLayersNeuron-1][0], activations[numLayersNeuron-1][1]); 
-    prob=norm(coeff)/norm(coeffPrev);
-    prandom=rng()/normalizer;
-    coeffPrev = coeff;
-    //if ((prob-1)>1.e-8 || (prandom-prob) < -1.e-8){
-    if (true){
-      inputSignalEpochs.push_back(inputSignal);
-      activationsEpochs.push_back(activations);
-      outputCs.push_back(coeff);
-      coupledDetsEpochs.push_back(coupledDets);
-      coupledOutputCsEpochs.push_back(coupledOutputCs);
-      listDetsToTrainFiltered.push_back(listDetsToTrain[epoch]);
-    } 
-  }
-
-  
-  // State generation fails if number of determinants and coefficients are not equal
-  
-  try{
-    outputState = State(listDetsToTrainFiltered, outputCs, coupledDetsEpochs, coupledOutputCsEpochs);
-  }
-  catch(sizeMismatchError const &ex){
-          // Check if outputCs and coupledOutputCsEpochs have the same size.
-	  // If the two are not equal in size, shrink them
-	  int mSize = (listDetsToTrainFiltered.size() > outputCs.size())?outputCs.size():listDetsToTrainFiltered.size();
-	  outputCs.resize(mSize);
-	  listDetsToTrainFiltered.resize(mSize);
-	  outputState = State(listDetsToTrainFiltered,outputCs, coupledDetsEpochs,
-                              coupledOutputCsEpochs);
-  }
-
-  updateParameters(2);
-
-}
-*/
-//---------------------------------------------------------------------------------------------------//
 
 coeffType NeuralNetwork::getCoeff(detType const &det) const{
 	//Run the network
@@ -215,6 +110,11 @@ coeffType NeuralNetwork::getCoeff(detType const &det) const{
 void NeuralNetwork::cacheNetworkState() const{
 	inputSignalEpochs.push_back(inputSignal);
 	activationsEpochs.push_back(activations);
+}
+
+void NeuralNetwork::repCachedNetworkState() const{
+	inputSignalEpochs.push_back(inputSignalEpochs.back());
+	activationsEpochs.push_back(inputSignalEpochs.back());
 }
 
 void NeuralNetwork::updateStateCache() const{
