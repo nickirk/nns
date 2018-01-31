@@ -65,5 +65,4 @@ void ListGen::diffuse(std::vector<detType> &list, std::vector<int> const& spinCo
  }
  removeDuplicate(list);
  diffuseList = list;
- pos = 0;
 }
