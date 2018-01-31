@@ -19,6 +19,13 @@ class Hamiltonian{
   //these are the coefficients of the second quantized hamiltonian
   std::vector<double> oneBodyEntries;
   std::vector<double> twoBodyEntries;
+  int twoBodyIndex(int s, int r, int q, int p) const{
+		return s + r * d + q * d * d + p * d * d * d;
+  }
+
+  int oneBodyIndex(int s, int r) const{
+		return s + d * r;
+  }
 };
 
 detType getRandomCoupledState(detType const &source, double &p);
