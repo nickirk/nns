@@ -29,20 +29,20 @@ class NeuralNetwork{
     std::vector<coeffType > getCoupledCoeffs(detType const &det,
     		std::vector<detType > &coupledDets) const;
     Eigen::VectorXd feedForward(detType const& det) const;
-    void updateParameters(int method, State const &outputState, double learningRate);
+    void updateParameters(int method, State const &outputState, double learningRate, int iteration);
     void setCostFunction(CostFunction const &externalCF) {cf = &externalCF;}
     // These are for storing the networks state - this is very dangerous and expensive
     // cacheNetworkState appends the current activations to the cache
-    void cacheNetworkState() const;
-    // updateStateCache updates the last cached values with the current activations
-    void updateStateCache() const;
+    //void cacheNetworkState() const;
+    //void repCachedNetworkState() const;
+    //// updateStateCache updates the last cached values with the current activations
+    //void updateStateCache() const;
     CostFunction const* getCostFunction() const {return cf;}
     Eigen::Map<Eigen::MatrixXd> getWeights(int layer) const {return weights[layer];}
     Eigen::Map<Eigen::VectorXd> getBiases(int layer) const {return biases[layer];}
   private:
     double momentumDamping;
     bool momentum;
-    int iteration;
     double lamdaS1;
     double lamdaS;
     double gammaS;
@@ -51,6 +51,15 @@ class NeuralNetwork{
     Eigen::VectorXd yS1;
     Eigen::VectorXd Egz2;
     std::vector<int> sizes;
+   //----------------------
+   //variables for ADAM
+   double beta1;
+   double beta2;
+   Eigen::VectorXd m;
+   Eigen::VectorXd v;
+   Eigen::VectorXd m1;
+   Eigen::VectorXd v1;
+   //---------------------
     int numNNP;
     Eigen::VectorXd NNP;
     Eigen::VectorXd generlisedForcePrev;
@@ -59,9 +68,9 @@ class NeuralNetwork{
     double *adNablaNNP;
     //These four are cache variables that are used to store the state of the network
     //They are potentially very memory expensive, we want to get rid of them first
-    mutable std::vector<std::vector<Eigen::VectorXd>> inputSignalEpochs;
-    mutable std::vector<std::vector<Eigen::VectorXd>> activationsEpochs;
-    mutable std::vector<Eigen::VectorXd> inputSignal; 
+    //mutable std::vector<std::vector<Eigen::VectorXd>> inputSignalsEpochs;
+    //mutable std::vector<std::vector<Eigen::VectorXd>> activationsEpochs;
+    mutable std::vector<Eigen::VectorXd> inputSignals; 
     mutable std::vector<Eigen::VectorXd> activations; 
     std::vector<Eigen::Map<Eigen::VectorXd>> biases;
     std::vector<Eigen::Map<Eigen::MatrixXd>> weights;
@@ -70,16 +79,17 @@ class NeuralNetwork{
     CostFunction const *cf;
     Solver sl;
     Eigen::VectorXd backPropagate(
-           std::vector<std::vector<Eigen::VectorXd>> const &inputSignalEpochs,
-           std::vector<std::vector<Eigen::VectorXd>> const &activationsEpochs,
-		   State const &outputState
+      Eigen::VectorXd const &lastLayerFeedBack
          );
-    Eigen::MatrixXcd backPropagateSR(
-           std::vector<std::vector<Eigen::VectorXd>> const &inputSignalEpochs,
-           std::vector<std::vector<Eigen::VectorXd>> const &activationsEpochs,
-		   State const &outputState
+    Eigen::VectorXd calcNablaNNP(
+      State const &outputState
          );
-    std::vector<Eigen::VectorXd> NablaE_C(std::vector<detType> const &listDetsToTrain);
+    Eigen::VectorXd calcNablaNNPMk(
+	   State const &outputState
+     );
+    Eigen::MatrixXcd calcdCdwSR(
+      State const &outputState
+         );
     coeffType outputLayer() const {	size_t numLayers{sizes.size()};
     	return coeffType(activations[numLayers-1][0],activations[numLayers-1][1]);}
 };

@@ -15,15 +15,15 @@
 
 class Trainer {
 public:
-	Trainer(NeuralNetwork &NNW_, Sampler const &msampler);
-	void train(double learningRate);
+	Trainer(NeuralNetwork &NNW_, Sampler &msampler);
+	void train(double learningRate, int method, int iteration);
 	void getNextCoeff(coeffType &cI, detType &dI);
 	double getE() const;
 	State getState() const;
 	virtual ~Trainer();
 private:
 	NeuralNetwork &NNW;
-	Sampler const &msampler;
+	Sampler &msampler;
 
 	// containers for
 	// the sampled determinants
@@ -32,8 +32,8 @@ private:
 	std::vector<coeffType > sampledCoeffs;
 
 	// Maybe
-	std::vector<std::vector<coeffType >> coupledCoeffs;
-	std::vector<std::vector<detType >> coupledDets;
+	std::vector<std::vector<coeffType >> coupledCoeffsEpoch;
+	std::vector<std::vector<detType >> coupledDetsEpoch;
 };
 
 #endif /* SRC_TRAINER_HPP_ */

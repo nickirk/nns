@@ -16,7 +16,8 @@
 #include "Determinant.hpp"
 
 
-Basis::Basis(std::vector<int> const &spinConfig){
+Basis::Basis(std::vector<int> const &spinConfig_){
+  spinConfig = spinConfig_;
   numEle = spinConfig[0]+spinConfig[1];
   numOrb = spinConfig[2]; 
   indexOfDet = 0;

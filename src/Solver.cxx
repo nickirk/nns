@@ -16,8 +16,6 @@ Solver::~Solver() {
 }
 
 void Solver::update(Eigen::VectorXd &w, Eigen::VectorXd const &force) const{
-        std::cout << "force=" << std::endl;
-        std::cout <<   force  << std::endl;
 	w-=gamma*force;
 }
 

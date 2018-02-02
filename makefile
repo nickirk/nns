@@ -2,8 +2,8 @@ CXX=g++
 LDFLAGS=-std=c++11 -g -Wall
 EIGEN_PATH=lib/eigen/
 EIGEN_FLAGS=-I$(EIGEN_PATH)
-SOURCEFILES=Sampler.cxx Nnw.cxx Basis.cxx Hamiltonian.cxx Determinant.cxx EnergyCF.cxx NormCF.cxx EnergyEstimator.cxx FermionicHamiltonian.cxx BosonicHamiltonian.cxx Solver.cxx Trainer.cxx MarkovSampler.cxx ListGen.cxx
-TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testRandom.cxx
+SOURCEFILES=Sampler.cxx Nnw.cxx Basis.cxx Hamiltonian.cxx Determinant.cxx EnergyCF.cxx NormCF.cxx EnergyEstimator.cxx FermionicHamiltonian.cxx BosonicHamiltonian.cxx Solver.cxx Trainer.cxx MarkovSampler.cxx ListGen.cxx EnergyEsMarkov.cxx
+TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testRandom.cxx testMarkov.cxx
 SRC=src
 TST=test
 BUILD=build
@@ -17,6 +17,7 @@ DEPENDENCIES=$(patsubst %.cxx,$(DDIR)/%.d,$(SOURCEFILES)) $(patsubst %.cxx,$(TST
 BTEST=basisTest
 NNWTEST=nnwTest
 ALGTEST=algTest
+MARKOVTEST=markovTest
 STEST=samplerTest
 HTEST=hamTest
 ETEST=eigenTest
@@ -24,6 +25,7 @@ CFTEST=cfTest
 PTTEST=ptTest
 BTESTOBJECT=$(TSTBUILD)/testBasis.o
 NNWTESTOBJECT=$(TSTBUILD)/testNnw.o
+MARKOVTESTOBJECT=$(TSTBUILD)/testMarkov.o
 ALGTESTOBJECT=$(TSTBUILD)/testAlg.o
 STESTOBJECT=$(TSTBUILD)/testSampler.o
 ETESTOBJECT=$(TSTBUILD)/testEigen.o
@@ -55,6 +57,9 @@ testBasis: $(OBJECTS) $(BTESTOBJECT)
 	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
 	
 testAlg: $(OBJECTS) $(ALGTESTOBJECT)	
+	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
+
+testMarkov: $(OBJECTS) $(MARKOVTESTOBJECT)	
 	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
 
 testNnw: $(OBJECTS) $(NNWTESTOBJECT)
