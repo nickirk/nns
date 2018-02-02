@@ -9,7 +9,7 @@
 #include "Hamiltonian.hpp"
 #include <random>
 #include <cmath>
-
+#include <iostream>
 MarkovSampler::~MarkovSampler() {
 }
 

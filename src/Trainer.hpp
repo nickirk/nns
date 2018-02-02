@@ -12,6 +12,7 @@
 #include "CoeffType.hpp"
 #include "Determinant.hpp"
 #include "Sampler.hpp"
+#include "State.hpp"
 
 class Trainer {
 public:
@@ -19,21 +20,13 @@ public:
 	void train(double learningRate, int method, int iteration);
 	void getNextCoeff(coeffType &cI, detType &dI);
 	double getE() const;
-	State getState() const;
+	std::vector<State> getState() const;
 	virtual ~Trainer();
 private:
 	NeuralNetwork &NNW;
 	Sampler &msampler;
+	std::vector<State > inputState;
 
-	// containers for
-	// the sampled determinants
-	std::vector<detType > sampledDets;
-	// their coefficients
-	std::vector<coeffType > sampledCoeffs;
-
-	// Maybe
-	std::vector<std::vector<coeffType >> coupledCoeffsEpoch;
-	std::vector<std::vector<detType >> coupledDetsEpoch;
 };
 
 #endif /* SRC_TRAINER_HPP_ */

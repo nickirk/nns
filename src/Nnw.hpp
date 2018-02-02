@@ -29,7 +29,7 @@ class NeuralNetwork{
     std::vector<coeffType > getCoupledCoeffs(detType const &det,
     		std::vector<detType > &coupledDets) const;
     Eigen::VectorXd feedForward(detType const& det) const;
-    void updateParameters(int method, State const &outputState, double learningRate, int iteration);
+    void updateParameters(int method, std::vector<State> const &outputState, double learningRate, int iteration);
     void setCostFunction(CostFunction const &externalCF) {cf = &externalCF;}
     // These are for storing the networks state - this is very dangerous and expensive
     // cacheNetworkState appends the current activations to the cache
@@ -82,13 +82,13 @@ class NeuralNetwork{
       Eigen::VectorXd const &lastLayerFeedBack
          );
     Eigen::VectorXd calcNablaNNP(
-      State const &outputState
+      std::vector<State> const &outputState
          );
     Eigen::VectorXd calcNablaNNPMk(
-	   State const &outputState
+	   std::vector<State> const &outputState
      );
     Eigen::MatrixXcd calcdCdwSR(
-      State const &outputState
+      std::vector<State> const &outputState
          );
     coeffType outputLayer() const {	size_t numLayers{sizes.size()};
     	return coeffType(activations[numLayers-1][0],activations[numLayers-1][1]);}

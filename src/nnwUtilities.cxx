@@ -12,7 +12,7 @@
 #include "Sampler.hpp"
 #include <iostream>
 
-void preTrain(NeuralNetwork &network, State const &target, Sampler const &msampler, double trainRate, int iteration){
+void preTrain(NeuralNetwork &network, std::<State> const &target, Sampler const &msampler, double trainRate, int iteration){
 // Trains the network to represent some state target
 // We first backup the current cost function
 	CostFunction const *backupCF = network.getCostFunction();
@@ -22,7 +22,7 @@ void preTrain(NeuralNetwork &network, State const &target, Sampler const &msampl
 // Set up an initial list of determinants to train
 // Caveat: All determinants not present in the state do not matter
 // i.e. their coefficients are treated as unknown
-	std::vector<detType > list = target.getDets();
+	//std::vector<detType > list = target.getDets();
 
 	// set up the trainer
 	Trainer ev(network,msampler);

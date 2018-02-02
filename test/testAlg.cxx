@@ -95,7 +95,7 @@ int main(){
     if (epsilon > 0.05)
       epsilon -= 0.001;
     if(count%1 == 0){
-      State states=ev.getState();
+      std::vector<State > states=ev.getState();
       double normalizer=eCF.getNormalizer();
       ofstream outputC;
       outputC.open("coeff.txt");
