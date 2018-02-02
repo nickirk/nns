@@ -27,7 +27,6 @@ void Solver::update(Eigen::VectorXd &w, Eigen::VectorXd const &force,
 	ok = dcdw*ci.conjugate()/normalizer;
 	okokp = (dcdw*dcdw.adjoint()/normalizer).real();
 	s = okokp - (ok*ok.adjoint()).real();
-        //Eigen::MatrixXd diag(1.1* Eigen::VectorXd::Ones(w.size()).asDiagonal());
         double lamda = std::max(100*std::pow(0.999,iteration), 1e-2);
         s+=s.diagonal().asDiagonal()*lamda;
 	w-=gamma*s.inverse()*force;

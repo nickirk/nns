@@ -6,7 +6,7 @@
 
 void Hamiltonian::setMatrixElement(int r, int s, double newEntry){
   //r is creation inedx, s is annihilation index
-  oneBodyEntries[s+d*r]=newEntry;
+	oneBodyEntries[oneBodyIndex(s, r)] = newEntry;
 }
 
 //---------------------------------------------------------------------------------------------------//
@@ -19,10 +19,10 @@ void Hamiltonian::setMatrixElement(int p, int q, int r, int s, double newEntry){
   if(p==q || r==s){
     newEntry=0.0;
   }
-  twoBodyEntries[s+r*d+q*d*d+p*d*d*d]=newEntry;
-  twoBodyEntries[r+s*d+q*d*d+p*d*d*d]=-newEntry;
-  twoBodyEntries[s+r*d+p*d*d+q*d*d*d]=-newEntry;
-  twoBodyEntries[r+s*d+p*d*d+q*d*d*d]=newEntry;
+	twoBodyEntries[twoBodyIndex(s, r, q, p)] = newEntry;
+  twoBodyEntries[twoBodyIndex(r,s,q,p)]=-newEntry;
+  twoBodyEntries[twoBodyIndex(s,r,p,q)]=-newEntry;
+  twoBodyEntries[twoBodyIndex(r,s,p,q)]=newEntry;
 }
 
 //---------------------------------------------------------------------------------------------------//
@@ -63,10 +63,10 @@ double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
     //there is no sign in the diagonal term since all appearing operators are bosonic (a_i^\dagger a_i)
     for(unsigned int i=0;i<same.size();++i){
       //all contributions if alpha==beta
-      diagonalTerm+=oneBodyEntries[same[i]+d*same[i]];
+      diagonalTerm+=oneBodyEntries[oneBodyIndex(same[i],same[i])];
       for(unsigned int j=i;j<same.size();++j){
 	//use this ordering to eliminate fermionic sign (this is basically n_i*n_j)
-	diagonalTerm+=twoBodyEntries[same[i]+d*same[j]+d*d*same[j]+d*d*d*same[i]];
+	diagonalTerm+=twoBodyEntries[twoBodyIndex(same[i],same[j],same[j],same[i])];
       }
     }
     return diagonalTerm;
@@ -81,7 +81,7 @@ double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
     fermiSign*=getFermiSign(proxy,holes[1],excitations[1]);
     //it is always holes[1]>holes[0] and excitations[1]>excitations[0]
     //take into account fermi sign due to states with indices between holes[0] and holes[1]
-    return fermiSign*twoBodyEntries[holes[0]+d*holes[1]+d*d*excitations[0]+d*d*d*excitations[1]];
+    return fermiSign*twoBodyEntries[twoBodyIndex(holes[0],holes[1],excitations[0],excitations[1])];
   }
   double twoBodyTerm{0.0};
   int localSign{0};
@@ -93,10 +93,10 @@ double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
 	localSign=-1;
       else
 	localSign=1;
-      twoBodyTerm+=localSign*twoBodyEntries[excitations[0]+d*k+d*d*holes[0]+d*d*d*k];
+      twoBodyTerm+=localSign*twoBodyEntries[twoBodyIndex(excitations[0],k,holes[0],k)];
     }
   }
-  return fermiSign*(oneBodyEntries[excitations[0]+d*holes[0]]+twoBodyTerm);
+  return fermiSign*(oneBodyEntries[oneBodyIndex(excitations[0],holes[0])]+twoBodyTerm);
 }
 
 //---------------------------------------------------------------------------------------------------//
