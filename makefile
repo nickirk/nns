@@ -2,8 +2,8 @@ CXX=g++
 LDFLAGS=-std=c++11 -g -Wall
 EIGEN_PATH=lib/eigen/
 EIGEN_FLAGS=-I$(EIGEN_PATH)
-SOURCEFILES=Sampler.cxx Nnw.cxx Basis.cxx Hamiltonian.cxx Determinant.cxx EnergyCF.cxx NormCF.cxx EnergyEstimator.cxx FermionicHamiltonian.cxx BosonicHamiltonian.cxx Solver.cxx
-TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx
+SOURCEFILES=Sampler.cxx Nnw.cxx Basis.cxx Hamiltonian.cxx Determinant.cxx EnergyCF.cxx NormCF.cxx EnergyEstimator.cxx FermionicHamiltonian.cxx AbInitioHamiltonian.cxx BosonicHamiltonian.cxx Solver.cxx
+TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx
 SRC=src
 TST=test
 BUILD=build
@@ -22,6 +22,7 @@ HTEST=hamTest
 ETEST=eigenTest
 CFTEST=cfTest
 PTTEST=ptTest
+ABINHAMTEST=abinhamTest
 BTESTOBJECT=$(TSTBUILD)/testBasis.o
 NNWTESTOBJECT=$(TSTBUILD)/testNnw.o
 ALGTESTOBJECT=$(TSTBUILD)/testAlg.o
@@ -30,6 +31,7 @@ ETESTOBJECT=$(TSTBUILD)/testEigen.o
 HTESTOBJECT=$(TSTBUILD)/testHam.o
 CFTESTOBJECT=$(TSTBUILD)/testCF.o
 PTTESTOBJECT=$(TSTBUILD)/testPreTrain.o
+ABINHAMTESTOBJECT=$(TSTBUILD)/testAbInitioHam.o
 TESTBASISEXEC=build/test/testBasis
 
 $(DIRECTORIES):
@@ -73,6 +75,9 @@ testCF: $(OBJECTS) $(CFTESTOBJECT)
 	
 testPT: $(OBJECTS) $(PTTESTOBJECT)
 	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@
+
+testAbInitioHam: $(OBJECTS) $(ABINHAMTESTOBJECT)	
+	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
                                             
 clean:
 	rm -r $(BUILD)/*                          
