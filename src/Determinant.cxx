@@ -63,3 +63,8 @@ bool operator < (detType const& lhs, detType const& rhs)
 {
   return verbatimCast(lhs) < verbatimCast(rhs);
 }
+
+bool compare_det(detType const& lhs, detType const& rhs){
+
+    return (lhs<rhs);
+}

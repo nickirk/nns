@@ -23,7 +23,7 @@
 const std::complex<double> ii(0.,1.);
 class NeuralNetwork{
   public:
-    NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF);
+    NeuralNetwork(Hamiltonian const &H_, std::vector<int> const &sizes_, CostFunction const &externalCF);
     void train(std::vector<detType> const&listDetsToTrain, double eta, int iteration_);
     double getEnergy(){return cf->calc(outputState);}
     State getState() const {return outputState;}
@@ -34,6 +34,8 @@ class NeuralNetwork{
     Eigen::Map<Eigen::MatrixXd> getWeights(int layer) const {return weights[layer];}
     Eigen::Map<Eigen::VectorXd> getBiases(int layer) const {return biases[layer];}
   private:
+    // Hamiltonian
+    Hamiltonian const &H;
     double momentumDamping;
     bool momentum;
     int iteration;

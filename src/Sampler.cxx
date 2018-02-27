@@ -55,7 +55,7 @@ void Sampler::diffuse(std::vector<detType> &list, std::vector<int> const& spinCo
    prandom=rngd()/normalizerd;
    lastLayerActivation=NNW.feedForward(list[i]);
    c_i=coeffType(lastLayerActivation[0], lastLayerActivation[1]);
-   buf = getRandomCoupledState(list[i],probUnbias);
+   buf = H.getRandomCoupledState(list[i],probUnbias);
    //buf = getRandomDeterminant(spinConfig);
    lastLayerActivation = NNW.feedForward(buf);
    c_j=coeffType(lastLayerActivation[0], lastLayerActivation[1]);
@@ -129,7 +129,7 @@ void Sampler::generateList(std::vector<detType > &list) const{
 
 detType Sampler::getRandomConnection(detType const &startingPoint) const{
 	double p{0};
-	return getRandomCoupledState(startingPoint, p);
+	return H.getRandomCoupledState(startingPoint, p);
 }
 
 void removeDuplicate(std::vector<detType> &list){

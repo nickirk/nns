@@ -18,8 +18,8 @@
 #include "NormCF.hpp"
 #include "Solver.hpp"
 //using namespace Eigen;
-NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_, 
-CostFunction const &externalCF):sizes(sizes_), cf(&externalCF), sl(Solver(0.5)){
+NeuralNetwork::NeuralNetwork(Hamiltonian const &H_, std::vector<int> const &sizes_, 
+CostFunction const &externalCF):H(H_), sizes(sizes_), cf(&externalCF), sl(Solver(0.5)){
   momentumDamping = 0.6;
   momentum = false;
   //initial para for Nesterov's accelerated gradient descent
@@ -134,7 +134,7 @@ void NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double et
   double const normalizer = static_cast<double>(rng.max());
   double prob{1.0};
   //feed the first det to NNW and get the coeff. 
-  coupledDets = getCoupledStates(listDetsToTrain[0]);
+  coupledDets = H.getCoupledStates(listDetsToTrain[0]);
   coupledDetsEpochs.push_back(coupledDets);
   coeffType coupledCoeff;
   for (size_t i=0; i<coupledDets.size(); ++i){
@@ -156,7 +156,7 @@ void NeuralNetwork::train(std::vector<detType> const &listDetsToTrain, double et
     //initial input layer
     coupledOutputCs.clear();
     coupledDets.clear();
-    coupledDets = getCoupledStates(listDetsToTrain[epoch]);
+    coupledDets = H.getCoupledStates(listDetsToTrain[epoch]);
     for (size_t i=0; i<coupledDets.size(); ++i){
       feedForward(coupledDets[i]);
       coupledCoeff=coeffType(activations[numLayersNeuron-1][0],

@@ -1,3 +1,9 @@
+/*
+ * testAbInitioHam.cxx
+ *
+ *  Created on: Feb 13, 2018
+ *      Author: Lauretta Schwarz
+ */
 #include <vector>
 #include <string>
 #include <iostream>

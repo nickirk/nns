@@ -3,208 +3,362 @@
 #include <cmath>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
-void Hamiltonian::setMatrixElement(int r, int s, double newEntry){
-  //r is creation inedx, s is annihilation index
-  oneBodyEntries[s+d*r]=newEntry;
+
+int Hamiltonian::getId(int i) const {
+    // convert a spin orbital index to a spatial one if necessary
+    int ind{0};
+
+    if (spin_orbs){
+        // stored in spin orbtials
+        ind = i;
+        
+        return ind;
+    }
+    else{
+        // stored in spatial orbitals
+        ind = (i-1)/2 + 1;
+
+        return ind;
+    }
+
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+
+void Hamiltonian::initMatrixStorage(bool bspin_orbs){
+    // are integrals stored in spin or spatial orbitals
+    
+    spin_orbs = false;
+    spin_orbs = bspin_orbs;
+    if (spin_orbs){
+        std::cout << "Storing 1- and 2-electron integrals in spin orbitals" << std::endl;
+    }
+    else{
+        std::cout << "Storing 1- and 2-electron integrals in spatial orbitals" << std::endl;
+    }
+
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+
+void Hamiltonian::setMatrixElement(int p, int q, double newEntry){
+    // <p|h|q> a+_p a_q
+    int pq{0};
+
+    if (p > q){
+        pq = (p*(p-1))/2 + q;
+    }
+    else{
+        pq = (q*(q-1))/2 + p;
+    }
+
+    oneBodyEntries[pq-1]=newEntry;
 }
 
 //---------------------------------------------------------------------------------------------------//
 
 void Hamiltonian::setMatrixElement(int p, int q, int r, int s, double newEntry){
-  //twoBodyEntries are meant to be antisymmetrized
-  //p,q are creation indices, r,s are annihilation indices
-  //for input, order of p,q and r,s does not matter, all entries are generated anyway (might be optimized)
-  //default input: r>s, p>q
-  if(p==q || r==s){
-    newEntry=0.0;
-  }
-  twoBodyEntries[s+r*d+q*d*d+p*d*d*d]=newEntry;
-  twoBodyEntries[r+s*d+q*d*d+p*d*d*d]=-newEntry;
-  twoBodyEntries[s+r*d+p*d*d+q*d*d*d]=-newEntry;
-  twoBodyEntries[r+s*d+p*d*d+q*d*d*d]=newEntry;
-}
+    // <pq|rs> a+_p a+_q a_s a_r
 
-//---------------------------------------------------------------------------------------------------//
+    int pr{0},qs{0};
+    int pqrs{0};
 
-double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
-//  std::cout << "size d=" << d << " alpha size=" << alpha.size() << " beta size" << beta.size() << std::endl;
-  if(static_cast<int>(alpha.size())!=d || d!=static_cast<int>(beta.size())){
-	if(alpha.size()==beta.size()){
-		throw sizeMismatchError(d,alpha.size());
-	}
-	else{
-		throw sizeMismatchError(alpha.size(),beta.size());
-	}
-  }
-  std::vector<int> excitations;
-  std::vector<int> holes;
-  std::vector<int> same;
-  double diff{0.0};
-  for(int i=0;i<d;++i){
-    diff=static_cast<int>(alpha[i])-static_cast<int>(beta[i]);
-    if(diff>0){
-      excitations.push_back(i);
-      }
-    if(diff<0){
-      holes.push_back(i);
+    if (p > r){
+        pr = (p*(p-1))/2 + r;
     }
     else{
-      if(diff==0 && alpha[i]){
-	same.push_back(i);
-      }
+        pr = (r*(r-1))/2 + p;
     }
-  }
-  if(holes.size()!=excitations.size() || holes.size()>2){
-    return 0.0;
-  }
-  if(holes.size()==0){
-    double diagonalTerm{0.0};
-    //there is no sign in the diagonal term since all appearing operators are bosonic (a_i^\dagger a_i)
-    for(unsigned int i=0;i<same.size();++i){
-      //all contributions if alpha==beta
-      diagonalTerm+=oneBodyEntries[same[i]+d*same[i]];
-      for(unsigned int j=i;j<same.size();++j){
-	//use this ordering to eliminate fermionic sign (this is basically n_i*n_j)
-	diagonalTerm+=twoBodyEntries[same[i]+d*same[j]+d*d*same[j]+d*d*d*same[i]];
-      }
+
+    if (q > s){
+        qs = (q*(q-1))/2 + s;
     }
-    return diagonalTerm;
-  }
-  int fermiSign{-1};
-  //Sign for conversion to canonical form
-  if(holes.size()==2){
-    fermiSign*=getFermiSign(beta,holes[0],excitations[0]);
-    detType proxy=beta;
-    annihilate(proxy,holes[0]);
-    create(proxy,(excitations[0]));
-    fermiSign*=getFermiSign(proxy,holes[1],excitations[1]);
-    //it is always holes[1]>holes[0] and excitations[1]>excitations[0]
-    //take into account fermi sign due to states with indices between holes[0] and holes[1]
-    return fermiSign*twoBodyEntries[holes[0]+d*holes[1]+d*d*excitations[0]+d*d*d*excitations[1]];
-  }
-  double twoBodyTerm{0.0};
-  int localSign{0};
-  fermiSign=getFermiSign(beta,holes[0],excitations[0]);
-  for(int k=0;k<d;++k){
-    //sum up all second-order contributions. The correct sign is included in the definition of twoBodyEntries
-    if(alpha[k]){
-      if((k>holes[0] && k>excitations[0]) || (k<holes[0] && k<excitations[0]))
-	localSign=-1;
-      else
-	localSign=1;
-      twoBodyTerm+=localSign*twoBodyEntries[excitations[0]+d*k+d*d*holes[0]+d*d*d*k];
+    else{
+        qs = (s*(s-1))/2 + q;
     }
-  }
-  return fermiSign*(oneBodyEntries[excitations[0]+d*holes[0]]+twoBodyTerm);
+
+    if (pr > qs){
+        pqrs = (pr*(pr-1))/2 + qs;
+    }
+    else{
+        pqrs = (qs*(qs-1))/2 + pr;
+    }
+
+
+    twoBodyEntries[pqrs-1]=newEntry;
 }
 
 //---------------------------------------------------------------------------------------------------//
-std::vector<detType> getCoupledStates(detType const &source){
-  int const d=source.size();
-  std::vector<detType> coupledList;
-  std::vector<int> spawnLeft, spawnRight;
-  for(int i=0;i<d;++i){
-    //search all sites from which one can hop to the left/right
-    if(source[i]){
-      if(source[(i+2)%d]==0){
-	spawnRight.push_back(i);
-      }
-      if(source[(i-2+d)%d]==0){
-	spawnLeft.push_back(i);
-      }
+
+double Hamiltonian::getMatrixElement(int p, int q) const {
+    // <p|h|q> a+_p a_q
+    int pq{0};
+
+    if (p > q){
+        pq = (p*(p-1))/2 + q;
     }
-  }
-  detType targetTmp=source;
-  for (unsigned int i=0; i<spawnLeft.size(); ++i){
-    targetTmp=source;
-    annihilate(targetTmp,spawnLeft[i]);
-    create(targetTmp,(spawnLeft[i]-2+d)%d);
-    coupledList.push_back(targetTmp);
-  }
-  for (unsigned int i=0; i<spawnRight.size(); ++i){
-    targetTmp=source;
-    annihilate(targetTmp,spawnRight[i]);
-    create(targetTmp,(spawnRight[i]+2)%d);
-    coupledList.push_back(targetTmp);
-  }
-  int const numSpawn=spawnLeft.size()+spawnRight.size();
-  return coupledList;
+    else{
+        pq = (q*(q-1))/2 + p;
+    }
+
+    double h_pq = 0.0;
+    h_pq = oneBodyEntries[pq-1];
+
+    return h_pq;
 }
 
-detType getRandomCoupledState(detType const &source,  double &pGet){
-  std::random_device rng;
-  double const normalization=static_cast<double>(rng.max());
-  int const d=source.size();
-  detType target=source;
-  //for hubbard
-  //hubbard one-particle basis: 1(up), 1(down), 2(up), ..., L(up), L(down)
-  std::vector<int> spawnLeft, spawnRight;
-  for(int i=0;i<d;++i){
-    //search all sites from which one can hop to the left/right
-    if(source[i]){
-      if(source[(i+2)%d]==0){
-	spawnRight.push_back(i);
+//---------------------------------------------------------------------------------------------------//
+
+double Hamiltonian::getMatrixElement(int p, int q, int r, int s) const {
+
+    // <pq|rs> a+_p a+_q a_s a_r
+
+    int pr{0},qs{0};
+    int pqrs{0};
+
+    if (p > r){
+        pr = (p*(p-1))/2 + r;
+    }
+    else{
+        pr = (r*(r-1))/2 + p;
+    }
+
+    if (q > s){
+        qs = (q*(q-1))/2 + s;
+    }
+    else{
+        qs = (s*(s-1))/2 + q;
+    }
+
+    if (pr > qs){
+        pqrs = (pr*(pr-1))/2 + qs;
+    }
+    else{
+        pqrs = (qs*(qs-1))/2 + pr;
+    }
+
+
+    double u_pqrs = 0.0; 
+    u_pqrs = twoBodyEntries[pqrs-1];
+
+    return u_pqrs;
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+
+double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
+    // get the Hamiltonian matrix element H_{alpha,beta} between two 
+    // configuration alpha and beta
+//  std::cout << "size d=" << d << " alpha size=" << alpha.size() << " beta size" << beta.size() << std::endl;
+    if(static_cast<int>(alpha.size())!=d || d!=static_cast<int>(beta.size())){
+      if(alpha.size()==beta.size()){
+      	throw sizeMismatchError(d,alpha.size());
       }
-      if(source[(i-2+d)%d]==0){
-	spawnLeft.push_back(i);
+      else{
+      	throw sizeMismatchError(alpha.size(),beta.size());
       }
     }
-  }
-  int const numSpawn=spawnLeft.size()+spawnRight.size();
-  int p{static_cast<int>(rng()/normalization*(numSpawn+1))};
-  //pick one of those sites at random (including direction)
-  pGet=1.0/static_cast<double>(numSpawn+1);
-  if(p>=numSpawn){
-    return source;
-  }
-  int const offset=spawnLeft.size();
-  int newPos{0};
-  if(p>=offset){
-    newPos=spawnRight[p-offset];
-    annihilate(target,newPos);
-    create(target,(newPos+2)%d);
-  }
-  else{
-    newPos=spawnLeft[p];
-    annihilate(target,newPos);
-    create(target,(newPos-2+d)%d);
-  }
-  //for ab-initio
-  /*
-  std::vector<int> holes, exc;
-  for(int i=0;i<d;++i){
-    if(source[i])
-      exc.push_back(i);
-    else
-      holes.push_back(i);
-  }
-  int numHole=holes.size();
-  int numExc=exc.size();
-  if(numHole<2 || numExc<2){
-    pGet=1;
-    return source;
-  }
-  int p=static_cast<int>(rng()/normalization*numHole);
-  int q=static_cast<int>(rng()/normalization*(numHole-1));
-  if(q>=p){
-    //ensure q!=p
-    ++q;
-  }
-  int r=static_cast<int>(rng()/normalization*numExc);
-  int s=static_cast<int>(rng()/normalization*(numExc-1));
-  if(r>=s){
-    //ensure r!=s
-    ++r;
-  }
-  target.addParticle(holes[p]);
-  target.addParticle(holes[q]);
-  target.removeParticle(exc[r]);
-  target.removeParticle(exc[s]);
-  //simplest algorithm, assuming global couplings
-  pGet=4.0/(numExc*numHole*(numHole-1)*(numExc-1));
-  */
-  return target;
+
+    // first get the spin orbitals involved in the excitation leading
+    // from alpha to beta (holes in alpha and particles in beta) 
+    // and the parity between the two configurations which is the sign 
+    // determined by the number of 
+    std::vector<int> excitations;
+    std::vector<int> holes;
+    std::vector<int> same;
+    double diff{0.0};
+    bool parity{false};
+    double paritysign{1.0};
+    int nperm{0};
+
+
+    // get the differences in occupied spin obitals
+    // determine the parity between the configurations
+    // this is equal to (-1)^g where g is the number of occupied spin 
+    // orbitals between the positions of the spin orbitals involved 
+    // in the excitation
+    // spin orbitals are stored in range 1,...,M
+    for (int i=0;i<d;++i){
+        diff=static_cast<int>(alpha[i])-static_cast<int>(beta[i]);
+        if (diff>0){
+            // holes in alpha
+            holes.push_back(i+1);
+        }
+        if (diff<0){
+            // particles in beta
+            excitations.push_back(i+1);
+        }
+        else{
+            // these spin orbitals are present in both
+            if (diff==0 && alpha[i]){
+                same.push_back(i+1);
+            }
+        }
+    }
+    // holes and excitations are already ordered, i.e. 
+    // holes[1] > holes[0] and excitations[1] > excitations[0]
+    if (holes.size()!=excitations.size() || holes.size()>2){
+        return 0.0;
+    }
+
+    // need to ensure that holes and particles of one excitation share the 
+    // same spin for a double excitation
+    if (holes.size()==2){
+        if ((holes[0]%2)!=(excitations[0]%2)){
+            // swap particles so that spins match
+            int tmp{0};
+            tmp = excitations[0];
+            excitations[0] = excitations[1];
+            excitations[1] = tmp;
+        }
+    }
+
+    // get the parity which depends on the distance between the holes and 
+    // particles
+    // for a double excitation if a crossing of the two excitations occurs 
+    // an additional permutation is needed
+    nperm = 0;
+    detType ex_alpha=alpha;
+    if (holes.size()!=0){
+        for (int i=0; i<holes.size(); ++i){
+            nperm += getFermiSign(ex_alpha,(holes[i]-1),(excitations[i]-1));
+            // for double excitations: if there is a crossing of the excitation this 
+            // complicates everything -> best to simulate excitation
+            annihilate(ex_alpha,(holes[i]-1));
+            create(ex_alpha,(excitations[i]-1));
+        }
+    }
+    parity = false;
+    paritysign = 1.0;
+    if ((nperm%2)==1){
+        parity = true;
+        paritysign = -1.0;
+    }
+
+
+    if (holes.size()==0){
+        // diagonal Hamiltonian matrix element, i.e. alpha = beta
+        double diagonalTerm{0.0};
+        int indi{0},indj{0};
+        // since the configurations are the same the parity is +1
+        for(int i=0;i<same.size();++i){
+            // \sum_i <i|h|i>
+            indi = this->getId(same[i]);
+            diagonalTerm += this->getMatrixElement(indi,indi);
+        }
+        int idn{0},idx{0};
+        for(int i=0;(i<same.size()-1);++i){
+            for(int j=(i+1);j<same.size();++j){
+                // \sum_j>i <ij|ij> - <ij|ji>
+                // need to ensure that alpha(j) > alpha(i) which 
+                // is not guaranteed
+                indi = this->getId(same[i]);
+                indj = this->getId(same[j]);
+                idx = std::max(indi,indj);
+                idn = std::min(indi,indj);
+                // Coulomb term <ij|ij>
+                diagonalTerm += this->getMatrixElement(idn,idx,idn,idx);
+                // exchange term <ij|ji>
+                // only non-zero contribution when orbitals share the 
+                // same spin
+                if ((same[i]%2)==(same[j]%2)){
+                    diagonalTerm -= this->getMatrixElement(idn,idx,idx,idn);
+                }
+            }
+        }
+        
+        return diagonalTerm;
+    }
+    else if (holes.size()==1){
+        // single excitations
+        double singleTerm{0.0};
+        int indi{0},indj{0},inda{0};
+
+
+        // <i|h|a>
+        if ((holes[0]%2)==(excitations[0]%2)){
+            indi = this->getId(holes[0]);
+            inda = this->getId(excitations[0]);
+            singleTerm += this->getMatrixElement(indi,inda);
+        }
+
+        // \sum_j <ij|aj> - <ij|ja>
+        for (int i=0;i<same.size();++i){
+            indi = this->getId(holes[0]);
+            indj = this->getId(same[i]);
+            inda = this->getId(excitations[0]);
+            // coulomb term <ij|aj>
+            if ((holes[0]%2)==(excitations[0]%2)){
+                singleTerm += this->getMatrixElement(indi,indj,inda,indj);
+            }
+            // exchange term <ij|ja>
+            if (((holes[0]%2)==(excitations[0]%2))&&((holes[0]%2)==(same[i]%2))){
+                singleTerm -= this->getMatrixElement(indi,indj,indj,inda);
+            }
+        }
+        // self terms cancel 
+
+        // parity
+        if (parity){
+            singleTerm *= paritysign;
+        }
+
+        return singleTerm;
+
+    }
+    else if (holes.size()==2){
+        // double excitation
+        double doubleTerm{0.0};
+        int indi{0},indj{0},inda{0},indb{0};
+
+        // no contribution from one-particle integrals
+
+        // for excitation ij->ab
+        // <ij|ab> - <ij|ba>
+        // only non-zero contributions are those for which the spins of 
+        // the orbitals are the same 
+        // coulomb term <ij|ab>
+        if (((holes[0]%2)==(excitations[0]%2))&&((holes[1]%2)==(excitations[1]%2))){
+            indi = this->getId(holes[0]);
+            indj = this->getId(holes[1]);
+            inda = this->getId(excitations[0]);
+            indb = this->getId(excitations[1]);
+            doubleTerm = this->getMatrixElement(indi,indj,inda,indb);
+        }
+        else{
+            doubleTerm = 0.0;
+        }
+        // only non-zero contributions are those for which the spins of 
+        // the orbitals are the same 
+        // exchange term <ij|ba>
+        if (((holes[0]%2)==(excitations[1]%2))&&((holes[1]%2)==(excitations[0]%2))){
+            indi = this->getId(holes[0]);
+            indj = this->getId(holes[1]);
+            inda = this->getId(excitations[0]);
+            indb = this->getId(excitations[1]);
+            doubleTerm -= this->getMatrixElement(indi,indj,indb,inda);
+        }
+        
+        // parity
+        if (parity){
+            doubleTerm *= paritysign;
+        }
+
+        return doubleTerm;
+    }
+    else{
+        // more than double excitation -> 0
+        double Term{0.0};
+
+        Term = 0.0;
+
+        return Term;
+    }
 }
 
 //---------------------------------------------------------------------------------------------------//

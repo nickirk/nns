@@ -15,6 +15,8 @@ public:
 	FermionicHamiltonian(int dimension):Hamiltonian(dimension){};
 	virtual ~FermionicHamiltonian();
 	int getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex) const;
+    detType getRandomCoupledState(detType const &source, double &p) const;
+    std::vector<detType> getCoupledStates(detType const &source) const;
 };
 
 FermionicHamiltonian generateFermiHubbard(int dim, double U, double t);
