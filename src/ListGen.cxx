@@ -55,7 +55,7 @@ void ListGen::diffuse(std::vector<detType> &list, std::vector<int> const& spinCo
  for (size_t i(0); i<list.size(); ++i){
    prandom=rngd()/normalizerd;
    c_i=NNW.getCoeff(list[i]);
-   buf = getRandomCoupledState(list[i],probUnbias);
+   buf = getRandomConnection(list[i]);
    //buf = getRandomDeterminant(spinConfig);
    c_j=NNW.getCoeff(buf);
    //getRandomCoupledState(buf,probUnbias);

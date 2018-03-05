@@ -24,9 +24,10 @@ const std::complex<double> ii(0.,1.);
 class NeuralNetwork{
   public:
     NeuralNetwork(Hamiltonian const &H_, std::vector<int> const &sizes_, CostFunction const &externalCF);
+    coeffType getCoeff(detType const &det) const;
     void train(std::vector<detType> const&listDetsToTrain, double eta, int iteration_);
-    double getEnergy(){return cf->calc(outputState);}
-    State getState() const {return outputState;}
+    //double getEnergy(){return cf->calc(outputState);}
+    //State getState() const {return outputState;}
     double calcEnergy(std::vector<detType> const &listDetsToTrain) const;
     Eigen::VectorXd feedForward(detType const& det) const;
     void updateParameters(int method, std::vector<State> const &outputState, double learningRate, int iteration);

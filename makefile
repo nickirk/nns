@@ -2,7 +2,6 @@ CXX=g++
 LDFLAGS=-std=c++11 -g -Wall
 EIGEN_PATH=lib/eigen/
 EIGEN_FLAGS=-I$(EIGEN_PATH)
-<<<<<<< HEAD
 SOURCEFILES=Sampler.cxx Nnw.cxx Basis.cxx Hamiltonian.cxx Determinant.cxx EnergyCF.cxx NormCF.cxx EnergyEstimator.cxx FermionicHamiltonian.cxx AbInitioHamiltonian.cxx BosonicHamiltonian.cxx Solver.cxx Trainer.cxx MarkovSampler.cxx ListGen.cxx EnergyEsMarkov.cxx
 TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx testAlgAb.cxx testRandom.cxx testMarkov.cxx
 SRC=src

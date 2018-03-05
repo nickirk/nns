@@ -19,10 +19,11 @@ void MarkovSampler::iterate(coeffType &cI, detType &dI) const{
 	std::random_device rd;     // only used once to initialise (seed) engine
 	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
 	std::uniform_real_distribution<double> uni;		// Uniform distribution from 0.0 to 1.0
+	int maxIters(1000);
 	// Iterate until acceptance (or maximum number of iters)
 	for(int i=0;i<maxIters;++i){
 		// First, get a random coupled determinant (from cDet)
-		detType tmp{getRandomCoupledState(cDet,p)};
+		detType tmp{getRandomConnection(cDet)};
 		// And its coefficient
 		coeffType tmpCoeff{NNW.getCoeff(tmp)};
 		if(uni(rng) < std::pow(std::abs(tmpCoeff)/std::abs(lastCoeff),2)){

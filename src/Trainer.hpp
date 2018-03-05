@@ -16,7 +16,7 @@
 
 class Trainer {
 public:
-	Trainer(NeuralNetwork &NNW_, Sampler &msampler);
+	Trainer(Hamiltonian const &modelHam_,NeuralNetwork &NNW_, Sampler &msampler);
 	void train(double learningRate, int method, int iteration);
 	void getNextCoeff(coeffType &cI, detType &dI);
 	double getE() const;
@@ -24,6 +24,7 @@ public:
 	virtual ~Trainer();
 private:
 	NeuralNetwork &NNW;
+	Hamiltonian const &modelHam;
 	Sampler &msampler;
 	std::vector<State > inputState;
 

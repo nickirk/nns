@@ -46,6 +46,7 @@ int main(){
   //add random determinants.
   //IntCast just to cast the determinant into a integer number so that 
   //we can see if anything is going wrong with the basis.
+  auto HF=basis.getDetByIndex(0);
   for (int i=0; i< basis.getSize(); ++i){
     list.push_back(basis.getDetByIndex(i));
     detsIntcast << verbatimCast(basis.getDetByIndex(i)) << endl;
@@ -54,7 +55,7 @@ int main(){
   std::cout<<"Listsize= "<<list.size()<<std::endl;
   EnergyEstimator eCF(modelHam);
   //Neural network takes in the size and the cost function.
-  NeuralNetwork NNW(size_NNW, eCF);
+  NeuralNetwork NNW(modelHam,size_NNW, eCF);
   // numDetsToTrain_ is the total number you want to keep in the list 
   // during the training process. By default it is the whole Hilbert space.
   // But for a stochastic diffuse process, much less is needed. One should 
@@ -75,7 +76,7 @@ int main(){
   ListGen sampler(modelHam, basis, numDetsToTrain_, HF,NNW);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
-  Trainer ev(NNW,sampler);
+  Trainer ev(modelHam, NNW,sampler);
   ofstream myfile1;
   myfile1.open (fileName);
   double energy(0.);
@@ -108,10 +109,10 @@ int main(){
       double normalizer=eCF.getNormalizer();
       ofstream outputC;
       outputC.open("coeff.txt");
-      for(size_t s=0; s<states.size(); ++s){
-        outputC << verbatimCast(states.getDet(s)) << " " << sqrt(norm(states.getCoeff(s)))/sqrt(normalizer) << endl; 
-        cout << "C_" << s << "= " << states.getCoeff(s) << endl;
-      }
+      //for(size_t s=0; s<states.size(); ++s){
+      //  outputC << verbatimCast(states.getDet(s)) << " " << sqrt(norm(states.getCoeff(s)))/sqrt(normalizer) << endl; 
+      //  cout << "C_" << s << "= " << states.getCoeff(s) << endl;
+      //}
       outputC.close();
       cout << "normalizer=" << normalizer << endl;
       myfile1 << count << " " << energy << endl;

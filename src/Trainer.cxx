@@ -8,7 +8,7 @@
 #include "Trainer.hpp"
 #include <iostream>
 
-Trainer::Trainer(NeuralNetwork &NNW_, Sampler  &msampler_):NNW(NNW_), msampler(msampler_) {
+Trainer::Trainer(Hamiltonian const &modelHam_, NeuralNetwork &NNW_, Sampler  &msampler_):modelHam(modelHam_),NNW(NNW_), msampler(msampler_) {
 	int numDets{msampler.getNumDets()};
 	inputState.resize(numDets);
 
@@ -43,7 +43,7 @@ void Trainer::train(double learningRate, int method, int iteration){
 	for(int i=0; i < numDets; ++i){
 	  msampler.iterate(inputState[i].coeff, inputState[i].det);
 	  //-------------------------------------
-          inputState[i].coupledDets = getCoupledStates(inputState[i].det); 
+          inputState[i].coupledDets = modelHam.getCoupledStates(inputState[i].det); 
 	  inputState[i].coupledCoeffs.resize(inputState[i].coupledDets.size());
 	  //sampledDets[i] =  msampler.getDet(i);
 	  //sampledCoeffs[i] =  NNW.getCoeff(sampledDets[i]);
