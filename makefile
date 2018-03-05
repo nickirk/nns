@@ -2,8 +2,9 @@ CXX=g++
 LDFLAGS=-std=c++11 -g -Wall
 EIGEN_PATH=lib/eigen/
 EIGEN_FLAGS=-I$(EIGEN_PATH)
-SOURCEFILES=Sampler.cxx Nnw.cxx Basis.cxx Hamiltonian.cxx Determinant.cxx EnergyCF.cxx NormCF.cxx EnergyEstimator.cxx FermionicHamiltonian.cxx AbInitioHamiltonian.cxx BosonicHamiltonian.cxx Solver.cxx
-TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx testAlgAb.cxx
+<<<<<<< HEAD
+SOURCEFILES=Sampler.cxx Nnw.cxx Basis.cxx Hamiltonian.cxx Determinant.cxx EnergyCF.cxx NormCF.cxx EnergyEstimator.cxx FermionicHamiltonian.cxx AbInitioHamiltonian.cxx BosonicHamiltonian.cxx Solver.cxx Trainer.cxx MarkovSampler.cxx ListGen.cxx EnergyEsMarkov.cxx
+TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx testAlgAb.cxx testRandom.cxx testMarkov.cxx
 SRC=src
 TST=test
 BUILD=build
@@ -17,6 +18,7 @@ DEPENDENCIES=$(patsubst %.cxx,$(DDIR)/%.d,$(SOURCEFILES)) $(patsubst %.cxx,$(TST
 BTEST=basisTest
 NNWTEST=nnwTest
 ALGTEST=algTest
+MARKOVTEST=markovTest
 STEST=samplerTest
 HTEST=hamTest
 ETEST=eigenTest
@@ -26,6 +28,7 @@ ABINHAMTEST=abinhamTest
 ALGABTEST=algAbTest
 BTESTOBJECT=$(TSTBUILD)/testBasis.o
 NNWTESTOBJECT=$(TSTBUILD)/testNnw.o
+MARKOVTESTOBJECT=$(TSTBUILD)/testMarkov.o
 ALGTESTOBJECT=$(TSTBUILD)/testAlg.o
 STESTOBJECT=$(TSTBUILD)/testSampler.o
 ETESTOBJECT=$(TSTBUILD)/testEigen.o
@@ -34,6 +37,7 @@ CFTESTOBJECT=$(TSTBUILD)/testCF.o
 PTTESTOBJECT=$(TSTBUILD)/testPreTrain.o
 ABINHAMTESTOBJECT=$(TSTBUILD)/testAbInitioHam.o
 ALGABTESTOBJECT=$(TSTBUILD)/testAlgAb.o
+RNGTESTOBJECT=$(TSTBUILD)/testRandom.o
 TESTBASISEXEC=build/test/testBasis
 
 $(DIRECTORIES):
@@ -60,6 +64,9 @@ testBasis: $(OBJECTS) $(BTESTOBJECT)
 testAlg: $(OBJECTS) $(ALGTESTOBJECT)	
 	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
 
+testMarkov: $(OBJECTS) $(MARKOVTESTOBJECT)	
+	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
+
 testNnw: $(OBJECTS) $(NNWTESTOBJECT)
 	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
 
@@ -80,6 +87,8 @@ testPT: $(OBJECTS) $(PTTESTOBJECT)
 
 testAbInitioHam: $(OBJECTS) $(ABINHAMTESTOBJECT)	
 	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
+testRandom: $(RNGTESTOBJECT)
+	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@
                                             
 testAlgAb: $(OBJECTS) $(ALGABTESTOBJECT)	
 	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 

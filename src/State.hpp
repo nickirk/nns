@@ -14,36 +14,39 @@
 
 class State{
 public:
-	State():dets(std::vector<detType >(0)), coeffs(std::vector<coeffType >(0)), 
-         coupledCoeffs(std::vector<std::vector<coeffType>>(0)), 
-         coupledDets(std::vector<std::vector<detType>>(0)) {};
+	State():det(detType({0})), coeff(coeffType(0.,0.)), 
+         coupledCoeffs(std::vector<coeffType>(0)), 
+         coupledDets(std::vector<detType>(0)) {};
 	State(
-              std::vector<detType > const &dets_, 
-              std::vector<coeffType > const &coeffs_, 
-              std::vector<std::vector<detType>> const &coupledDets_,
-              std::vector<std::vector<coeffType>> const &coupledCoeffs_
+              detType  const &det_, 
+              coeffType const &coeff_, 
+              std::vector<detType> const &coupledDets_,
+              std::vector<coeffType> const &coupledCoeffs_
               ):
-		dets(dets_), 
-                coeffs(coeffs_), 
+		det(det_), 
+                coeff(coeff_), 
                 coupledCoeffs(coupledCoeffs_),
                 coupledDets(coupledDets_){
 		// A state has to have one coefficient per determinant
 		// one might argue that supplying less coefficient should be fine and that
 		// the rest should be filled with zeroes, we might change that
-		if(dets.size() != coeffs.size()) throw sizeMismatchError(dets.size(),coeffs.size());
+	        // if(dets.size() != coeffs.size()) throw sizeMismatchError(dets.size(),coeffs.size());
 	};
-	detType getDet(int i) const{return dets[i];}
-	coeffType getCoeff(int i) const{return coeffs[i];}
-	std::vector<coeffType> getAllCoeff() const{return coeffs;}
-	std::vector<detType> getDets() const {return dets;}
-        std::vector<coeffType> getCoupledCoeffs(int i) const{return coupledCoeffs[i];}
-        std::vector<detType> getCoupledDets(int i) const{return coupledDets[i];}
-	size_t size()const{return dets.size();}
-private:
-	std::vector<detType > dets;
-	std::vector<coeffType > coeffs;
-        std::vector<std::vector<coeffType> > coupledCoeffs;
-        std::vector<std::vector<detType> > coupledDets;
+	//detType getDet(int i) const{return dets[i];}
+	//coeffType getCoeff(int i) const{return coeffs[i];}
+	//std::vector<coeffType> getAllCoeff() const{return coeffs;}
+	//std::vector<detType> getDets() const {return dets;}
+        //std::vector<coeffType> getCoupledCoeffs(int i) const{return coupledCoeffs[i];}
+        //std::vector<detType> getCoupledDets(int i) const{return coupledDets[i];}
+	//size_t size()const{return dets.size();}
+
+	detType det;
+	coeffType coeff;
+        std::vector<coeffType> coupledCoeffs;
+        std::vector<detType> coupledDets;
+        bool operator < (State const &m) const {
+	  return det < m.det;
+	}
 };
 
 #endif /* SRC_STATE_HPP_ */

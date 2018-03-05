@@ -23,6 +23,9 @@ int Hamiltonian::getId(int i) const {
         return ind;
     }
 
+void Hamiltonian::setMatrixElement(int r, int s, double newEntry){
+  //r is creation inedx, s is annihilation index
+	oneBodyEntries[oneBodyIndex(s, r)] = newEntry;
 }
 
 //---------------------------------------------------------------------------------------------------//
@@ -40,6 +43,18 @@ void Hamiltonian::initMatrixStorage(bool bspin_orbs){
         std::cout << "Storing 1- and 2-electron integrals in spatial orbitals" << std::endl;
     }
 
+void Hamiltonian::setMatrixElement(int p, int q, int r, int s, double newEntry){
+  //twoBodyEntries are meant to be antisymmetrized
+  //p,q are creation indices, r,s are annihilation indices
+  //for input, order of p,q and r,s does not matter, all entries are generated anyway (might be optimized)
+  //default input: r>s, p>q
+  if(p==q || r==s){
+    newEntry=0.0;
+  }
+	twoBodyEntries[twoBodyIndex(s, r, q, p)] = newEntry;
+  twoBodyEntries[twoBodyIndex(r,s,q,p)]=-newEntry;
+  twoBodyEntries[twoBodyIndex(s,r,p,q)]=-newEntry;
+  twoBodyEntries[twoBodyIndex(r,s,p,q)]=newEntry;
 }
 
 //---------------------------------------------------------------------------------------------------//
@@ -90,6 +105,49 @@ void Hamiltonian::setMatrixElement(int p, int q, int r, int s, double newEntry){
 
 
     twoBodyEntries[pqrs-1]=newEntry;
+  }
+  if(holes.size()!=excitations.size() || holes.size()>2){
+    return 0.0;
+  }
+  if(holes.size()==0){
+    double diagonalTerm{0.0};
+    //there is no sign in the diagonal term since all appearing operators are bosonic (a_i^\dagger a_i)
+    for(unsigned int i=0;i<same.size();++i){
+      //all contributions if alpha==beta
+      diagonalTerm+=oneBodyEntries[oneBodyIndex(same[i],same[i])];
+      for(unsigned int j=i;j<same.size();++j){
+	//use this ordering to eliminate fermionic sign (this is basically n_i*n_j)
+	diagonalTerm+=twoBodyEntries[twoBodyIndex(same[i],same[j],same[j],same[i])];
+      }
+    }
+    return diagonalTerm;
+  }
+  int fermiSign{-1};
+  //Sign for conversion to canonical form
+  if(holes.size()==2){
+    fermiSign*=getFermiSign(beta,holes[0],excitations[0]);
+    detType proxy=beta;
+    annihilate(proxy,holes[0]);
+    create(proxy,(excitations[0]));
+    fermiSign*=getFermiSign(proxy,holes[1],excitations[1]);
+    //it is always holes[1]>holes[0] and excitations[1]>excitations[0]
+    //take into account fermi sign due to states with indices between holes[0] and holes[1]
+    return fermiSign*twoBodyEntries[twoBodyIndex(holes[0],holes[1],excitations[0],excitations[1])];
+  }
+  double twoBodyTerm{0.0};
+  int localSign{0};
+  fermiSign=getFermiSign(beta,holes[0],excitations[0]);
+  for(int k=0;k<d;++k){
+    //sum up all second-order contributions. The correct sign is included in the definition of twoBodyEntries
+    if(alpha[k]){
+      if((k>holes[0] && k>excitations[0]) || (k<holes[0] && k<excitations[0]))
+	localSign=-1;
+      else
+	localSign=1;
+      twoBodyTerm+=localSign*twoBodyEntries[twoBodyIndex(excitations[0],k,holes[0],k)];
+    }
+  }
+  return fermiSign*(oneBodyEntries[oneBodyIndex(excitations[0],holes[0])]+twoBodyTerm);
 }
 
 //---------------------------------------------------------------------------------------------------//
@@ -146,6 +204,21 @@ double Hamiltonian::getMatrixElement(int p, int q, int r, int s) const {
     u_pqrs = twoBodyEntries[pqrs-1];
 
     return u_pqrs;
+  }
+  detType targetTmp=source;
+  for (unsigned int i=0; i<spawnLeft.size(); ++i){
+    targetTmp=source;
+    annihilate(targetTmp,spawnLeft[i]);
+    create(targetTmp,(spawnLeft[i]-2+d)%d);
+    coupledList.push_back(targetTmp);
+  }
+  for (unsigned int i=0; i<spawnRight.size(); ++i){
+    targetTmp=source;
+    annihilate(targetTmp,spawnRight[i]);
+    create(targetTmp,(spawnRight[i]+2)%d);
+    coupledList.push_back(targetTmp);
+  }
+  return coupledList;
 }
 
 //---------------------------------------------------------------------------------------------------//
