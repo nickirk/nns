@@ -11,10 +11,8 @@
 DenseLayer(std::vector<Eigen::MatrixXd> const &inputs_, 
            double &(actFunc_)(double), int size_):
   Layer(inputs_) actFunc(actFunc_), numNrn(size_){
-  for (size_t i(0); i<inputs.size(); i++){
-    z.push_back(Eigen::VectorXd::Zero(numNrn));  
-  }
-  activations.push_back(Eigen::VectorXd::Zero(numNrn));
+  z(inputs.size(),Eigen::VectorXd::Zero(numNrn));  
+  activations(1,Eigen::VectorXd::Zero(numNrn));
 }
 
 void DenseLayer::mapPara(double *adNNP, int &startPoint){

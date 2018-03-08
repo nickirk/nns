@@ -35,8 +35,6 @@ public:
 
   void constrInputLayer(int numNrn);
 
-  void constrOutputLayer();
-
   void initialiseNetwork();
 
   void setCostFunction(CostFunction const &externalCF) {cf = &externalCF;}
@@ -54,7 +52,7 @@ private:
   // Hamiltonian
   Hamiltonian const &H;
   //Structure of the NNW
-  std::vector<Layer> network;
+  std::vector<Layer> Layers;
   //variables for RMSprop
   double momentumDamping;
   bool momentum;
@@ -83,17 +81,8 @@ private:
   double *adNNP;
   Eigen::VectorXd nablaNNP;
   double *adNablaNNP;
+  std::vector<VectorXd> feedIns;
 
-  //These four are cache variables that are used to store the state of the network
-  //They are potentially very memory expensive, we want to get rid of them first
-  //mutable std::vector<std::vector<Eigen::VectorXd>> inputSignalsEpochs;
-  //mutable std::vector<std::vector<Eigen::VectorXd>> activationsEpochs;
-  mutable std::vector<Eigen::VectorXd> inputSignals; 
-  mutable std::vector<Eigen::VectorXd> activations; 
-  //std::vector<Eigen::Map<Eigen::VectorXd>> biases;
-  //std::vector<Eigen::Map<Eigen::MatrixXd>> weights;
-  //std::vector<Eigen::Map<Eigen::VectorXd>> nablaBiases;
-  //std::vector<Eigen::Map<Eigen::MatrixXd>> nablaWeights;
   CostFunction const *cf;
   Solver sl;
   Eigen::VectorXd backPropagate(
@@ -108,8 +97,10 @@ private:
   Eigen::MatrixXcd calcdCdwSR(
     std::vector<State> const &outputState
        );
-  coeffType outputLayer() const {	size_t numLayers{sizes.size()};
-  	return coeffType(activations[numLayers-1][0],activations[numLayers-1][1]);}
+  coeffType outputLayer() const {	
+    size_t numLayers{sizes.size()};
+  	return coeffType(activations[numLayers-1][0],activations[numLayers-1][1]);
+  }
 };
 
 #endif

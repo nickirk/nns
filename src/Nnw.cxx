@@ -18,8 +18,9 @@
 #include "Layer.hpp"
 
 
-NeuralNetwork::NeuralNetwork(Hamiltonian const &H_, std::vector<int> const &sizes_, 
-CostFunction const &externalCF):H(H_), sizes(sizes_), cf(&externalCF), sl(Solver(0.5)){
+NeuralNetwork::NeuralNetwork(Hamiltonian const &H_, 
+  CostFunction const &externalCF):H(H_), sizes(sizes_), cf(&externalCF), 
+  sl(Solver(0.5)){
   //initial value for NNW para
   numLayers = 0;
   generlisedForcePrev = Eigen::VectorXd::Zero(numNNP);
@@ -53,21 +54,20 @@ CostFunction const &externalCF):H(H_), sizes(sizes_), cf(&externalCF), sl(Solver
   m1  = Eigen::VectorXd::Zero(numNNP);
   v  = Eigen::VectorXd::Zero(numNNP);
   v1  = Eigen::VectorXd::Zero(numNNP);
-  //map parameters to matrices and initalize them with normal distribution.
-  //map nablaPara to matrices and vectors with 0.
+
 }
 //initialise the network after construction functions are called.
 void NeuralNetwork::initialiseNetwork(){
   //calculate the size of the NNP array:
   numNNP=0;
   for (int layer(0); layer<numLayers; ++layer){
-    numNNP+=network[layer].numPara;
+    numNNP+=Layers[layer].numPara;
   }
   NNP = Eigen::VectorXd::Ones(numNNP);
   adNNP = &NNP(0);
   int startPoint(0);
   for (int layer(0); layer<numLayers; ++layer){
-    network[layer].mapPara(adNNP, startPoint);
+    Layers[layer].mapPara(adNNP, startPoint);
   /*
   //initial activity signals. 
   activations.push_back(Eigen::VectorXd::Zero(sizes[0]));
@@ -78,31 +78,34 @@ void NeuralNetwork::initialiseNetwork(){
   }
   */
   }
-
   nablaNNP = Eigen::VectorXd::Zero(numNNP);
   //get the address of nablaNNP
   adNablaNNP = &nablaNNP(0);
 }
 //---------------------------------------------------------------------------------------------------//
 // construction function of the NNW
-void NeuralNetwork::constrInputLayer(int numNrn){
+void NeuralNetwork::constrInputLayer(int numStates){
 
+  feedIns(1,Eigen::VectorXd::Zero(numStates));
 
+  InputLayer inputLayer(feedIns, numStates);
+  Layers.push_back(inputLayer);
+  numLayers++;
 }
 
 void NeuralNetwork::constrDenseLayer(std::vector<Eigen::MatrixXd> const 
                                      &inputs_, double &(actFunc_)(double),
                                      int size_){
- DenseLayer denseLayer(inputs_, actFunc_(double), size_);
- network.push_back(denseLayer);
- numLayers++;
+  DenseLayer denseLayer(inputs_, actFunc_(double), size_);
+  Layers.push_back(denseLayer);
+  numLayers++;
 }
 /*
 void NeuralNetwork::constrConvLayer(std::vector<Eigen::MatrixXd> const 
                                      &inputs_,double &(actFunc_)(double),
                                      int size_){
  ConvLayer convLayer(inputs_, actFunc_(double));
- network.push_back(convLayer);
+ Layers.push_back(convLayer);
  numLayers++;
 }
 */
@@ -180,33 +183,21 @@ void NeuralNetwork::updateParameters(int method, std::vector<State> const &outpu
 
 Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const{
   int numStates=det.size();
-  int numLayersNeuron(sizes.size());
   for (int state=0; state<numStates; ++state){
-    activations[0][state] = det[state]?1.0:-1.0;
-    inputSignals[0][state] = det[state]?1.0:-1.0;
+    feedIns[0](state) = det[state]?1.0:-1.0;
   }
 
-  for (int layer=1; layer < numLayersNeuron; ++layer){
-    //Here the 0th layer of weights correspond to the connections between
-    //the 0th and 1st layer. Here layer refers to the Neuron layer. When use 
-    //it to refer the Biases and weights' layer, we need conversion.
-    activations[layer] = weights[layer-1]*activations[layer-1]+biases[layer-1];
-    inputSignals[layer] = activations[layer];
-    if (layer == numLayersNeuron-1)
-    activations[layer] = activations[layer].unaryExpr(&Linear);
-    else 
-    activations[layer] = activations[layer].unaryExpr(&Tanh);
+  for (int layer(0); layer < numLayers; ++layer){
+      Layers[layer].processSignal();
   }
-  return activations[numLayersNeuron-1];
+  return Layers[numLayers-1].activations[0];
 }
 
 //---------------------------------------------------------------------------------------------------//
 
 Eigen::VectorXd NeuralNetwork::backPropagate(
-       Eigen::VectorXd	            const &lastLayerFeedBack
+       Eigen::VectorXd const &lastLayerFeedBack
      ){
-  int numLayers(sizes.size()-1);
-  int numLayersNeuron(sizes.size());
   //everytime the backPropagate is called, we should reset nabla* to zero.
   nablaNNP *= 0.;
 
