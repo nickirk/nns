@@ -10,15 +10,16 @@
 
 #include <vector>
 #include <stdio.h>
-#include <math.h>
 #include <complex>
 #include <Eigen/Dense>
+#include "math/MathFunctions.hpp"
 #include "CostFunction.hpp"
 #include "Determinant.hpp"
 #include "Basis.hpp"
 #include "Hamiltonian.hpp"
 #include "State.hpp"
 #include "Solver.hpp"
+#include "Layer.hpp"
 
 const std::complex<double> ii(0.,1.);
 class NeuralNetwork{
@@ -30,11 +31,11 @@ public:
   void constrDenseLayer(std::vector<Eigen::MatrixXd> const &inputs_,
                         double &(actFunc_)(double),int size_);
 
-  void constrConvLayer();
+  //void constrConvLayer();
 
-  void constrInLayer();
+  void constrInputLayer(int numNrn);
 
-  void constrOutLayer();
+  void constrOutputLayer();
 
   void initialiseNetwork();
 
@@ -48,6 +49,7 @@ public:
   CostFunction const* getCostFunction() const {return cf;}
   Eigen::Map<Eigen::MatrixXd> getWeights(int layer) const {return weights[layer];}
   Eigen::Map<Eigen::VectorXd> getBiases(int layer) const {return biases[layer];}
+
 private:
   // Hamiltonian
   Hamiltonian const &H;
@@ -88,10 +90,10 @@ private:
   //mutable std::vector<std::vector<Eigen::VectorXd>> activationsEpochs;
   mutable std::vector<Eigen::VectorXd> inputSignals; 
   mutable std::vector<Eigen::VectorXd> activations; 
-  std::vector<Eigen::Map<Eigen::VectorXd>> biases;
-  std::vector<Eigen::Map<Eigen::MatrixXd>> weights;
-  std::vector<Eigen::Map<Eigen::VectorXd>> nablaBiases;
-  std::vector<Eigen::Map<Eigen::MatrixXd>> nablaWeights;
+  //std::vector<Eigen::Map<Eigen::VectorXd>> biases;
+  //std::vector<Eigen::Map<Eigen::MatrixXd>> weights;
+  //std::vector<Eigen::Map<Eigen::VectorXd>> nablaBiases;
+  //std::vector<Eigen::Map<Eigen::MatrixXd>> nablaWeights;
   CostFunction const *cf;
   Solver sl;
   Eigen::VectorXd backPropagate(
@@ -110,19 +112,4 @@ private:
   	return coeffType(activations[numLayers-1][0],activations[numLayers-1][1]);}
 };
 
-double NormalDistribution(double dummy);
-double Tanh_prime(double in);
-double Tanh(double in); 
-double Linear(double in);
-double Linear_prime(double in);
-double Rectifier(double in);
-double Rectifier_prime(double in);
-double Arcsinh(double in);
-double Arcsinh_prime(double in);
-double Gaussian(double in);
-double Gaussian_prime(double in);
-double GaussianAntiSym(double in);
-double GaussianAntiSym_prime(double in);
-double Sigmoid(double in);
-double Sigmoid_prime(double in);
 #endif

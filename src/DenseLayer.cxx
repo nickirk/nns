@@ -9,8 +9,8 @@
 #include "DenseLayer.hpp"
 
 DenseLayer(std::vector<Eigen::MatrixXd> const &inputs_, 
-           double &(actFunc_)(double), int size_)
-  Layer(inputs_, actFunc_), numNrn(size_){
+           double &(actFunc_)(double), int size_):
+  Layer(inputs_) actFunc(actFunc_), numNrn(size_){
   for (size_t i(0); i<inputs.size(); i++){
     z.push_back(Eigen::VectorXd::Zero(numNrn));  
   }
@@ -19,10 +19,16 @@ DenseLayer(std::vector<Eigen::MatrixXd> const &inputs_,
 
 void DenseLayer::mapPara(double *adNNP, int &startPoint){
   for(size_t i(0); i<inputs.size(); i++){
-    weights.push_back(Eigen::Map<Eigen::MatrixXd>(adNNP+startPoint, numNrn, 
-      inputs[i].size());
+    Eigen::Map<Eigen::MatrixXd> weightsTmp(adNNP+startPoint,numNrn,
+		  input[i].size());
+    //weightsTmp /= weightsTmp.size();
+    weightsTmp = weightsTmp.unaryExpr(&NormalDistribution);
+    weights.push_back(weightsTmp);
     startPoint+=numNrn*inputs[i].size();
   }
+  Eigen::Map<Eigen::VectorXd> biaseTmp(adNNP+startPoint,numNrn); 
+  //biaseTmp /= biaseTmp.size();
+  biaseTmp = biaseTmp.unaryExpr(&NormalDistribution);
   biases.push_back(Eigen::Map(Eigen::VectorXd)(adNNP+startPoint, numNrn)); 
   startPoint+=numNrn*inputs[i].size();
 }

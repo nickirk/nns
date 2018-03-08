@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include <vector>
-#include "errors.hpp"
+#include "utilities/Errors.hpp"
 
 // these should not be members of some class, better use generic functions
 using detType = std::vector<bool>;

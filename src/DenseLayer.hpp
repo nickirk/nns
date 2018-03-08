@@ -21,7 +21,8 @@ public:
   void backProp();
 private:
   int numNrn;
-  //z=w*input+bias;
+  //z=w*input+bias, which is an intermediate variable but is needed
+  //during the backpropagation step
   std::vector<Eigen::VectorXd> z;
   std::vector<Eigen::Map<Eigen::VectorXd>> biases;
   std::vector<Eigen::Map<Eigen::MatrixXd>> weights;

@@ -7,7 +7,7 @@
 
 #include "AbInitioHamiltonian.hpp"
 #include "Determinant.hpp"
-#include "errors.hpp"
+#include "utilities/Errors.hpp"
 #include <string>
 #include <sstream>
 #include <iostream>

@@ -6,23 +6,24 @@
  */
 #include <vector>
 #include <iostream>
-#include <math.h>
-#include <cmath>
 #include <random>
 #include <Eigen/Dense>
 #include <Eigen/Core>
 #include <complex>
 #include "State.hpp"
 #include "Nnw.hpp"
-#include "errors.hpp"
+#include "utilities/Errors.hpp"
 #include "NormCF.hpp"
 #include "Solver.hpp"
-//using namespace Eigen;
+#include "Layer.hpp"
+
+
 NeuralNetwork::NeuralNetwork(Hamiltonian const &H_, std::vector<int> const &sizes_, 
 CostFunction const &externalCF):H(H_), sizes(sizes_), cf(&externalCF), sl(Solver(0.5)){
   //initial value for NNW para
   numLayers = 0;
   generlisedForcePrev = Eigen::VectorXd::Zero(numNNP);
+
   //initial value for momentum algo
   momentumDamping = 0.6;
   momentum = false;
@@ -52,13 +53,8 @@ CostFunction const &externalCF):H(H_), sizes(sizes_), cf(&externalCF), sl(Solver
   m1  = Eigen::VectorXd::Zero(numNNP);
   v  = Eigen::VectorXd::Zero(numNNP);
   v1  = Eigen::VectorXd::Zero(numNNP);
-  //get the address of NNP
-  nablaNNP = Eigen::VectorXd::Zero(numNNP);
-  //get the address of nablaNNP
-  adNablaNNP = &nablaNNP(0);
   //map parameters to matrices and initalize them with normal distribution.
   //map nablaPara to matrices and vectors with 0.
-  int startPoint=0;
 }
 //initialise the network after construction functions are called.
 void NeuralNetwork::initialiseNetwork(){
@@ -72,28 +68,7 @@ void NeuralNetwork::initialiseNetwork(){
   int startPoint(0);
   for (int layer(0); layer<numLayers; ++layer){
     network[layer].mapPara(adNNP, startPoint);
-    /*
-    Eigen::Map<Eigen::MatrixXd> weightsTmp(adNNP+startPoint,sizes[layer+1],
-		                           sizes[layer]);
-    //NNP is modified here.
-    //weightsTmp /= weightsTmp.size();
-    weightsTmp = weightsTmp.unaryExpr(&NormalDistribution);
-    weights.push_back(weightsTmp);
-    nablaWeights.push_back(
-      Eigen::Map<Eigen::MatrixXd>(adNablaNNP+startPoint, sizes[layer+1],
-      sizes[layer])
-    );
-    startPoint+=sizes[layer]*sizes[layer+1];
-    Eigen::Map<Eigen::VectorXd> biaseTmp(adNNP+startPoint,sizes[layer+1]); 
-    //biaseTmp /= biaseTmp.size();
-    biaseTmp = biaseTmp.unaryExpr(&NormalDistribution);
-    biases.push_back(biaseTmp);
-    nablaBiases.push_back(
-      Eigen::Map<Eigen::VectorXd>(adNablaNNP+startPoint, sizes[layer+1])
-    );
-    startPoint+=sizes[layer+1];
-  }
-
+  /*
   //initial activity signals. 
   activations.push_back(Eigen::VectorXd::Zero(sizes[0]));
   inputSignals.push_back(Eigen::VectorXd::Zero(sizes[0]));
@@ -102,17 +77,27 @@ void NeuralNetwork::initialiseNetwork(){
     inputSignals.push_back(Eigen::VectorXd::Zero(sizes[layer+1]));
   }
   */
+  }
+
+  nablaNNP = Eigen::VectorXd::Zero(numNNP);
+  //get the address of nablaNNP
+  adNablaNNP = &nablaNNP(0);
 }
 //---------------------------------------------------------------------------------------------------//
 // construction function of the NNW
+void NeuralNetwork::constrInputLayer(int numNrn){
+
+
+}
+
 void NeuralNetwork::constrDenseLayer(std::vector<Eigen::MatrixXd> const 
-                                     &inputs_,double &(actFunc_)(double),
+                                     &inputs_, double &(actFunc_)(double),
                                      int size_){
  DenseLayer denseLayer(inputs_, actFunc_(double), size_);
  network.push_back(denseLayer);
  numLayers++;
 }
-
+/*
 void NeuralNetwork::constrConvLayer(std::vector<Eigen::MatrixXd> const 
                                      &inputs_,double &(actFunc_)(double),
                                      int size_){
@@ -120,6 +105,7 @@ void NeuralNetwork::constrConvLayer(std::vector<Eigen::MatrixXd> const
  network.push_back(convLayer);
  numLayers++;
 }
+*/
 
 
 coeffType NeuralNetwork::getCoeff(detType const &det) const{
@@ -371,38 +357,3 @@ Eigen::MatrixXcd NeuralNetwork::calcdCdwSR(
 
 //---------------------------------------------------------------------------------------------------//
 
-double NormalDistribution(double input)
-{
-  //input will be a constant, which is a normalization factor.
-  std::random_device rd;
-  static std::mt19937 rng(rd());
-  static std::normal_distribution<> nd(0.,input);
-  return nd(rng);
-}
-
-//---------------------------------------------------------------------------------------------------//
-
-double Tanh_prime(double in){return 1-tanh(in)*tanh(in);};
-double Tanh(double in){return tanh(in);};
-double Linear(double in) {return in;};
-double Linear_prime(double in){return 1;};
-double Rectifier(double in){return (in<-1e-8)?0.01*in:in;};
-double Rectifier_prime(double in){return (in<-1e-8)?0.01:1.;};
-double Arcsinh(double in){return std::asinh(in);};
-double Arcsinh_prime(double in){return 1./sqrt(1.+ in*in);};
-double Gaussian(double in){return exp(-pow(in,2));};
-double Gaussian_prime(double in){return -2*in*Gaussian(in);};
-double GaussianAntiSym(double in){
-  double value(0.);
-  if (in > 1e-8) value = 1.-Gaussian(in);
-  else if (in < -1e-8) value = Gaussian(in)-1.;
-  return value;
-}
-double GaussianAntiSym_prime(double in){
-  double value(0.);
-  if (in > 1e-8) value = -Gaussian_prime(in);
-  else if (in < -1e-8) value = Gaussian_prime(in);
-  return value;
-}
-double Sigmoid(double in){return 1./(1+exp(-in));};
-double Sigmoid_prime(double in){return Sigmoid(in)*(1-Sigmoid(in));};
