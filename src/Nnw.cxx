@@ -129,7 +129,10 @@ void NeuralNetwork::updateStateCache() const{
 */
 //---------------------------------------------------------------------------------------------------//
 
-void NeuralNetwork::updateParameters(int method, std::vector<State> const &outputState, double learningRate, int iteration){
+void NeuralNetwork::updateParameters(
+    int method, std::vector<State> const &outputState, double learningRate, 
+    int iteration
+    ){
   //method corresponds to
   // 0: Stochastic gradiend desend
   // 1: Stochastic reconfiguration
