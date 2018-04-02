@@ -13,27 +13,27 @@ double NormalDistribution(double input)
   return nd(rng);
 }
 
-double Tanh_prime(double in){return 1-tanh(in)*tanh(in);};
+double TanhPrime(double in){return 1-tanh(in)*tanh(in);};
 double Tanh(double in){return tanh(in);};
 double Linear(double in) {return in;};
-double Linear_prime(double in){return 1;};
+double LinearPrime(double in){return 1;};
 double Rectifier(double in){return (in<-1e-8)?0.01*in:in;};
-double Rectifier_prime(double in){return (in<-1e-8)?0.01:1.;};
+double RectifierPrime(double in){return (in<-1e-8)?0.01:1.;};
 double Arcsinh(double in){return std::asinh(in);};
-double Arcsinh_prime(double in){return 1./sqrt(1.+ in*in);};
+double ArcsinhPrime(double in){return 1./sqrt(1.+ in*in);};
 double Gaussian(double in){return exp(-pow(in,2));};
-double Gaussian_prime(double in){return -2*in*Gaussian(in);};
+double GaussianPrime(double in){return -2*in*Gaussian(in);};
 double GaussianAntiSym(double in){
   double value(0.);
   if (in > 1e-8) value = 1.-Gaussian(in);
   else if (in < -1e-8) value = Gaussian(in)-1.;
   return value;
 }
-double GaussianAntiSym_prime(double in){
+double GaussianAntiSymPrime(double in){
   double value(0.);
-  if (in > 1e-8) value = -Gaussian_prime(in);
-  else if (in < -1e-8) value = Gaussian_prime(in);
+  if (in > 1e-8) value = -GaussianPrime(in);
+  else if (in < -1e-8) value = GaussianPrime(in);
   return value;
 }
 double Sigmoid(double in){return 1./(1+exp(-in));};
-double Sigmoid_prime(double in){return Sigmoid(in)*(1-Sigmoid(in));};
+double SigmoidPrime(double in){return Sigmoid(in)*(1-Sigmoid(in));};

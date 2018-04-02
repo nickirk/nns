@@ -82,7 +82,7 @@ void NeuralNetwork::initialiseNetwork(){
   //get the address of nablaNNP
   adNablaNNP = &nablaNNP(0);
 }
-//---------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // construction function of the NNW
 void NeuralNetwork::constrInputLayer(int numStates){
 
@@ -93,9 +93,10 @@ void NeuralNetwork::constrInputLayer(int numStates){
   numLayers++;
 }
 
-void NeuralNetwork::constrDenseLayer(std::vector<Eigen::MatrixXd> const 
-                                     &inputs_, double &(actFunc_)(double),
-                                     int size_){
+void NeuralNetwork::constrDenseLayer(
+    std::vector<Eigen::MatrixXd> const &inputs_, double &(actFunc_)(double),
+    int size_
+    ){
   DenseLayer denseLayer(inputs_, actFunc_(double), size_);
   Layers.push_back(denseLayer);
   numLayers++;
@@ -119,7 +120,10 @@ coeffType NeuralNetwork::getCoeff(detType const &det) const{
 }
 
 
-void NeuralNetwork::updateParameters(int method, std::vector<State> const &outputState, double learningRate, int iteration){
+void NeuralNetwork::updateParameters(
+    int method, std::vector<State> const &outputState, double learningRate, 
+    int iteration
+    ){
   //method corresponds to
   // 0: Stochastic gradiend desend
   // 1: Stochastic reconfiguration
@@ -135,15 +139,13 @@ void NeuralNetwork::updateParameters(int method, std::vector<State> const &outpu
     Eigen::MatrixXcd dCdw=calcdCdwSR(outputState);
     Eigen::VectorXcd ci(outputState.size());
     for (size_t i(0); i<outputState.size(); ++i) ci(i) = outputState[i].coeff;
-    //Eigen::Map<Eigen::VectorXcd> ci(&(outputState[0].coeff),outputState.size());
-
     sl.update(NNP,generlisedForce,ci,dCdw, iteration);
   }
   else if (method ==2){
      lamdaS1 = (1+std::sqrt(1+4*lamdaS*lamdaS))/2.;
      gammaS = (1-lamdaS)/(lamdaS1);//*std::exp(-1./100*iteration);
      double rho=0.9;//*std::exp(-1./100*iteration);
-     Egz2 = rho*Egz2.matrix() + (1-rho)*generlisedForce.array().square().matrix();
+     Egz2 = rho*Egz2.matrix()+(1-rho)*generlisedForce.array().square().matrix();
      Egz2 += Eigen::VectorXd::Ones(numNNP)*1e-4;
      Eigen::VectorXd RMS = (Egz2).array().sqrt();
      Eigen::VectorXd tau = learningRate * RMS.array().inverse();
@@ -165,8 +167,11 @@ void NeuralNetwork::updateParameters(int method, std::vector<State> const &outpu
   }
   else if (method == 4){
     if (iteration==0) generlisedForcePrev = generlisedForce;
-    double beta = (generlisedForce.transpose()*(generlisedForce-generlisedForcePrev)/
-                  (generlisedForcePrev.transpose()*generlisedForcePrev))(0);
+    double beta = (
+                    generlisedForce.transpose()
+                    *(generlisedForce-generlisedForcePrev)
+                    /(generlisedForcePrev.transpose()*generlisedForcePrev)
+                  )(0);
     generlisedForce += beta*generlisedForcePrev; 
     //Eigen::MatrixXcd dCdw=calcdCdwSRSR(inputSignalsEpochs, activationsEpochs, outputState);
     //std::vector<coeffType> outputCs = outputState.getAllCoeff();
@@ -179,7 +184,7 @@ void NeuralNetwork::updateParameters(int method, std::vector<State> const &outpu
   }
 }
 
-//---------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const{
   int numStates=det.size();
@@ -193,7 +198,7 @@ Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const{
   return Layers[numLayers-1].activations[0];
 }
 
-//---------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 Eigen::VectorXd NeuralNetwork::backPropagate(
        Eigen::VectorXd const &lastLayerFeedBack
@@ -245,7 +250,7 @@ Eigen::VectorXd NeuralNetwork::backPropagate(
   return nablaNNP;
 }
 
-//---------------------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 Eigen::VectorXd NeuralNetwork::calcNablaNNP(
 	   std::vector<State > const &outputState

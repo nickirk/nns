@@ -10,7 +10,7 @@
 #include "Determinant.hpp"
 
 InputLayer(std::vector<Eigen::VectorXd> const &inputs_, int size_): 
-    Layer(inputs_), numNrn(size_){
+    Layer(inputs_, &Linear(double)), numNrn(size_){
   activations(1,Eigen::VectorXd::Zero(numNrn));
 }
 

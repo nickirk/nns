@@ -11,28 +11,34 @@
 // classes for error handling. This is the way to go for
 // exception handling
 
-class outOfRangeError{
+class OutOfRangeError{
 public:
-	outOfRangeError(int pos_):pos(pos_){};
+	OutOfRangeError(int pos_):pos(pos_){};
 	int pos;
 };
 
-class invalidAnnihilation{
+class InvalidAnnihilation{
 public:
-	invalidAnnihilation(int pos_):pos(pos_){};
+	InvalidAnnihilation(int pos_):pos(pos_){};
 	int pos;
 };
 
-class invalidCreation{
+class InvalidCreation{
 public:
-	invalidCreation(int pos_):pos(pos_){};
+	InvalidCreation(int pos_):pos(pos_){};
 	int pos;
 };
 
-class sizeMismatchError{
+class SizeMismatchError{
 public:
-	sizeMismatchError(int a,int b):sizeA(a),sizeB(b){};
+	SizeMismatchError(int a,int b):sizeA(a),sizeB(b){};
 	int sizeA, sizeB;
 };
+
+class ActFuncDoNotExist{
+  public:
+    ActFuncDoNotExist(std::string actFunc_) actFunc(actFunc_);
+    std::string actFunc;
+}
 
 #endif /* ERRORS_HPP_ */

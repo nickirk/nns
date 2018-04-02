@@ -13,12 +13,13 @@
 
 class DenseLayer: public Layer{
 public:
-  DenseLayer(std::vector<Eigen::MatrixXd> const &inputs_, 
+  DenseLayer(std::vector<Eigen::VectorXd> const &inputs_, 
              double &(actFunc_)(double), int size_) 
   virtual ~DenseLayer();
   void processSignal();
   void mapPara(double *adNNP, int &startPoint);
   void backProp();
+  int numPara;
 private:
   int numNrn;
   //z=w*input+bias, which is an intermediate variable but is needed

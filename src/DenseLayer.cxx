@@ -1,5 +1,5 @@
 /*
- * DenseLayer.hpp
+ * DenseLayer.cxx
  * Created on 06.3.2018
  * Author: Ke Liao 
  */
@@ -10,7 +10,7 @@
 
 DenseLayer(std::vector<Eigen::MatrixXd> const &inputs_, 
            double &(actFunc_)(double), int size_):
-  Layer(inputs_) actFunc(actFunc_), numNrn(size_){
+  Layer(inputs_, &(actFunc_)(double)) numNrn(size_){
   z(inputs.size(),Eigen::VectorXd::Zero(numNrn));  
   activations(1,Eigen::VectorXd::Zero(numNrn));
 }
@@ -28,7 +28,7 @@ void DenseLayer::mapPara(double *adNNP, int &startPoint){
   //biaseTmp /= biaseTmp.size();
   biaseTmp = biaseTmp.unaryExpr(&NormalDistribution);
   biases.push_back(Eigen::Map(Eigen::VectorXd)(adNNP+startPoint, numNrn)); 
-  startPoint+=numNrn*inputs[i].size();
+  startPoint+=numNrn;
 }
 
 void DenseLayer::processSignal(){
