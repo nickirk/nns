@@ -42,7 +42,21 @@ std::vector<Eigen::VectorXd> ConvLayer::convolve(
     Eigen::VectorXd const &input, int startPt
     ){
   for (int i(0); i < numFilters; i++){
-    
+    //calculate the output vector size, there is a formular or work it out
+    //by yourself...I do it later
+    int sizeAct(sth.);
+    for (int j(0); j < sizeAct; j++){		
+   //map the input into a vector which is the same size 
+   //as the filter and then take dot product. 
+   //To map the input into a vector, need the stride size and 
+   //the address of the first element of the input.
+   //How to get the address of the reference?
+   //applying the address-of operator to the reference is the same as taking 
+   //the address of the original object. So just add & in front of input
+    Eigen::Map<Eigen::VectorXd> inputTmp(&input+startPt, sizeFilter);
+    Eigen::VectorXd actTmp(sizeAct);
+    actTmp(j)=inputTmp.dot(Filters(i));
+    }
   } 
   
 }

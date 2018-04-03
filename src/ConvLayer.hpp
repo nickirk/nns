@@ -20,6 +20,7 @@ public:
   int numPara;
 private:
   int numFilters;
+  int sizeFilter;
   int numNrn;
   int stride;
   std::vector<Eigen::VectorXd> convolve(Eigen::VectorXd const& input);
