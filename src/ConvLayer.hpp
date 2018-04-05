@@ -21,6 +21,8 @@ public:
 private:
   int numFilters;
   int sizeFilter;
+  //numNrn here refers to length of the filter, so in total
+  //there should be numNrn*depthLastLayer parameters per filter.
   int numNrn;
   int stride;
   std::vector<Eigen::VectorXd> convolve(Eigen::VectorXd const& input);

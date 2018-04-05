@@ -24,12 +24,17 @@ ConvLayer(
 }
 
 void ConvLayer::mapPara(double *adNNP, int &startPoint){
+  //remember that filters always extend the full depth of the input volume
+  //in our case, a filter is always a 2 dimensional matrix, i.e. length and
+  //depth(=inputs.size())
+  //Damn, it requires higher dimension than 2...
   for(int i(0); i<numFilters; i++){
-    Eigen::Map<Eigen::MatrixXd> weightsTmp(adNNP+startPoint,numNrn, 1);
+    Eigen::Map<Eigen::MatrixXd> weightsTmp(adNNP+startPoint,numNrn, 
+        inputs.size());
     //weightsTmp /= weightsTmp.size();
     weightsTmp = weightsTmp.unaryExpr(&NormalDistribution);
     weights.push_back(weightsTmp);
-    startPoint+=numNrn;
+    startPoint+=numNrni*inputs.size();
   }
   Eigen::Map<Eigen::VectorXd> biaseTmp(adNNP+startPoint,1); 
   //biaseTmp /= biaseTmp.size();
@@ -41,10 +46,11 @@ void ConvLayer::mapPara(double *adNNP, int &startPoint){
 std::vector<Eigen::VectorXd> ConvLayer::convolve(
     Eigen::VectorXd const &input, int startPt
     ){
+  //need to determine the output size. 
+  //calculate the output vector size, 
+  //(N_in-sizeFilter)/stride+1;
+
   for (int i(0); i < numFilters; i++){
-    //calculate the output vector size, there is a formular or work it out
-    //by yourself...I do it later
-    int sizeAct(sth.);
     for (int j(0); j < sizeAct; j++){		
    //map the input into a vector which is the same size 
    //as the filter and then take dot product. 
@@ -58,5 +64,4 @@ std::vector<Eigen::VectorXd> ConvLayer::convolve(
     actTmp(j)=inputTmp.dot(Filters(i));
     }
   } 
-  
 }
