@@ -14,13 +14,13 @@ using namespace Eigen;
 
 using namespace std;
 int main(){
-  int numSites(6);
+  int numSites(19);
   int numStates(2*numSites);
-  int spinUp(3);
-  int spinDown(3);
+  int spinUp(2);
+  int spinDown(2);
   
   vector<int> spinConfig{spinUp, spinDown, numStates};
-  int numHidden(10*numSites);
+  int numHidden(5*numSites);
   //int numHidden1(2*numSites);
   vector<int> size_NNW = {numStates, numHidden, 2};
   //cout << "input number of hidden neurons=";
