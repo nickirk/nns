@@ -20,17 +20,23 @@ public:
   int numPara;
 private:
   int numFilters;
-  int sizeFilter;
-  //numNrn here refers to length of the filter, so in total
-  //there should be numNrn*depthLastLayer parameters per filter.
+  int depthFilter;
+  int lengthFilter;
+  // numNrn here refers to length of the filter, so in total
+  // there should be numNrn*depthLastLayer parameters per filter.
   int numNrn;
   int stride;
-  std::vector<Eigen::VectorXd> convolve(Eigen::VectorXd const& input);
-  //z=w*input+bias, which is an intermediate variable but is needed
-  //during the backpropagation step
+  std::vector<Eigen::VectorXd> convolve();
+  // z=w*input+bias, which is an intermediate variable but is needed
+  // during the backpropagation step
   std::vector<Eigen::VectorXd> z;
+  // each filter (consists of several chanels) shares the same 
+  // bias. So the dimension will be L vector of double
   std::vector<Eigen::Map<Eigen::VectorXd>> biases;
-  std::vector<Eigen::Map<Eigen::MatrixXd>> weights;
+  // the weights have one-to-one correspondance to neurons. 
+  // in convNet, each filter has the same depth as that of the 
+  // previous output signal. So we define it as a Lxlxsize
+  std::vector<std::vector<Eigen::Map<Eigen::MatrixXd>>> weights;
 
 }
 
