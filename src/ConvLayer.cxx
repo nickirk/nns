@@ -10,19 +10,20 @@
 
 ConvLayer(
           std::vector<Eigen::VectorXd> const &inputs_, 
-          double &(actFunc_)(double), int size_,
-          int numFilters_, int lengthFilter_, int stride_
+          double &(actFunc_)(double), 
+          int lengthFilter_, int numFilters_, int stride_
           ):
             Layer(inputs_, &(actFunc_)(double)), 
-            numNrn(size_),
             numFilters(numFilters_),
             depthFilter(inputs_.size()),
             lengthFilter(lengthFilter_),
             stride(stride_){
-  z(inputs.size(),Eigen::VectorXd::Zero(numNrn));  
-  activations(1,Eigen::VectorXd::Zero(numNrn));
-  numPara = numNrn*numFilters+numFilters;
-
+  //sizeAct is the size of the activations of each filter.
+  sizeAct=(inputs[0].size()-lengthFilter)/stride+1;
+  z(numFilters,Eigen::VectorXd::Zero(sizeAct));  
+  activations(numFilters,Eigen::VectorXd::Zero(sizeAct));
+  //checked
+  numPara = depthFilter*lengthFilter*numFilters+numFilters;
 }
 
 void ConvLayer::mapPara(double *adNNP, int &startPoint){
@@ -30,17 +31,15 @@ void ConvLayer::mapPara(double *adNNP, int &startPoint){
   //in our case, a filter consists of several 2 dimensional matrix, i.e. 
   //std::vecotr<Eigen::MatrixXd> (we restrict ourselves for now to one D 
   //system, so the matrix have dimension lx1). 
-  //The size of the vector is the same as the 
-  //inputs.size().
   for(int i(0); i<numFilters; i++){
     std::vector<Eigen::Map<Eigen::MatrixXd>> filterTmp;
     for (int j(0); j < depthFilter; j++){
-      Eigen::Map<Eigen::MatrixXd> weightsTmp(adNNP+startPoint,numNrn, 
+      Eigen::Map<Eigen::MatrixXd> weightsTmp(adNNP+startPoint,lengthFilter, 
           1);
       //weightsTmp /= weightsTmp.size();
       weightsTmp = weightsTmp.unaryExpr(&NormalDistribution);
       filterTmp.push_back(weightsTmp);
-      startPoint+=numNrn;
+      startPoint+=lengthFilter;
     }
     weights.push_back(filterTmp);
     Eigen::Map<Eigen::VectorXd> biaseTmp(adNNP+startPoint,1); 
@@ -51,28 +50,31 @@ void ConvLayer::mapPara(double *adNNP, int &startPoint){
   }
 }
 
-std::vector<Eigen::VectorXd> ConvLayer::convolve(){
+std::vector<Eigen::VectorXd> ConvLayer::processSignal(){
   //need to determine the output size. 
   //calculate the output vector size, 
-  //(N_in-sizeFilter)/stride+1;
-
+  //(N_in-lengthFilter)/stride+1;
   for (int i(0); i < numFilters; i++){
     int startPt(0);
     for (int j(0); j < sizeAct; j++){
-      for (int k(0); k< depthFilter; k++){    
+      for (int k(0); k < depthFilter; k++){    
         //map the input into a vector which is the same size 
         //as the filter and then take dot product. 
         //To map the input into a vector, need the stride size and 
         //the address of the first element of the input.
-        //How to get the address of the reference?
+        //How to get the address of a reference?
         //applying the address-of operator to the reference is 
         //the same as taking 
         //the address of the original object. So just add & in front of input
-         Eigen::Map<Eigen::VectorXd> inputTmp(&inputs[k]+startPt,lengthFilter);
-         Eigen::VectorXd actTmp(sizeAct);
-         actTmp(j)+=inputTmp.dot(Filters(i));
+        Eigen::Map<Eigen::VectorXd> inputTmp(&inputs[k]+startPt,lengthFilter);
+        // dot product 
+        z[i](j)+=inputTmp.transpose() * weights[i][k];
       }
       startPt+=stride;
     }
+    activations[i] = z[i];
+    activations[i].unaryExpr(&actFunc);
   } 
+
 }
+

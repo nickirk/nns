@@ -9,24 +9,23 @@
 class ConvLayer: public Layer {
 public:
   ConvLayer(
-            std::vector<Eigen::VectorXd> const &inputs_, 
-            double &(actFunc_)(double), int numFilters_, 
-            int size_, int stride_
+          std::vector<Eigen::VectorXd> const &inputs_, 
+          double &(actFunc_)(double), 
+          int lengthFilter_, int numFilters_, int stride_
             ) 
   virtual ~ConvLayer();
-  void processSignal();
-  void mapPara(double *adNNP, int &startPoint);
-  void backProp();
-  int numPara;
+  virtual void processSignal();
+  virtual void mapPara(double *adNNP, int &startPoint);
+  virtual void backProp();
+  virtual int getNumPara(){return numPara;};
 private:
+  int numPara;
   int numFilters;
   int depthFilter;
   int lengthFilter;
-  // numNrn here refers to length of the filter, so in total
-  // there should be numNrn*depthLastLayer parameters per filter.
-  int numNrn;
   int stride;
-  std::vector<Eigen::VectorXd> convolve();
+  //sizeAct is the size of the activations of each filter.
+  int sizeAct;
   // z=w*input+bias, which is an intermediate variable but is needed
   // during the backpropagation step
   std::vector<Eigen::VectorXd> z;

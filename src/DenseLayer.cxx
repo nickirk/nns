@@ -13,6 +13,7 @@ DenseLayer(std::vector<Eigen::MatrixXd> const &inputs_,
   Layer(inputs_, &(actFunc_)(double)) numNrn(size_){
   z(inputs.size(),Eigen::VectorXd::Zero(numNrn));  
   activations(1,Eigen::VectorXd::Zero(numNrn));
+  numPara = numNrn*inputs[0].size()*inputs.size()+numNrn;
 }
 
 void DenseLayer::mapPara(double *adNNP, int &startPoint){
@@ -22,7 +23,7 @@ void DenseLayer::mapPara(double *adNNP, int &startPoint){
     //weightsTmp /= weightsTmp.size();
     weightsTmp = weightsTmp.unaryExpr(&NormalDistribution);
     weights.push_back(weightsTmp);
-    startPoint+=numNrn*inputs[i].size();
+    startPoint += numNrn*inputs[i].size();
   }
   Eigen::Map<Eigen::VectorXd> biaseTmp(adNNP+startPoint,numNrn); 
   //biaseTmp /= biaseTmp.size();

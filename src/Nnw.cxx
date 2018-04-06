@@ -61,7 +61,7 @@ void NeuralNetwork::initialiseNetwork(){
   //calculate the size of the NNP array:
   numNNP=0;
   for (int layer(0); layer<numLayers; ++layer){
-    numNNP+=Layers[layer].numPara;
+    numNNP+=Layers[layer].getNumPara();
   }
   NNP = Eigen::VectorXd::Ones(numNNP);
   adNNP = &NNP(0);

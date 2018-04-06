@@ -33,7 +33,6 @@ Layer(std::vector<Eigen::VectorXd> const &inputs_, string actFunc_)
     actFuncPrime = &RectifierPrime(double);
   }
   else 
-
 }
 
 #endif

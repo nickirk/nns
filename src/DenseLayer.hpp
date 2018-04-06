@@ -16,11 +16,13 @@ public:
   DenseLayer(std::vector<Eigen::VectorXd> const &inputs_, 
              double &(actFunc_)(double), int size_) 
   virtual ~DenseLayer();
-  void processSignal();
-  void mapPara(double *adNNP, int &startPoint);
-  void backProp();
-  int numPara;
+  virtual void processSignal();
+  virtual void backProp();
+  virtual void mapPara(double *adNNP, int &startPoint);
+  virtual int getNumPara(return numPara;);
+ 
 private:
+  int numPara;
   int numNrn;
   //z=w*input+bias, which is an intermediate variable but is needed
   //during the backpropagation step

@@ -16,14 +16,21 @@ class Layer{
 public:
 	Layer(std::vector<Eigen::VectorXd> const &inputs_, string actFunc_);
 	virtual ~Layer();
+  //functional functions
   virtual void processSignal();
-  virtual void updatePara();
+  // update of parameters will be done on network level, not on layer level.
+  //virtual void updatePara();
+  virtual void backProp();
+  virtual void mapPara(double *adNNP, int &startPoint);
+  virtual void initialise(Eigen::VectorXd const &NNP);
+  //interface for accessing data
   virtual std::vector<Eigen::VectorXd> getInputs(){return inputs;};
   virtual std::vector<Eigen::VectorXd> getActs(){return activations;};
-  virtual void initialise(Eigen::VectorXd const &NNP);
+  virtual int getNumPara();
+protected:
   doulbe &actFunc; 
   doulbe &actFuncPrime; 
-protected:
+  int numPara;
 	std::vector<Eigen::VectorXd> inputs;
 	std::vector<Eigen::VectorXd> activations;
 }
