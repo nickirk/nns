@@ -26,7 +26,8 @@ class NeuralNetwork{
 public:
   NeuralNetwork();
   ~NeuralNetwork();
-  NeuralNetwork(Hamiltonian const &H_, std::vector<int> const &sizes_, CostFunction const &externalCF);
+  NeuralNetwork(Hamiltonian const &H_, std::vector<int> const &sizes_, 
+                CostFunction const &externalCF);
   //construction functions for NNW
   void constrDenseLayer(std::vector<Eigen::MatrixXd> const &inputs_,
                         double &(actFunc_)(double),int size_);
@@ -40,7 +41,8 @@ public:
   void setCostFunction(CostFunction const &externalCF) {cf = &externalCF;}
   //functionalities of NNW
   Eigen::VectorXd feedForward(detType const& det) const;
-  void updateParameters(int method, std::vector<State> const &outputState, double learningRate, int iteration);
+  void updateParameters(int method, std::vector<State> const &outputState, 
+                        double learningRate, int iteration);
 
   //interface API
   coeffType getCoeff(detType const &det) const;
@@ -52,7 +54,7 @@ private:
   // Hamiltonian
   Hamiltonian const &H;
   //Structure of the NNW
-  std::vector<Layer> Layers;
+  std::vector<Layer*> Layers;
   //variables for RMSprop
   double momentumDamping;
   bool momentum;

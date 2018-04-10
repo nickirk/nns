@@ -12,7 +12,7 @@
 #include "CostFunction.hpp"
 #include "State.hpp"
 #include "Hamiltonian.hpp"
-#include "CoeffType.hpp"
+#include "TypeDefine.hpp"
 
 class EnergyEstimator: public CostFunction{
 public:

@@ -20,6 +20,10 @@ public:
   virtual void backProp();
   virtual void mapPara(double *adNNP, int &startPoint);
   virtual int getNumPara(return numPara;);
+  //want to achieve the effect of returning reference instead of making a 
+  //copy. But Eigen::Map is already a referece object..
+  weightType & getWeights(return &weights) const;
+  biasType & getbiases(return &biases) const;
  
 private:
   int numPara;
@@ -27,8 +31,10 @@ private:
   //z=w*input+bias, which is an intermediate variable but is needed
   //during the backpropagation step
   std::vector<Eigen::VectorXd> z;
-  std::vector<Eigen::Map<Eigen::VectorXd>> biases;
-  std::vector<Eigen::Map<Eigen::MatrixXd>> weights;
+  biasType biases;
+  weightType weights;
+  biasType nablaBiases;
+  weightType nablaWeights;
 }
 
 #endif

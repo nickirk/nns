@@ -7,7 +7,7 @@
 
 #include <math.h>
 #include "NormCF.hpp"
-#include "CoeffType.hpp"
+#include "TypeDefine.hpp"
 
 std::vector<Eigen::VectorXd > NormCF::nabla(std::vector<State> const &input) const{
 	std::vector<Eigen::VectorXd > cfBuf(input.size());

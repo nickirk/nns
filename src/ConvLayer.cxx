@@ -22,6 +22,7 @@ ConvLayer(
   sizeAct=(inputs[0].size()-lengthFilter)/stride+1;
   z(numFilters,Eigen::VectorXd::Zero(sizeAct));  
   activations(numFilters,Eigen::VectorXd::Zero(sizeAct));
+  deltas(numFilters,Eigen::VectorXd::Zero(sizeAct));
   //checked
   numPara = depthFilter*lengthFilter*numFilters+numFilters;
 }
@@ -67,8 +68,11 @@ std::vector<Eigen::VectorXd> ConvLayer::processSignal(){
         //the same as taking 
         //the address of the original object. So just add & in front of input
         Eigen::Map<Eigen::VectorXd> inputTmp(&inputs[k]+startPt,lengthFilter);
-        // dot product 
-        z[i](j)+=inputTmp.transpose() * weights[i][k];
+        // dot product with a reversed weight matrix, due to the mathematical 
+        // definition of convolution. Since here the weight matrix is nx1, 
+        // which is column major, so reverse colwise.
+        z[i](j)+=inputTmp.transpose() * weights[i][k].colwise().reverse()
+                  +biases[i];
       }
       startPt+=stride;
     }

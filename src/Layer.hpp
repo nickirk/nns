@@ -10,6 +10,7 @@
 #include <vector>
 #include <Eigen/Dense>
 #include <string>
+#include "TypeDefine.hpp"
 #include "math/MathFunctions.hpp"
 
 class Layer{
@@ -33,6 +34,7 @@ protected:
   int numPara;
 	std::vector<Eigen::VectorXd> inputs;
 	std::vector<Eigen::VectorXd> activations;
+  std::vector<Eigen::VectorXd> deltas;
 }
 
 #endif

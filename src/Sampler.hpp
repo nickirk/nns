@@ -11,7 +11,7 @@
 #include "Determinant.hpp"
 #include "Basis.hpp"
 #include "Hamiltonian.hpp"
-#include "CoeffType.hpp"
+#include "TypeDefine.hpp"
 #include "Nnw.hpp"
 
 class Sampler{

@@ -6,6 +6,10 @@
 #ifndef ConvLayer_DEFINED
 #define ConvLayer_DEFINED
 
+#include <vector>
+#include <Eigen/Dense>
+#include "Layer.hpp"
+
 class ConvLayer: public Layer {
 public:
   ConvLayer(
@@ -18,6 +22,9 @@ public:
   virtual void mapPara(double *adNNP, int &startPoint);
   virtual void backProp();
   virtual int getNumPara(){return numPara;};
+  //interface
+  weightType & getWeights(return &weights) const;
+  biasType & getbiases(return &biases) const;
 private:
   int numPara;
   int numFilters;
@@ -31,12 +38,11 @@ private:
   std::vector<Eigen::VectorXd> z;
   // each filter (consists of several chanels) shares the same 
   // bias. So the dimension will be L vector of double
-  std::vector<Eigen::Map<Eigen::VectorXd>> biases;
+  biasType biases;
   // the weights have one-to-one correspondance to neurons. 
   // in convNet, each filter has the same depth as that of the 
   // previous output signal. So we define it as a Lxlxsize
-  std::vector<std::vector<Eigen::Map<Eigen::MatrixXd>>> weights;
-
+  weightType weights;
 }
 
 
