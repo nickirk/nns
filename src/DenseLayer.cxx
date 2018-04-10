@@ -56,9 +56,9 @@ void DenseLayer::backProp(
     std::vector<Eigen::VectorXd> prevDelta, 
     weightType &prevWeights;
     ){
-    deltas[0] = prevWeights[0][0].transpose() * deltaPreviousLayer; 
+    deltas[0] = prevWeights[0][0].transpose() * prevDelta; 
     deltas[0] = deltas[0].array()* z[0].unaryExpr(&actFuncPrime).array();
-    nablaBiases[0] = delta[0];
+    nablaBiases[0] = deltas[0];
     //get a weight matrix. \partial C/\partial w^{l}_{jk} = a^{l-1}_k \delta_j^l 
     //the layer here refers to the lth layer of Biases and weights, so for
     //activation layer refers to the l-1th layer.

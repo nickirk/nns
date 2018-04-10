@@ -14,10 +14,13 @@
 class DenseLayer: public Layer{
 public:
   DenseLayer(std::vector<Eigen::VectorXd> const &inputs_, 
-             double &(actFunc_)(double), int size_) 
+             double &(actFunc_)(double), int size_);
   virtual ~DenseLayer();
   virtual void processSignal();
-  virtual void backProp();
+  virtual void backProp(
+                        std::vector<Eigen::VectorXd> prevDelta, 
+                        weightType &prevWeights
+                        );
   virtual void mapPara(double *adNNP, int &startPoint);
   virtual int getNumPara(return numPara;);
   //want to achieve the effect of returning reference instead of making a 
@@ -25,7 +28,7 @@ public:
   weightType & getWeights(return &weights) const;
   biasType & getbiases(return &biases) const;
  
-private:
+protected:
   int numPara;
   int numNrn;
   //z=w*input+bias, which is an intermediate variable but is needed
