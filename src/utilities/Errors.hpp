@@ -37,8 +37,8 @@ public:
 
 class ActFuncDoNotExist{
   public:
-    ActFuncDoNotExist(std::string actFunc_) actFunc(actFunc_);
+    ActFuncDoNotExist(std::string actFunc_):actFunc(actFunc_);
     std::string actFunc;
-}
+};
 
 #endif /* ERRORS_HPP_ */

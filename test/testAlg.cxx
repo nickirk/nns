@@ -20,9 +20,7 @@ int main(){
   int spinDown(4);
   
   vector<int> spinConfig{spinUp, spinDown, numStates};
-  int numHidden(10*numSites);
   //int numHidden1(2*numSites);
-  vector<int> size_NNW = {numStates, numHidden, 2};
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
   double trainRate(1.5);
@@ -55,7 +53,11 @@ int main(){
   std::cout<<"Listsize= "<<list.size()<<std::endl;
   EnergyEstimator eCF(modelHam);
   //Neural network takes in the size and the cost function.
-  NeuralNetwork NNW(modelHam,size_NNW, eCF);
+  NeuralNetwork NNW(modelHam, eCF);
+  NNW.constrInputLayer(numStates);
+  NNW.constrDenseLayer(NNW[0].getActs(), Tanh, 10);
+  NNW.constrOutputLayer(NNW[1].getActs(), Linear, 2);
+  NNW.initialiseNetwork();
   // numDetsToTrain_ is the total number you want to keep in the list 
   // during the training process. By default it is the whole Hilbert space.
   // But for a stochastic diffuse process, much less is needed. One should 

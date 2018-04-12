@@ -15,7 +15,7 @@ class OutputLayer: public DenseLayer{
 public:
   OutputLayer(std::vector<Eigen::VectorXd> const &inputs_, 
              double &(actFunc_)(double), int size_) 
-  void backProp();
+  virtual void backProp(Eigen::VectorXd dCostdC);
 }
 
 #endif

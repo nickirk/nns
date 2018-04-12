@@ -20,4 +20,4 @@
 using coeffType = std::complex<double>;
 using weightType = std::vector<std::vector<Eigen::Map<Eigen::MatrixXd>>>;
 using biasType = std::vector<Eigen::Map<Eigen::VectorXd>>;
-#endif /* SRC_COEFFTYPE_HPP_ */
+#endif /* SRC_TYPEDEFINE_HPP_ */

@@ -14,13 +14,12 @@ OutputLayer(std::vector<Eigen::VectorXd> const &inputs_,
            double &(actFunc_)(double), int size_):
   DenseLayer(inputs_, &(actFunc_)(double), size_);
 
-
 void DenseLayer::backProp(
-    std::vector<Eigen::VectorXd> prevDelta, 
-    weightType &prevWeights;
+    Eigen::VectorXd dCostdC
     ){
-    deltas[0] = prevWeights[0][0].transpose() * prevDelta; 
-    deltas[0] = deltas[0].array()* z[0].unaryExpr(&actFuncPrime).array();
+    deltas[0] = 
+    (dCostdC.array() * 
+    z[0].unaryExpr(&actFuncPrime).array()).matrix();
     nablaBiases[0] = deltas[0];
     //get a weight matrix. \partial C/\partial w^{l}_{jk} = a^{l-1}_k \delta_j^l 
     //the layer here refers to the lth layer of Biases and weights, so for

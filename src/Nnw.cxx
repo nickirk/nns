@@ -19,8 +19,7 @@
 
 
 NeuralNetwork::NeuralNetwork(Hamiltonian const &H_, 
-  CostFunction const &externalCF):H(H_), sizes(sizes_), cf(&externalCF), 
-  sl(Solver(0.5)){
+  CostFunction const &externalCF):H(H_), cf(&externalCF), sl(Solver(0.5)){
   //initial value for NNW para
   numLayers = 0;
   generlisedForcePrev = Eigen::VectorXd::Zero(numNNP);
@@ -99,6 +98,16 @@ void NeuralNetwork::constrDenseLayer(
     ){
   DenseLayer denseLayer(inputs_, actFunc_(double), size_);
   Layers.push_back(denseLayer);
+  numLayers++;
+}
+
+void NeuralNetwork::constrOutputLayer(
+    std::vector<Eigen::VectorXd> const &inputs_, 
+    double &(actFunc_)(double), 
+    int size_
+    ){
+  OutputLayer outputLayer(inputs_, actFunc_(double), size_);
+  Layers.push_back(outputLayer);
   numLayers++;
 }
 /*
@@ -195,7 +204,7 @@ Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const{
   for (int layer(0); layer < numLayers; ++layer){
       Layers[layer].processSignal();
   }
-  return Layers[numLayers-1].activations[0];
+  return Layers[numLayers-1].getActs[0];
 }
 
 //---------------------------------------------------------------------------//
@@ -205,7 +214,12 @@ Eigen::VectorXd NeuralNetwork::backPropagate(
      ){
   //everytime the backPropagate is called, we should reset nabla* to zero.
   nablaNNP *= 0.;
+  Layers[numLayers-1].backProp(lastLayerFeedBack);
+  for (size_t layer(numLayers-2); layer > 0; layer--){
+    Layers[layer].backProp(Layers[layer+1].getDeltas());
+  }
 
+/*
   Eigen::VectorXd deltaTheLastLayer;
   deltaTheLastLayer = 
   (lastLayerFeedBack.array() * 
@@ -247,6 +261,7 @@ Eigen::VectorXd NeuralNetwork::backPropagate(
     //activation layer refers to the l-1th layer.
     nablaWeights[layer] = deltaThisLayer * activations[layer].transpose();
   }
+*/
   return nablaNNP;
 }
 

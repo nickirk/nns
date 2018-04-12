@@ -9,35 +9,33 @@
 
 #include <vector>
 #include <Eigen/Dense>
+#include <string>
 #include "Layer.hpp"
 
 class DenseLayer: public Layer{
 public:
   DenseLayer(std::vector<Eigen::VectorXd> const &inputs_, 
-             double &(actFunc_)(double), int size_);
+             int actFunc_, int size_);
   virtual ~DenseLayer();
   virtual void processSignal();
   virtual void backProp(
                         std::vector<Eigen::VectorXd> prevDelta, 
                         weightType &prevWeights
                         );
-  virtual void mapPara(double *adNNP, int &startPoint);
-  virtual int getNumPara(return numPara;);
+  virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint){};
+  virtual int getNumPara(){return numPara;};
   //want to achieve the effect of returning reference instead of making a 
   //copy. But Eigen::Map is already a referece object..
-  weightType & getWeights(return &weights) const;
-  biasType & getbiases(return &biases) const;
+  const weightType & getWeights(){return weights;};
+  const biasType & getbiases(){return biases;};
  
 protected:
   int numPara;
   int numNrn;
-  //z=w*input+bias, which is an intermediate variable but is needed
-  //during the backpropagation step
-  std::vector<Eigen::VectorXd> z;
   biasType biases;
   weightType weights;
   biasType nablaBiases;
   weightType nablaWeights;
-}
+};
 
 #endif

@@ -10,7 +10,7 @@
 #include "../src/EnergyCF.hpp"
 #include "../src/State.hpp"
 #include "../src/Determinant.hpp"
-#include "../src/CoeffType.hpp"
+#include "../src/TypeDefine.hpp"
 #include "../src/Basis.hpp"
 
 int main(){
