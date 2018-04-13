@@ -15,12 +15,15 @@
 class DenseLayer: public Layer{
 public:
   DenseLayer(std::vector<Eigen::VectorXd> const &inputs_, 
-             int actFunc_, int size_);
+             std::string actFunc_, int size_);
   virtual ~DenseLayer();
   virtual void processSignal();
   virtual void backProp(
                         std::vector<Eigen::VectorXd> prevDelta, 
                         weightType &prevWeights
+                        );
+  virtual void backProp(
+                        Eigen::VectorXd dCostdC
                         );
   virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint){};
   virtual int getNumPara(){return numPara;};

@@ -10,12 +10,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Core>
 #include <complex>
-#include "State.hpp"
 #include "Nnw.hpp"
-#include "utilities/Errors.hpp"
-#include "NormCF.hpp"
-#include "Solver.hpp"
-#include "Layer.hpp"
 
 
 NeuralNetwork::NeuralNetwork(Hamiltonian const &H_, 
@@ -60,13 +55,16 @@ void NeuralNetwork::initialiseNetwork(){
   //calculate the size of the NNP array:
   numNNP=0;
   for (int layer(0); layer<numLayers; ++layer){
-    numNNP+=Layers[layer].getNumPara();
+    numNNP+=Layers[layer]->getNumPara();
   }
   NNP = Eigen::VectorXd::Ones(numNNP);
   adNNP = &NNP(0);
+  nablaNNP = Eigen::VectorXd::Zero(numNNP);
+  //get the address of nablaNNP
+  adNablaNNP = &nablaNNP(0);
   int startPoint(0);
   for (int layer(0); layer<numLayers; ++layer){
-    Layers[layer].mapPara(adNNP, startPoint);
+    Layers[layer]->mapPara(adNNP, adNablaNNP, startPoint);
   /*
   //initial activity signals. 
   activations.push_back(Eigen::VectorXd::Zero(sizes[0]));
@@ -77,30 +75,28 @@ void NeuralNetwork::initialiseNetwork(){
   }
   */
   }
-  nablaNNP = Eigen::VectorXd::Zero(numNNP);
-  //get the address of nablaNNP
-  adNablaNNP = &nablaNNP(0);
 }
 //---------------------------------------------------------------------------//
 // construction function of the NNW
 void NeuralNetwork::constrInputLayer(int numStates){
 
-  feedIns(1,Eigen::VectorXd::Zero(numStates));
+  feedIns=Eigen::VectorXd::Zero(numStates);
 
   InputLayer inputLayer(feedIns, numStates);
-  Layers.push_back(inputLayer);
+  Layers.push_back(&inputLayer);
   numLayers++;
 }
 
 void NeuralNetwork::constrDenseLayer(
-    std::vector<Eigen::MatrixXd> const &inputs_, double &(actFunc_)(double),
+    std::vector<Eigen::VectorXd> const &inputs_, std::string actFunc_,
     int size_
     ){
-  DenseLayer denseLayer(inputs_, actFunc_(double), size_);
-  Layers.push_back(denseLayer);
+  DenseLayer denseLayer(inputs_, actFunc_, size_);
+  Layers.push_back(&denseLayer);
   numLayers++;
 }
 
+/*
 void NeuralNetwork::constrOutputLayer(
     std::vector<Eigen::VectorXd> const &inputs_, 
     double &(actFunc_)(double), 
@@ -110,7 +106,6 @@ void NeuralNetwork::constrOutputLayer(
   Layers.push_back(outputLayer);
   numLayers++;
 }
-/*
 void NeuralNetwork::constrConvLayer(std::vector<Eigen::MatrixXd> const 
                                      &inputs_,double &(actFunc_)(double),
                                      int size_){
@@ -121,12 +116,12 @@ void NeuralNetwork::constrConvLayer(std::vector<Eigen::MatrixXd> const
 */
 
 
-coeffType NeuralNetwork::getCoeff(detType const &det) const{
-	//Run the network
-	feedForward(det);
-	// and extract the coefficient from the last layer
-	return outputLayer();
-}
+//coeffType NeuralNetwork::getCoeff(detType const &det) const{
+//	//Run the network
+//	feedForward(det);
+//	// and extract the coefficient from the last layer
+//	return outputLayer();
+//}
 
 
 void NeuralNetwork::updateParameters(
@@ -198,13 +193,13 @@ void NeuralNetwork::updateParameters(
 Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const{
   int numStates=det.size();
   for (int state=0; state<numStates; ++state){
-    feedIns[0](state) = det[state]?1.0:-1.0;
+    feedIns(state) = det[state]?1.0:-1.0;
   }
 
   for (int layer(0); layer < numLayers; ++layer){
-      Layers[layer].processSignal();
+      Layers[layer]->processSignal();
   }
-  return Layers[numLayers-1].getActs[0];
+  return Layers[numLayers-1]->getActs()[0];
 }
 
 //---------------------------------------------------------------------------//
@@ -214,54 +209,11 @@ Eigen::VectorXd NeuralNetwork::backPropagate(
      ){
   //everytime the backPropagate is called, we should reset nabla* to zero.
   nablaNNP *= 0.;
-  Layers[numLayers-1].backProp(lastLayerFeedBack);
+  Layers[numLayers-1]->backProp(lastLayerFeedBack);
   for (size_t layer(numLayers-2); layer > 0; layer--){
-    Layers[layer].backProp(Layers[layer+1].getDeltas());
+    Layers[layer]->backProp(Layers[layer+1]->getDeltas());
   }
 
-/*
-  Eigen::VectorXd deltaTheLastLayer;
-  deltaTheLastLayer = 
-  (lastLayerFeedBack.array() * 
-  inputSignals[numLayersNeuron-1].unaryExpr(&Linear_prime).array()).matrix();
-  //adding up all nablaBiases and nablaWeights, in the end use the average
-  //of them to determine the final change of the weights and biases.
-  //Treat them as Vectors and Matrices.
-  //Starting from the last layer of neuron and backpropagate the error.
-  //nablaWeights have the same structure as weights, only numLayers-2 layers.
-  std::vector<Eigen::VectorXd> deltaAllLayers;
-  deltaAllLayers.push_back(deltaTheLastLayer);
-  nablaBiases[numLayers-1] = deltaTheLastLayer;
-  nablaWeights[numLayers-1] = 
-    deltaTheLastLayer * activations[numLayersNeuron-2].transpose();
-  for (int layer=numLayers-2; layer >= 0; --layer){
-    //Calculating the error from the second last layer to
-    //the 1st layer (0th layer is the input neurons, have no biases.)
-    //Remember weights have only 0th -- numLayers-2 layers.
-    Eigen::VectorXd deltaPreviousLayer=deltaAllLayers[numLayers-2-layer];
-    Eigen::VectorXd deltaThisLayer;
-    //MatrixXd deltaAsDiagonal;
-    //\delta_l = ((weights_{l+1, l}^T\delta^{l+1})) .* tanh'(z^l);
-    //where ^T means transpose, l means lth layer, tanh' means the derivative
-    //of tanh and z^l= tanh(weights_{l,l-1}activations^{l-1}) is the input signal 
-    //on the lth layer neurons, where weights_{l, l-1} corresponds to the 
-    //connections between the lth and l-1 th layers of neurons. Notice
-    // .* means elementwise multiply.
-    
-    deltaThisLayer = weights[layer+1].transpose() * deltaPreviousLayer; 
-    //To achive elementwise multiply, form a diagonal vector.
-    //deltaAsDiagonal = deltaThisLayer.asDiagonal();
-
-    deltaThisLayer = deltaThisLayer.array()
-       * inputSignals[layer+1].unaryExpr(&Tanh_prime).array();
-    deltaAllLayers.push_back(deltaThisLayer);
-    nablaBiases[layer] = deltaThisLayer;
-    //get a weight matrix. \partial C/\partial w^{l}_{jk} = a^{l-1}_k \delta_j^l 
-    //the layer here refers to the lth layer of Biases and weights, so for
-    //activation layer refers to the l-1th layer.
-    nablaWeights[layer] = deltaThisLayer * activations[layer].transpose();
-  }
-*/
   return nablaNNP;
 }
 

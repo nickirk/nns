@@ -8,7 +8,8 @@
 #include <Eigen/Dense>
 #include "DenseLayer.hpp"
 
-DenseLayer::DenseLayer(std::vector<Eigen::VectorXd> const &inputs_, int actFunc_, int size_):
+DenseLayer::DenseLayer(std::vector<Eigen::VectorXd> const &inputs_, 
+    std::string actFunc_, int size_):
   Layer(inputs_, actFunc_), numNrn(size_){
   z(inputs.size(),Eigen::VectorXd::Zero(numNrn));  
   activations(1,Eigen::VectorXd::Zero(numNrn));
@@ -61,4 +62,18 @@ void DenseLayer::backProp(std::vector<Eigen::VectorXd> prevDelta,
     //activation layer refers to the l-1th layer.
     for (size_t i(0); i < inputs.size(); i++)
       nablaWeights[0][i] = deltas[0] * inputs[i].transpose();
+}
+
+void DenseLayer::backProp(
+    Eigen::VectorXd dCostdC
+    ){
+    deltas[0] = 
+    (dCostdC.array() * 
+    z[0].unaryExpr(&actFuncPrime).array()).matrix();
+    nablaBiases[0] = deltas[0];
+    //get a weight matrix. \partial C/\partial w^{l}_{jk} = a^{l-1}_k \delta_j^l 
+    //the layer here refers to the lth layer of Biases and weights, so for
+    //activation layer refers to the l-1th layer.
+    for (size_t i(0); i < inputs.size(); i++)
+      nablaWeights[0][i] = delta[0] * inputs[i].transpose();
 }

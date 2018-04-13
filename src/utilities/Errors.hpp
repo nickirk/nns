@@ -35,10 +35,10 @@ public:
 	int sizeA, sizeB;
 };
 
-class ActFuncDoNotExist{
-  public:
-    ActFuncDoNotExist(std::string actFunc_):actFunc(actFunc_);
-    std::string actFunc;
-};
+//class ActFuncDoNotExist{
+//  public:
+//    ActFuncDoNotExist(std::string actFunc_):actFunc(actFunc_);
+//    std::string actFunc;
+//};
 
 #endif /* ERRORS_HPP_ */

@@ -11,7 +11,7 @@
 #include "math/MathFunctions.hpp"
 #include "Layer.hpp"
 
-Layer::Layer(std::vector<Eigen::VectorXd> const &inputs_, int actFunc_):
+Layer::Layer(std::vector<Eigen::VectorXd> const &inputs_, std::string actFunc_):
 inputs(inputs_){
   //default activation function
   actFunc=&Tanh;

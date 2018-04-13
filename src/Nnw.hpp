@@ -11,6 +11,7 @@
 #include <vector>
 #include <stdio.h>
 #include <complex>
+#include <string>
 #include <Eigen/Dense>
 #include "math/MathFunctions.hpp"
 #include "CostFunction.hpp"
@@ -20,6 +21,8 @@
 #include "State.hpp"
 #include "Solver.hpp"
 #include "Layer.hpp"
+#include "InputLayer.hpp"
+#include "DenseLayer.hpp"
 #include "TypeDefine.hpp"
 
 const std::complex<double> ii(0.,1.);
@@ -31,20 +34,20 @@ public:
                 CostFunction const &externalCF);
   //construction functions for NNW
   void constrDenseLayer(
-      std::vector<Eigen::MatrixXd> const &inputs_,
-      double &(actFunc_)(double),
+      std::vector<Eigen::VectorXd> const &inputs_,
+      std::string actFunc_,
       int size_);
 
   //void constrConvLayer();
 
   void constrInputLayer(int numNrn);
-  
+ /* 
   void constrOutputLayer(
       std::vector<Eigen::VectorXd> const &inputs_, 
       double &(actFunc_)(double), 
       int size_
-      ){
-
+      );
+ */
   void initialiseNetwork();
 
   void setCostFunction(CostFunction const &externalCF) {cf = &externalCF;};
@@ -56,8 +59,8 @@ public:
   //interface API
   coeffType getCoeff(detType const &det) const;
   CostFunction const* getCostFunction() const {return cf;};
-  Eigen::Map<Eigen::MatrixXd> getWeights(int layer) const {return weights[layer];};
-  Eigen::Map<Eigen::VectorXd> getBiases(int layer) const {return biases[layer];};
+  //Eigen::Map<Eigen::MatrixXd> getWeights(int layer) const {return weights[layer];};
+  //Eigen::Map<Eigen::VectorXd> getBiases(int layer) const {return biases[layer];};
 
 private:
   // Hamiltonian
@@ -92,7 +95,7 @@ private:
   double *adNNP;
   Eigen::VectorXd nablaNNP;
   double *adNablaNNP;
-  std::vector<Eigen::VectorXd> feedIns;
+  Eigen::VectorXd feedIns;
 
   CostFunction const *cf;
   Solver sl;
@@ -108,10 +111,10 @@ private:
   Eigen::MatrixXcd calcdCdwSR(
     std::vector<State> const &outputState
        );
-  coeffType outputLayer() const {	
-    size_t numLayers{sizes.size()};
-  	return coeffType(activations[numLayers-1][0],activations[numLayers-1][1]);
-  }
+  //coeffType outputLayer() const {	
+  //  size_t numLayers{sizes.size()};
+  //	return coeffType(activations[numLayers-1][0],activations[numLayers-1][1]);
+  //}
 };
 
 #endif
