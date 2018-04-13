@@ -8,33 +8,27 @@
 #include <vector>
 #include <Eigen/Dense>
 #include <string>
-#include "math/MathFunctions.hpp"
 #include "Layer.hpp"
 
 Layer::Layer(std::vector<Eigen::VectorXd> const &inputs_, std::string actFunc_):
 inputs(inputs_){
   //default activation function
-  actFunc=&Tanh;
-  actFuncPrime=&TanhPrime;
   numPara=0;
-  if (actFunc_ == Linear){
-    actFunc(&Linear(double));
-    actFuncPrime(&LinearPrime(double));
+  if (actFunc_ == "Linear"){
+    actFunc=&Linear;
+    actFuncPrime=&LinearPrime;
   }
-  else if (actFunc_ == Tanh){
-    actFunc(&Tanh(double));
-    actFuncPrime(&TanhPrime(double));
+  else if (actFunc_ == "Tanh"){
+    actFunc=&Tanh;
+    actFuncPrime=&TanhPrime;
   }
-  else if (actFunc_ == Sigmoid){
-    actFunc(&Sigmoid(double));
-    actFuncPrime(&SigmoidPrime(double));
+  else if (actFunc_ == "Sigmoid"){
+    actFunc=&Sigmoid;
+    actFuncPrime=&SigmoidPrime;
   }
-  else if (actFunc_ == Sigmoid){
-    actFunc(&Sigmoid(double));
-    actFuncPrime(&SigmoidPrime(double));
+  else if (actFunc_ == "Rectifier"){
+    actFunc=&Rectifier;
+    actFuncPrime=&RectifierPrime;
   }
-  else if (actFunc_ == Rectifier){
-    actFunc(&Rectifier(double));
-    actFuncPrime(&RectifierPrime(double));
-  }
+  else throw ActFuncDoNotExist(actFunc_);
 }

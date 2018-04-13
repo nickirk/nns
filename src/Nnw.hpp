@@ -59,6 +59,7 @@ public:
   //interface API
   coeffType getCoeff(detType const &det) const;
   CostFunction const* getCostFunction() const {return cf;};
+  Layer* getLayer(int layer){return Layers[layer];};
   //Eigen::Map<Eigen::MatrixXd> getWeights(int layer) const {return weights[layer];};
   //Eigen::Map<Eigen::VectorXd> getBiases(int layer) const {return biases[layer];};
 
@@ -95,7 +96,7 @@ private:
   double *adNNP;
   Eigen::VectorXd nablaNNP;
   double *adNablaNNP;
-  Eigen::VectorXd feedIns;
+  std::vector<Eigen::VectorXd> feedIns;
 
   CostFunction const *cf;
   Solver sl;
@@ -111,10 +112,8 @@ private:
   Eigen::MatrixXcd calcdCdwSR(
     std::vector<State> const &outputState
        );
-  //coeffType outputLayer() const {	
-  //  size_t numLayers{sizes.size()};
-  //	return coeffType(activations[numLayers-1][0],activations[numLayers-1][1]);
-  //}
+  coeffType outputLayer() const {
+  	return coeffType(Layers[numLayers-1]->getActs()[0][0],Layers[numLayers-1]->getActs()[0][1]);
+  };
 };
-
 #endif

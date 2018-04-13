@@ -157,10 +157,10 @@ double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
 //  std::cout << "size d=" << d << " alpha size=" << alpha.size() << " beta size" << beta.size() << std::endl;
     if(static_cast<int>(alpha.size())!=d || d!=static_cast<int>(beta.size())){
       if(alpha.size()==beta.size()){
-      	throw sizeMismatchError(d,alpha.size());
+      	throw SizeMismatchError(d,alpha.size());
       }
       else{
-      	throw sizeMismatchError(alpha.size(),beta.size());
+      	throw SizeMismatchError(alpha.size(),beta.size());
       }
     }
 

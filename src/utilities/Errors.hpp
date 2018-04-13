@@ -7,7 +7,7 @@
 
 #ifndef ERRORS_HPP_
 #define ERRORS_HPP_
-
+#include <string>
 // classes for error handling. This is the way to go for
 // exception handling
 
@@ -35,10 +35,10 @@ public:
 	int sizeA, sizeB;
 };
 
-//class ActFuncDoNotExist{
-//  public:
-//    ActFuncDoNotExist(std::string actFunc_):actFunc(actFunc_);
-//    std::string actFunc;
-//};
+class ActFuncDoNotExist{
+  public:
+    ActFuncDoNotExist(std::string actFunc_):actFunc(actFunc_){};
+    std::string actFunc;
+};
 
 #endif /* ERRORS_HPP_ */

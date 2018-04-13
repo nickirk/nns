@@ -14,10 +14,10 @@ using namespace Eigen;
 
 using namespace std;
 int main(){
-  int numSites(8);
+  int numSites(4);
   int numStates(2*numSites);
-  int spinUp(4);
-  int spinDown(4);
+  int spinUp(2);
+  int spinDown(2);
   
   vector<int> spinConfig{spinUp, spinDown, numStates};
   //int numHidden1(2*numSites);
@@ -30,7 +30,7 @@ int main(){
   Basis basis(spinConfig);
   //generate hamiltonian
   FermionicHamiltonian modelHam(numStates);
-  double U{2.}, t{-1};
+  double U{4.}, t{-1};
   modelHam = generateFermiHubbard(numStates, U, t);
   
   cout << "Basis size= " << basis.getSize() << endl;
@@ -55,8 +55,8 @@ int main(){
   //Neural network takes in the size and the cost function.
   NeuralNetwork NNW(modelHam, eCF);
   NNW.constrInputLayer(numStates);
-  NNW.constrDenseLayer(NNW[0].getActs(), Tanh, 10);
-  NNW.constrOutputLayer(NNW[1].getActs(), Linear, 2);
+  NNW.constrDenseLayer(NNW.getLayer(0)->getActs(), "Tanh", 10);
+  NNW.constrDenseLayer(NNW.getLayer(1)->getActs(), "Linear", 2);
   NNW.initialiseNetwork();
   // numDetsToTrain_ is the total number you want to keep in the list 
   // during the training process. By default it is the whole Hilbert space.
@@ -82,18 +82,16 @@ int main(){
   ofstream myfile1;
   myfile1.open (fileName);
   double energy(0.);
-  int lastSign(0);
   int count(0);
   std::vector<Eigen::VectorXd> coeffs;
   double epsilon(0.3);
-  int listSize(0);
   vector<detType> listRef;
   vector<detType> listRefPrev;
   vector<detType> listRefTotal;
   for(int l(0); l<10000; ++l){
+    cout << "I am here" << endl;
     ev.train(trainRate,method,l);
-    listSize = list.size();
-
+    int listSize = list.size();
     // get the new energy
     energy = ev.getE();
 
@@ -118,12 +116,14 @@ int main(){
       outputC.close();
       cout << "normalizer=" << normalizer << endl;
       myfile1 << count << " " << energy << endl;
+      /*
       ofstream bias0;
       bias0.open ("bias0.txt");
       bias0 << NNW.getBiases(0) << endl;
       ofstream bias1;
       bias1.open ("bias1.txt");
       bias1 << NNW.getBiases(1) << endl;
+      */
       int allowedNumChangeSign = int(basis.getSize()*0.1);
       cout << "energy= " << energy<< endl;
       cout << "list size= " << list.size()<< endl;

@@ -850,7 +850,7 @@ detType AbInitioHamiltonian::genSingleExcitation(detType const &source, std::vec
 
         // to avoid infinity loops
         if (attempts>250){
-            throw outOfRangeError(attempts);
+            throw OutOfRangeError(attempts);
         }
 
         attempts += 1;
@@ -908,7 +908,7 @@ detType AbInitioHamiltonian::genSingleExcitation(detType const &source, std::vec
             
             // to avoid infinity loops
             if (attempts>250){
-                throw outOfRangeError(attempts);
+                throw OutOfRangeError(attempts);
             }
 
             attempts += 1;
@@ -1111,7 +1111,7 @@ int AbInitioHamiltonian::pickOrbA(detType const &source, std::vector<int> const 
                     }
                 }
                 // unable to find orbital a
-                throw outOfRangeError(aelec);
+                throw OutOfRangeError(aelec);
             }
             else{
                 // keep drawing orbitals randomly until an 
@@ -1128,7 +1128,7 @@ int AbInitioHamiltonian::pickOrbA(detType const &source, std::vector<int> const 
 
                     if (attemptsa > 250){
                         // unable to find orbital a
-                        throw outOfRangeError(attemptsa);
+                        throw OutOfRangeError(attemptsa);
                     }
                     attemptsa += 1;
                 }
@@ -1174,7 +1174,7 @@ int AbInitioHamiltonian::pickOrbA(detType const &source, std::vector<int> const 
                         counter += 1;
                     }
                 }
-                throw outOfRangeError(aelec);
+                throw OutOfRangeError(aelec);
             }
             else{
                 // draw orbitals randomly until an unoccupied one is found
@@ -1192,7 +1192,7 @@ int AbInitioHamiltonian::pickOrbA(detType const &source, std::vector<int> const 
                     }
 
                     if (attemptsa > 250){
-                        throw outOfRangeError(attemptsa);
+                        throw OutOfRangeError(attemptsa);
                     }
                     attemptsa += 1;
                 }
@@ -1226,7 +1226,7 @@ int AbInitioHamiltonian::pickOrbA(detType const &source, std::vector<int> const 
         }
 
         if (attemptsoverall > (norbs*20)){
-            throw outOfRangeError(attemptsoverall);
+            throw OutOfRangeError(attemptsoverall);
         }
         attemptsoverall += 1;
     }
@@ -1303,7 +1303,7 @@ int AbInitioHamiltonian::pickOrbB(detType const &source, std::vector<int> const 
         }
 
         if (counter != belec){
-            throw outOfRangeError(belec);
+            throw OutOfRangeError(belec);
         }
     }
     else{
@@ -1325,7 +1325,7 @@ int AbInitioHamiltonian::pickOrbB(detType const &source, std::vector<int> const 
             }
 
             if (attemptsb>1000){
-                throw outOfRangeError(attemptsb);
+                throw OutOfRangeError(attemptsb);
             }
             attemptsb += 1;
         }
@@ -1525,7 +1525,7 @@ int AbInitioHamiltonian::countNumberCoupledStates(detType const &source, int exf
     int nalpha,nbeta,nunoccalpha,nunoccbeta;
 
     if ((exflag<1)||(exflag>3)){
-        throw outOfRangeError(exflag);
+        throw OutOfRangeError(exflag);
     }
 
     // number of occupied and unoccupied alpha and beta spin orbitals

@@ -8,6 +8,7 @@
 
 #include <math.h>
 #include <cmath>
+#include <random>
 
 double NormalDistribution(double dummy);
 double TanhPrime(double in);
@@ -24,5 +25,4 @@ double GaussianAntiSym(double in);
 double GaussianAntiSymPrime(double in);
 double Sigmoid(double in);
 double SigmoidPrime(double in);
-
 #endif

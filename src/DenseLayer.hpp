@@ -11,6 +11,7 @@
 #include <Eigen/Dense>
 #include <string>
 #include "Layer.hpp"
+#include "math/MathFunctions.hpp"
 
 class DenseLayer: public Layer{
 public:
@@ -19,17 +20,17 @@ public:
   virtual ~DenseLayer();
   virtual void processSignal();
   virtual void backProp(
-                        std::vector<Eigen::VectorXd> prevDelta, 
-                        weightType &prevWeights
+                        std::vector<Eigen::VectorXd> const &prevDelta,
+                        weightType const &prevWeights
                         );
   virtual void backProp(
                         Eigen::VectorXd dCostdC
                         );
-  virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint){};
+  virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint);
   virtual int getNumPara(){return numPara;};
   //want to achieve the effect of returning reference instead of making a 
   //copy. But Eigen::Map is already a referece object..
-  const weightType & getWeights(){return weights;};
+  virtual const weightType & getWeights(){return weights;};
   const biasType & getbiases(){return biases;};
  
 protected:

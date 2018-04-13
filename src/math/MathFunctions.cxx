@@ -3,13 +3,14 @@
  * Created on 08.3.2018
  * Author: Ke Liao 
  */
+#include "MathFunctions.hpp"
 
-double NormalDistribution(double input)
+double NormalDistribution(double dummy)
 {
   //input will be a constant, which is a normalization factor.
   std::random_device rd;
   static std::mt19937 rng(rd());
-  static std::normal_distribution<> nd(0.,input);
+  static std::normal_distribution<> nd(0.,dummy);
   return nd(rng);
 }
 

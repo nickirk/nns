@@ -50,6 +50,9 @@ NeuralNetwork::NeuralNetwork(Hamiltonian const &H_,
   v1  = Eigen::VectorXd::Zero(numNNP);
 
 }
+NeuralNetwork::~NeuralNetwork(){
+
+}
 //initialise the network after construction functions are called.
 void NeuralNetwork::initialiseNetwork(){
   //calculate the size of the NNP array:
@@ -80,10 +83,8 @@ void NeuralNetwork::initialiseNetwork(){
 // construction function of the NNW
 void NeuralNetwork::constrInputLayer(int numStates){
 
-  feedIns=Eigen::VectorXd::Zero(numStates);
-
-  InputLayer inputLayer(feedIns, numStates);
-  Layers.push_back(&inputLayer);
+  feedIns.resize(1, Eigen::VectorXd::Zero(numStates));
+  Layers.push_back(new InputLayer(feedIns, numStates));
   numLayers++;
 }
 
@@ -91,8 +92,7 @@ void NeuralNetwork::constrDenseLayer(
     std::vector<Eigen::VectorXd> const &inputs_, std::string actFunc_,
     int size_
     ){
-  DenseLayer denseLayer(inputs_, actFunc_, size_);
-  Layers.push_back(&denseLayer);
+  Layers.push_back(new DenseLayer(inputs_, actFunc_, size_));
   numLayers++;
 }
 
@@ -116,12 +116,12 @@ void NeuralNetwork::constrConvLayer(std::vector<Eigen::MatrixXd> const
 */
 
 
-//coeffType NeuralNetwork::getCoeff(detType const &det) const{
-//	//Run the network
-//	feedForward(det);
-//	// and extract the coefficient from the last layer
-//	return outputLayer();
-//}
+coeffType NeuralNetwork::getCoeff(detType const &det) const{
+	//Run the network
+	feedForward(det);
+	// and extract the coefficient from the last layer
+	return outputLayer();
+}
 
 
 void NeuralNetwork::updateParameters(
@@ -133,7 +133,7 @@ void NeuralNetwork::updateParameters(
   // 1: Stochastic reconfiguration
   // 2: Nesterov's Accelerated Gradient Descent
   // 3: ADAM
-  Eigen::VectorXd generlisedForce=calcNablaNNPMk(outputState);
+  Eigen::VectorXd generlisedForce=calcNablaNNP(outputState);
   if (method == 0){
     sl.update(NNP,generlisedForce);
     //update weights and biases
@@ -190,13 +190,9 @@ void NeuralNetwork::updateParameters(
 
 //---------------------------------------------------------------------------//
 
-Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const{
-  int numStates=det.size();
-  for (int state=0; state<numStates; ++state){
-    feedIns(state) = det[state]?1.0:-1.0;
-  }
-
-  for (int layer(0); layer < numLayers; ++layer){
+Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const {
+  Layers[0]->processSignal(det);
+  for (int layer(1); layer < numLayers; ++layer){
       Layers[layer]->processSignal();
   }
   return Layers[numLayers-1]->getActs()[0];
@@ -211,7 +207,7 @@ Eigen::VectorXd NeuralNetwork::backPropagate(
   nablaNNP *= 0.;
   Layers[numLayers-1]->backProp(lastLayerFeedBack);
   for (size_t layer(numLayers-2); layer > 0; layer--){
-    Layers[layer]->backProp(Layers[layer+1]->getDeltas());
+    Layers[layer]->backProp(Layers[layer+1]->getDeltas(),Layers[layer+1]->getWeights());
   }
 
   return nablaNNP;
@@ -228,7 +224,7 @@ Eigen::VectorXd NeuralNetwork::calcNablaNNP(
   std::vector<Eigen::VectorXd> dEdC = cf->nabla(outputState);
   for (int epoch=0; epoch < numDets; ++epoch){
     // obtain inputSignals and activations of all layers
-    feedForward(outputState[epoch].det); 
+    feedForward(outputState[epoch].det);
     // calculate the derivatives of this determinant
     deltaNNP += backPropagate(dEdC[epoch]);
   }

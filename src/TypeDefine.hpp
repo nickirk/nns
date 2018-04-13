@@ -18,6 +18,7 @@
 // Only keep it as long as nececcary in this stage
 // Typedef for coefficients
 using coeffType = std::complex<double>;
+using detType = std::vector<bool>;
 using weightType = std::vector<std::vector<Eigen::Map<Eigen::MatrixXd>>>;
 using biasType = std::vector<Eigen::Map<Eigen::VectorXd>>;
 #endif /* SRC_TYPEDEFINE_HPP_ */

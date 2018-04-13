@@ -11,10 +11,13 @@
 DenseLayer::DenseLayer(std::vector<Eigen::VectorXd> const &inputs_, 
     std::string actFunc_, int size_):
   Layer(inputs_, actFunc_), numNrn(size_){
-  z(inputs.size(),Eigen::VectorXd::Zero(numNrn));  
-  activations(1,Eigen::VectorXd::Zero(numNrn));
-  deltas(1,Eigen::VectorXd::Zero(numNrn));
+  z.resize(inputs.size(),Eigen::VectorXd::Zero(numNrn));
+  activations.resize(1,Eigen::VectorXd::Zero(numNrn));
+  deltas.resize(1,Eigen::VectorXd::Zero(numNrn));
   numPara = numNrn*inputs[0].size()*inputs.size()+numNrn;
+}
+
+DenseLayer::~DenseLayer(){
 }
 
 void DenseLayer::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
@@ -52,10 +55,10 @@ void DenseLayer::processSignal(){
 }
 
 
-void DenseLayer::backProp(std::vector<Eigen::VectorXd> prevDelta,
-    weightType &prevWeights){
-    deltas[0] = prevWeights[0][0].transpose() * prevDelta; 
-    deltas[0] = deltas[0].array()* z[0].unaryExpr(&actFuncPrime).array();
+void DenseLayer::backProp(std::vector<Eigen::VectorXd> const &prevDelta,
+    weightType const &prevWeights){
+    deltas[0] = prevWeights[0][0].transpose() * prevDelta[0];
+    deltas[0] = deltas[0].array()* (z[0].unaryExpr(actFuncPrime)).array();
     nablaBiases[0] = deltas[0];
     //get a weight matrix. \partial C/\partial w^{l}_{jk} = a^{l-1}_k \delta_j^l 
     //the layer here refers to the lth layer of Biases and weights, so for
@@ -69,11 +72,11 @@ void DenseLayer::backProp(
     ){
     deltas[0] = 
     (dCostdC.array() * 
-    z[0].unaryExpr(&actFuncPrime).array()).matrix();
+    z[0].unaryExpr(actFuncPrime).array()).matrix();
     nablaBiases[0] = deltas[0];
     //get a weight matrix. \partial C/\partial w^{l}_{jk} = a^{l-1}_k \delta_j^l 
     //the layer here refers to the lth layer of Biases and weights, so for
     //activation layer refers to the l-1th layer.
     for (size_t i(0); i < inputs.size(); i++)
-      nablaWeights[0][i] = delta[0] * inputs[i].transpose();
+      nablaWeights[0][i] = deltas[0] * inputs[i].transpose();
 }
