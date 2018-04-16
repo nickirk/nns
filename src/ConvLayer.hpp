@@ -18,7 +18,10 @@ public:
           int lengthFilter_, int numFilters_, int stride_
             ) 
   virtual ~ConvLayer();
-  virtual void processSignal();
+  virtual void backProp(
+    std::vector<Eigen::VectorXd> const &prevDelta,
+    weightType const &prevWeights
+    );
   virtual void mapPara(double *adNNP, int &startPoint);
   virtual void backProp();
   virtual int getNumPara(){return numPara;};

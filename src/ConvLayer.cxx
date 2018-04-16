@@ -8,7 +8,7 @@
 #include "ConvLayer.hpp"
 
 
-ConvLayer(
+ConvLayer::ConvLayer(
           std::vector<Eigen::VectorXd> const &inputs_, 
           double &(actFunc_)(double), 
           int lengthFilter_, int numFilters_, int stride_
@@ -25,6 +25,10 @@ ConvLayer(
   deltas(numFilters,Eigen::VectorXd::Zero(sizeAct));
   //checked
   numPara = depthFilter*lengthFilter*numFilters+numFilters;
+}
+
+ConvLayer::~ConvLayer(){
+
 }
 
 void ConvLayer::mapPara(double *adNNP, int &startPoint){
@@ -51,7 +55,7 @@ void ConvLayer::mapPara(double *adNNP, int &startPoint){
   }
 }
 
-std::vector<Eigen::VectorXd> ConvLayer::processSignal(){
+void ConvLayer::processSignal(){
   //need to determine the output size. 
   //calculate the output vector size, 
   //(N_in-lengthFilter)/stride+1;
@@ -79,6 +83,11 @@ std::vector<Eigen::VectorXd> ConvLayer::processSignal(){
     activations[i] = z[i];
     activations[i].unaryExpr(&actFunc);
   } 
-
 }
 
+void ConvLayer::backProp(
+    std::vector<Eigen::VectorXd> const &prevDelta,
+    weightType const &prevWeights
+    ){
+
+}
