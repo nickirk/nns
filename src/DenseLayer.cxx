@@ -5,6 +5,7 @@
  */
 
 #include <vector>
+#include <iostream>
 #include <Eigen/Dense>
 #include "DenseLayer.hpp"
 
@@ -38,7 +39,7 @@ void DenseLayer::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
   nablaWeights.push_back(NablaWeightsTmp);
   Eigen::Map<Eigen::VectorXd> biaseTmp(adNNP+startPoint,numNrn); 
   Eigen::Map<Eigen::VectorXd> NablaBiaseTmp(adNablaNNP+startPoint,numNrn); 
-  //biaseTmp /= biaseTmp.size();
+  //biaseTmp /= biaseTmp[0].size();
   biaseTmp = biaseTmp.unaryExpr(&NormalDistribution);
   biases.push_back(biaseTmp); 
   nablaBiases.push_back(NablaBiaseTmp);
@@ -72,7 +73,7 @@ void DenseLayer::backProp(
     ){
     deltas[0] = 
     (dCostdC.array() * 
-    z[0].unaryExpr(actFuncPrime).array()).matrix();
+    (z[0].unaryExpr(actFuncPrime)).array()).matrix();
     nablaBiases[0] = deltas[0];
     //get a weight matrix. \partial C/\partial w^{l}_{jk} = a^{l-1}_k \delta_j^l 
     //the layer here refers to the lth layer of Biases and weights, so for

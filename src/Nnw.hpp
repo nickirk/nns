@@ -112,8 +112,8 @@ private:
   Eigen::MatrixXcd calcdCdwSR(
     std::vector<State> const &outputState
        );
-  coeffType outputLayer() const {
-  	return coeffType(Layers[numLayers-1]->getActs()[0][0],Layers[numLayers-1]->getActs()[0][1]);
-  };
+  //coeffType outputLayer() const {
+  //	return coeffType(Layers[numLayers-1]->getActs()[0][0],Layers[numLayers-1]->getActs()[0][1]);
+  //};
 };
 #endif

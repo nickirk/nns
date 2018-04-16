@@ -32,3 +32,7 @@ inputs(inputs_){
   }
   else throw ActFuncDoNotExist(actFunc_);
 }
+
+Layer::~Layer(){
+
+}

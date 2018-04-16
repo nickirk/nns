@@ -225,7 +225,7 @@ double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
     nperm = 0;
     detType ex_alpha=alpha;
     if (holes.size()!=0){
-        for (int i=0; i<holes.size(); ++i){
+        for (size_t i=0; i<holes.size(); ++i){
             nperm += getFermiSign(ex_alpha,(holes[i]-1),(excitations[i]-1));
             // for double excitations: if there is a crossing of the excitation this 
             // complicates everything -> best to simulate excitation
@@ -246,14 +246,14 @@ double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
         double diagonalTerm{0.0};
         int indi{0},indj{0};
         // since the configurations are the same the parity is +1
-        for(int i=0;i<same.size();++i){
+        for(size_t i=0;i<same.size();++i){
             // \sum_i <i|h|i>
             indi = this->getId(same[i]);
             diagonalTerm += this->getMatrixElement(indi,indi);
         }
         int idn{0},idx{0};
-        for(int i=0;(i<same.size()-1);++i){
-            for(int j=(i+1);j<same.size();++j){
+        for(size_t i=0;(i<same.size()-1);++i){
+            for(size_t j=(i+1);j<same.size();++j){
                 // \sum_j>i <ij|ij> - <ij|ji>
                 // need to ensure that alpha(j) > alpha(i) which 
                 // is not guaranteed
@@ -288,7 +288,7 @@ double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
         }
 
         // \sum_j <ij|aj> - <ij|ja>
-        for (int i=0;i<same.size();++i){
+        for (size_t i=0;i<same.size();++i){
             indi = this->getId(holes[0]);
             indj = this->getId(same[i]);
             inda = this->getId(excitations[0]);

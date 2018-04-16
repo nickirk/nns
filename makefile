@@ -43,15 +43,19 @@ $(DIRECTORIES):
 	mkdir $@
 
 $(DDIR)/%.d: $(SRC)/%.cxx $(DDIR)
+	mkdir -p $(dir $@)
 	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -MM $< -o $@
 
 $(BUILD)/%.o: $(SRC)/%.cxx
+	mkdir -p $(dir $@)
 	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -c src/$*.cxx -o $@
 
 $(TSTDDIR)/%.d: $(TST)/%.cxx $(TSTDDIR)
+	mkdir -p $(dir $@)
 	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -MM $< -o $@
 
 $(TSTBUILD)/%.o: $(TST)/%.cxx
+	mkdir -p $(dir $@)
 	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -c $< -o $@
 
 

@@ -89,7 +89,7 @@ AbInitioHamiltonian readAbInitioHamiltonian(int dim, std::string file_name){
             // need a case insensitive comparison of the string
             if ((parts.size() > 1)&&(!end_header)){
                 // find uhf=.false. or .true.
-                for (int a=0; a<parts.size(); ++a){
+                for (size_t a=0; a<parts.size(); ++a){
                     std::string lower_parts = parts[a]; 
                     std::transform(lower_parts.begin(), lower_parts.end(), 
                             lower_parts.begin(), ::tolower);
@@ -968,7 +968,7 @@ std::vector<int> AbInitioHamiltonian::pickElecPair(std::vector<int> const &sourc
     orbs.push_back(source_orbs[elecs[1]]);
 
     // and the spin of the electrons
-    for (int i=0; i<orbs.size(); ++i){
+    for (size_t i=0; i<orbs.size(); ++i){
         if ((orbs[i]%2)==0){
             // alpha spin
             spin.push_back(0);
@@ -1090,7 +1090,7 @@ int AbInitioHamiltonian::pickOrbA(detType const &source, std::vector<int> const 
                 aelec = static_cast<int>((static_cast<double>(nexcita-nforbiddenorbs)*rand)) + 1;
 
                 counter = 1;
-                for (int i=0; i<source.size(); ++i){
+                for (size_t i=0; i<source.size(); ++i){
                     // is it not occupied ?
                     if (!source[i]){
                         // orbital not in determinant and thus it is allowed
@@ -1393,7 +1393,7 @@ detType AbInitioHamiltonian::genDoubleExcitation(detType const &source, std::vec
     target = source;
     holes.clear();
     particles.clear();
-    for (int i=0; i<elecs.size(); ++i){
+    for (size_t i=0; i<elecs.size(); ++i){
         annihilate(target,source_orbs[elecs[i]]);
         holes.push_back(source_orbs[elecs[i]]);
     }
@@ -1440,7 +1440,7 @@ detType AbInitioHamiltonian::getRandomCoupledState(detType const &source, double
     nunoccs.push_back(0);
     nunoccs.push_back(0);
 
-    for (int i=0; i<source_orbs.size(); ++i){
+    for (size_t i=0; i<source_orbs.size(); ++i){
         //if (source[i]){
         if ((source_orbs[i]%2)==0){
             // alpha spin
@@ -1452,7 +1452,7 @@ detType AbInitioHamiltonian::getRandomCoupledState(detType const &source, double
         }
         //}
     }
-    for (int i=0; i<noccs.size(); ++i){
+    for (size_t i=0; i<noccs.size(); ++i){
         nunoccs[i] = (source.size()/2) - noccs[i];
     }
 
@@ -1531,7 +1531,7 @@ int AbInitioHamiltonian::countNumberCoupledStates(detType const &source, int exf
     // number of occupied and unoccupied alpha and beta spin orbitals
     nalpha = 0;
     nbeta = 0;
-    for (int i=0; i<source.size(); ++i){
+    for (size_t i=0; i<source.size(); ++i){
         if (source[i]){
             if ((i%2)==0){
                 // alpha spin
@@ -1599,7 +1599,7 @@ double AbInitioHamiltonian::calcGenProp(detType const &source, detType const &ta
     exflag = 3;
 
     // get the particles and holes involved in this excitation
-    for (int i=0; i<source.size(); ++i){
+    for (size_t i=0; i<source.size(); ++i){
         diff = static_cast<int>(source[i]) - static_cast<int>(target[i]);
         if (diff > 0){
             // holes
@@ -1638,7 +1638,7 @@ double AbInitioHamiltonian::calcGenProp(detType const &source, detType const &ta
     nunoccs.push_back(0);
     nunoccs.push_back(0);
 
-    for (int i=0; i<source_orbs.size(); ++i){
+    for (size_t i=0; i<source_orbs.size(); ++i){
         //if (source[i]){
         if ((source_orbs[i]%2)==0){
             // alpha spin
@@ -1650,7 +1650,7 @@ double AbInitioHamiltonian::calcGenProp(detType const &source, detType const &ta
         }
         //}
     }
-    for (int i=0; i<noccs.size(); ++i){
+    for (size_t i=0; i<noccs.size(); ++i){
         nunoccs[i] = (source.size()/2) - noccs[i];
     }
 
@@ -1698,7 +1698,7 @@ double AbInitioHamiltonian::calcGenProp(detType const &source, detType const &ta
 
         // number of electrons with no available excitation
         elecwnoexcit = 0;
-        for (int i=0; i<nunoccs.size(); ++i){
+        for (size_t i=0; i<nunoccs.size(); ++i){
             if (nunoccs[i]==0){
                 elecwnoexcit += nunoccs[i];
             }
@@ -1731,7 +1731,7 @@ double AbInitioHamiltonian::calcGenProp(detType const &source, detType const &ta
         elecpairs = (nel*(nel-1))/2;
 
         // spin of electron
-        for (int i=0; i< holes.size(); ++i){
+        for (size_t i=0; i< holes.size(); ++i){
             if ((holes[i]%2)==0){
                 // alpha
                 spin.push_back(0);

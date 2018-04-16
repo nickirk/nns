@@ -17,7 +17,7 @@
 class Layer{
 public:
   Layer(std::vector<Eigen::VectorXd> const &inputs_, std::string actFunc_);
-  virtual ~Layer(){};
+  virtual ~Layer();
   //functional functions
   virtual void processSignal(){};
   virtual void processSignal(detType const det){};
@@ -36,14 +36,18 @@ public:
   //interface for accessing data
   virtual const std::vector<Eigen::VectorXd>& getInputs(){return inputs;};
   virtual const std::vector<Eigen::VectorXd>& getActs(){return activations;};
-  virtual const weightType & getWeights();
+  //getWeights in base function has no return value and it is not defined for
+  //inputLayer, this may cause problem. Default return a empty vector.
+  //or move weights to base class
+  virtual const weightType & getWeights(){};
+  virtual const biasType & getBiases(){};
   virtual int getNumPara(){return numPara;};
   const std::vector<Eigen::VectorXd>& getDeltas(){return deltas;}
 protected:
   double (*actFunc)(double);
   double (*actFuncPrime)(double);
   int numPara;
-  std::vector<Eigen::VectorXd> inputs;
+  std::vector<Eigen::VectorXd> const &inputs;
   std::vector<Eigen::VectorXd> activations;
   //z=w*input+bias, which is an intermediate variable but is needed
   //during the backpropagation step

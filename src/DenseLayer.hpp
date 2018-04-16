@@ -30,8 +30,8 @@ public:
   virtual int getNumPara(){return numPara;};
   //want to achieve the effect of returning reference instead of making a 
   //copy. But Eigen::Map is already a referece object..
-  virtual const weightType & getWeights(){return weights;};
-  const biasType & getbiases(){return biases;};
+  const weightType & getWeights(){return weights;};
+  const biasType & getBiases(){return biases;};
  
 protected:
   int numPara;

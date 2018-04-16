@@ -15,10 +15,13 @@
 
 NeuralNetwork::NeuralNetwork(Hamiltonian const &H_, 
   CostFunction const &externalCF):H(H_), cf(&externalCF), sl(Solver(0.5)){
+
   //initial value for NNW para
   numLayers = 0;
-  generlisedForcePrev = Eigen::VectorXd::Zero(numNNP);
 
+  //inital para for ADAm
+  beta1=0.9;
+  beta2=0.999;
   //initial value for momentum algo
   momentumDamping = 0.6;
   momentum = false;
@@ -28,28 +31,9 @@ NeuralNetwork::NeuralNetwork(Hamiltonian const &H_,
   lamdaS =0.;
   gammaS = 0.;
   gammaS1 = 0.;
-  //-----------------------------------
-  //inital para for ADAm
-  beta1=0.9;
-  beta2=0.999;
-
-  //vectors for RMSprop
-  yS = Eigen::VectorXd::Zero(numNNP);
-  yS1 = Eigen::VectorXd::Zero(numNNP);
-  Egz2 = Eigen::VectorXd::Zero(numNNP);
-  m  = Eigen::VectorXd::Zero(numNNP);
-  m1  = Eigen::VectorXd::Zero(numNNP);
-  v  = Eigen::VectorXd::Zero(numNNP);
-  v1  = Eigen::VectorXd::Zero(numNNP);
-
-
-  //vectors for ADAM
-  m  = Eigen::VectorXd::Zero(numNNP);
-  m1  = Eigen::VectorXd::Zero(numNNP);
-  v  = Eigen::VectorXd::Zero(numNNP);
-  v1  = Eigen::VectorXd::Zero(numNNP);
 
 }
+
 NeuralNetwork::~NeuralNetwork(){
 
 }
@@ -68,16 +52,27 @@ void NeuralNetwork::initialiseNetwork(){
   int startPoint(0);
   for (int layer(0); layer<numLayers; ++layer){
     Layers[layer]->mapPara(adNNP, adNablaNNP, startPoint);
-  /*
-  //initial activity signals. 
-  activations.push_back(Eigen::VectorXd::Zero(sizes[0]));
-  inputSignals.push_back(Eigen::VectorXd::Zero(sizes[0]));
-  for (int layer=0; layer < numLayers; ++layer){
-    activations.push_back(Eigen::VectorXd::Zero(sizes[layer+1]));
-    inputSignals.push_back(Eigen::VectorXd::Zero(sizes[layer+1]));
   }
-  */
-  }
+
+  //-----------------------------------
+
+  generlisedForcePrev = Eigen::VectorXd::Zero(numNNP);
+  //vectors for RMSprop
+  yS = Eigen::VectorXd::Zero(numNNP);
+  yS1 = Eigen::VectorXd::Zero(numNNP);
+  Egz2 = Eigen::VectorXd::Zero(numNNP);
+  m  = Eigen::VectorXd::Zero(numNNP);
+  m1  = Eigen::VectorXd::Zero(numNNP);
+  v  = Eigen::VectorXd::Zero(numNNP);
+  v1  = Eigen::VectorXd::Zero(numNNP);
+
+
+  //vectors for ADAM
+  m  = Eigen::VectorXd::Zero(numNNP);
+  m1  = Eigen::VectorXd::Zero(numNNP);
+  v  = Eigen::VectorXd::Zero(numNNP);
+  v1  = Eigen::VectorXd::Zero(numNNP);
+
 }
 //---------------------------------------------------------------------------//
 // construction function of the NNW
@@ -118,9 +113,10 @@ void NeuralNetwork::constrConvLayer(std::vector<Eigen::MatrixXd> const
 
 coeffType NeuralNetwork::getCoeff(detType const &det) const{
 	//Run the network
-	feedForward(det);
+  Eigen::VectorXd output=feedForward(det);
 	// and extract the coefficient from the last layer
-	return outputLayer();
+  //std::cout << "Nnw.cxx:getCoeff(): output= " << output << std::endl;
+	return coeffType(output(0),output(1));
 }
 
 
@@ -192,9 +188,22 @@ void NeuralNetwork::updateParameters(
 
 Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const {
   Layers[0]->processSignal(det);
+  //std::cout << "Acts layer " << 0 << " =" << std::endl;
+  //std::cout<< Layers[0]->getActs()[0] << std::endl;
+  //0th layer has no weights!!! The getWeights() for InputLayer is not defined..
+  //FixMe, return a 0 vector and throw error.
+  //std::cout << "Weights layer " << 0 << " =" << std::endl;
+  //std::cout<< Layers[0]->getWeights()[0] << std::endl;
   for (int layer(1); layer < numLayers; ++layer){
       Layers[layer]->processSignal();
+      //std::cout << "Acts layer " << layer << " =" << std::endl;
+      //std::cout<< Layers[layer]->getActs()[0] << std::endl;
+      //std::cout << "Weights layer " << layer << " =" << std::endl;
+      //std::cout<< Layers[layer]->getWeights()[0][0] << std::endl;
+      //std::cout << "Nnw.cxx: Biases layer " << layer << " =" << std::endl;
+      //std::cout<< Layers[layer]->getBiases()[0] << std::endl;
   }
+
   return Layers[numLayers-1]->getActs()[0];
 }
 
@@ -207,7 +216,8 @@ Eigen::VectorXd NeuralNetwork::backPropagate(
   nablaNNP *= 0.;
   Layers[numLayers-1]->backProp(lastLayerFeedBack);
   for (size_t layer(numLayers-2); layer > 0; layer--){
-    Layers[layer]->backProp(Layers[layer+1]->getDeltas(),Layers[layer+1]->getWeights());
+    Layers[layer]->backProp(Layers[layer+1]->getDeltas(),
+                            Layers[layer+1]->getWeights());
   }
 
   return nablaNNP;
