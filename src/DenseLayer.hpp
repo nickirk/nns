@@ -24,7 +24,7 @@ public:
                         weightType const &prevWeights
                         );
   virtual void backProp(
-                        Eigen::VectorXd dCostdC
+                        Eigen::VectorXd const &prevDelta
                         );
   virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint);
   virtual int getNumPara(){return numPara;};

@@ -69,10 +69,10 @@ void DenseLayer::backProp(std::vector<Eigen::VectorXd> const &prevDelta,
 }
 
 void DenseLayer::backProp(
-    Eigen::VectorXd dCostdC
+    Eigen::VectorXd const &prevDelta
     ){
     deltas[0] = 
-    (dCostdC.array() * 
+    (prevDelta.array() * 
     (z[0].unaryExpr(actFuncPrime)).array()).matrix();
     nablaBiases[0] = deltas[0];
     //get a weight matrix. \partial C/\partial w^{l}_{jk} = a^{l-1}_k \delta_j^l 

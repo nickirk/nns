@@ -24,11 +24,11 @@ public:
   // update of parameters will be done on network level, not on layer level.
   //virtual void updatePara();
   virtual void backProp(
-                        std::vector<Eigen::VectorXd> prevDelta, 
+                        std::vector<Eigen::VectorXd> const &prevDelta, 
                         weightType const &prevWeights
                         ){};
   virtual void backProp(
-                        Eigen::VectorXd prevDelta
+                        Eigen::VectorXd const &prevDelta
                         ){};
   //virtual void mapPara(double *adNNP, int &startPoint);
   virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint){};
