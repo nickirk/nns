@@ -23,6 +23,7 @@
 #include "Layer.hpp"
 #include "InputLayer.hpp"
 #include "DenseLayer.hpp"
+#include "ConvLayer.hpp"
 #include "TypeDefine.hpp"
 
 const std::complex<double> ii(0.,1.);
@@ -38,7 +39,13 @@ public:
       std::string actFunc_,
       int size_);
 
-  //void constrConvLayer();
+  void constrConvLayer(
+    std::vector<Eigen::VectorXd> const &inputs_,
+    std::string actFunc_,
+    int numFilters_,
+    int lengthFilter_,
+    int stride_
+    );
 
   void constrInputLayer(int numNrn);
  /* 

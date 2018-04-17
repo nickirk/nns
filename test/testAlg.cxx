@@ -55,8 +55,10 @@ int main(){
   //Neural network takes in the size and the cost function.
   NeuralNetwork NNW(modelHam, eCF);
   NNW.constrInputLayer(numStates);
-  NNW.constrDenseLayer(NNW.getLayer(0)->getActs(), "Rectifier", 20*numStates);
-  NNW.constrDenseLayer(NNW.getLayer(1)->getActs(), "Linear", 2);
+  //constrConvLayer(inputs, actFunc, lengthFilter, depthFilter, stride)
+  NNW.constrConvLayer(NNW.getLayer(0)->getActs(), "Tanh", 4, 1, 2);
+  NNW.constrDenseLayer(NNW.getLayer(1)->getActs(), "Rectifier", 5*numStates);
+  NNW.constrDenseLayer(NNW.getLayer(2)->getActs(), "Linear", 2);
   NNW.initialiseNetwork();
   // numDetsToTrain_ is the total number you want to keep in the list 
   // during the training process. By default it is the whole Hilbert space.

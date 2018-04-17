@@ -101,14 +101,19 @@ void NeuralNetwork::constrOutputLayer(
   Layers.push_back(outputLayer);
   numLayers++;
 }
-void NeuralNetwork::constrConvLayer(std::vector<Eigen::MatrixXd> const 
-                                     &inputs_,double &(actFunc_)(double),
-                                     int size_){
- ConvLayer convLayer(inputs_, actFunc_(double));
- Layers.push_back(convLayer);
+*/
+
+void NeuralNetwork::constrConvLayer(
+    std::vector<Eigen::VectorXd> const &inputs_,
+    std::string actFunc_,
+    int numFilters_,
+    int lengthFilter_,
+    int stride_
+    ){
+ Layers.push_back(new ConvLayer(inputs_, actFunc_, numFilters_, lengthFilter_, 
+       stride_));
  numLayers++;
 }
-*/
 
 
 coeffType NeuralNetwork::getCoeff(detType const &det) const{

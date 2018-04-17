@@ -65,7 +65,7 @@ void DenseLayer::backProp(std::vector<Eigen::VectorXd> const &prevDelta,
     //the layer here refers to the lth layer of Biases and weights, so for
     //activation layer refers to the l-1th layer.
     for (size_t i(0); i < inputs.size(); i++)
-      nablaWeights[0][i] = deltas[0] * inputs[i].transpose();
+      nablaWeights[i][0] = deltas[0] * inputs[i].transpose();
 }
 
 void DenseLayer::backProp(
@@ -79,5 +79,5 @@ void DenseLayer::backProp(
     //the layer here refers to the lth layer of Biases and weights, so for
     //activation layer refers to the l-1th layer.
     for (size_t i(0); i < inputs.size(); i++)
-      nablaWeights[0][i] = deltas[0] * inputs[i].transpose();
+      nablaWeights[i][0] = deltas[0] * inputs[i].transpose();
 }

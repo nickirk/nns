@@ -39,8 +39,10 @@ public:
   //getWeights in base function has no return value and it is not defined for
   //inputLayer, this may cause problem. Default return a empty vector.
   //or move weights to base class
-  virtual const weightType & getWeights(){};
-  virtual const biasType & getBiases(){};
+  //virtual const weightType & getWeights(){};
+  //virtual const biasType & getBiases(){};
+  const weightType & getWeights(){return weights;};
+  const biasType & getbiases(){return biases;};
   virtual int getNumPara(){return numPara;};
   const std::vector<Eigen::VectorXd>& getDeltas(){return deltas;}
 protected:
@@ -53,6 +55,13 @@ protected:
   //during the backpropagation step
   std::vector<Eigen::VectorXd> z;
   std::vector<Eigen::VectorXd> deltas;
+  biasType biases;
+  // the weights have one-to-one correspondance to neurons. 
+  // in convNet, each filter has the same depth as that of the 
+  // previous output signal. So we define it as a Lxlxsize
+  weightType weights;
+  biasType nablaBiases;
+  weightType nablaWeights;
 };
 
 #endif

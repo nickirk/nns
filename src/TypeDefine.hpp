@@ -19,6 +19,8 @@
 // Typedef for coefficients
 using coeffType = std::complex<double>;
 using detType = std::vector<bool>;
+//numFilter<depthFilter<lengthFilter>>
 using weightType = std::vector<std::vector<Eigen::Map<Eigen::MatrixXd>>>;
+//numFilter<lengthFilter>
 using biasType = std::vector<Eigen::Map<Eigen::VectorXd>>;
 #endif /* SRC_TYPEDEFINE_HPP_ */

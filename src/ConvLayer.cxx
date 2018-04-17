@@ -10,10 +10,12 @@
 
 ConvLayer::ConvLayer(
           std::vector<Eigen::VectorXd> const &inputs_, 
-          double &(actFunc_)(double), 
-          int lengthFilter_, int numFilters_, int stride_
+          std::string actFunc_, 
+          int numFilters_,
+          int lengthFilter_,
+          int stride_
           ):
-            Layer(inputs_, &(actFunc_)(double)), 
+            Layer(inputs_, actFunc_), 
             numFilters(numFilters_),
             depthFilter(inputs_.size()),
             lengthFilter(lengthFilter_),
@@ -89,5 +91,23 @@ void ConvLayer::backProp(
     std::vector<Eigen::VectorXd> const &prevDelta,
     weightType const &prevWeights
     ){
-
+  for (int i(0); i < numFilters; i++){
+    deltas[i] = prevWeights[i][0].transpose() * prevDelta[0];
+    deltas[i] = deltas[i].array()* (z[i].unaryExpr(actFuncPrime)).array();
+    //bias of the convLayer is just delta. 
+    nablaBiases[i] = deltas[i];
+    //the complicated part is the weights. We need to retrieve the 
+    //nablaWeigths for each depth. Since we did a convolution, the 
+    //nablaWeights must contain a sum over a certain region of the 
+    //inputs from last layer. 
+    for (int j(0); j < depthFilter; j++){
+      for (int row(0); row < nablaWeights[i][j].rows(); row++){
+        for (int col(0); col < nablaWeights[i][j].cols(); col++){
+          Eigen::Map<Eigen::VectorXd> inputTmp(&inputs[j]+col,lengthFilter);
+          nablaWeights[i][j](row,col) = deltas[i].colwise().reverse() *
+                             inputTmp.transpose();
+        }
+      }
+    }
+  }
 }
