@@ -42,7 +42,7 @@ public:
   //virtual const weightType & getWeights(){};
   //virtual const biasType & getBiases(){};
   const weightType & getWeights(){return weights;};
-  const biasType & getbiases(){return biases;};
+  const biasType & getBiases(){return biases;};
   virtual int getNumPara(){return numPara;};
   const std::vector<Eigen::VectorXd>& getDeltas(){return deltas;}
 protected:

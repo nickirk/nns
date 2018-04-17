@@ -49,9 +49,10 @@ void DenseLayer::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
 void DenseLayer::processSignal(){
   activations[0]=Eigen::VectorXd::Zero(numNrn);
   for(size_t i(0); i<inputs.size(); i++){
-    z[i] = weights[0][i]*inputs[i]+biases[0]; 
+    z[i] = weights[0][i]*inputs[i];
     activations[0]+=z[i];
   }
+  activations[0]+=biases[0];
   activations[0]=activations[0].unaryExpr(actFunc);
 }
 
@@ -65,7 +66,7 @@ void DenseLayer::backProp(std::vector<Eigen::VectorXd> const &prevDelta,
     //the layer here refers to the lth layer of Biases and weights, so for
     //activation layer refers to the l-1th layer.
     for (size_t i(0); i < inputs.size(); i++)
-      nablaWeights[i][0] = deltas[0] * inputs[i].transpose();
+      nablaWeights[0][i] = deltas[0] * inputs[i].transpose();
 }
 
 void DenseLayer::backProp(
@@ -79,5 +80,5 @@ void DenseLayer::backProp(
     //the layer here refers to the lth layer of Biases and weights, so for
     //activation layer refers to the l-1th layer.
     for (size_t i(0); i < inputs.size(); i++)
-      nablaWeights[i][0] = deltas[0] * inputs[i].transpose();
+      nablaWeights[0][i] = deltas[0] * inputs[i].transpose();
 }

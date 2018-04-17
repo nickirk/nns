@@ -15,8 +15,8 @@ public:
 	BosonicHamiltonian(int dimension):Hamiltonian(dimension){};
 	virtual ~BosonicHamiltonian();
 	int getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex) const{return 1;};
-    detType getRandomCoupledState(detType const &source, double &p){};
-    std::vector<detType> getCoupledStates(detType const &source){} const;
+    //detType getRandomCoupledState(detType const &source, double &p){};
+    //std::vector<detType> getCoupledStates(detType const &source){} const;
 };
 
 #endif /* SRC_BOSONICHAMILTONIAN_HPP_ */
