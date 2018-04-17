@@ -14,10 +14,10 @@ using namespace Eigen;
 
 using namespace std;
 int main(){
-  int numSites(3);
+  int numSites(4);
   int numStates(2*numSites);
-  int spinUp(1);
-  int spinDown(1);
+  int spinUp(2);
+  int spinDown(2);
   
   vector<int> spinConfig{spinUp, spinDown, numStates};
   //int numHidden1(2*numSites);
@@ -57,9 +57,9 @@ int main(){
   NNW.constrInputLayer(numStates);
   //constrConvLayer(inputs, actFunc, lengthFilter, depthFilter, stride)
   cout << "Before constructing ConvLayer" << endl;
-  NNW.constrConvLayer(NNW.getLayer(0)->getActs(), "Tanh", 2, 2, 2);
-  cout << "Before constructing DenseLayer" << endl;
-  NNW.constrDenseLayer(NNW.getLayer(1)->getActs(), "Linear", 2);
+  NNW.constrConvLayer(NNW.getLayer(0)->getActs(), "Tanh", 6, 4, 2);
+  NNW.constrDenseLayer(NNW.getLayer(1)->getActs(), "Tanh", 10);
+  NNW.constrDenseLayer(NNW.getLayer(2)->getActs(), "Linear", 2);
   NNW.initialiseNetwork();
   cout << "After iniialise Network" << endl;
   // numDetsToTrain_ is the total number you want to keep in the list 
