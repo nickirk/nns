@@ -14,16 +14,16 @@ using namespace Eigen;
 
 using namespace std;
 int main(){
-  int numSites(4);
+  int numSites(6);
   int numStates(2*numSites);
-  int spinUp(2);
-  int spinDown(2);
+  int spinUp(3);
+  int spinDown(3);
   
   vector<int> spinConfig{spinUp, spinDown, numStates};
   //int numHidden1(2*numSites);
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
-  double trainRate(0.1);
+  double trainRate(0.5);
   //cout << "input training rate=";
   //cin >> trainRate;
   //generate basis, the basis class constructor takes in the spin configurations.
@@ -57,18 +57,18 @@ int main(){
   NNW.constrInputLayer(numStates);
   //constrConvLayer(inputs, actFunc, lengthFilter, depthFilter, stride)
   cout << "Before constructing ConvLayer" << endl;
-  NNW.constrConvLayer(NNW.getLayer(0)->getActs(), "Tanh", 6, 4, 2);
-  NNW.constrDenseLayer(NNW.getLayer(1)->getActs(), "Tanh", 10);
-  NNW.constrDenseLayer(NNW.getLayer(2)->getActs(), "Linear", 2);
+  //NNW.constrConvLayer(NNW.getLayer(0)->getActs(), "Tanh", 4, 5, 1);
+  NNW.constrDenseLayer(NNW.getLayer(0)->getActs(), "Tanh", 10*numStates);
+  NNW.constrDenseLayer(NNW.getLayer(1)->getActs(), "Linear", 2);
   NNW.initialiseNetwork();
   cout << "After iniialise Network" << endl;
   // numDetsToTrain_ is the total number you want to keep in the list 
   // during the training process. By default it is the whole Hilbert space.
   // But for a stochastic diffuse process, much less is needed. One should 
   // test to see how many is suitable for different systems.
-  int numDetsToTrain_ = basis.getSize();
-  //cout << "numDetsToTrain= ";
-  //cin >> numDetsToTrain_;
+  int numDetsToTrain_ = int(basis.getSize()*0.4);
+  cout << "numDetsToTrain= ";
+  cin >> numDetsToTrain_;
   int method(3);
   //cout << "Choose solver: 0, 1, 2, 3" << endl;
   //cout << "method 0: gradient descent" << endl;

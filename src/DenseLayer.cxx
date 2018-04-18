@@ -12,7 +12,7 @@
 DenseLayer::DenseLayer(std::vector<Eigen::VectorXd> const &inputs_, 
     std::string actFunc_, int size_):
   Layer(inputs_, actFunc_), numNrn(size_){
-  z.resize(inputs.size(),Eigen::VectorXd::Zero(numNrn));
+  z.resize(1,Eigen::VectorXd::Zero(numNrn));
   activations.resize(1,Eigen::VectorXd::Zero(numNrn));
   deltas.resize(1,Eigen::VectorXd::Zero(numNrn));
   numPara = numNrn*inputs[0].size()*inputs.size()+numNrn;
@@ -29,7 +29,7 @@ void DenseLayer::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
 		  inputs[i].size());
     Eigen::Map<Eigen::MatrixXd> NablaWeightTmp(adNablaNNP+startPoint,numNrn,
 		  inputs[i].size());
-    //weightsTmp /= weightsTmp.size();
+    //weightsTmp /= numNrn*inputs[i].size();
     weightTmp = weightTmp.unaryExpr(&NormalDistribution);
     weightsTmp.push_back(weightTmp);
     NablaWeightsTmp.push_back(NablaWeightTmp);
@@ -39,7 +39,7 @@ void DenseLayer::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
   nablaWeights.push_back(NablaWeightsTmp);
   Eigen::Map<Eigen::VectorXd> biaseTmp(adNNP+startPoint,numNrn); 
   Eigen::Map<Eigen::VectorXd> NablaBiaseTmp(adNablaNNP+startPoint,numNrn); 
-  //biaseTmp /= biaseTmp[0].size();
+  //biaseTmp /= biaseTmp.size();
   biaseTmp = biaseTmp.unaryExpr(&NormalDistribution);
   biases.push_back(biaseTmp); 
   nablaBiases.push_back(NablaBiaseTmp);
@@ -48,11 +48,12 @@ void DenseLayer::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
 
 void DenseLayer::processSignal(){
   activations[0]=Eigen::VectorXd::Zero(numNrn);
+  z[0]=Eigen::VectorXd::Zero(numNrn);
   for(size_t i(0); i<inputs.size(); i++){
-    z[i] = weights[0][i]*inputs[i];
-    activations[0]+=z[i];
+    z[0] += weights[0][i]*inputs[i];
   }
-  activations[0]+=biases[0];
+  z[0]+=biases[0];
+  activations[0]=z[0];
   activations[0]=activations[0].unaryExpr(actFunc);
 }
 

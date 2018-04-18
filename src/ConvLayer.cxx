@@ -82,12 +82,13 @@ void ConvLayer::processSignal(){
         //applying the address-of operator to the reference is 
         //the same as taking 
         //the address of the original object. So just add & in front of input
-        Eigen::Map<const Eigen::VectorXd> inputTmp(&inputs[k](0)+startPt,lengthFilter);
+        Eigen::Map<const Eigen::VectorXd> 
+          inputTmp(&inputs[k](0)+startPt,lengthFilter);
         // dot product with a reversed weight matrix, due to the mathematical 
         // definition of convolution. Since here the weight matrix is nx1, 
         // which is column major, so reverse colwise.
-        z[i](j)+=(weights[i][k].colwise().reverse().transpose()*inputTmp
-                  )(0);
+        z[i](j)+=(weights[i][k].colwise().reverse().transpose()*inputTmp)(0);
+        //z[i](j)+=(weights[i][k].transpose()*inputTmp)(0);
       }
       z[i](j)+=biases[i](0);
       startPt+=stride;
@@ -102,14 +103,10 @@ void ConvLayer::backProp(
     weightType const &prevWeights
     ){
   for (int i(0); i < numFilters; i++){
-    //std::cout << "ConvLayer.cxx: prevdeltas[0]=\n" << prevDelta[0] << std::endl;
     deltas[i] = prevWeights[0][i].transpose() * prevDelta[0];
-    deltas[i] = deltas[i].array() * (z[i].unaryExpr(actFuncPrime)).array();
-    //std::cout << "ConvLayer.cxx: After prime deltas[i]=\n" << deltas[i] << std::endl;
-    //std::cout << "ConvLayer.cxx: z[i]=\n" << z[i] << std::endl;
+    deltas[i] = (deltas[i].array() * z[i].unaryExpr(actFuncPrime).array()).matrix();
     //bias of the convLayer is just delta. 
     nablaBiases[i](0) = deltas[i].sum();
-    //std::cout << "ConvLayer.cxx: i=" << i << std::endl;
     //the complicated part is the weights. We need to retrieve the 
     //nablaWeigths for each depth. Since we did a convolution, the 
     //nablaWeights must contain a sum over a certain region of the 
@@ -117,16 +114,11 @@ void ConvLayer::backProp(
     for (int j(0); j < depthFilter; j++){
       for (int row(0); row < nablaWeights[i][j].rows(); row++){
         for (int col(0); col < nablaWeights[i][j].cols(); col++){
-        	//std::cout << "ConvLayer.cxx : row=" << row << std::endl;
           Eigen::Map<const Eigen::VectorXd, 0, Eigen::InnerStride<Eigen::Dynamic>>
 		  	  inputTmp(&inputs[j](0)+row,deltas[i].size(), Eigen::InnerStride<Eigen::Dynamic>(stride));
-          //std::cout << "ConvLayer.cxx: deltas[i].size()=" << deltas[i].size() << std::endl;
-          //std::cout << "ConvLayer.cxx: deltas[i]=\n" << deltas[i] << std::endl;
-          //std::cout << "ConvLayer.cxx: inputTmp=\n" << inputTmp.transpose() << std::endl;
-          //std::cout << "ConvLayer.cxx: nablaWeights.size()=" << nablaWeights[i][j].size() << std::endl;
+
           nablaWeights[i][j](row,col) = (inputTmp.transpose()*(deltas[i].colwise().reverse()))(0);
-          //std::cout << "ConvLayer.cxx: nablaWeights.[i][j](row,col)=" << nablaWeights[i][j](row,col) << std::endl;
-          //std::cout << "ConvLayer.cxx: i=" << i << std::endl;
+          //nablaWeights[i][j](row,col) = (inputTmp.transpose()*(deltas[i]))(0);
         }
       }
     }
