@@ -15,27 +15,24 @@ ListGen::ListGen(Hamiltonian const &H_, Basis const &fullBasis_, int numDets_, d
 
 ListGen::~ListGen() {
 }
-/*
+
 void ListGen::iterate(coeffType &cI, detType &dI) const{
 	// Fetch the next entry from the pre-arranged list
 	dI = getDet();
 	// Get its coefficient
 	cI = NNW.getCoeff(dI);
-	// Dont forget to cache the state
-	NNW.cacheNetworkState();
 }
-*/
-detType ListGen::getDet(int i) const{
-  return diffuseList[i];
-}
-/*
+
+//detType ListGen::getDet(int i) const{
+//  return diffuseList[i];
+//}
 detType ListGen::getDet() const{
 	pos += 1;
 	// cycle through the list, if we reach the end, start from the beginning
 	if(pos > diffuseList.size()) pos = 1;
 	return diffuseList[pos-1];
 }
-*/
+
 int ListGen::getNumDets() const{return diffuseList.size();}
 
 void ListGen::diffuse(std::vector<detType> &list, std::vector<int> const& spinConfig){

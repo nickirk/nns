@@ -14,25 +14,25 @@
 void annihilate(detType &det, int pos){
   if (pos > static_cast<int>(det.size()) || pos < 0){
     std::cerr << "Error! Annihilate outside of range! "; 
-    throw outOfRangeError(pos);
+    throw OutOfRangeError(pos);
   }
   if (det[pos]){ 
     det[pos] = 0;
   }
   else{ 
     std::cerr << "Error! Cannot annihilate an unoccupied state! ";
-    throw invalidAnnihilation(pos);
+    throw InvalidAnnihilation(pos);
   }
 }
 
 void create(detType &det, int pos){
   if (pos > static_cast<int>(det.size()) || pos < 0){
     std::cerr << "Error! Create outside of range! "; 
-    throw outOfRangeError(pos);
+    throw OutOfRangeError(pos);
   }
   if (det[pos]){
     std::cerr << "Error! Cannot create on an occupied state! ";
-    throw invalidCreation(pos);
+    throw InvalidCreation(pos);
   }
   else{
     det[pos] = 1;

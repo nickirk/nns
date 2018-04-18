@@ -6,6 +6,7 @@
  */
 
 #include "EnergyEstimator.hpp"
+#include <iostream>
 #include <vector>
 #include <complex>
 

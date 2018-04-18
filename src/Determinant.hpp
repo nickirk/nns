@@ -10,10 +10,9 @@
 
 #include <stdio.h>
 #include <vector>
-#include "errors.hpp"
-
+#include "utilities/Errors.hpp"
+#include "TypeDefine.hpp"
 // these should not be members of some class, better use generic functions
-using detType = std::vector<bool>;
 void create(detType &det, int pos);
 void annihilate(detType &det, int pos);
 std::vector<int> getOccupiedPositions(detType const &det);

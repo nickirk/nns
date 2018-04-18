@@ -12,14 +12,14 @@
 #include "CostFunction.hpp"
 #include "State.hpp"
 #include "Hamiltonian.hpp"
-#include "CoeffType.hpp"
+#include "TypeDefine.hpp"
 
 class EnergyEstimator: public CostFunction{
 public:
 	explicit EnergyEstimator(Hamiltonian const &H_):CostFunction(),H(H_),energy(0.0),normalizerCoeff(0.0){};
 	std::vector<Eigen::VectorXd> nabla(std::vector<State> const &input) const;
 	double calc(std::vector<State> const &input) const {return energy;};
-        double getNormalizer(){return normalizerCoeff;};
+    double getNormalizer(){return normalizerCoeff;};
 private:
 	Hamiltonian const& H;
 	mutable double energy;

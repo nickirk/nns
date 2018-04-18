@@ -10,7 +10,7 @@
 
 #include "CostFunction.hpp"
 #include "State.hpp"
-#include "CoeffType.hpp"
+#include "TypeDefine.hpp"
 
 // Cost function that measures the distance ||psi - psi_0||^2
 

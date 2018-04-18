@@ -10,7 +10,7 @@
 
 #include <vector>
 #include "Determinant.hpp"
-#include "CoeffType.hpp"
+#include "TypeDefine.hpp"
 
 class State{
 public:

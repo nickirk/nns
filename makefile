@@ -2,7 +2,7 @@ CXX=g++
 LDFLAGS=-std=c++11 -g -Wall
 EIGEN_PATH=lib/eigen/
 EIGEN_FLAGS=-I$(EIGEN_PATH)
-SOURCEFILES=Sampler.cxx Nnw.cxx Basis.cxx Hamiltonian.cxx Determinant.cxx EnergyCF.cxx NormCF.cxx EnergyEstimator.cxx FermionicHamiltonian.cxx AbInitioHamiltonian.cxx BosonicHamiltonian.cxx Solver.cxx Trainer.cxx MarkovSampler.cxx ListGen.cxx EnergyEsMarkov.cxx
+SOURCEFILES=Sampler.cxx Nnw.cxx Basis.cxx Hamiltonian.cxx Determinant.cxx EnergyCF.cxx NormCF.cxx EnergyEstimator.cxx FermionicHamiltonian.cxx AbInitioHamiltonian.cxx BosonicHamiltonian.cxx Solver.cxx Trainer.cxx MarkovSampler.cxx ListGen.cxx EnergyEsMarkov.cxx Layer.cxx DenseLayer.cxx ConvLayer.cxx InputLayer.cxx math/MathFunctions.cxx
 TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx testAlgAb.cxx testRandom.cxx testMarkov.cxx
 SRC=src
 TST=test
@@ -43,15 +43,19 @@ $(DIRECTORIES):
 	mkdir $@
 
 $(DDIR)/%.d: $(SRC)/%.cxx $(DDIR)
+	mkdir -p $(dir $@)
 	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -MM $< -o $@
 
 $(BUILD)/%.o: $(SRC)/%.cxx
+	mkdir -p $(dir $@)
 	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -c src/$*.cxx -o $@
 
 $(TSTDDIR)/%.d: $(TST)/%.cxx $(TSTDDIR)
+	mkdir -p $(dir $@)
 	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -MM $< -o $@
 
 $(TSTBUILD)/%.o: $(TST)/%.cxx
+	mkdir -p $(dir $@)
 	$(CXX) $(EIGEN_FLAGS) $(LDFLAGS) -c $< -o $@
 
 

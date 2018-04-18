@@ -18,8 +18,10 @@ public:
 	virtual ~ListGen();
 	//void iterate(coeffType &cI, detType &dI) const;
 	void diffuse(std::vector<detType> &list, std::vector<int> const& spinConfig);
-	detType getDet(int i) const;
-        int getNumDets() const;
+  void setDiffuseList(std::vector<detType > const &list){diffuseList=list;};
+  void iterate(coeffType &cI, detType &dI) const;
+	detType getDet() const;
+  int getNumDets() const;
 private:
 	NeuralNetwork const &NNW;
 	std::vector<detType > diffuseList;
