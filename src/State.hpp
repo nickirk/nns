@@ -12,6 +12,8 @@
 #include "Determinant.hpp"
 #include "CoeffType.hpp"
 
+// A state contains a determinant and its coefficient, and might further contain information
+// on coupled determinants
 class State{
 public:
 	State():det(detType({0})), coeff(coeffType(0.,0.)), 
@@ -42,6 +44,7 @@ public:
 
 	detType det;
 	coeffType coeff;
+// potentially also have a number of coupled determinants stored
         std::vector<coeffType> coupledCoeffs;
         std::vector<detType> coupledDets;
         bool operator < (State const &m) const {

@@ -7,9 +7,9 @@
 #include "../src/Determinant.hpp"
 #include "../src/FermionicHamiltonian.hpp"
 #include "../src/ListGen.hpp"
-#include "../src/MarkovSampler.hpp"
 #include "../src/EnergyEstimator.hpp"
 #include "../src/EnergyCF.hpp"
+#include "../src/MetropolisSampler.hpp"
 #include "../src/Trainer.hpp"
 using namespace Eigen;
 
@@ -34,7 +34,7 @@ int main(){
   //cout << "HF intCast=" << verbatimCast(HF) << endl;
   //list.push_back(HF);
   int numDetsToTrain_{200};
-  MarkovSampler sampler(modelHam, basis, numDetsToTrain_, HF,NNW);
+  MetropolisSampler sampler(modelHam, basis, numDetsToTrain_, HF,NNW);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
   double energy{0.0};

@@ -14,6 +14,9 @@
 #include "CoeffType.hpp"
 #include "Nnw.hpp"
 
+// Base class for sampling, these objects take some input state and a Hamiltonian and generate
+// lists of potentially relevant determinants
+
 class Sampler{
 public:
   Sampler(Hamiltonian const &H_, Basis const &fullBasis_, int numDets_, detType const &HF):H(H_),fullBasis(fullBasis_),

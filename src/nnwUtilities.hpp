@@ -10,6 +10,9 @@
 
 #include "Nnw.hpp"
 #include "Sampler.hpp"
+#include "State.hpp"
+
+// Try to match the neural network to a given input determinant
 
 void preTrain(NeuralNetwork &network, std::<State> const &target, Sampler const &msampler, int iteration);
 

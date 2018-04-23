@@ -10,12 +10,16 @@
 
 #include "Hamiltonian.hpp"
 
+// Implementation for hamiltonians with fermionic commutation relations
 class FermionicHamiltonian: public Hamiltonian {
 public:
 	FermionicHamiltonian(int dimension):Hamiltonian(dimension){};
 	virtual ~FermionicHamiltonian();
+// The fermi sign is the main difference to the plain Hamiltonian
 	int getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex) const;
+// These generate either a single random state coupled to source (with probability p)
     detType getRandomCoupledState(detType const &source, double &p) const;
+// or all states coupled to source
     std::vector<detType> getCoupledStates(detType const &source) const;
 };
 

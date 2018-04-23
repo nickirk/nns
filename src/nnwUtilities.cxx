@@ -12,7 +12,7 @@
 #include "Sampler.hpp"
 #include <iostream>
 
-void preTrain(NeuralNetwork &network, std::<State> const &target, Sampler const &msampler, double trainRate, int iteration){
+void preTrain(NeuralNetwork &network, std::vector<State> const &target, Sampler const &msampler, double trainRate, int iteration){
 // Trains the network to represent some state target
 // We first backup the current cost function
 	CostFunction const *backupCF = network.getCostFunction();

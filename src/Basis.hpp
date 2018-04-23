@@ -12,13 +12,18 @@
 //
 // type of the determiants
 
-
+// Basis class for converting integers to basis states and indexing orbitals
+// It is essentially a map from determinants to indices and vice versa
 class Basis{
   public:
     Basis(std::vector<int> const &spinConfig_);
+// total size of the many-body basis
     int getSize() const;
+// Return the determinant with index 'index'
     detType getDetByIndex(int index) const;
+// Return the index of the determinant 'det_'
     int getIndexByDet(detType const & det_) const;
+// Return the alpha/beta spin distribution
     std::vector<int > getSpinConfig() const {return spinConfig;};
   private:
     int numEle;
@@ -28,6 +33,7 @@ class Basis{
     int indexOfDet;
     std::vector<int> listOfOrbNum;
     std::vector<int> combination;
+// internal methods for handling the map
     int calcSize(int numOrb_, int numEle_);
     void createBasisDet(int offset, int numEle_);
     // determinants need to be accessed often, no need to add some
