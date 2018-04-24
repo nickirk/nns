@@ -23,7 +23,7 @@
 const std::complex<double> ii(0.,1.);
 class NeuralNetwork{
   public:
-    NeuralNetwork(Hamiltonian const &H_, std::vector<int> const &sizes_, CostFunction const &externalCF);
+    NeuralNetwork(std::vector<int> const &sizes_, CostFunction const &externalCF);
     coeffType getCoeff(detType const &det) const;
     void train(std::vector<detType> const&listDetsToTrain, double eta, int iteration_);
     //double getEnergy(){return cf->calc(outputState);}
@@ -32,18 +32,10 @@ class NeuralNetwork{
     Eigen::VectorXd feedForward(detType const& det) const;
     void updateParameters(int method, std::vector<State> const &outputState, double learningRate, int iteration);
     void setCostFunction(CostFunction const &externalCF) {cf = &externalCF;}
-    // These are for storing the networks state - this is very dangerous and expensive
-    // cacheNetworkState appends the current activations to the cache
-    //void cacheNetworkState() const;
-    //void repCachedNetworkState() const;
-    //// updateStateCache updates the last cached values with the current activations
-    //void updateStateCache() const;
     CostFunction const* getCostFunction() const {return cf;}
     Eigen::Map<Eigen::MatrixXd> getWeights(int layer) const {return weights[layer];}
     Eigen::Map<Eigen::VectorXd> getBiases(int layer) const {return biases[layer];}
   private:
-    // Hamiltonian
-    Hamiltonian const &H;
     double momentumDamping;
     bool momentum;
     double lamdaS1;

@@ -19,7 +19,7 @@ int main(){
   int numStates(2*numSites);
   int spinUp(3);
   int spinDown(3);
-  vector<int> spinConfig{spinUp, spinDown, numStates};
+  SpinConfig spinConfig(spinUp, spinDown, numStates);
   int numHidden(40*numSites);
   vector<int> size_NNW = {numStates, numHidden, 2};
   double trainRate(0.1);
@@ -34,13 +34,13 @@ int main(){
   //cout << "HF intCast=" << verbatimCast(HF) << endl;
   //list.push_back(HF);
   int numDetsToTrain_{200};
-  MetropolisSampler sampler(modelHam, basis, numDetsToTrain_, HF,NNW);
+  MetropolisSampler sampler(modelHam, basis, HF,NNW);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
   double energy{0.0};
   Trainer ev(NNW,sampler);
   for(int l(0); l<10000; ++l){
-    ev.train(trainRate,2);
+    ev.train(trainRate,2,l);
     // get the new energy
     energy = ev.getE();
     std::cout<<"Energy "<<energy<<std::endl;

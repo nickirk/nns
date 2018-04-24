@@ -12,7 +12,7 @@
 #include "Sampler.hpp"
 #include <iostream>
 
-void preTrain(NeuralNetwork &network, std::vector<State> const &target, Sampler const &msampler, double trainRate, int iteration){
+void preTrain(NeuralNetwork &network, std::vector<State> const &target, Sampler const &msampler, double trainRate){
 // Trains the network to represent some state target
 // We first backup the current cost function
 	CostFunction const *backupCF = network.getCostFunction();
@@ -26,10 +26,10 @@ void preTrain(NeuralNetwork &network, std::vector<State> const &target, Sampler 
 
 	// set up the trainer
 	Trainer ev(network,msampler);
-// Train the network
+    // Train the network
 	int const maxTrainCount = 1000;
 	for(int i = 0; i < maxTrainCount;++i){
-		ev.train(trainRate);
+		ev.train(trainRate,2,i);
 		std::cout << "Distance/t" << ev.getE() << std::endl;
 	}
 	network.setCostFunction(*backupCF);

@@ -14,6 +14,6 @@
 
 // Try to match the neural network to a given input determinant
 
-void preTrain(NeuralNetwork &network, std::<State> const &target, Sampler const &msampler, int iteration);
+void preTrain(NeuralNetwork &network, std::vector<State> const &target, Sampler const &msampler);
 
 #endif /* SRC_NNWUTILITIES_HPP_ */

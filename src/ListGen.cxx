@@ -9,40 +9,56 @@
 #include "ListGen.hpp"
 
 ListGen::ListGen(Hamiltonian const &H_, Basis const &fullBasis_, int numDets_, detType const &HF, NeuralNetwork const &NNW_):
-	Sampler(H_,fullBasis_,numDets_,HF),NNW(NNW_),pos(0){
-	diffuseList=std::vector<detType >(numDets_,HF);
+	Sampler(H_,fullBasis_,HF,numDets_),NNW(NNW_),pos(0){
+	std::vector<detType> tmp(numDets_,HF);
+	diffuse(tmp);
 }
+
+//---------------------------------------------------------------------------------------------------//
 
 ListGen::~ListGen() {
 }
-/*
+
+//---------------------------------------------------------------------------------------------------//
+
 void ListGen::iterate(coeffType &cI, detType &dI) const{
 	// Fetch the next entry from the pre-arranged list
 	dI = getDet();
 	// Get its coefficient
 	cI = NNW.getCoeff(dI);
 	// Dont forget to cache the state
-	NNW.cacheNetworkState();
 }
-*/
+
+//---------------------------------------------------------------------------------------------------//
+
 detType ListGen::getDet(int i) const{
   return diffuseList[i];
 }
-/*
+
+//---------------------------------------------------------------------------------------------------//
+
 detType ListGen::getDet() const{
 	pos += 1;
 	// cycle through the list, if we reach the end, start from the beginning
-	if(pos > diffuseList.size()) pos = 1;
+	if(pos > diffuseList.size()){
+		pos = 1;
+		// and also generate a new list
+		diffuse(diffuseList);
+	}
 	return diffuseList[pos-1];
 }
-*/
+
+//---------------------------------------------------------------------------------------------------//
+
 int ListGen::getNumDets() const{return diffuseList.size();}
 
-void ListGen::diffuse(std::vector<detType> &list, std::vector<int> const& spinConfig){
+//---------------------------------------------------------------------------------------------------//
+
+void ListGen::diffuse(std::vector<detType> &list) const{
  list=diffuseList;
  detType buf;
  while (list.size() < numDets){
-   buf = getRandomDeterminant(spinConfig);
+   buf = getRandomDeterminant(sC);
    list.push_back(buf);
  }
  coeffType c_i;

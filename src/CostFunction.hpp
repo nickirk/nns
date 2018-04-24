@@ -10,6 +10,7 @@
 
 #include "State.hpp"
 #include "CoeffType.hpp"
+#include <Eigen/Dense>
 
 // Abstract base class for cost functions
 

@@ -6,7 +6,7 @@
  */
 
 #include <iostream>
-#include "../src/Hamiltonian.hpp"
+#include "../src/FermionicHamiltonian.hpp"
 #include "../src/CostFunction.hpp"
 #include "../src/EnergyCF.hpp"
 #include "../src/Determinant.hpp"
@@ -14,7 +14,7 @@
 int main(){
 	int numSites{3}, numStates{2*numSites};;
 	double U{4}, t{-1};
-	Hamiltonian modelHam = generateHubbard(numStates,U,t);
+	FermionicHamiltonian modelHam = generateFermiHubbard(numStates,U,t);
 	EnergyCF eCF(modelHam);
 	detType D1(numStates, false);
 	detType D2 = D1;
@@ -28,7 +28,7 @@ int main(){
 	std::vector<detType > HFArr(2);
 	HFArr[0] = D1;
 	HFArr[1] = D2;
-	State HF(HFArr,TwoCoeffs);
+	std::vector<State> HF(1,State(HFArr,TwoCoeffs));
 	std::vector<coeffType > dE = eCF.nabla(HF);
 	std::cout << "Energy " << eCF.calc(HF) << std::endl;
 	std::cout << "Derivative " << dE[0] << std::endl;

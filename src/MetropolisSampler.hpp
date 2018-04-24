@@ -16,11 +16,11 @@
 
 class MetropolisSampler: public Sampler {
 public:
-	MetropolisSampler(Hamiltonian const &H_, Basis const &fullBasis_, int numDets_, detType const &HF, NeuralNetwork const &NNW_):
-			Sampler(H_,fullBasis_,numDets_,HF),NNW(NNW_),lastCoeff(NNW_.getCoeff(cDet)){};
+	MetropolisSampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF, NeuralNetwork const &NNW_):
+			Sampler(H_,fullBasis_,HF),NNW(NNW_),lastCoeff(NNW_.getCoeff(cDet)){};
 	virtual ~MetropolisSampler();
 	//Do a markov step
-	void iterate(coeffType &cI, detType &dI) const;
+	virtual void iterate(coeffType &cI, detType &dI) const;
 private:
 	NeuralNetwork const &NNW;
 	mutable coeffType lastCoeff;

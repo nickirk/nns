@@ -3,7 +3,7 @@
 #include <Eigen/Eigenvalues>
 #include "../src/Determinant.hpp"
 #include "../src/Basis.hpp"
-#include "../src/Hamiltonian.hpp"
+#include "../src/FermionicHamiltonian.hpp"
 using namespace std;
 int main(){
   int numSites(8);
@@ -21,36 +21,19 @@ int main(){
   Basis basis(spinConfig);
   FermionicHamiltonian modelHam(numStates);
   cout << "Basis size= " << basis.getSize() << endl;
-  cout << "Hamiltonian size= " << modelHam.getSize() << endl;
+  cout << "Hamiltonian size= " << modelHam.getNumOrbs() << endl;
   cout << "print out Ham element" << endl;
-  for (int i(0); i<modelHam.getSize(); ++i){
-    for (int j(0); j< modelHam.getSize(); ++j){
+  for (int i(0); i<modelHam.getNumOrbs(); ++i){
+    for (int j(0); j< modelHam.getNumOrbs(); ++j){
       cout << modelHam(i,j) << ", " ;
     }
     cout << endl;
   }
-  for (int i(0); i<modelHam.getSize(); ++i){
-    for (int j(0); j< modelHam.getSize(); ++j){
+  for (int i(0); i<modelHam.getNumOrbs(); ++i){
+    for (int j(0); j< modelHam.getNumOrbs(); ++j){
       cout << modelHam(basis.getDetByIndex(i), basis.getDetByIndex(j)) << ",";
     }
     cout << endl;
   }
-  /*
-  cout << modelHam.lowerPos(0)<<'\t'<<modelHam.upperPos(0)<<'\n';
-  int a,b;
-  double c;
-  for(int i(0);i<modelHam.getSparseSize();++i){
-    modelHam.sparseAccess(i,a,b,c);
-    cout << a << '\t'<<b<<'\t'<<c<<'\n';
-  }
-  */
-  Eigen::MatrixXd H(Eigen::MatrixXd::Zero(modelHam.getSize(),modelHam.getSize())); 
-  for (int i=0; i<modelHam.getSparseSize(); ++i){
-    int row, col;
-    double value(0.);
-    modelHam.sparseAccess(i, row, col, value);
-    H(row,col) = value;
-  }
-  cout << "Diag= " << H.eigenvalues()  << endl;
 }
 

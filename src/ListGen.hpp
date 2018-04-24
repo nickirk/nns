@@ -11,18 +11,20 @@
 #include "Nnw.hpp"
 #include "Determinant.hpp"
 #include "Sampler.hpp"
+#include "SpinConfig.hpp"
 
 class ListGen : public Sampler{
 public:
 	ListGen(Hamiltonian const &H_, Basis const &fullBasis_, int numDets_, detType const &HF, NeuralNetwork const &NNW);
 	virtual ~ListGen();
-	//void iterate(coeffType &cI, detType &dI) const;
-	void diffuse(std::vector<detType> &list, std::vector<int> const& spinConfig);
-	detType getDet(int i) const;
-        int getNumDets() const;
+	virtual void iterate(coeffType &cI, detType &dI) const;
+	void diffuse(std::vector<detType> &list) const;
+	virtual detType getDet(int i) const;
+	virtual detType getDet() const;
+    virtual int getNumDets() const;
 private:
 	NeuralNetwork const &NNW;
-	std::vector<detType > diffuseList;
+	mutable std::vector<detType > diffuseList;
 	mutable size_t pos;
 };
 

@@ -18,7 +18,7 @@
 class Trainer {
 public:
 // supply a sampler, a Hamiltonian and the NNW
-	Trainer(Hamiltonian const &modelHam_,NeuralNetwork &NNW_, Sampler &msampler);
+	Trainer(NeuralNetwork &NNW_, Sampler &msampler);
 // train() tries to optimize the parameters of the NNW with respect to its cost function
 	void train(double learningRate, int method, int iteration);
 // read-out methods for energy and coefficients

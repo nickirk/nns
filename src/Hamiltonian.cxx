@@ -10,7 +10,7 @@ int Hamiltonian::getId(int i) const {
     // convert a spin orbital index to a spatial one if necessary
     int ind{0};
 
-    if (spin_orbs){
+    if (spinOrbs){
         // stored in spin orbtials
         ind = i;
         
@@ -31,9 +31,9 @@ int Hamiltonian::getId(int i) const {
 void Hamiltonian::initMatrixStorage(bool bspin_orbs){
     // are integrals stored in spin or spatial orbitals
     
-    spin_orbs = false;
-    spin_orbs = bspin_orbs;
-    if (spin_orbs){
+    spinOrbs = false;
+    spinOrbs = bspin_orbs;
+    if (spinOrbs){
         std::cout << "Storing 1- and 2-electron integrals in spin orbitals" << std::endl;
     }
     else{

@@ -13,6 +13,7 @@
 #include "State.hpp"
 #include "Hamiltonian.hpp"
 #include "CoeffType.hpp"
+#include <Eigen/Dense>
 
 class EnergyEsMarkov: public CostFunction{
 public:

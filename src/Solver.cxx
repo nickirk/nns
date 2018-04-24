@@ -15,10 +15,12 @@ Solver::Solver(double eta):gamma(eta) {
 Solver::~Solver() {
 }
 
+// Gradient descent
 void Solver::update(Eigen::VectorXd &w, Eigen::VectorXd const &force) const{
 	w-=gamma*force;
 }
 
+// Conjugate descent
 void Solver::update(Eigen::VectorXd &w, Eigen::VectorXd const &force,
 					   Eigen::VectorXcd const &ci, Eigen::MatrixXcd const &dcdw, int const &iteration) const{
 	Eigen::MatrixXd s, okokp;

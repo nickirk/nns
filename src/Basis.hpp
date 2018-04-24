@@ -9,6 +9,7 @@
 #define Basis_DEFINED
 
 #include "Determinant.hpp"
+#include "SpinConfig.hpp"
 //
 // type of the determiants
 
@@ -16,7 +17,7 @@
 // It is essentially a map from determinants to indices and vice versa
 class Basis{
   public:
-    Basis(std::vector<int> const &spinConfig_);
+    Basis(SpinConfig const &spinConfig_);
 // total size of the many-body basis
     int getSize() const;
 // Return the determinant with index 'index'
@@ -24,10 +25,10 @@ class Basis{
 // Return the index of the determinant 'det_'
     int getIndexByDet(detType const & det_) const;
 // Return the alpha/beta spin distribution
-    std::vector<int > getSpinConfig() const {return spinConfig;};
+    SpinConfig getSpinConfig() const {return spinConfig;};
   private:
     int numEle;
-    std::vector<int> spinConfig;
+    SpinConfig spinConfig;
     int numOrb;
     int size;
     int indexOfDet;

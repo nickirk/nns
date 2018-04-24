@@ -19,6 +19,10 @@ public:
 	State():det(detType({0})), coeff(coeffType(0.,0.)), 
          coupledCoeffs(std::vector<coeffType>(0)), 
          coupledDets(std::vector<detType>(0)) {};
+	State(detType const &det_, coeffType const &coeff_):
+		det(det_), coeff(coeff_),
+        coupledCoeffs(std::vector<coeffType>(0)),
+        coupledDets(std::vector<detType>(0)) {};
 	State(
               detType  const &det_, 
               coeffType const &coeff_, 

@@ -18,8 +18,8 @@
 #include "NormCF.hpp"
 #include "Solver.hpp"
 //using namespace Eigen;
-NeuralNetwork::NeuralNetwork(Hamiltonian const &H_, std::vector<int> const &sizes_, 
-CostFunction const &externalCF):H(H_), sizes(sizes_), cf(&externalCF), sl(Solver(0.5)){
+NeuralNetwork::NeuralNetwork(std::vector<int> const &sizes_,
+CostFunction const &externalCF):sizes(sizes_), cf(&externalCF), sl(Solver(0.5)){
   momentumDamping = 0.6;
   momentum = false;
   //initial para for Nesterov's accelerated gradient descent
@@ -109,24 +109,6 @@ coeffType NeuralNetwork::getCoeff(detType const &det) const{
 	return outputLayer();
 }
 
-//---------------------------------------------------------------------------------------------------//
-/*
-void NeuralNetwork::cacheNetworkState() const{
-	inputSignalsEpochs.push_back(inputSignals);
-	activationsEpochs.push_back(activations);
-}
-
-void NeuralNetwork::repCachedNetworkState() const{
-	inputSignalsEpochs.push_back(inputSignalsEpochs.back());
-	activationsEpochs.push_back(inputSignalsEpochs.back());
-}
->>>>>>> markov-sampler
-
-void NeuralNetwork::updateStateCache() const{
-	inputSignalsEpochs.back()=inputSignals;
-	activationsEpochs.back()=activations;
-}
-*/
 //---------------------------------------------------------------------------------------------------//
 
 void NeuralNetwork::updateParameters(int method, std::vector<State> const &outputState, double learningRate, int iteration){

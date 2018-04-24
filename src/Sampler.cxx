@@ -13,21 +13,26 @@
 #include "Determinant.hpp"
 #include <iostream>
 
+// Just take any connected determinant and let the Hamiltonian decide what is connected
 detType Sampler::getRandomConnection(detType const &startingPoint) const{
 	double p{0};
 	return H.getRandomCoupledState(startingPoint, p);
 }
 
+
+// Go through a list of dets and remove duplicates (generic function)
 void removeDuplicate(std::vector<detType> &list){
  std::sort( list.begin(), list.end() );
+// make use of std::unique for a sorted list
  auto it=std::unique( list.begin(), list.end() );
  list.erase( it, list.end() );
 }
 
-detType getRandomDeterminant(std::vector<int> const &spinConfig){ 
-  int numSpinUp(spinConfig[0]);
-  int numSpinDown(spinConfig[1]);
-  int numStates(spinConfig[2]);
+// This creates some random determinant with a given spin configuraion
+detType getRandomDeterminant(SpinConfig const &spinConfig){
+  int numSpinUp(spinConfig(1));
+  int numSpinDown(spinConfig(-1));
+  int numStates(spinConfig.numSpinOrbs());
   detType randomDet(numStates, 0);  
   std::vector<int> possibleSpinUpStates;
   for (int i(0);i<(numStates/2); ++i){

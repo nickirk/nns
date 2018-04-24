@@ -9,6 +9,7 @@
 #define SRC_ENERGYESTIMATOR_HPP_
 
 #include <vector>
+#include <Eigen/Dense>
 #include "CostFunction.hpp"
 #include "State.hpp"
 #include "Hamiltonian.hpp"
