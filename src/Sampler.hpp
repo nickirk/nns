@@ -11,7 +11,7 @@
 #include "Determinant.hpp"
 #include "Basis.hpp"
 #include "Hamiltonian.hpp"
-#include "CoeffType.hpp"
+#include "TypeDefine.hpp"
 #include "Nnw.hpp"
 #include "SpinConfig.hpp"
 
@@ -20,7 +20,7 @@
 
 class Sampler{
 public:
-  Sampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF, int numDets_= 100):numDets(numDets_),H(H_),fullBasis(fullBasis_),
+  Sampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF, int numDets_= 100):H(H_),numDets(numDets_),fullBasis(fullBasis_),
 											     cDet(HF),sC(fullBasis_.getSpinConfig()){}
   virtual ~Sampler(){};
   // and functionalities: get a random coupled determinant

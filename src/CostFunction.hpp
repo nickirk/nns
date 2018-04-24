@@ -9,8 +9,8 @@
 #define COST_FUNCTION_DEFINED
 
 #include "State.hpp"
-#include "CoeffType.hpp"
 #include <Eigen/Dense>
+#include "TypeDefine.hpp"
 
 // Abstract base class for cost functions
 

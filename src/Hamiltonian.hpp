@@ -2,6 +2,7 @@
 #define HAMILTONIAN_CLASS
 
 #include "Determinant.hpp"
+#include "./utilities/Errors.hpp"
 
 class Hamiltonian{
  public:

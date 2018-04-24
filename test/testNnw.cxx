@@ -29,7 +29,7 @@ int main(){
   modelHam = generateFermiHubbard(numStates, U, t);
   vector<detType> list;
   EnergyEstimator eCF(modelHam);
-  NeuralNetwork NNW(size_NNW, eCF);
+  NeuralNetwork NNW(modelHam,eCF);
   detType HF=basis.getDetByIndex(0);
   //cout << "HF intCast=" << verbatimCast(HF) << endl;
   //list.push_back(HF);

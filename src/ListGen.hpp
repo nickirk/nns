@@ -19,6 +19,7 @@ public:
 	virtual ~ListGen();
 	virtual void iterate(coeffType &cI, detType &dI) const;
 	void diffuse(std::vector<detType> &list) const;
+	void setDiffuseList(std::vector<detType > const &list){diffuseList=list;};
 	virtual detType getDet(int i) const;
 	virtual detType getDet() const;
     virtual int getNumDets() const;

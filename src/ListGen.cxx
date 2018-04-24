@@ -26,7 +26,6 @@ void ListGen::iterate(coeffType &cI, detType &dI) const{
 	dI = getDet();
 	// Get its coefficient
 	cI = NNW.getCoeff(dI);
-	// Dont forget to cache the state
 }
 
 //---------------------------------------------------------------------------------------------------//

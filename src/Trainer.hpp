@@ -9,7 +9,7 @@
 #define SRC_TRAINER_HPP_
 
 #include "Nnw.hpp"
-#include "CoeffType.hpp"
+#include "TypeDefine.hpp"
 #include "Determinant.hpp"
 #include "Sampler.hpp"
 #include "State.hpp"

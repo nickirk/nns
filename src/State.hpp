@@ -10,7 +10,7 @@
 
 #include <vector>
 #include "Determinant.hpp"
-#include "CoeffType.hpp"
+#include "TypeDefine.hpp"
 
 // A state contains a determinant and its coefficient, and might further contain information
 // on coupled determinants

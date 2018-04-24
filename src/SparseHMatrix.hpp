@@ -10,7 +10,7 @@
 
 #include "Hamiltonian.hpp"
 #include <vector>
-#include "CoeffType.hpp"
+#include "TypeDefine.hpp"
 
 class SparseHMatrix {
 // Class for translating a second quantized Hamiltonian into a sparse matrix

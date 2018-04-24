@@ -12,9 +12,8 @@
 #include "CostFunction.hpp"
 #include "State.hpp"
 #include "Hamiltonian.hpp"
-#include "CoeffType.hpp"
 #include "Eigen/Dense"
-
+#include "TypeDefine.hpp"
 // This cost function tries to minimize the energy expectation value
 
 class EnergyCF: public CostFunction{

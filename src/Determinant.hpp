@@ -10,11 +10,10 @@
 
 #include <stdio.h>
 #include <vector>
-#include "errors.hpp"
+#include "utilities/Errors.hpp"
+#include "TypeDefine.hpp"
 
-// We represent determinants as boolean vectors for now
-using detType = std::vector<bool>;
-// Add an electron at orbital pos
+// these should not be members of some class, better use generic functions
 void create(detType &det, int pos);
 // Remove an electron at orbital pos
 void annihilate(detType &det, int pos);
