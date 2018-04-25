@@ -5,8 +5,6 @@
  * All rights reserved
  */
 
-#include "Basis.hpp"
-
 #include <stdio.h>
 #include <vector>
 #include <random>
@@ -14,9 +12,7 @@
 #include <algorithm>
 #include <stdio.h>
 #include <iostream>
-
-#include "Determinant.hpp"
-
+#include "Basis.hpp"
 
 Basis::Basis(SpinConfig const &spinConfig_):
 	spinConfig(spinConfig_)

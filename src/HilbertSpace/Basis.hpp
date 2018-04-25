@@ -8,6 +8,7 @@
 #ifndef Basis_DEFINED
 #define Basis_DEFINED
 
+#include <vector>
 #include "Determinant.hpp"
 #include "../utilities/SpinConfig.hpp"
 //

@@ -3,11 +3,11 @@
  * Created on 27.3.2018
  * Author: Ke Liao 
  */
-#include "ConvLayer.hpp"
 
 #include <vector>
 #include <Eigen/Dense>
 #include <iostream>
+#include "ConvLayer.hpp"
 
 
 ConvLayer::ConvLayer(

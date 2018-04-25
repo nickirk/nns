@@ -4,14 +4,13 @@
  * Author: Ke Liao and Kai Guther
  * All rights reserved
  */
-#include "Nnw.hpp"
-
 #include <vector>
 #include <iostream>
 #include <random>
 #include <Eigen/Dense>
 #include <Eigen/Core>
 #include <complex>
+#include "Nnw.hpp"
 NeuralNetwork::NeuralNetwork(CostFunction const &externalCF):cf(&externalCF), sl(Solver(0.5)){
 
   //initial value for NNW para

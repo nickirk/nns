@@ -11,7 +11,7 @@
 
 #include <complex>
 #include <vector>
-#include "Eigen/Dense"
+#include <Eigen/Dense>
 
 // We eventually want to use complex, but the current version uses VectorXd
 //using coeffType = std::complex<double>;

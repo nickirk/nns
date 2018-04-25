@@ -8,9 +8,9 @@
 #ifndef COST_FUNCTION_DEFINED
 #define COST_FUNCTION_DEFINED
 
+#include "../utilities/State.hpp"
 #include <Eigen/Dense>
 #include "../utilities/TypeDefine.hpp"
-#include "../utilities/State.hpp"
 
 // Abstract base class for cost functions
 

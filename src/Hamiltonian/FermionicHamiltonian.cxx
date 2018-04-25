@@ -5,9 +5,8 @@
  *      Author: guther
  */
 
-#include "FermionicHamiltonian.hpp"
-
 #include <random>
+#include "FermionicHamiltonian.hpp"
 
 FermionicHamiltonian::~FermionicHamiltonian() {
 }

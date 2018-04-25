@@ -5,11 +5,10 @@
  */
 
 
-#include "Layer.hpp"
-
 #include <vector>
 #include <Eigen/Dense>
 #include <string>
+#include "Layer.hpp"
 
 Layer::Layer(std::vector<Eigen::VectorXd> const &inputs_, std::string actFunc_):
 inputs(inputs_){

@@ -4,11 +4,10 @@
  * Author: Ke Liao 
  */
 
-#include "InputLayer.hpp"
-
 #include <vector>
 #include <Eigen/Dense>
 #include "../../HilbertSpace/Determinant.hpp"
+#include "InputLayer.hpp"
 
 InputLayer::InputLayer(std::vector<Eigen::VectorXd> const &inputs_, int size_):
     Layer(inputs_, "Linear"), numNrn(size_){

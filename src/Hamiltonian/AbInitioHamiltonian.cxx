@@ -5,9 +5,6 @@
  *      Author: Lauretta Schwarz
  */
 
-#include "AbInitioHamiltonian.hpp"
-
-#include "../utilities/Errors.hpp"
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -19,6 +16,8 @@
 #include <cmath>
 #include <random>
 #include "../HilbertSpace/Determinant.hpp"
+#include "AbInitioHamiltonian.hpp"
+#include "../utilities/Errors.hpp"
 
 AbInitioHamiltonian::~AbInitioHamiltonian() {
 }
