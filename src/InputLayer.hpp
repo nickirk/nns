@@ -23,7 +23,9 @@ public:
                         weightType const &prevWeights){};
   // same for mapping parameters - nothing will happen
   virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint){};
-  void processSignal(detType const det) const;
+  void processSignal(detType const &det) const;
+  // input layers don't do anything when processing an empty signal
+  void processSignal()const{};
 private:
   int numNrn;
 };

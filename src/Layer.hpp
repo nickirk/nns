@@ -23,16 +23,16 @@ public:
   // virtual function for copying polymorphic layers
   virtual Layer* clone() const=0;
   //functional functions
-  virtual void processSignal() const{};
-  virtual void processSignal(detType const det) const{};
+  virtual void processSignal() const=0;
+  // just for convenience, we want to be able to call process signal with an argument
+  // (to prevent unfortunate bugs with the inputlayer, which overrides this method)
+  virtual void processSignal(detType const &det) const{processSignal();};
   // update of parameters will be done on network level, not on layer level.
   virtual void backProp(
                         std::vector<Eigen::VectorXd> const &prevDelta, 
                         weightType const &prevWeights
                         )=0;
-  virtual void backProp(
-                        Eigen::VectorXd const &prevDelta
-                        ){};
+  virtual void backProp(Eigen::VectorXd const &prevDelta){};
   //virtual void mapPara(double *adNNP, int &startPoint);
   virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint)=0;
   //virtual void initialise(Eigen::VectorXd const &NNP);
