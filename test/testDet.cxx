@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <iostream>
-#include "../src/Determinant.hpp"
-#include "../src/Basis.hpp"
+
+#include "../src/HilbertSpace/Basis.hpp"
+#include "../src/HilbertSpace/Determinant.hpp"
 //Determinant.hpp/.cxx have been tested and passed.
 int main(){
   detType det(5,0);

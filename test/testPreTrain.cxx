@@ -5,15 +5,15 @@
  *      Author: guther
  */
 
-#include "../src/Nnw.hpp"
-#include "../src/FermionicHamiltonian.hpp"
-#include "../src/EnergyCF.hpp"
-#include "../src/State.hpp"
-#include "../src/Determinant.hpp"
-#include "../src/TypeDefine.hpp"
-#include "../src/Basis.hpp"
-#include "../src/SpinConfig.hpp"
-#include "../src/MetropolisSampler.hpp"
+#include "../src/CostFunctions/EnergyCF.hpp"
+#include "../src/utilities/State.hpp"
+#include "../src/HilbertSpace/Determinant.hpp"
+#include "../src/utilities/TypeDefine.hpp"
+#include "../src/Hamiltonian/FermionicHamiltonian.hpp"
+#include "../src/Network/Nnw.hpp"
+#include "../src/HilbertSpace/Basis.hpp"
+#include "../src/Samplers/MetropolisSampler.hpp"
+#include "../src/utilities/SpinConfig.hpp"
 
 int main(){
 	int numSites{3}, numStates{2*numSites};;

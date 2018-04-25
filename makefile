@@ -2,7 +2,7 @@ CXX=g++
 LDFLAGS=-std=c++11 -g -Wall
 EIGEN_PATH=lib/eigen/
 EIGEN_FLAGS=-I$(EIGEN_PATH)
-SOURCEFILES=Sampler.cxx Nnw.cxx Basis.cxx Hamiltonian.cxx Determinant.cxx EnergyCF.cxx NormCF.cxx EnergyEstimator.cxx FermionicHamiltonian.cxx AbInitioHamiltonian.cxx BosonicHamiltonian.cxx Solver.cxx Trainer.cxx MetropolisSampler.cxx ListGen.cxx EnergyEsMarkov.cxx Layer.cxx DenseLayer.cxx ConvLayer.cxx InputLayer.cxx LayerStructure.cxx math/MathFunctions.cxx
+SOURCEFILES=Samplers/Sampler.cxx Network/Nnw.cxx HilbertSpace/Basis.cxx Hamiltonian/Hamiltonian.cxx HilbertSpace/Determinant.cxx CostFunctions/EnergyCF.cxx CostFunctions/NormCF.cxx CostFunctions/EnergyEstimator.cxx Hamiltonian/FermionicHamiltonian.cxx Hamiltonian/AbInitioHamiltonian.cxx Hamiltonian/BosonicHamiltonian.cxx Solver.cxx Trainer.cxx Samplers/MetropolisSampler.cxx Samplers/ListGen.cxx CostFunctions/EnergyEsMarkov.cxx Network/Layers/Layer.cxx Network/Layers/DenseLayer.cxx Network/Layers/ConvLayer.cxx Network/Layers/InputLayer.cxx Network/LayerStructure.cxx math/MathFunctions.cxx
 TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx testAlgAb.cxx testRandom.cxx testMarkov.cxx
 SRC=src
 TST=test

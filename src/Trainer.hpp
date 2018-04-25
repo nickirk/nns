@@ -8,11 +8,11 @@
 #ifndef SRC_TRAINER_HPP_
 #define SRC_TRAINER_HPP_
 
-#include "Nnw.hpp"
-#include "TypeDefine.hpp"
-#include "Determinant.hpp"
-#include "Sampler.hpp"
-#include "State.hpp"
+#include "Network/Nnw.hpp"
+#include "HilbertSpace/Determinant.hpp"
+#include "Samplers/Sampler.hpp"
+#include "utilities/State.hpp"
+#include "utilities/TypeDefine.hpp"
 
 // wrapper class for training the NNW
 class Trainer {

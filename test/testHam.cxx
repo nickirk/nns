@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <iostream>
 #include <Eigen/Eigenvalues>
-#include "../src/Determinant.hpp"
-#include "../src/Basis.hpp"
-#include "../src/FermionicHamiltonian.hpp"
+#include "../src/Hamiltonian/FermionicHamiltonian.hpp"
+#include "../src/HilbertSpace/Basis.hpp"
+#include "../src/HilbertSpace/Determinant.hpp"
 using namespace std;
 int main(){
   int numSites(8);

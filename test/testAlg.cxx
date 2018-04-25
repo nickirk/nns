@@ -2,15 +2,9 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
-#include "../src/Nnw.hpp"
-#include "../src/Basis.hpp"
-#include "../src/Determinant.hpp"
-#include "../src/FermionicHamiltonian.hpp"
-#include "../src/ListGen.hpp"
-#include "../src/EnergyEstimator.hpp"
-#include "../src/EnergyCF.hpp"
-#include "../src/Trainer.hpp"
-#include "../src/SpinConfig.hpp"
+#include <Eigen/Dense>
+
+#include "../src/NNWLib.hpp"
 using namespace Eigen;
 
 using namespace std;
@@ -23,7 +17,7 @@ int main(){
   //int numHidden1(2*numSites);
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
-  double trainRate(0.5);
+  double trainRate(0.1);
   //cout << "input training rate=";
   //cin >> trainRate;
   //generate basis, the basis class constructor takes in the spin configurations.

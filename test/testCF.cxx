@@ -6,10 +6,11 @@
  */
 
 #include <iostream>
-#include "../src/FermionicHamiltonian.hpp"
-#include "../src/CostFunction.hpp"
-#include "../src/EnergyCF.hpp"
-#include "../src/Determinant.hpp"
+
+#include "../src/CostFunctions/CostFunction.hpp"
+#include "../src/CostFunctions/EnergyCF.hpp"
+#include "../src/HilbertSpace/Determinant.hpp"
+#include "../src/Hamiltonian/FermionicHamiltonian.hpp"
 
 int main(){
 	int numSites{3}, numStates{2*numSites};;

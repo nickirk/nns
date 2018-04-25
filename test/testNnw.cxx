@@ -2,14 +2,15 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
-#include "../src/Nnw.hpp"
-#include "../src/Basis.hpp"
-#include "../src/Determinant.hpp"
-#include "../src/FermionicHamiltonian.hpp"
-#include "../src/ListGen.hpp"
-#include "../src/EnergyEstimator.hpp"
-#include "../src/EnergyCF.hpp"
-#include "../src/MetropolisSampler.hpp"
+
+#include "../src/CostFunctions/EnergyCF.hpp"
+#include "../src/CostFunctions/EnergyEstimator.hpp"
+#include "../src/Hamiltonian/FermionicHamiltonian.hpp"
+#include "../src/Samplers/ListGen.hpp"
+#include "../src/Network/Nnw.hpp"
+#include "../src/HilbertSpace/Basis.hpp"
+#include "../src/HilbertSpace/Determinant.hpp"
+#include "../src/Samplers/MetropolisSampler.hpp"
 #include "../src/Trainer.hpp"
 using namespace Eigen;
 
