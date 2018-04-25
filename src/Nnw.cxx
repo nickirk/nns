@@ -206,6 +206,8 @@ Eigen::VectorXd NeuralNetwork::backPropagate(
      ){
   //everytime the backPropagate is called, we should reset nabla* to zero.
   nablaNNP *= 0.;
+  // Does not work with empty networks
+  if(Layers.size()==0) throw EmptyNetworkError();
   Layers[numLayers-1]->backProp(lastLayerFeedBack);
   for (size_t layer(numLayers-2); layer > 0; layer--){
     Layers[layer]->backProp(Layers[layer+1]->getDeltas(),

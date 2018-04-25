@@ -14,6 +14,8 @@
 #include "math/MathFunctions.hpp"
 #include "utilities/Errors.hpp"
 
+// single layer of a neural network (abstract base class)
+
 class Layer{
 public:
   Layer(std::vector<Eigen::VectorXd> const &inputs_, std::string actFunc_);
@@ -24,11 +26,10 @@ public:
   virtual void processSignal() const{};
   virtual void processSignal(detType const det) const{};
   // update of parameters will be done on network level, not on layer level.
-  //virtual void updatePara();
-    virtual void backProp(
+  virtual void backProp(
                         std::vector<Eigen::VectorXd> const &prevDelta, 
                         weightType const &prevWeights
-                        ){};
+                        )=0;
   virtual void backProp(
                         Eigen::VectorXd const &prevDelta
                         ){};
