@@ -21,6 +21,8 @@ public:
           int stride_
             ); 
   virtual ~ConvLayer();
+  // implement the clone() functionality
+  virtual ConvLayer* clone() const{return new ConvLayer(*this);}
   virtual void backProp(
     std::vector<Eigen::VectorXd> const &prevDelta,
     weightType const &prevWeights

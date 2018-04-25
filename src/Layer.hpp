@@ -18,6 +18,8 @@ class Layer{
 public:
   Layer(std::vector<Eigen::VectorXd> const &inputs_, std::string actFunc_);
   virtual ~Layer();
+  // virtual function for copying polymorphic layers
+  virtual Layer* clone() const{return new Layer(*this);}
   //functional functions
   virtual void processSignal() const{};
   virtual void processSignal(detType const det) const{};

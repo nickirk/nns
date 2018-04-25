@@ -17,6 +17,10 @@ class LayerStructure {
 public:
 	LayerStructure();
 	// do all the nasty RAII stuff here instead of the NNW
+	LayerStructure(LayerStructure const &source);
+	LayerStructure(LayerStructure &&source);
+	LayerStructure& operator=(LayerStructure const &source);
+	LayerStructure& operator=(LayerStructure &&source);
 	virtual ~LayerStructure();
 	// Give it the same functionality as std::vector, so it feels like a std::vector
 	size_t size() const {return layers.size();}
@@ -35,6 +39,9 @@ public:
 private:
 	std::vector<Layer*> layers;
 	// Internal directives for copying the vector
+	void copyLayerStructure(LayerStructure const &source);
+	// free all memory
+	void release();
 };
 
 #endif /* SRC_LAYERSTRUCTURE_HPP_ */

@@ -18,6 +18,8 @@ public:
   DenseLayer(std::vector<Eigen::VectorXd> const &inputs_, 
              std::string actFunc_, int size_);
   virtual ~DenseLayer();
+  // implement the clone() functionality
+  virtual DenseLayer* clone() const{return new DenseLayer(*this);}
   virtual void processSignal() const;
   virtual void backProp(
                         std::vector<Eigen::VectorXd> const &prevDelta,
