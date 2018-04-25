@@ -18,6 +18,9 @@ public:
   virtual ~InputLayer();
   // implement the clone() functionality
   virtual InputLayer* clone() const {return new InputLayer(*this);}
+  // back-propagating on an input layer does not do anything
+  virtual void backProp(Eigen::VectorXd const &prevDelta){};
+  virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint){};
   void processSignal(detType const det) const;
 private:
   int numNrn;

@@ -25,13 +25,13 @@ public:
   virtual void processSignal(detType const det) const{};
   // update of parameters will be done on network level, not on layer level.
   //virtual void updatePara();
-  virtual void backProp(
+    virtual void backProp(
                         std::vector<Eigen::VectorXd> const &prevDelta, 
                         weightType const &prevWeights
-                        )=0;
+                        ){};
   virtual void backProp(
                         Eigen::VectorXd const &prevDelta
-                        )=0;
+                        ){};
   //virtual void mapPara(double *adNNP, int &startPoint);
   virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint)=0;
   //virtual void initialise(Eigen::VectorXd const &NNP);
