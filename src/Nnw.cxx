@@ -28,12 +28,15 @@ NeuralNetwork::NeuralNetwork(CostFunction const &externalCF):cf(&externalCF), sl
   lamdaS =0.;
   gammaS = 0.;
   gammaS1 = 0.;
+  numNNP = 0;
 
 }
 
 NeuralNetwork::~NeuralNetwork(){
-
 }
+
+//---------------------------------------------------------------------------//
+
 //initialise the network after construction functions are called.
 void NeuralNetwork::initialiseNetwork(){
   //calculate the size of the NNP array:
@@ -42,10 +45,10 @@ void NeuralNetwork::initialiseNetwork(){
     numNNP+=Layers[layer]->getNumPara();
   }
   NNP = Eigen::VectorXd::Ones(numNNP);
-  adNNP = &NNP(0);
+  double *adNNP = &NNP(0);
   nablaNNP = Eigen::VectorXd::Zero(numNNP);
   //get the address of nablaNNP
-  adNablaNNP = &nablaNNP(0);
+  double *adNablaNNP = &nablaNNP(0);
   int startPoint(0);
   for (int layer(0); layer<numLayers; ++layer){
     Layers[layer]->mapPara(adNNP, adNablaNNP, startPoint);
@@ -76,7 +79,7 @@ void NeuralNetwork::initialiseNetwork(){
 void NeuralNetwork::constrInputLayer(int numStates){
 
   feedIns.resize(1, Eigen::VectorXd::Zero(numStates));
-  Layers.push_back(new InputLayer(feedIns, numStates));
+  Layers.addInputLayer(feedIns,numStates);
   numLayers++;
 }
 
@@ -85,7 +88,7 @@ void NeuralNetwork::constrDenseLayer(
     std::vector<Eigen::VectorXd> const &inputs_, std::string actFunc_,
     int size_
     ){
-  Layers.push_back(new DenseLayer(inputs_, actFunc_, size_));
+  Layers.addDenseLayer(inputs_,actFunc_,size_);
   numLayers++;
 }
 
@@ -97,8 +100,7 @@ void NeuralNetwork::constrConvLayer(
     int lengthFilter_,
     int stride_
     ){
- Layers.push_back(new ConvLayer(inputs_, actFunc_, numFilters_, lengthFilter_, 
-  stride_));
+ Layers.addConvLayer(inputs_,actFunc_,numFilters_,lengthFilter_,stride_);
  numLayers++;
 }
 
@@ -177,7 +179,7 @@ void NeuralNetwork::updateParameters(
 
 //---------------------------------------------------------------------------//
 
-Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const {
+Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const{
 	if(Layers.size()==0) throw EmptyNetworkError();
   Layers[0]->processSignal(det);
   //std::cout << "Acts layer " << 0 << " =" << std::endl;

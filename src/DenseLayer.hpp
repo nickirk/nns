@@ -18,7 +18,7 @@ public:
   DenseLayer(std::vector<Eigen::VectorXd> const &inputs_, 
              std::string actFunc_, int size_);
   virtual ~DenseLayer();
-  virtual void processSignal();
+  virtual void processSignal() const;
   virtual void backProp(
                         std::vector<Eigen::VectorXd> const &prevDelta,
                         weightType const &prevWeights

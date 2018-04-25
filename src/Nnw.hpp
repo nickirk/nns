@@ -25,12 +25,14 @@
 #include "DenseLayer.hpp"
 #include "ConvLayer.hpp"
 #include "TypeDefine.hpp"
+#include "LayerStructure.hpp"
 
 const std::complex<double> ii(0.,1.);
 class NeuralNetwork{
 public:
   NeuralNetwork();
   ~NeuralNetwork();
+  NeuralNetwork(NeuralNetwork const &source);
   NeuralNetwork(CostFunction const &externalCF);
   //construction functions for NNW
   void constrDenseLayer(
@@ -64,13 +66,17 @@ public:
   //interface API
   coeffType getCoeff(detType const &det) const;
   CostFunction const* getCostFunction() const {return cf;};
-  Layer* getLayer(int layer){return Layers[layer];};
+  Layer* getLayer(int layer){
+	  if(layer<Layers.size() && layer >= 0)
+	  return Layers[layer];
+	  throw OutOfRangeError(layer);
+  };
   //Eigen::Map<Eigen::MatrixXd> getWeights(int layer) const {return weights[layer];};
   //Eigen::Map<Eigen::VectorXd> getBiases(int layer) const {return biases[layer];};
 
 private:
   //Structure of the NNW
-  std::vector<Layer*> Layers;
+  LayerStructure Layers;
   //variables for RMSprop
   double momentumDamping;
   bool momentum;
@@ -96,9 +102,7 @@ private:
   int numLayers;
   Eigen::VectorXd NNP;
   Eigen::VectorXd generlisedForcePrev;
-  double *adNNP;
   Eigen::VectorXd nablaNNP;
-  double *adNablaNNP;
   std::vector<Eigen::VectorXd> feedIns;
 
   CostFunction const *cf;
@@ -115,6 +119,7 @@ private:
   Eigen::MatrixXcd calcdCdwSR(
     std::vector<State> const &outputState
        );
+  void copyNetwork(NeuralNetwork const &source);
   //coeffType outputLayer() const {
   //	return coeffType(Layers[numLayers-1]->getActs()[0][0],Layers[numLayers-1]->getActs()[0][1]);
   //};

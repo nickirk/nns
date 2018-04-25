@@ -65,7 +65,7 @@ void ConvLayer::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
   }
 }
 
-void ConvLayer::processSignal(){
+void ConvLayer::processSignal() const{
   //need to determine the output size. 
   //calculate the output vector size, 
   //(N_in-lengthFilter)/stride+1;

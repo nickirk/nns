@@ -25,7 +25,7 @@ public:
     std::vector<Eigen::VectorXd> const &prevDelta,
     weightType const &prevWeights
     );
-  virtual void processSignal();
+  virtual void processSignal() const;
   virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint);
   virtual int getNumPara(){return numPara;};
   const int getStride(){return stride;};

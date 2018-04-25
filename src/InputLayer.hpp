@@ -15,7 +15,7 @@ class InputLayer: public Layer{
 public:
   InputLayer(std::vector<Eigen::VectorXd> const &inputs_, int size_);
   virtual ~InputLayer();
-  void processSignal(detType const det);
+  void processSignal(detType const det) const;
 private:
   int numNrn;
 };

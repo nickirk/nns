@@ -46,7 +46,7 @@ void DenseLayer::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
   startPoint+=numNrn;
 }
 
-void DenseLayer::processSignal(){
+void DenseLayer::processSignal() const{
   activations[0]=Eigen::VectorXd::Zero(numNrn);
   z[0]=Eigen::VectorXd::Zero(numNrn);
   for(size_t i(0); i<inputs.size(); i++){
