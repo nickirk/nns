@@ -57,19 +57,7 @@ void Trainer::train(double learningRate, int method, int iteration){
 	std::sort(inputState.begin(), inputState.end());
 	NNW.updateParameters(method,inputState,learningRate,iteration);
 }
-//--------------------------------------------------------------------------------------------------//
-/*
-std::vector<coeffType > NeuralNetwork::getCoupledCoeffs(detType const &det,
-		std::vector<detType > &coupledDets) const{
-	coupledDets = getCoupledStates(det);
-	std::vector<coeffType > coupledCoeffs(coupledDets.size());
-	for(size_t i=0; coupledDets.size(); ++i){
-		feedForward(coupledDets[i]);
-		coupledCoeffs[i] = outputLayer();
-	}
-	return coupledCoeffs;
-}
-*/
+
 //---------------------------------------------------------------------------------------------------//
 
 double Trainer::getE() const{

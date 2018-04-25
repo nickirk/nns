@@ -28,8 +28,8 @@ public:
 	std::vector<State> getState() const;
 	virtual ~Trainer();
 private:
-	NeuralNetwork &NNW;
 	Hamiltonian const &modelHam;
+	NeuralNetwork &NNW;
 	Sampler &msampler;
 	std::vector<State > inputState;
 

@@ -92,6 +92,7 @@ void NeuralNetwork::constrDenseLayer(
   numLayers++;
 }
 
+//---------------------------------------------------------------------------------------------------//
 
 void NeuralNetwork::constrConvLayer(
     std::vector<Eigen::VectorXd> const &inputs_,
@@ -104,6 +105,7 @@ void NeuralNetwork::constrConvLayer(
  numLayers++;
 }
 
+//---------------------------------------------------------------------------------------------------//
 
 coeffType NeuralNetwork::getCoeff(detType const &det) const{
 	//Run the network
@@ -112,6 +114,8 @@ coeffType NeuralNetwork::getCoeff(detType const &det) const{
   //std::cout << "Nnw.cxx:getCoeff(): output= " << output << std::endl;
 	return coeffType(output(0),output(1));
 }
+
+//---------------------------------------------------------------------------------------------------//
 
 void NeuralNetwork::updateParameters(
     int method, std::vector<State> const &outputState, double learningRate, 
@@ -190,16 +194,6 @@ Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const{
   //std::cout<< Layers[0]->getWeights()[0] << std::endl;
   for (int layer(1); layer < numLayers; ++layer){
       Layers[layer]->processSignal();
-      for (size_t nf(0); nf<Layers[layer]->getActs().size(); nf++){
-	    	//std::cout << "Acts layer " << layer << " =" << std::endl;
-        //std::cout<< "nf=" <<nf << "\n" << Layers[layer]->getActs()[nf] << std::endl;
-      	  for (size_t d(0); d<Layers[layer]->getWeights()[nf].size(); d++){
-      		  //std::cout << "Weights layer " << layer << " nf= " << nf << " d=" << d << "\n" << std::endl;
-      		  //std::cout<< Layers[layer]->getWeights()[nf][d] << std::endl;
-      	  }
-      	  //std::cout << "Nnw.cxx: Biases nf=" << nf << "\n" << std::endl;
-   	  //std::cout<< Layers[layer]->getBiases()[nf] << std::endl;
-      }
   }
 
   return Layers[numLayers-1]->getActs()[0];

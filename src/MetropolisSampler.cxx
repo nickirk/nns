@@ -19,19 +19,15 @@ void MetropolisSampler::iterate(coeffType &cI, detType &dI) const{
 	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
 	std::uniform_real_distribution<double> uni;		// Uniform distribution from 0.0 to 1.0
 	// First, get a random coupled determinant (from cDet)
-	int const maxTrials{1000};
-	for(int i{0};i<maxTrials;++i){
-		detType tmp{getRandomConnection(cDet)};
-		// And its coefficient
-		coeffType tmpCoeff{NNW.getCoeff(tmp)};
-		if(uni(rng) < std::pow(std::abs(tmpCoeff)/std::abs(lastCoeff),2)){
-			// With probability cJ/cI, accept the move
-			cDet = tmp;
-			lastCoeff = tmpCoeff;
-			break;
-		}
+	detType tmp{getRandomConnection(cDet)};
+	// And its coefficient
+	coeffType tmpCoeff{NNW.getCoeff(tmp)};
+	if(uni(rng) < std::pow(std::abs(tmpCoeff)/std::abs(lastCoeff),2)){
+		// With probability cJ/cI, accept the move
+		cDet = tmp;
+		lastCoeff = tmpCoeff;
+		// and set the output
 	}
-	// and set the output
 	cI = lastCoeff;
 	dI = cDet;
 }

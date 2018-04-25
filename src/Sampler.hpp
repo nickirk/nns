@@ -17,7 +17,6 @@
 
 // Base class for sampling, these objects take some input state and a Hamiltonian and generate
 // lists of potentially relevant determinants
-
 class Sampler{
 public:
   Sampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF, int numDets_= 100):H(H_),numDets(numDets_),fullBasis(fullBasis_),

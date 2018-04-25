@@ -16,15 +16,16 @@
 class LayerStructure {
 public:
 	LayerStructure();
-	virtual ~LayerStructure(){};
+	// do all the nasty RAII stuff here instead of the NNW
+	virtual ~LayerStructure();
 	// Give it the same functionality as std::vector, so it feels like a std::vector
 	size_t size() const {return layers.size();}
 	// Except it does not return the objects themselves, but their addresses
 	Layer* operator[](int i) {return const_cast<Layer*>(static_cast<LayerStructure const&>(*this)[i]);}
-	Layer const* operator[](int i) const{return &(layers[i]);}
+	Layer const* operator[](int i) const{return layers[i];}
 	// The push_back method might not be so commonly required, as we already have
 	// explicit addXYLayer functions
-	void push_back(Layer &input){layers.push_back(input);}
+	void push_back(Layer* &input){layers.push_back(input);}
 	// Even though it also has a push_back method, I though it
 	// easier to maintain with these functions
 	void addInputLayer(std::vector<Eigen::VectorXd> const &feedIns, int numStates);
@@ -32,7 +33,7 @@ public:
 	void addConvLayer(std::vector<Eigen::VectorXd> const &inputs, std::string const &actFunc, int numFilters,
     int lengthFilter,int stride);
 private:
-	std::vector<Layer> layers;
+	std::vector<Layer*> layers;
 	// Internal directives for copying the vector
 };
 

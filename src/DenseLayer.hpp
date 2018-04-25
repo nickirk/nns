@@ -27,14 +27,13 @@ public:
                         Eigen::VectorXd const &prevDelta
                         );
   virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint);
-  virtual int getNumPara(){return numPara;};
+  virtual int getNumPara() const{return numPara;};
   //want to achieve the effect of returning reference instead of making a 
   //copy. But Eigen::Map is already a referece object..
   //const weightType & getWeights(){return weights;};
   //const biasType & getBiases(){return biases;};
  
 protected:
-  int numPara;
   int numNrn;
   //biasType biases;
   //weightType weights;
