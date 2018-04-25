@@ -19,7 +19,7 @@ public:
   Layer(std::vector<Eigen::VectorXd> const &inputs_, std::string actFunc_);
   virtual ~Layer();
   // virtual function for copying polymorphic layers
-  virtual Layer* clone() const{return new Layer(*this);}
+  virtual Layer* clone() const=0;
   //functional functions
   virtual void processSignal() const{};
   virtual void processSignal(detType const det) const{};
@@ -28,12 +28,12 @@ public:
   virtual void backProp(
                         std::vector<Eigen::VectorXd> const &prevDelta, 
                         weightType const &prevWeights
-                        ){};
+                        )=0;
   virtual void backProp(
                         Eigen::VectorXd const &prevDelta
-                        ){};
+                        )=0;
   //virtual void mapPara(double *adNNP, int &startPoint);
-  virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint){};
+  virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint)=0;
   //virtual void initialise(Eigen::VectorXd const &NNP);
   //interface for accessing data
   virtual const std::vector<Eigen::VectorXd>& getInputs() const{return inputs;};
