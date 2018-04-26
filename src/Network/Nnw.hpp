@@ -62,7 +62,7 @@ public:
   void setCostFunction(CostFunction const &externalCF) {cf = &externalCF;};
   //functionalities of NNW
   Eigen::VectorXd feedForward(detType const& det) const;
-  void updateParameters(int method, std::vector<State> const &outputState, 
+  void updateParameters(int method, State const &outputState,
                         double learningRate, int iteration);
 
   //interface API
@@ -113,13 +113,13 @@ private:
     Eigen::VectorXd const &lastLayerFeedBack
        );
   Eigen::VectorXd calcNablaNNP(
-    std::vector<State> const &outputState
+    State const &outputState
        );
   Eigen::VectorXd calcNablaNNPMk(
-   std::vector<State> const &outputState
+   State const &outputState
    );
   Eigen::MatrixXcd calcdCdwSR(
-    std::vector<State> const &outputState
+    State const &outputState
        );
   void copyNetwork(NeuralNetwork const &source);
   //coeffType outputLayer() const {

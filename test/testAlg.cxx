@@ -95,14 +95,14 @@ int main(){
     // update the list of determinants used in the sampler
     count++;
     if(count%1 == 0){
-      std::vector<State > states=ev.getState();
+      auto states=ev.getState();
       double normalizer=eCF.getNormalizer();
       ofstream outputC;
       outputC.open("coeff.txt");
       for(size_t s=0; s<states.size(); ++s){
-        outputC << verbatimCast(states[s].det) << " " 
-        << sqrt(norm(states[s].coeff))/sqrt(normalizer) << endl; 
-        cout << "C_" << s << "= " << states[s].coeff << endl;
+        outputC << verbatimCast(states.getDet(s)) << " "
+        << sqrt(norm(states.getCoeff(s)))/sqrt(normalizer) << endl;
+        cout << "C_" << s << "= " << states.getCoeff(s) << endl;
       }
       outputC.close();
       cout << "normalizer=" << normalizer << endl;

@@ -120,7 +120,7 @@ coeffType NeuralNetwork::getCoeff(detType const &det) const{
 //---------------------------------------------------------------------------------------------------//
 
 void NeuralNetwork::updateParameters(
-    int method, std::vector<State> const &outputState, double learningRate, 
+    int method, State const &outputState, double learningRate,
     int iteration
     ){
   //method corresponds to
@@ -137,7 +137,7 @@ void NeuralNetwork::updateParameters(
   else if (method == 1){
     Eigen::MatrixXcd dCdw=calcdCdwSR(outputState);
     Eigen::VectorXcd ci(outputState.size());
-    for (size_t i(0); i<outputState.size(); ++i) ci(i) = outputState[i].coeff;
+    for (size_t i(0); i<outputState.size(); ++i) ci(i) = outputState.getCoeff(i);
     sl.update(NNP,generlisedForce,ci,dCdw, iteration);
   }
   else if (method ==2){
@@ -177,7 +177,7 @@ void NeuralNetwork::updateParameters(
     //Eigen::Map<Eigen::VectorXcd> ci(&(outputCs[0]),outputCs.size());
     //Eigen::Map<Eigen::VectorXcd> ci(&(outputState[0].coeff),outputState.size());
     Eigen::VectorXcd ci(outputState.size());
-    for (size_t i(0); i<outputState.size(); ++i) ci(i) = outputState[i].coeff;
+    for (size_t i(0); i<outputState.size(); ++i) ci(i) = outputState.getCoeff(i);
     NNP -= learningRate * generlisedForce;
     generlisedForcePrev = generlisedForce;
   }
@@ -222,7 +222,7 @@ Eigen::VectorXd NeuralNetwork::backPropagate(
 //---------------------------------------------------------------------------//
 
 Eigen::VectorXd NeuralNetwork::calcNablaNNP(
-	   std::vector<State > const &outputState
+	   State const &outputState
      ){
   int numDets = outputState.size();
   //everytime the backPropagate is called, we should reset nabla* to zero.
@@ -230,7 +230,7 @@ Eigen::VectorXd NeuralNetwork::calcNablaNNP(
   std::vector<Eigen::VectorXd> dEdC = cf->nabla(outputState);
   for (int epoch=0; epoch < numDets; ++epoch){
     // obtain inputSignals and activations of all layers
-    feedForward(outputState[epoch].det);
+    feedForward(outputState.getDet(epoch));
     // calculate the derivatives of this determinant
     deltaNNP += backPropagate(dEdC[epoch]);
   }
@@ -240,7 +240,7 @@ Eigen::VectorXd NeuralNetwork::calcNablaNNP(
 //---------------------------------------------------------------------------------------------------//
 
 Eigen::VectorXd NeuralNetwork::calcNablaNNPMk(
-	   std::vector<State > const &outputState
+	   State const &outputState
      ){
   int numDets = outputState.size();
   Eigen::VectorXd deltaNNP(Eigen::VectorXd::Zero(numNNP));
@@ -256,22 +256,22 @@ Eigen::VectorXd NeuralNetwork::calcNablaNNPMk(
   Eigen::VectorXd deltaNNPTmpPrev(Eigen::VectorXd::Zero(numNNP));
   for (int epoch(0); epoch < numDets; ++epoch){
     Eigen::VectorXd deltaNNPTmp(Eigen::VectorXd::Zero(numNNP));
-    if (epoch == 0 || (outputState[epoch].det != outputState[epoch-1].det)){  
-      feedForward(outputState[epoch].det);
+    if (epoch == 0 || (outputState.getDet(epoch) != outputState.getDet(epoch-1))){
+      feedForward(outputState.getDet(epoch));
       deltaNNPc.real() = backPropagate(realMask) ;
       deltaNNPc.imag() = -backPropagate(imagMask) ;
       deltaNNPc *=  dEdC[pos](0);
-      deltaNNPc /= std::conj(outputState[epoch].coeff); 
+      deltaNNPc /= std::conj(outputState.getCoeff(epoch));
       deltaNNPTmp += 2 * deltaNNPc.real();
       pos++;
-      std::vector<detType> coupledDets = outputState[epoch].coupledDets;
-      std::vector<coeffType > coupledCoeffs = outputState[epoch].coupledCoeffs;
+      std::vector<detType> coupledDets = outputState.coupledDets(epoch);
+      std::vector<coeffType > coupledCoeffs = outputState.coupledCoeffs(epoch);
       for (size_t i(0); i < coupledDets.size(); ++i){
         feedForward(coupledDets[i]);
         deltaNNPc.real() = backPropagate(realMask) ;
         deltaNNPc.imag() = backPropagate(imagMask) ;
         deltaNNPc *=  dEdC[pos](0);
-        deltaNNPc /= outputState[epoch].coeff; 
+        deltaNNPc /= outputState.getCoeff(epoch);
         deltaNNPTmp += 2 * deltaNNPc.real();
         pos++;
       }
@@ -287,7 +287,7 @@ Eigen::VectorXd NeuralNetwork::calcNablaNNPMk(
 
 //---------------------------------------------------------------------------------------------------//
 Eigen::MatrixXcd NeuralNetwork::calcdCdwSR( 
-  std::vector<State > const &outputState
+  State  const &outputState
   ){
 //This step produce a complex matrix dCdw. It is done via the same backPropagate
 //algorithm, with dEdC set to a vector of (1,0) (real part) and a vector of (0,1)
@@ -309,7 +309,7 @@ Eigen::MatrixXcd NeuralNetwork::calcdCdwSR(
     std::vector<Eigen::VectorXd> dEdC(numDets,dedc);
     //create w_k|--C_i matrix
     for (int epoch(0); epoch < numDets; ++epoch){
-      feedForward(outputState[i].det);
+      feedForward(outputState.getDet(i));
       backPropagate(dEdC[epoch]);
       //fill up the dCdwTmp matrix column by column. Column index is C_i, row index is w_k
       dCdwTmp.col(epoch) << nablaNNP; 

@@ -13,7 +13,7 @@
 namespace networkVMC{
 
 // This gets the energy expectation value of the state 'input'
-double EnergyCF::evaluate(std::vector<State> const &input) const{
+double EnergyCF::evaluate(State const &input) const{
   double energyVal{0.0};
   normalizerCoeff=0.0;
   std::complex<double> normalizerCoeffComplex(0.,0.);
@@ -21,13 +21,13 @@ double EnergyCF::evaluate(std::vector<State> const &input) const{
   int numDets = input.size();
   for (int i=0; i < numDets; ++i){
 	  // The entries of state are pairs of determinant/coefficient
-    coeffType c_i=input[i].coeff;
+    coeffType c_i=input.getCoeff(i);
     // also assign the denominator
     normalizerCoeffComplex += std::norm(c_i);
     //sign_i = (output_Cs[i]-0. < 1e-8)?-1:0;
     for (int j=0; j < numDets; ++j){
-      coeffType c_j = input[j].coeff;
-      Hij = H(input[i].det, input[j].det);
+      coeffType c_j = input.getCoeff(j);
+      Hij = H(input.getDet(j), input.getDet(i));
     // sum up the contributions to E
       energyVal += std::real(std::conj(c_i) * c_j * Hij);
     }
@@ -38,7 +38,7 @@ double EnergyCF::evaluate(std::vector<State> const &input) const{
 }
 
 // Here, we get the derivative of the energy with respect to the coefficients of input
-std::vector<Eigen::VectorXd> EnergyCF::nabla(std::vector<State> const &input) const{
+std::vector<Eigen::VectorXd> EnergyCF::nabla(State const &input) const{
 // To get the derivative, we also need the energy, so first evaluate
 // This also assigns the normalizer
   energy = evaluate(input);
@@ -49,12 +49,12 @@ std::vector<Eigen::VectorXd> EnergyCF::nabla(std::vector<State> const &input) co
     Eigen::VectorXd dEdC_i=Eigen::VectorXd::Zero(2);
     std::complex<double> A(0.,0.);
     for (int j=0; j < numDets; ++j){
-      coeffType c_j=input[j].coeff;
+      coeffType c_j=input.getCoeff(j);
       // We add up the contributions to the derivative
-      A += c_j * H(input[i].det,
-                        input[j].det);
+      A += c_j * H(input.getDet(i),
+                        input.getDet(j));
     }
-    coeffType c_i = input[i].coeff;
+    coeffType c_i = input.getCoeff(i);
     A -=  energy * c_i;
     // re-use the normalizer from evaluate
     A /= normalizerCoeff;

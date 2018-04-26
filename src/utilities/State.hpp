@@ -12,51 +12,50 @@
 
 #include "../HilbertSpace/Determinant.hpp"
 #include "TypeDefine.hpp"
+#include "Errors.hpp"
 
 namespace networkVMC{
 
-// A state contains a determinant and its coefficient, and might further contain information
-// on coupled determinants
+// A state is a list of determinants and their coefficients
 class State{
 public:
-	State():det(detType({0})), coeff(coeffType(0.,0.)), 
-         coupledCoeffs(std::vector<coeffType>(0)), 
-         coupledDets(std::vector<detType>(0)) {};
+	State():dets(std::vector<detType>(0)), coeffs(std::vector<coeffType>(0)){};
 	State(detType const &det_, coeffType const &coeff_):
-		det(det_), coeff(coeff_),
-        coupledCoeffs(std::vector<coeffType>(0)),
-        coupledDets(std::vector<detType>(0)) {};
-	State(
-              detType  const &det_, 
-              coeffType const &coeff_, 
-              std::vector<detType> const &coupledDets_,
-              std::vector<coeffType> const &coupledCoeffs_
-              ):
-		det(det_), 
-                coeff(coeff_), 
-                coupledCoeffs(coupledCoeffs_),
-                coupledDets(coupledDets_){
+		dets(std::vector<detType>(1,det_)), coeffs(std::vector<coeffType>(1,coeff_)) {};
+	State(std::vector<detType> const &dets_, std::vector<coeffType> const &coeffs_):dets(dets_),coeffs(coeffs_){
 		// A state has to have one coefficient per determinant
 		// one might argue that supplying less coefficient should be fine and that
 		// the rest should be filled with zeroes, we might change that
-	        // if(dets.size() != coeffs.size()) throw sizeMismatchError(dets.size(),coeffs.size());
+	    if(dets.size() != coeffs.size()) throw SizeMismatchError(dets.size(),coeffs.size());
 	};
-	//detType getDet(int i) const{return dets[i];}
-	//coeffType getCoeff(int i) const{return coeffs[i];}
-	//std::vector<coeffType> getAllCoeff() const{return coeffs;}
-	//std::vector<detType> getDets() const {return dets;}
-        //std::vector<coeffType> getCoupledCoeffs(int i) const{return coupledCoeffs[i];}
-        //std::vector<detType> getCoupledDets(int i) const{return coupledDets[i];}
-	//size_t size()const{return dets.size();}
 
-	detType det;
-	coeffType coeff;
-// potentially also have a number of coupled determinants stored
-        std::vector<coeffType> coupledCoeffs;
-        std::vector<detType> coupledDets;
-        bool operator < (State const &m) const {
-	  return det < m.det;
-	}
+	// access operators for determinants and coefficients of the state
+	detType const& getDet(int i) const{return dets[i];}
+	coeffType const& getCoeff(int i) const{return coeffs[i];}
+
+	// implement the non-const version via the const version
+	detType& getDet(int i) {return const_cast<detType &>(static_cast<State const &>((*this)).getDet(i));}
+	coeffType& getCoeff(int i){return const_cast<coeffType &>(static_cast<State const &>((*this)).getCoeff(i));}
+
+	// access operators for the coupled determinants
+	std::vector<detType>const& coupledDets(int i) const{return cdets[i];}
+	std::vector<coeffType>const& coupledCoeffs(int i) const{return ccoeffs[i];}
+
+	// same as above: prevent code duplication
+	std::vector<detType>& coupledDets(int i) {return const_cast<std::vector<detType > &>(static_cast<State const &>((*this)).coupledDets(i));}
+	std::vector<coeffType>& coupledCoeffs(int i){return const_cast<std::vector<coeffType> &>(static_cast<State const &>((*this)).coupledCoeffs(i));}
+
+	// vector utilities
+	void clear() {dets.clear(); coeffs.clear(); cdets.clear(); ccoeffs.clear();}
+	void resize(int i) {dets.resize(i); coeffs.resize(i); cdets.resize(i); ccoeffs.resize(i);}
+	size_t size()const{return dets.size();}
+private:
+	std::vector<detType> dets;
+	std::vector<coeffType> coeffs;
+
+	// preliminary implementation of coupled stuff
+	std::vector<std::vector<detType> > cdets;
+	std::vector<std::vector<coeffType >> ccoeffs;
 };
 
 }

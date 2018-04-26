@@ -12,9 +12,6 @@ namespace networkVMC{
 
 Trainer::Trainer(NeuralNetwork &NNW_, Sampler  &msampler_):modelHam(msampler_.getH()),NNW(NNW_), msampler(msampler_) {
 	inputState.resize(msampler.getNumDets());
-	//optional
-	//coupledDets.resize(numDets);
-	//coupledCoeffs.resize(numDets);
 }
 
 //---------------------------------------------------------------------------------------------------//
@@ -25,11 +22,9 @@ Trainer::~Trainer() {
 //---------------------------------------------------------------------------------------------------//
 
 void Trainer::train(double learningRate, int method, int iteration){
-	// Get the number of samples
-	int numDets{inputState.size()};
-	inputState.clear();
+	int numDets{msampler.getNumDets()};
 	inputState.resize(numDets);
-        //coupledCoeffsEpoch.clear();
+	//coupledCoeffsEpoch.clear();
         //coupledDetsEpoch.clear();
 	//sampledDet.resize(numDets);
 	//sampledCoeff.resize(numDets);
@@ -39,16 +34,17 @@ void Trainer::train(double learningRate, int method, int iteration){
 
 	// And now, for the chosen number of samples, get the respective determinants and
 	// coefficients
+	std::cout<<"numdets "<<numDets<<'\n';
 	for(int i=0; i < numDets; ++i){
-	  msampler.iterate(inputState[i].coeff, inputState[i].det);
+	  msampler.iterate(inputState.getCoeff(i), inputState.getDet(i));
 	  //-------------------------------------
-    inputState[i].coupledDets = modelHam.getCoupledStates(inputState[i].det);
-	  inputState[i].coupledCoeffs.resize(inputState[i].coupledDets.size());
+    inputState.coupledDets(i) = modelHam.getCoupledStates(inputState.getDet(i));
+	  inputState.coupledCoeffs(i).resize(inputState.coupledDets(i).size());
 	  //sampledDets[i] =  msampler.getDet(i);
 	  //sampledCoeffs[i] =  NNW.getCoeff(sampledDets[i]);
           //NNW.cacheNetworkState();
-	  for(size_t j=0; j < inputState[i].coupledDets.size(); ++j){
-	  	inputState[i].coupledCoeffs[j]=NNW.getCoeff(inputState[i].coupledDets[j]);
+	  for(size_t j=0; j < inputState.coupledDets(i).size(); ++j){
+	  	inputState.coupledCoeffs(i)[j]=NNW.getCoeff(inputState.coupledDets(i)[j]);
 	  }
 	}
 	// sort the list of determinants so that we can avoid 
@@ -56,7 +52,7 @@ void Trainer::train(double learningRate, int method, int iteration){
         //coupledCoeffsEpoch.push_back(coupledCoeffs);
         //coupledDetsEpoch.push_back(coupledDets);
         //msampler.setReference(sampledDets[numDets-1]);
-	std::sort(inputState.begin(), inputState.end());
+	//std::sort(inputState.begin(), inputState.end());
 	NNW.updateParameters(method,inputState,learningRate,iteration);
 }
 
@@ -70,7 +66,7 @@ double Trainer::getE() const{
 
 //---------------------------------------------------------------------------------------------------//
 
-std::vector<State > Trainer::getState() const{
+State  Trainer::getState() const{
 	// This is for testing and debugging purpose, only
 	return inputState;
 }

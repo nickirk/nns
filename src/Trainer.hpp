@@ -27,13 +27,13 @@ public:
 	void getNextCoeff(coeffType &cI, detType &dI);
 	double getE() const;
 // read out the current state of the NNW
-	std::vector<State> getState() const;
+	State getState() const;
 	virtual ~Trainer();
 private:
 	Hamiltonian const &modelHam;
 	NeuralNetwork &NNW;
 	Sampler &msampler;
-	std::vector<State > inputState;
+	State inputState;
 
 };
 

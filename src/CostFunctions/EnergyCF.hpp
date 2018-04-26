@@ -25,8 +25,8 @@ public:
 	// Here, we need to supply a Hamiltonian
 	explicit EnergyCF(Hamiltonian const &H_):CostFunction(),H(H_),energy(0.0),normalizerCoeff(0.0){};
 // implementation of the function itself and its derivative
-	virtual std::vector<Eigen::VectorXd> nabla(std::vector<State> const &input) const;
-	virtual double calc(std::vector<State> const &input) const {return energy;}
+	virtual std::vector<Eigen::VectorXd> nabla(State const &input) const;
+	virtual double calc(State const &input) const {return energy;}
 // auxiliary function to compute the denominator of the expectation value
     double getNormalizer(){return normalizerCoeff;};
 private:
@@ -34,7 +34,7 @@ private:
 // treat energy and normalizer as mutable, as they are only auxiliary cache variables
 	mutable double energy;
 	mutable double normalizerCoeff;
-	double evaluate(std::vector<State> const &input) const;
+	double evaluate(State const &input) const;
 };
 
 }
