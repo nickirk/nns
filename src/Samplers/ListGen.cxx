@@ -7,6 +7,8 @@
 
 #include "ListGen.hpp"
 
+namespace networkVMC{
+
 ListGen::ListGen(Hamiltonian const &H_, Basis const &fullBasis_, int numDets_, detType const &HF, NeuralNetwork const &NNW_):
 	Sampler(H_,fullBasis_,HF,numDets_),NNW(NNW_),pos(0){
 	std::vector<detType> tmp(numDets_,HF);
@@ -79,4 +81,6 @@ void ListGen::diffuse(std::vector<detType> &list) const{
  }
  removeDuplicate(list);
  diffuseList = list;
+}
+
 }

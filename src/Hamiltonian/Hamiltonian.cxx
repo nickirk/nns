@@ -6,6 +6,7 @@
 #include <iostream>
 #include <algorithm>
 
+namespace networkVMC{
 
 int Hamiltonian::getId(int i) const {
     // convert a spin orbital index to a spatial one if necessary
@@ -371,3 +372,4 @@ void Hamiltonian::printMatrix(int N){
   std::vector<int> alpha, beta;
 }
 
+}

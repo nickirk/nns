@@ -10,6 +10,8 @@
 
 #include <Eigen/Dense>
 
+namespace networkVMC{
+
 // Class doing the minimization in a force-field given by force by different schemes
 class Solver {
 public:
@@ -25,5 +27,7 @@ public:
 private:
 	double gamma;
 };
+
+}
 
 #endif /* SRC_SOLVER_HPP_ */

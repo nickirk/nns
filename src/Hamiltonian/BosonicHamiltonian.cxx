@@ -7,7 +7,11 @@
 
 #include "BosonicHamiltonian.hpp"
 
+namespace networkVMC{
+
 BosonicHamiltonian::~BosonicHamiltonian() {
 	// TODO Auto-generated destructor stub
+}
+
 }
 

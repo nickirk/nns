@@ -14,6 +14,8 @@
 
 // Class for sampling determinants using the metropolis algorithm
 
+namespace networkVMC{
+
 class MetropolisSampler: public Sampler {
 public:
 	MetropolisSampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF, NeuralNetwork const &NNW_):
@@ -26,4 +28,5 @@ private:
 	mutable coeffType lastCoeff;
 };
 
+}
 #endif /* SRC_SAMPLERS_METROPOLISSAMPLER_HPP_ */

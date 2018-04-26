@@ -14,6 +14,8 @@
 #include "../utilities/TypeDefine.hpp"
 #include "../utilities/Errors.hpp"
 
+namespace networkVMC{
+
 // these should not be members of some class, better use generic functions
 void create(detType &det, int pos);
 // Remove an electron at orbital pos
@@ -27,4 +29,6 @@ int verbatimCast(detType const & det);
 bool operator == (detType const &a, detType const &b);
 bool operator < (detType const &lhs, detType const &rhs);
 bool compare_det(detType const &lhs, detType const &rhs);
+
+}
 #endif

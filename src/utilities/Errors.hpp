@@ -11,6 +11,8 @@
 // classes for error handling. This is the way to go for
 // exception handling
 
+namespace networkVMC{
+
 class OutOfRangeError{
 public:
 	OutOfRangeError(int pos_):pos(pos_){};
@@ -45,5 +47,7 @@ class EmptyNetworkError{
 public:
 	EmptyNetworkError(){};
 };
+
+}
 
 #endif /* ERRORS_HPP_ */

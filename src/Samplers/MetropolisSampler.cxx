@@ -11,6 +11,8 @@
 #include <cmath>
 
 #include "../Hamiltonian/Hamiltonian.hpp"
+
+namespace networkVMC{
 MetropolisSampler::~MetropolisSampler() {
 }
 
@@ -31,4 +33,6 @@ void MetropolisSampler::iterate(coeffType &cI, detType &dI) const{
 	}
 	cI = lastCoeff;
 	dI = cDet;
+}
+
 }

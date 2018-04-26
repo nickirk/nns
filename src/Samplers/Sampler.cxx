@@ -15,6 +15,8 @@
 #include "../HilbertSpace/Determinant.hpp"
 #include "../utilities/State.hpp"
 
+namespace networkVMC{
+
 // Just take any connected determinant and let the Hamiltonian decide what is connected
 detType Sampler::getRandomConnection(detType const &startingPoint) const{
 	double p{0};
@@ -65,4 +67,6 @@ detType getRandomDeterminant(SpinConfig const &spinConfig){
     possibleSpinDownStates.erase(possibleSpinDownStates.begin()+random_integer);
   }
   return randomDet; 
+}
+
 }

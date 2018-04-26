@@ -9,6 +9,8 @@
 #include <Eigen/Dense>
 #include "DenseLayer.hpp"
 
+namespace networkVMC{
+
 DenseLayer::DenseLayer(std::vector<Eigen::VectorXd> const &inputs_, 
     std::string actFunc_, int size_):
   Layer(inputs_, actFunc_), numNrn(size_){
@@ -82,4 +84,6 @@ void DenseLayer::backProp(
     //activation layer refers to the l-1th layer.
     for (size_t i(0); i < inputs.size(); i++)
       nablaWeights[0][i] = deltas[0] * inputs[i].transpose();
+}
+
 }

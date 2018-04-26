@@ -8,6 +8,8 @@
 #include "Trainer.hpp"
 #include <iostream>
 
+namespace networkVMC{
+
 Trainer::Trainer(NeuralNetwork &NNW_, Sampler  &msampler_):modelHam(msampler_.getH()),NNW(NNW_), msampler(msampler_) {
 	inputState.resize(msampler.getNumDets());
 	//optional
@@ -73,3 +75,4 @@ std::vector<State > Trainer::getState() const{
 	return inputState;
 }
 
+}

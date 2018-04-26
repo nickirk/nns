@@ -11,6 +11,8 @@
 #include <string>
 #include "Hamiltonian.hpp"
 
+namespace networkVMC{
+
 class AbInitioHamiltonian: public Hamiltonian {
 public:
 	AbInitioHamiltonian(int dimension):Hamiltonian(dimension){};
@@ -45,5 +47,7 @@ public:
 };
 
 AbInitioHamiltonian readAbInitioHamiltonian(int dim, std::string file_name);
+
+}
 
 #endif /* SRC_HAMILTONIAN_ABINITIOHAMILTONIAN_HPP_ */

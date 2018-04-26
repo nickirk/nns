@@ -13,6 +13,8 @@
 #include "CostFunction.hpp"
 #include "../utilities/State.hpp"
 
+namespace networkVMC{
+
 // Cost function that measures the distance ||psi - psi_0||^2
 
 class NormCF: public CostFunction{
@@ -27,5 +29,6 @@ private:
 	std::vector<State> psi;
 };
 
+}
 
 #endif /* SRC_COSTFUNCTIONS_NORMCF_HPP_ */

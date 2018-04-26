@@ -15,6 +15,8 @@
 #include "../Hamiltonian/Hamiltonian.hpp"
 #include "../utilities/State.hpp"
 
+namespace networkVMC{
+
 class EnergyEstimator: public CostFunction{
 public:
 	explicit EnergyEstimator(Hamiltonian const &H_):CostFunction(),H(H_),energy(0.0),normalizerCoeff(0.0){};
@@ -28,6 +30,6 @@ private:
 	double evaluate(std::vector<State> const &input) const;
 };
 
-
+}
 
 #endif /* SRC_COSTFUNCTIONS_ENERGYESTIMATOR_HPP_ */

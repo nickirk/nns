@@ -10,6 +10,8 @@
 
 #include "Hamiltonian.hpp"
 
+namespace networkVMC{
+
 // Hamiltonian with bosonic commutation relations
 class BosonicHamiltonian: public Hamiltonian {
 public:
@@ -20,5 +22,7 @@ public:
     //detType getRandomCoupledState(detType const &source, double &p){};
     //std::vector<detType> getCoupledStates(detType const &source){} const;
 };
+
+}
 
 #endif /* SRC_HAMILTONIAN_BOSONICHAMILTONIAN_HPP_ */

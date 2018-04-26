@@ -8,6 +8,8 @@
 #include "Solver.hpp"
 #include <iostream>
 
+namespace networkVMC{
+
 Solver::Solver(double eta):gamma(eta) {
 
 }
@@ -32,4 +34,6 @@ void Solver::update(Eigen::VectorXd &w, Eigen::VectorXd const &force,
         double lamda = std::max(100*std::pow(0.999,iteration), 1e-2);
         s+=s.diagonal().asDiagonal()*lamda;
 	w-=gamma*s.inverse()*force;
+}
+
 }

@@ -11,6 +11,8 @@
 #include "../../math/MathFunctions.hpp"
 #include "Layer.hpp"
 
+namespace networkVMC{
+
 class ConvLayer: public Layer {
 public:
   ConvLayer(
@@ -45,5 +47,6 @@ private:
   // bias. So the dimension will be L vector of double
 };
 
+}
 
 #endif

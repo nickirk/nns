@@ -11,6 +11,8 @@
 #include <vector>
 #include <complex>
 
+namespace networkVMC{
+
 double EnergyEstimator::evaluate(std::vector<State> const &input) const{
   double energyVal{0.0};
   normalizerCoeff=0.0;
@@ -59,3 +61,4 @@ std::vector<Eigen::VectorXd> EnergyEstimator::nabla(std::vector<State> const &in
   return dEdC;
 }
 
+}

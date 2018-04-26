@@ -11,6 +11,8 @@
 #include "Layers/DenseLayer.hpp"
 #include "Layers/InputLayer.hpp"
 
+namespace networkVMC{
+
 LayerStructure::LayerStructure(){
 	layers.clear();
 }
@@ -101,5 +103,6 @@ void LayerStructure::addConvLayer(std::vector<Eigen::VectorXd> const &inputs, st
 	layers.push_back(new ConvLayer(inputs,actFunc,numFilters,lengthFilter,stride));
 }
 
+}
 
 

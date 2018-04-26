@@ -7,6 +7,8 @@
 
 #include "SparseHMatrix.hpp"
 
+namespace networkVMC{
+
 SparseHMatrix::SparseHMatrix() {
 	// TODO Auto-generated constructor stub
 
@@ -14,5 +16,7 @@ SparseHMatrix::SparseHMatrix() {
 
 SparseHMatrix::~SparseHMatrix() {
 	// TODO Auto-generated destructor stub
+}
+
 }
 

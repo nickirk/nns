@@ -10,6 +10,8 @@
 
 #include "Hamiltonian.hpp"
 
+namespace networkVMC{
+
 // Implementation for hamiltonians with fermionic commutation relations
 class FermionicHamiltonian: public Hamiltonian {
 public:
@@ -25,4 +27,5 @@ public:
 
 FermionicHamiltonian generateFermiHubbard(int dim, double U, double t);
 
+}
 #endif /* SRC_HAMILTONIAN_FERMIONICHAMILTONIAN_HPP_ */

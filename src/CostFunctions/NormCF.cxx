@@ -11,6 +11,8 @@
 
 #include "../utilities/TypeDefine.hpp"
 
+namespace networkVMC{
+
 std::vector<Eigen::VectorXd > NormCF::nabla(std::vector<State> const &input) const{
 	std::vector<Eigen::VectorXd > cfBuf(input.size());
 	for(size_t i=0;i<input.size();++i){
@@ -34,4 +36,5 @@ double NormCF::calc(std::vector<State> const &input) const{
 	return buf;
 }
 
+}
 

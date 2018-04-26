@@ -14,6 +14,8 @@
 #include "utilities/State.hpp"
 #include "utilities/TypeDefine.hpp"
 
+namespace networkVMC{
+
 // wrapper class for training the NNW
 class Trainer {
 public:
@@ -34,5 +36,7 @@ private:
 	std::vector<State > inputState;
 
 };
+
+}
 
 #endif /* SRC_TRAINER_HPP_ */

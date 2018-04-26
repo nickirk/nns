@@ -14,6 +14,8 @@
 #include "../../math/MathFunctions.hpp"
 #include "Layer.hpp"
 
+namespace networkVMC{
+
 class DenseLayer: public Layer{
 public:
   DenseLayer(std::vector<Eigen::VectorXd> const &inputs_, 
@@ -34,8 +36,10 @@ public:
   //const weightType & getWeights(){return weights;};
   //const biasType & getBiases(){return biases;};
  
-protected:
+private:
   int numNrn;
 };
+
+}
 
 #endif

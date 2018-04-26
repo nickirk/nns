@@ -17,8 +17,11 @@
 #include "../utilities/State.hpp"
 // This cost function tries to minimize the energy expectation value
 
+namespace networkVMC{
+
 class EnergyCF: public CostFunction{
 public:
+	virtual ~EnergyCF(){};
 	// Here, we need to supply a Hamiltonian
 	explicit EnergyCF(Hamiltonian const &H_):CostFunction(),H(H_),energy(0.0),normalizerCoeff(0.0){};
 // implementation of the function itself and its derivative
@@ -34,6 +37,6 @@ private:
 	double evaluate(std::vector<State> const &input) const;
 };
 
-
+}
 
 #endif /* SRC_COSTFUNCTIONS_ENERGYCF_HPP_ */

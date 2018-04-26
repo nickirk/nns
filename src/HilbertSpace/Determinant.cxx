@@ -12,6 +12,8 @@
 #include <iostream>
 #include <math.h>
 
+namespace networkVMC{
+
 void annihilate(detType &det, int pos){
   if (pos > static_cast<int>(det.size()) || pos < 0){
     std::cerr << "Error! Annihilate outside of range! "; 
@@ -68,4 +70,6 @@ bool operator < (detType const& lhs, detType const& rhs)
 bool compare_det(detType const& lhs, detType const& rhs){
 
     return (lhs<rhs);
+}
+
 }

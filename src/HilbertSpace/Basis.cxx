@@ -14,6 +14,8 @@
 #include <iostream>
 #include "Basis.hpp"
 
+namespace networkVMC{
+
 Basis::Basis(SpinConfig const &spinConfig_):
 	spinConfig(spinConfig_)
 {
@@ -75,5 +77,7 @@ void Basis::createBasisDet(int offset, int numEle_){
     createBasisDet(i+1, numEle_-1);
     combination.pop_back();
   }
+}
+
 }
 

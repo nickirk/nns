@@ -13,6 +13,8 @@
 #include "../utilities/TypeDefine.hpp"
 #include "Hamiltonian.hpp"
 
+namespace networkVMC{
+
 class SparseHMatrix {
 // Class for translating a second quantized Hamiltonian into a sparse matrix
 public:
@@ -28,5 +30,7 @@ private:
 	std::vector<coeffType> entries;
 	std::vector<int> rows, cols;
 };
+
+}
 
 #endif /* SRC_HAMILTONIAN_SPARSEHMATRIX_HPP_ */

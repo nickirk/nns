@@ -4,10 +4,12 @@
 #include "../HilbertSpace/Determinant.hpp"
 #include "../utilities/Errors.hpp"
 
+namespace networkVMC{
+
 class Hamiltonian{
  public:
   // constructors
-  Hamiltonian():d(0),spinOrbs(false){}
+  Hamiltonian():d(0),donebodyint(0),dtwobodyint(0),spinOrbs(false){}
   //dimension is the dimension of the single-particle Hilbert space
   explicit Hamiltonian(int dimension):d(dimension),donebodyint(((d*(d+1))/2)),dtwobodyint(((donebodyint*(donebodyint+1))/2)),oneBodyEntries(std::vector<double>(donebodyint,0.0)),twoBodyEntries(std::vector<double>(dtwobodyint,0.0)),spinOrbs(false){}
   //explicit Hamiltonian(int dimension):d(dimension),oneBodyEntries(std::vector<double>(d*d,0.0)),twoBodyEntries(std::vector<double>(d*d*d*d,0.0)){}
@@ -60,5 +62,7 @@ detType getRandomCoupledState(detType const &source, double &p);
 std::vector<detType> getCoupledStates(detType const &source);
 //basically counts the number of particles between annihilatorIndex and creatorIndex in alpha, yielding the sign of a^\dagger_i a_j (alpha) in the canonical operator ordering
 int getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex);
+
+}
 
 #endif

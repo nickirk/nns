@@ -27,6 +27,8 @@
 #include "../Hamiltonian/Hamiltonian.hpp"
 #include "LayerStructure.hpp"
 
+namespace networkVMC{
+
 const std::complex<double> ii(0.,1.);
 class NeuralNetwork{
 public:
@@ -124,4 +126,6 @@ private:
   //	return coeffType(Layers[numLayers-1]->getActs()[0][0],Layers[numLayers-1]->getActs()[0][1]);
   //};
 };
+
+}
 #endif

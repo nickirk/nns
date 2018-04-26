@@ -12,8 +12,12 @@
 #include "../Samplers/Sampler.hpp"
 #include "State.hpp"
 
+namespace networkVMC{
+
 // Try to match the neural network to a given input determinant
 
 void preTrain(NeuralNetwork &network, std::vector<State> const &target, Sampler const &msampler);
+
+}
 
 #endif /* SRC_UTILITIES_NNWUTILITIES_HPP_ */

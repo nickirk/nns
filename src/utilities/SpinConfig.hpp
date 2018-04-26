@@ -8,6 +8,7 @@
 #ifndef SRC_UTILITIES_SPINCONFIG_HPP_
 #define SRC_UTILITIES_SPINCONFIG_HPP_
 
+namespace networkVMC{
 
 // Storing how many electrons have which ms
 class SpinConfig {
@@ -26,5 +27,7 @@ private:
 	// internal stuff
 	int up, down, numStates;
 };
+
+}
 
 #endif /* SRC_UTILITIES_SPINCONFIG_HPP_ */

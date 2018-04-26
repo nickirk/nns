@@ -12,6 +12,8 @@
 
 #include "Layers/Layer.hpp"
 
+namespace networkVMC{
+
 // The array containing the layers
 // I externalized this to circumvent the need of RAII overhead
 class LayerStructure {
@@ -44,5 +46,7 @@ private:
 	// free all memory
 	void release();
 };
+
+}
 
 #endif /* SRC_HEADERS_LAYERSTRUCTURE_HPP_ */

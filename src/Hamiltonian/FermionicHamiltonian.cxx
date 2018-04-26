@@ -8,6 +8,8 @@
 #include <random>
 #include "FermionicHamiltonian.hpp"
 
+namespace networkVMC{
+
 FermionicHamiltonian::~FermionicHamiltonian() {
 }
 int FermionicHamiltonian::getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex) const{
@@ -180,5 +182,7 @@ detType FermionicHamiltonian::getRandomCoupledState(detType const &source,  doub
   pGet=4.0/(numExc*numHole*(numHole-1)*(numExc-1));
   */
   return target;
+}
+
 }
 

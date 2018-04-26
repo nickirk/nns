@@ -19,6 +19,8 @@
 #include "AbInitioHamiltonian.hpp"
 #include "../utilities/Errors.hpp"
 
+namespace networkVMC{
+
 AbInitioHamiltonian::~AbInitioHamiltonian() {
 }
 
@@ -1792,5 +1794,7 @@ double AbInitioHamiltonian::calcGenProp(detType const &source, detType const &ta
     }
 
     return pgen;
+
+}
 
 }

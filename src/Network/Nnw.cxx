@@ -11,6 +11,8 @@
 #include <Eigen/Core>
 #include <complex>
 #include "Nnw.hpp"
+
+namespace networkVMC{
 NeuralNetwork::NeuralNetwork(CostFunction const &externalCF):cf(&externalCF), sl(Solver(0.5)){
 
   //initial value for NNW para
@@ -318,5 +320,6 @@ Eigen::MatrixXcd NeuralNetwork::calcdCdwSR(
   return dCdw;
 }
 
+}
 //---------------------------------------------------------------------------------------------------//
 

@@ -13,6 +13,8 @@
 #include "../HilbertSpace/Determinant.hpp"
 #include "TypeDefine.hpp"
 
+namespace networkVMC{
+
 // A state contains a determinant and its coefficient, and might further contain information
 // on coupled determinants
 class State{
@@ -56,5 +58,7 @@ public:
 	  return det < m.det;
 	}
 };
+
+}
 
 #endif /* SRC_UTILITIES_STATE_HPP_ */

@@ -13,6 +13,8 @@
 #include "../utilities/SpinConfig.hpp"
 #include "Sampler.hpp"
 
+namespace networkVMC{
+
 class ListGen : public Sampler{
 public:
 	ListGen(Hamiltonian const &H_, Basis const &fullBasis_, int numDets_, detType const &HF, NeuralNetwork const &NNW);
@@ -28,5 +30,7 @@ private:
 	mutable std::vector<detType > diffuseList;
 	mutable size_t pos;
 };
+
+}
 
 #endif /* SRC_HEADERS_LISTGEN_HPP_ */

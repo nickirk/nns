@@ -11,8 +11,8 @@
 #include <vector>
 #include "Determinant.hpp"
 #include "../utilities/SpinConfig.hpp"
-//
-// type of the determiants
+
+namespace networkVMC{
 
 // Basis class for converting integers to basis states and indexing orbitals
 // It is essentially a map from determinants to indices and vice versa
@@ -43,5 +43,7 @@ class Basis{
     std::vector<detType > basis;
     std::vector<int> indexBasis;
 };
+
+}
 
 #endif

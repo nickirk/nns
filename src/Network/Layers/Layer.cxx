@@ -10,6 +10,8 @@
 #include <string>
 #include "Layer.hpp"
 
+namespace networkVMC{
+
 Layer::Layer(std::vector<Eigen::VectorXd> const &inputs_, std::string actFunc_):
 inputs(inputs_){
   //default activation function
@@ -34,5 +36,7 @@ inputs(inputs_){
 }
 
 Layer::~Layer(){
+
+}
 
 }

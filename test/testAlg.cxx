@@ -6,6 +6,7 @@
 
 #include "../src/NNWLib.hpp"
 using namespace Eigen;
+using namespace networkVMC;
 
 using namespace std;
 int main(){

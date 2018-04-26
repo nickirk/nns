@@ -9,6 +9,8 @@
 #include "../../HilbertSpace/Determinant.hpp"
 #include "InputLayer.hpp"
 
+namespace networkVMC{
+
 InputLayer::InputLayer(std::vector<Eigen::VectorXd> const &inputs_, int size_):
     Layer(inputs_, "Linear"), numNrn(size_){
   //for the InputLayer, the inputs are 0 vector.
@@ -25,4 +27,6 @@ void InputLayer::processSignal(detType const &det) const{
   for (int state=0; state<numStates; ++state){
     activations[0](state) = det[state]?1.0:-1.0;
   }
+}
+
 }

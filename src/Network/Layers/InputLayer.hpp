@@ -11,6 +11,8 @@
 #include <Eigen/Dense>
 #include "Layer.hpp"
 
+namespace networkVMC{
+
 // First layer of a nerual network
 class InputLayer: public Layer{
 public:
@@ -30,4 +32,5 @@ private:
   int numNrn;
 };
 
+}
 #endif

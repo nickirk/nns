@@ -9,6 +9,7 @@
 #include <iostream>
 #include "ConvLayer.hpp"
 
+namespace networkVMC{
 
 ConvLayer::ConvLayer(
           std::vector<Eigen::VectorXd> const &inputs_, 
@@ -124,4 +125,6 @@ void ConvLayer::backProp(
       }
     }
   }
+}
+
 }

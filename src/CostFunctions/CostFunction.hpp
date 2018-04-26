@@ -12,6 +12,8 @@
 #include <Eigen/Dense>
 #include "../utilities/TypeDefine.hpp"
 
+namespace networkVMC{
+
 // Abstract base class for cost functions
 
 class CostFunction{
@@ -23,5 +25,7 @@ public:
 	virtual std::vector<Eigen::VectorXd > nabla(std::vector<State> const &input) const = 0;
 	virtual double calc(std::vector<State> const &input) const = 0;
 };
+
+}
 
 #endif

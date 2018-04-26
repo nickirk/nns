@@ -10,6 +10,8 @@
 #include <vector>
 #include <complex>
 
+namespace networkVMC{
+
 // This gets the energy expectation value of the state 'input'
 double EnergyCF::evaluate(std::vector<State> const &input) const{
   double energyVal{0.0};
@@ -62,5 +64,7 @@ std::vector<Eigen::VectorXd> EnergyCF::nabla(std::vector<State> const &input) co
     dEdC.push_back(dEdC_i);
   }
   return dEdC;
+}
+
 }
 

@@ -15,6 +15,8 @@
 #include "../../math/MathFunctions.hpp"
 #include "../../utilities/Errors.hpp"
 
+namespace networkVMC{
+
 // single layer of a neural network (abstract base class)
 
 class Layer{
@@ -34,7 +36,6 @@ public:
                         weightType const &prevWeights
                         )=0;
   virtual void backProp(Eigen::VectorXd const &prevDelta){};
-  //virtual void mapPara(double *adNNP, int &startPoint);
   virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint)=0;
   //virtual void initialise(Eigen::VectorXd const &NNP);
   //interface for accessing data
@@ -43,8 +44,6 @@ public:
   //getWeights in base function has no return value and it is not defined for
   //inputLayer, this may cause problem. Default return a empty vector.
   //or move weights to base class
-  //virtual const weightType & getWeights(){};
-  //virtual const biasType & getBiases(){};
   const weightType & getWeights() const{return weights;};
   const biasType & getBiases() const{return biases;};
   virtual int getNumPara() const{return numPara;};
@@ -69,5 +68,7 @@ protected:
   biasType nablaBiases;
   weightType nablaWeights;
 };
+
+}
 
 #endif

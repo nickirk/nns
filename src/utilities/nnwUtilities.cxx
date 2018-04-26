@@ -13,6 +13,8 @@
 #include "../Samplers/Sampler.hpp"
 #include "State.hpp"
 
+namespace networkVMC{
+
 void preTrain(NeuralNetwork &network, std::vector<State> const &target, Sampler const &msampler, double trainRate){
 // Trains the network to represent some state target
 // We first backup the current cost function
@@ -34,5 +36,7 @@ void preTrain(NeuralNetwork &network, std::vector<State> const &target, Sampler 
 		std::cout << "Distance/t" << ev.getE() << std::endl;
 	}
 	network.setCostFunction(*backupCF);
+}
+
 }
 

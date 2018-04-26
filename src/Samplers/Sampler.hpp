@@ -16,6 +16,8 @@
 #include "../utilities/TypeDefine.hpp"
 #include "../Hamiltonian/Hamiltonian.hpp"
 
+namespace networkVMC{
+
 // Base class for sampling, these objects take some input state and a Hamiltonian and generate
 // lists of potentially relevant determinants
 class Sampler{
@@ -57,4 +59,6 @@ protected:
 inline double dblAbs(double x){if(x>0) return x;return -x;}
 void removeDuplicate(std::vector<detType> &list);
 detType getRandomDeterminant(SpinConfig const &spinConfig);
+
+}
 #endif
