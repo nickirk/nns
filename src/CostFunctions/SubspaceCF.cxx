@@ -20,6 +20,8 @@ std::vector<Eigen::VectorXd > SubspaceCF::nabla(State const &input) const{
 	return dist.nabla(input);
 }
 
+//---------------------------------------------------------------------------------------------------//
+
 State SubspaceCF::diagonalizeSubspace(State const & input) const{
 	return input;
 }

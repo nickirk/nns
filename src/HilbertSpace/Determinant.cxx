@@ -28,6 +28,8 @@ void annihilate(detType &det, int pos){
   }
 }
 
+//---------------------------------------------------------------------------------------------------//
+
 void create(detType &det, int pos){
   if (pos > static_cast<int>(det.size()) || pos < 0){
     std::cerr << "Error! Create outside of range! "; 
@@ -42,6 +44,8 @@ void create(detType &det, int pos){
   }
 }
 
+//---------------------------------------------------------------------------------------------------//
+
 std::vector<int> getOccupiedPositions(detType const &det) {
   std::vector<int> positions;
   for (size_t i=0; i < det.size(); i++){
@@ -49,6 +53,8 @@ std::vector<int> getOccupiedPositions(detType const &det) {
   }
   return positions;
 }
+
+//---------------------------------------------------------------------------------------------------//
 
 int verbatimCast(detType const & det){
 	int tmp = 0;
@@ -59,6 +65,8 @@ int verbatimCast(detType const & det){
 	}
 	return tmp;
 }
+
+//---------------------------------------------------------------------------------------------------//
 
 bool operator==(detType const& a, detType const& b) { return verbatimCast(a) == verbatimCast(b);}
 

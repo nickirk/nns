@@ -12,6 +12,7 @@
 
 #include "../HilbertSpace/Determinant.hpp"
 #include "TypeDefine.hpp"
+#include "sorting.hpp"
 #include "Errors.hpp"
 
 namespace networkVMC{
@@ -28,6 +29,8 @@ public:
 		// the rest should be filled with zeroes, we might change that
 	    if(storedDets.size() != storedCoeffs.size()) throw SizeMismatchError(storedDets.size(),storedCoeffs.size());
 	};
+
+//---------------------------------------------------------------------------------------------------//
 
 	// access operators for determinants and coefficients of the state
 	detType const& det(int i) const{return storedDets[i];}
@@ -50,10 +53,34 @@ public:
 	void resize(int i) {storedDets.resize(i); storedCoeffs.resize(i); cdets.resize(i); ccoeffs.resize(i);}
 	size_t size()const{return storedDets.size();}
 
+//---------------------------------------------------------------------------------------------------//
 	// sort the storedDets + storedCoeffs according to determinant order
-	void sortDet();
+	void sortDet(){
+	// first, get the permutation used for sorting
+	auto perm = getPermutation(storedDets,detComparer());
+	// then sort the dets and coeffs according to it (and cdets/ccoeffs with them)
+	permuteAll(perm);
+	}
+//---------------------------------------------------------------------------------------------------//
 	// or according to highest coefficient
-    void sortCoeffs();
+    void sortCoeffs(){
+    // sort the state using the coefficient-wise comparison
+    // we employ the sorting.hpp utilities (same as above)
+      auto perm = getPermutation(storedCoeffs,coeffComparer());
+      permuteAll(perm);
+    }
+
+//---------------------------------------------------------------------------------------------------//
+    // this is just to prevent code duplication
+    void permuteAll(std::vector<std::size_t> const &perm){
+    // reorder the content of the state according to the permutation perm
+      applyPermutation(storedDets,perm);
+      applyPermutation(storedCoeffs,perm);
+      applyPermutation(cdets,perm);
+      applyPermutation(ccoeffs,perm);
+    }
+
+//---------------------------------------------------------------------------------------------------//
 private:
 	std::vector<detType> storedDets;
 	std::vector<coeffType> storedCoeffs;

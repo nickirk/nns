@@ -30,6 +30,8 @@ void SparseHMatrix::MatMul(coeffType *in, coeffType *out){
 	}
 }
 
+//---------------------------------------------------------------------------------------------------//
+
 // This sets up the sparse matrix representing H in subspace
 void SparseHMatrix::load(Hamiltonian const &H, State const &subspace){
 	dim = subspace.size();
