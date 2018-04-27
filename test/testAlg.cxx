@@ -100,9 +100,9 @@ int main(){
       ofstream outputC;
       outputC.open("coeff.txt");
       for(size_t s=0; s<states.size(); ++s){
-        outputC << verbatimCast(states.getDet(s)) << " "
-        << sqrt(norm(states.getCoeff(s)))/sqrt(normalizer) << endl;
-        cout << "C_" << s << "= " << states.getCoeff(s) << endl;
+        outputC << verbatimCast(states.det(s)) << " "
+        << sqrt(norm(states.coeff(s)))/sqrt(normalizer) << endl;
+        cout << "C_" << s << "= " << states.coeff(s) << endl;
       }
       outputC.close();
       cout << "normalizer=" << normalizer << endl;
