@@ -12,6 +12,7 @@
 #include "../Hamiltonian/SparseHMatrix.hpp"
 #include "CostFunction.hpp"
 #include "../Hamiltonian/Hamiltonian.hpp"
+#include "../utilities/State.hpp"
 
 namespace networkVMC{
 
@@ -23,14 +24,14 @@ public:
 	SubspaceCF(Hamiltonian const &H_);
 	virtual ~SubspaceCF();
 // Derivative with respect to the input's coefficients
-	virtual std::vector<Eigen::VectorXd > nabla(std::vector<State> const &input) const;
+	virtual std::vector<Eigen::VectorXd > nabla(State const &input) const;
 // Value of the cost function
-	virtual double calc(std::vector<State> const &input) const;
+	virtual double calc(State const &input) const {return distance;}
 private:
 	Hamiltonian const &H;
-	SparseHMatrix HS;
+	double distance;
 // auxiliary function for getting the ground state in the space spanned by the determinants of input
-	std::vector<State> diagonalizeSubspace(std::vector<State> const & input);
+	State diagonalizeSubspace(State const & input) const;
 };
 
 }

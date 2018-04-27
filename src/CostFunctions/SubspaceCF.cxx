@@ -7,14 +7,21 @@
 
 #include "SubspaceCF.hpp"
 
+#include "../../lib/arpackpp/include/arssym.h"
+#include "NormCF.hpp"
+
 namespace networkVMC{
 
-SubspaceCF::SubspaceCF(Hamiltonian const &H_):H(H_) {
-	// TODO Auto-generated constructor stub
+SubspaceCF::~SubspaceCF() {
 }
 
-SubspaceCF::~SubspaceCF() {
-	// TODO Auto-generated destructor stub
+std::vector<Eigen::VectorXd > SubspaceCF::nabla(State const &input) const{
+	NormCF dist(diagonalizeSubspace(input));
+	return dist.nabla(input);
+}
+
+State SubspaceCF::diagonalizeSubspace(State const & input) const{
+	return input;
 }
 
 }

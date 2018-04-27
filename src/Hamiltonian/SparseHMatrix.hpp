@@ -12,24 +12,34 @@
 
 #include "../utilities/TypeDefine.hpp"
 #include "Hamiltonian.hpp"
+#include "../utilities/State.hpp"
 
 namespace networkVMC{
 
 class SparseHMatrix {
 // Class for translating a second quantized Hamiltonian into a sparse matrix
+// This is not really storing the Hamiltonian, but applying it to a vector
 public:
 	SparseHMatrix();
-	SparseHMatrix(Hamiltonian const &H){load(H);};
+	SparseHMatrix(Hamiltonian const &H,State const &subspace){load(H,subspace);};
 	virtual ~SparseHMatrix();
 // Multiplication function for the Arpack interface
-	void MatMul(std::vector<coeffType> const &in, std::vector<coeffType> const &out);
-// Load a Hamiltonian and construct the sparse matrix
-	void load(Hamiltonian const &H);
+	void MatMul(coeffType *in, coeffType *out);
+
+// create a sparse representation of H in subspace
+	void load(Hamiltonian const &H, State const &subspace);
 private:
-// use a standard sparse storage scheme
-	std::vector<coeffType> entries;
-	std::vector<int> rows, cols;
+// We consider the Hamiltonian H in the space spanned by a the determinants of a given State subspace
+	size_t dim;
+// sparse storage scheme (CRS)
+// entries are the values of the nonzero elements of H
+	std::vector<double> entries;
+// cols are the columns belonging to the values, and rowPos contains the indices of those entries
+// that start a new row
+	std::vector<int> rowPos,cols;
 };
+
+
 
 }
 
