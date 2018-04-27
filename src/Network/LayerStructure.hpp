@@ -28,6 +28,8 @@ public:
 	// Give it the same functionality as std::vector, so it feels like a std::vector
 	size_t size() const {return layers.size();}
 	// Except it does not return the objects themselves, but their addresses
+	// (in fact, it is a vector of pointers and the assignment/construction handles the
+	//  resource ownership, so this is a vector of polymorphic objects)
 	Layer* operator[](int i) {return const_cast<Layer*>(static_cast<LayerStructure const&>(*this)[i]);}
 	Layer const* operator[](int i) const{return layers[i];}
 	// The push_back method might not be so commonly required, as we already have

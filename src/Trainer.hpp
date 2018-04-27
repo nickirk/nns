@@ -20,7 +20,7 @@ namespace networkVMC{
 class Trainer {
 public:
 // supply a sampler, a Hamiltonian and the NNW
-	Trainer(NeuralNetwork &NNW_, Sampler &msampler);
+	Trainer(NeuralNetwork &NNW_, Sampler const &msampler);
 // train() tries to optimize the parameters of the NNW with respect to its cost function
 	void train(double learningRate, int method, int iteration);
 // read-out methods for energy and coefficients
@@ -32,7 +32,7 @@ public:
 private:
 	Hamiltonian const &modelHam;
 	NeuralNetwork &NNW;
-	Sampler &msampler;
+	Sampler const &msampler;
 	State inputState;
 
 };

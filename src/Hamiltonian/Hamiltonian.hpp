@@ -11,7 +11,7 @@ class Hamiltonian{
   // constructors
   Hamiltonian():d(0),donebodyint(0),dtwobodyint(0),spinOrbs(false){}
   //dimension is the dimension of the single-particle Hilbert space
-  explicit Hamiltonian(int dimension):d(dimension),donebodyint(((d*(d+1))/2)),dtwobodyint(((donebodyint*(donebodyint+1))/2)),oneBodyEntries(std::vector<double>(donebodyint,0.0)),twoBodyEntries(std::vector<double>(dtwobodyint,0.0)),spinOrbs(false){}
+  explicit Hamiltonian(int dimension):d(dimension),donebodyint(((d*(d+1))/2)),dtwobodyint(((donebodyint*(donebodyint+1))/2)),spinOrbs(false),oneBodyEntries(std::vector<double>(donebodyint,0.0)),twoBodyEntries(std::vector<double>(dtwobodyint,0.0)){}
   //explicit Hamiltonian(int dimension):d(dimension),oneBodyEntries(std::vector<double>(d*d,0.0)),twoBodyEntries(std::vector<double>(d*d*d*d,0.0)){}
   // set the one- and two-body integrals of the Hamiltonian operator
   void setMatrixElement(int p, int q, double newEntry);

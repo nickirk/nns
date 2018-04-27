@@ -10,7 +10,7 @@
 
 namespace networkVMC{
 
-Trainer::Trainer(NeuralNetwork &NNW_, Sampler  &msampler_):modelHam(msampler_.getH()),NNW(NNW_), msampler(msampler_) {
+Trainer::Trainer(NeuralNetwork &NNW_, Sampler const &msampler_):modelHam(msampler_.getH()),NNW(NNW_), msampler(msampler_) {
 	inputState.resize(msampler.getNumDets());
 }
 
@@ -35,10 +35,11 @@ void Trainer::train(double learningRate, int method, int iteration){
 	// And now, for the chosen number of samples, get the respective determinants and
 	// coefficients
 	std::cout<<"numdets "<<numDets<<'\n';
+	// TODO this should not be part of the trainer, move it to somewhere in the state
 	for(int i=0; i < numDets; ++i){
-	  msampler.iterate(inputState.getCoeff(i), inputState.getDet(i));
+	  msampler.iterate(inputState.coeff(i), inputState.det(i));
 	  //-------------------------------------
-    inputState.coupledDets(i) = modelHam.getCoupledStates(inputState.getDet(i));
+    inputState.coupledDets(i) = modelHam.getCoupledStates(inputState.det(i));
 	  inputState.coupledCoeffs(i).resize(inputState.coupledDets(i).size());
 	  //sampledDets[i] =  msampler.getDet(i);
 	  //sampledCoeffs[i] =  NNW.getCoeff(sampledDets[i]);

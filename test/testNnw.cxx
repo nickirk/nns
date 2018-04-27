@@ -12,9 +12,11 @@
 #include "../src/HilbertSpace/Determinant.hpp"
 #include "../src/Samplers/MetropolisSampler.hpp"
 #include "../src/Trainer.hpp"
-using namespace Eigen;
 
+using namespace Eigen;
+using namespace networkVMC;
 using namespace std;
+
 int main(){
   int numSites(6);
   int numStates(2*numSites);

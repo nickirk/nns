@@ -68,6 +68,7 @@ LayerStructure::~LayerStructure(){
 //---------------------------------------------------------------------------//
 
 void LayerStructure::release(){
+	// deallocate all layers
 	for(size_t i{0};i<layers.size();++i){
 		delete layers[i];
 	}
@@ -86,6 +87,8 @@ void LayerStructure::copyLayerStructure(LayerStructure const &source){
 }
 
 //---------------------------------------------------------------------------//
+
+// add the different kinds of layers to the structure
 
 void LayerStructure::addInputLayer(std::vector<Eigen::VectorXd> const &feedIns, int numStates){
 	layers.push_back(new InputLayer(feedIns,numStates));

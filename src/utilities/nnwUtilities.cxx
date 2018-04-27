@@ -5,7 +5,7 @@
  *      Author: guther
  */
 
-#include "Trainer.hpp"
+#include "../Trainer.hpp"
 #include <iostream>
 
 #include "../CostFunctions/CostFunction.hpp"
@@ -15,7 +15,7 @@
 
 namespace networkVMC{
 
-void preTrain(NeuralNetwork &network, std::vector<State> const &target, Sampler const &msampler, double trainRate){
+void preTrain(NeuralNetwork &network, State const &target, Sampler const &msampler, double trainRate){
 // Trains the network to represent some state target
 // We first backup the current cost function
 	CostFunction const *backupCF = network.getCostFunction();

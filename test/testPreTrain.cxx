@@ -6,6 +6,7 @@
  */
 
 #include "../src/CostFunctions/EnergyCF.hpp"
+#include "../src/utilities/nnwUtilities.hpp"
 #include "../src/utilities/State.hpp"
 #include "../src/HilbertSpace/Determinant.hpp"
 #include "../src/utilities/TypeDefine.hpp"
@@ -15,15 +16,17 @@
 #include "../src/Samplers/MetropolisSampler.hpp"
 #include "../src/utilities/SpinConfig.hpp"
 
+using namespace networkVMC;
+
 int main(){
 	int numSites{3}, numStates{2*numSites};;
 	double U{4}, t{-1};
 	FermionicHamiltonian modelHam = generateFermiHubbard(numStates,U,t);
 	EnergyCF eCF(modelHam);
 // Two types of coefficients: 0 and 1 in the target state
-	coeffType coeffZero = Eigen::VectorXd::Zero(2);
+	coeffType coeffZero;
 	coeffType coeffOne = coeffZero;
-	coeffOne[0] = 1.0;
+	coeffOne = 1.0;
 
 // Now generate the basis states for the target
 	SpinConfig sC(numSites,numSites,numStates);
@@ -33,11 +36,11 @@ int main(){
 	std::vector<coeffType > targetCoeffs(basisGen.getSize(), coeffZero);
 	targetCoeffs[0] = coeffOne;
 
-	std::vector<State> targetState(1,State(targetDets, targetCoeffs));
+	State targetState(targetDets, targetCoeffs);
 
-	NeuralNetwork network(modelHam, eCF);
+	NeuralNetwork network(eCF);
 	MetropolisSampler msampler(modelHam,basisGen,D,network);
-	preTrain(network, targetState,msampler);
+	preTrain(network,targetState,msampler);
 }
 
 

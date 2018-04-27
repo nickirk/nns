@@ -7,10 +7,9 @@
 
 #include <iostream>
 
-#include "../src/CostFunctions/CostFunction.hpp"
-#include "../src/CostFunctions/EnergyCF.hpp"
-#include "../src/HilbertSpace/Determinant.hpp"
-#include "../src/Hamiltonian/FermionicHamiltonian.hpp"
+#include "../src/NNWLib.hpp"
+
+using namespace networkVMC;
 
 int main(){
 	int numSites{3}, numStates{2*numSites};;
@@ -23,14 +22,13 @@ int main(){
 	create(D1,2);
 	create(D2,0);
 	create(D2,4);
-	coeffType coeff = Eigen::VectorXd::Zero(2);
-	coeff[0] = 1.0;
+	coeffType coeff = 1.0;
 	std::vector<coeffType > TwoCoeffs(2,coeff);
 	std::vector<detType > HFArr(2);
 	HFArr[0] = D1;
 	HFArr[1] = D2;
-	std::vector<State> HF(1,State(HFArr,TwoCoeffs));
-	std::vector<coeffType > dE = eCF.nabla(HF);
+	State HF(HFArr,TwoCoeffs);
+	auto dE = eCF.nabla(HF);
 	std::cout << "Energy " << eCF.calc(HF) << std::endl;
 	std::cout << "Derivative " << dE[0] << std::endl;
 }

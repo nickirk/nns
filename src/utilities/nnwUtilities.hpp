@@ -16,7 +16,7 @@ namespace networkVMC{
 
 // Try to match the neural network to a given input determinant
 
-void preTrain(NeuralNetwork &network, std::vector<State> const &target, Sampler const &msampler);
+void preTrain(NeuralNetwork &network, State const &target, Sampler const &msampler,double trainRate=0.1);
 
 }
 

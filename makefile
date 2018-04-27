@@ -1,8 +1,9 @@
 CXX=g++
-LDFLAGS=-std=c++11 -g -Wall
+ARPACK_INCLUDE_PATH=$(CURDIR)/lib/arpack/arpackpp/include/
+LDFLAGS=-std=c++11 -g -Wall -I$(ARPACK_INCLUDE_PATH)
 EIGEN_PATH=lib/eigen/
 EIGEN_FLAGS=-I$(EIGEN_PATH)
-SOURCEFILES=Samplers/Sampler.cxx Network/Nnw.cxx HilbertSpace/Basis.cxx Hamiltonian/Hamiltonian.cxx HilbertSpace/Determinant.cxx CostFunctions/EnergyCF.cxx CostFunctions/NormCF.cxx CostFunctions/EnergyEstimator.cxx Hamiltonian/FermionicHamiltonian.cxx Hamiltonian/AbInitioHamiltonian.cxx Hamiltonian/BosonicHamiltonian.cxx Solver.cxx Trainer.cxx Samplers/MetropolisSampler.cxx Samplers/ListGen.cxx CostFunctions/EnergyEsMarkov.cxx Network/Layers/Layer.cxx Network/Layers/DenseLayer.cxx Network/Layers/ConvLayer.cxx Network/Layers/InputLayer.cxx Network/LayerStructure.cxx math/MathFunctions.cxx
+SOURCEFILES=Samplers/Sampler.cxx Network/Nnw.cxx HilbertSpace/Basis.cxx Hamiltonian/Hamiltonian.cxx HilbertSpace/Determinant.cxx CostFunctions/EnergyCF.cxx CostFunctions/NormCF.cxx CostFunctions/EnergyEstimator.cxx Hamiltonian/FermionicHamiltonian.cxx Hamiltonian/AbInitioHamiltonian.cxx Hamiltonian/BosonicHamiltonian.cxx Solver.cxx Trainer.cxx Samplers/MetropolisSampler.cxx Samplers/ListGen.cxx CostFunctions/EnergyEsMarkov.cxx Network/Layers/Layer.cxx Network/Layers/DenseLayer.cxx Network/Layers/ConvLayer.cxx Network/Layers/InputLayer.cxx Network/LayerStructure.cxx math/MathFunctions.cxx utilities/nnwUtilities.cxx Hamiltonian/SparseHMatrix.cxx CostFunctions/SubspaceCF.cxx
 TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx testAlgAb.cxx testRandom.cxx testMarkov.cxx
 SRC=src
 TST=test
@@ -62,39 +63,39 @@ $(TSTBUILD)/%.o: $(TST)/%.cxx
 -include $(DEPENDENCIES)
 
 testBasis: $(OBJECTS) $(BTESTOBJECT) 
-	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
+	$(CXX)  $(LDFLAGS) $^ -o $(TSTBUILD)/$@ 
 	
 testAlg: $(OBJECTS) $(ALGTESTOBJECT)	
-	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
+	$(CXX)  $(LDFLAGS) $^ -o $(TSTBUILD)/$@ 
 
 testMarkov: $(OBJECTS) $(MARKOVTESTOBJECT)	
-	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
+	$(CXX)  $(LDFLAGS) $^ -o $(TSTBUILD)/$@ 
 
 testNnw: $(OBJECTS) $(NNWTESTOBJECT)
-	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
+	$(CXX)  $(LDFLAGS) $^ -o $(TSTBUILD)/$@ 
 
 testSampler: $(OBJECTS) $(STESTOBJECT)
-	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
+	$(CXX)  $(LDFLAGS) $^ -o $(TSTBUILD)/$@ 
 
 testEigen: $(OBJECTS) $(ETESTOBJECT)
-	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
+	$(CXX)  $(LDFLAGS) $^ -o $(TSTBUILD)/$@ 
 
 testHam: $(OBJECTS) $(HTESTOBJECT)
-	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
+	$(CXX)  $(LDFLAGS) $^ -o $(TSTBUILD)/$@ 
 	
 testCF: $(OBJECTS) $(CFTESTOBJECT)
-	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@
+	$(CXX)  $(LDFLAGS) $^ -o $(TSTBUILD)/$@
 	
 testPT: $(OBJECTS) $(PTTESTOBJECT)
-	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@
+	$(CXX)  $(LDFLAGS) $^ -o $(TSTBUILD)/$@
 
 testAbInitioHam: $(OBJECTS) $(ABINHAMTESTOBJECT)	
-	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
+	$(CXX)  $(LDFLAGS) $^ -o $(TSTBUILD)/$@ 
 testRandom: $(RNGTESTOBJECT)
-	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@
+	$(CXX)  $(LDFLAGS) $^ -o $(TSTBUILD)/$@
                                             
 testAlgAb: $(OBJECTS) $(ALGABTESTOBJECT)	
-	$(CXX)  $(LDLFLAGS) $^ -o $(TSTBUILD)/$@ 
+	$(CXX)  $(LDFLAGS) $^ -o $(TSTBUILD)/$@ 
 clean:
 	rm -r $(BUILD)/*                          
                                            

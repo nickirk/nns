@@ -19,23 +19,23 @@ namespace networkVMC{
 // A state is a list of determinants and their coefficients
 class State{
 public:
-	State():dets(std::vector<detType>(0)), coeffs(std::vector<coeffType>(0)){};
+	State():storedDets(std::vector<detType>(0)), storedCoeffs(std::vector<coeffType>(0)){};
 	State(detType const &det_, coeffType const &coeff_):
-		dets(std::vector<detType>(1,det_)), coeffs(std::vector<coeffType>(1,coeff_)) {};
-	State(std::vector<detType> const &dets_, std::vector<coeffType> const &coeffs_):dets(dets_),coeffs(coeffs_){
+		storedDets(std::vector<detType>(1,det_)), storedCoeffs(std::vector<coeffType>(1,coeff_)) {};
+	State(std::vector<detType> const &dets_, std::vector<coeffType> const &coeffs_):storedDets(dets_),storedCoeffs(coeffs_){
 		// A state has to have one coefficient per determinant
 		// one might argue that supplying less coefficient should be fine and that
 		// the rest should be filled with zeroes, we might change that
-	    if(dets.size() != coeffs.size()) throw SizeMismatchError(dets.size(),coeffs.size());
+	    if(storedDets.size() != storedCoeffs.size()) throw SizeMismatchError(storedDets.size(),storedCoeffs.size());
 	};
 
 	// access operators for determinants and coefficients of the state
-	detType const& getDet(int i) const{return dets[i];}
-	coeffType const& getCoeff(int i) const{return coeffs[i];}
+	detType const& det(int i) const{return storedDets[i];}
+	coeffType const& coeff(int i) const{return storedCoeffs[i];}
 
 	// implement the non-const version via the const version
-	detType& getDet(int i) {return const_cast<detType &>(static_cast<State const &>((*this)).getDet(i));}
-	coeffType& getCoeff(int i){return const_cast<coeffType &>(static_cast<State const &>((*this)).getCoeff(i));}
+	detType& det(int i) {return const_cast<detType &>(static_cast<State const &>((*this)).det(i));}
+	coeffType& coeff(int i){return const_cast<coeffType &>(static_cast<State const &>((*this)).coeff(i));}
 
 	// access operators for the coupled determinants
 	std::vector<detType>const& coupledDets(int i) const{return cdets[i];}
@@ -46,12 +46,12 @@ public:
 	std::vector<coeffType>& coupledCoeffs(int i){return const_cast<std::vector<coeffType> &>(static_cast<State const &>((*this)).coupledCoeffs(i));}
 
 	// vector utilities
-	void clear() {dets.clear(); coeffs.clear(); cdets.clear(); ccoeffs.clear();}
-	void resize(int i) {dets.resize(i); coeffs.resize(i); cdets.resize(i); ccoeffs.resize(i);}
-	size_t size()const{return dets.size();}
+	void clear() {storedDets.clear(); storedCoeffs.clear(); cdets.clear(); ccoeffs.clear();}
+	void resize(int i) {storedDets.resize(i); storedCoeffs.resize(i); cdets.resize(i); ccoeffs.resize(i);}
+	size_t size()const{return storedDets.size();}
 private:
-	std::vector<detType> dets;
-	std::vector<coeffType> coeffs;
+	std::vector<detType> storedDets;
+	std::vector<coeffType> storedCoeffs;
 
 	// preliminary implementation of coupled stuff
 	std::vector<std::vector<detType> > cdets;

@@ -42,7 +42,7 @@ public:
   virtual void setNumDets(int newNum){numDets=newNum;}
   // get the number of dets
   virtual int getNumDets() const {return numDets;}
-  Hamiltonian const& getH() {return H;}
+  Hamiltonian const& getH() const{return H;}
 private:
   // Hamiltonian
   Hamiltonian const &H;

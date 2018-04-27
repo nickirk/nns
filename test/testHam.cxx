@@ -5,6 +5,7 @@
 #include "../src/HilbertSpace/Basis.hpp"
 #include "../src/HilbertSpace/Determinant.hpp"
 using namespace std;
+using namespace networkVMC;
 int main(){
   int numSites(8);
   int numStates(2*numSites);

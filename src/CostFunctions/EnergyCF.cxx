@@ -21,13 +21,13 @@ double EnergyCF::evaluate(State const &input) const{
   int numDets = input.size();
   for (int i=0; i < numDets; ++i){
 	  // The entries of state are pairs of determinant/coefficient
-    coeffType c_i=input.getCoeff(i);
+    coeffType c_i=input.coeff(i);
     // also assign the denominator
     normalizerCoeffComplex += std::norm(c_i);
     //sign_i = (output_Cs[i]-0. < 1e-8)?-1:0;
     for (int j=0; j < numDets; ++j){
-      coeffType c_j = input.getCoeff(j);
-      Hij = H(input.getDet(j), input.getDet(i));
+      coeffType c_j = input.coeff(j);
+      Hij = H(input.det(j), input.det(i));
     // sum up the contributions to E
       energyVal += std::real(std::conj(c_i) * c_j * Hij);
     }
@@ -49,12 +49,12 @@ std::vector<Eigen::VectorXd> EnergyCF::nabla(State const &input) const{
     Eigen::VectorXd dEdC_i=Eigen::VectorXd::Zero(2);
     std::complex<double> A(0.,0.);
     for (int j=0; j < numDets; ++j){
-      coeffType c_j=input.getCoeff(j);
+      coeffType c_j=input.coeff(j);
       // We add up the contributions to the derivative
-      A += c_j * H(input.getDet(i),
-                        input.getDet(j));
+      A += c_j * H(input.det(i),
+                        input.det(j));
     }
-    coeffType c_i = input.getCoeff(i);
+    coeffType c_i = input.coeff(i);
     A -=  energy * c_i;
     // re-use the normalizer from evaluate
     A /= normalizerCoeff;
