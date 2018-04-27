@@ -17,13 +17,13 @@ SparseHMatrix::~SparseHMatrix() {}
 void SparseHMatrix::MatMul(coeffType *in, coeffType *out){
 // Do the Matrix-Vector multiplication
 	// first, set the output vector to 0
-	for(size_t i{0};i<dim;++i){
+	for(std::size_t i{0};i<dim;++i){
 		out[i] = 0;
 	}
 	// then, do the sparse matrix-vector mutltiplication
-	for(size_t i{0};i<rowPos.size()-1;++i){
+	for(std::size_t i{0};i<rowPos.size()-1;++i){
 		// for each row (starting with 0), get all the corresponding contributions
-		for(size_t j{rowPos[j]};j<rowPos[i+1];++j){
+		for(std::size_t j{rowPos[j]};j<rowPos[i+1];++j){
 			// entries[j] is the contribution to row i from the entry of in at cols[j]
 			out[i] += entries[j]*in[cols[j]];
 		}
@@ -37,9 +37,9 @@ void SparseHMatrix::load(Hamiltonian const &H, State const &subspace){
 	rowPos.clear();
 	cols.clear();
 // scan the Hamiltonian for nonzero entries and store them
-	for(size_t i{0};i<dim;++i){
+	for(std::size_t i{0};i<dim;++i){
 		rowPos.push_back(entries.size());
-		for(size_t j{0};j<dim;++j){
+		for(std::size_t j{0};j<dim;++j){
 			double tmp{H(subspace.det(i),subspace.det(j))};
 			if(std::abs(tmp) > epsilon){
 				entries.push_back(tmp);

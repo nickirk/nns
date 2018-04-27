@@ -49,6 +49,11 @@ public:
 	void clear() {storedDets.clear(); storedCoeffs.clear(); cdets.clear(); ccoeffs.clear();}
 	void resize(int i) {storedDets.resize(i); storedCoeffs.resize(i); cdets.resize(i); ccoeffs.resize(i);}
 	size_t size()const{return storedDets.size();}
+
+	// sort the storedDets + storedCoeffs according to determinant order
+	void sortDet();
+	// or according to highest coefficient
+    void sortCoeffs();
 private:
 	std::vector<detType> storedDets;
 	std::vector<coeffType> storedCoeffs;
