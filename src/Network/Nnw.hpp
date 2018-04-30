@@ -69,7 +69,7 @@ public:
   coeffType getCoeff(detType const &det) const;
   CostFunction const* getCostFunction() const {return cf;};
   Layer* getLayer(int layer){
-	  if(layer<Layers.size() && layer >= 0)
+	  if(static_cast<unsigned int>(layer)<Layers.size() && layer >= 0)
 	  return Layers[layer];
 	  throw OutOfRangeError(layer);
   };

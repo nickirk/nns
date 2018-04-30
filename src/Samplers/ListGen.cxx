@@ -57,7 +57,7 @@ int ListGen::getNumDets() const{return diffuseList.size();}
 void ListGen::diffuse(std::vector<detType> &list) const{
  list=diffuseList;
  detType buf;
- while (list.size() < numDets){
+ while (list.size() < static_cast<unsigned int>(numDets)){
    buf = getRandomDeterminant(sC);
    list.push_back(buf);
  }
@@ -67,7 +67,6 @@ void ListGen::diffuse(std::vector<detType> &list) const{
  std::random_device rngd;
  double const normalizerd = static_cast<double>(rngd.max());
  double prandom=rngd()/normalizerd;
- double probUnbias(0.);
  for (size_t i(0); i<list.size(); ++i){
    prandom=rngd()/normalizerd;
    c_i=NNW.getCoeff(list[i]);

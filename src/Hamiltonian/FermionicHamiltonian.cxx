@@ -105,7 +105,6 @@ std::vector<detType> FermionicHamiltonian::getCoupledStates(detType const &sourc
     create(targetTmp,(spawnRight[i]+2)%d);
     coupledList.push_back(targetTmp);
   }
-  int const numSpawn=spawnLeft.size()+spawnRight.size();
   return coupledList;
 }
 

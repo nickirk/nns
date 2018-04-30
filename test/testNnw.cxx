@@ -33,17 +33,25 @@ int main(){
   vector<detType> list;
   EnergyEstimator eCF(modelHam);
   NeuralNetwork NNW(eCF);
+
+  NNW.constrInputLayer(numStates);
+  NNW.constrDenseLayer(NNW.getLayer(0)->getActs(), "Tanh", 10*numStates);
+  NNW.constrDenseLayer(NNW.getLayer(1)->getActs(), "Linear", 2);
+  NNW.initialiseNetwork();
+
   detType HF=basis.getDetByIndex(0);
   //cout << "HF intCast=" << verbatimCast(HF) << endl;
   //list.push_back(HF);
-  int numDetsToTrain_{200};
-  MetropolisSampler sampler(modelHam, basis, HF,NNW);
+  //MetropolisSampler sampler(modelHam, basis, HF,NNW);
+  ListGen sampler(modelHam, basis, 100, HF,NNW);
+  //std::vector<detType> dummy;
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
   double energy{0.0};
   Trainer ev(NNW,sampler);
-  for(int l(0); l<10000; ++l){
-    ev.train(trainRate,2,l);
+  for(int l(0); l<100; ++l){
+    ev.train(trainRate,3,l);
+    //sampler.diffuse(dummy);
     // get the new energy
     energy = ev.getE();
     std::cout<<"Energy "<<energy<<std::endl;

@@ -31,7 +31,7 @@ public:
     );
   virtual void processSignal() const;
   virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint);
-  const int getStride() const{return stride;};
+  int getStride() const{return stride;};
   //interface
 private:
   int numFilters;
