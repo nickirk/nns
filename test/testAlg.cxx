@@ -84,7 +84,7 @@ int main(){
   double energy(0.);
   int count(0);
   std::vector<Eigen::VectorXd> coeffs;
-  for(int l(0); l<10000; ++l){
+  for(int l(0); l<3000; ++l){
     cout << "testAlg.cxx: iteration= " << l << endl;
     sampler.diffuse(list);
     ev.train(trainRate,method,l);

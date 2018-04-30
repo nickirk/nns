@@ -38,22 +38,17 @@ void Trainer::train(double learningRate, int method, int iteration){
 	// TODO this should not be part of the trainer, move it to somewhere in the state
 	for(int i=0; i < numDets; ++i){
 	  msampler.iterate(inputState.coeff(i), inputState.det(i));
-	  //-------------------------------------
-    inputState.coupledDets(i) = modelHam.getCoupledStates(inputState.det(i));
+
+	  // get some coupled determinants and their coefficients to use in the
+	  // energy estimator
+      inputState.coupledDets(i) = modelHam.getCoupledStates(inputState.det(i));
 	  inputState.coupledCoeffs(i).resize(inputState.coupledDets(i).size());
-	  //sampledDets[i] =  msampler.getDet(i);
-	  //sampledCoeffs[i] =  NNW.getCoeff(sampledDets[i]);
-          //NNW.cacheNetworkState();
+
+	  // just get the coefficients from the NNW
 	  for(size_t j=0; j < inputState.coupledDets(i).size(); ++j){
 	  	inputState.coupledCoeffs(i)[j]=NNW.getCoeff(inputState.coupledDets(i)[j]);
 	  }
 	}
-	// sort the list of determinants so that we can avoid 
-        // computing repeated tasks.
-        //coupledCoeffsEpoch.push_back(coupledCoeffs);
-        //coupledDetsEpoch.push_back(coupledDets);
-        //msampler.setReference(sampledDets[numDets-1]);
-	//std::sort(inputState.begin(), inputState.end());
 	NNW.updateParameters(method,inputState,learningRate,iteration);
 }
 

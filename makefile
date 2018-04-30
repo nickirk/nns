@@ -1,10 +1,10 @@
-CXX=icpc
+CXX=g++
 ARPACK_INCLUDE_PATH=$(CURDIR)/lib/arpack/arpackpp/include/
 LDFLAGS=-std=c++11 -g -Wall -I$(ARPACK_INCLUDE_PATH)
 EIGEN_PATH=lib/eigen/
 EIGEN_FLAGS=-I$(EIGEN_PATH)
 SOURCEFILES=Samplers/Sampler.cxx Network/Nnw.cxx HilbertSpace/Basis.cxx Hamiltonian/Hamiltonian.cxx HilbertSpace/Determinant.cxx CostFunctions/EnergyCF.cxx CostFunctions/NormCF.cxx CostFunctions/EnergyEstimator.cxx CostFunctions/EnergyCF.cxx Hamiltonian/FermionicHamiltonian.cxx Hamiltonian/AbInitioHamiltonian.cxx Hamiltonian/BosonicHamiltonian.cxx Solver.cxx Trainer.cxx Samplers/MetropolisSampler.cxx Samplers/ListGen.cxx CostFunctions/EnergyEsMarkov.cxx Network/Layers/Layer.cxx Network/Layers/DenseLayer.cxx Network/Layers/ConvLayer.cxx Network/Layers/InputLayer.cxx Network/LayerStructure.cxx math/MathFunctions.cxx utilities/nnwUtilities.cxx Hamiltonian/SparseHMatrix.cxx
-TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx testAlgAb.cxx testRandom.cxx testMarkov.cxx
+TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx testAlgAb.cxx testRandom.cxx testMetropolis.cxx
 SRC=src
 TST=test
 BUILD=build
@@ -18,7 +18,7 @@ DEPENDENCIES=$(patsubst %.cxx,$(DDIR)/%.d,$(SOURCEFILES)) $(patsubst %.cxx,$(TST
 BTEST=basisTest
 NNWTEST=nnwTest
 ALGTEST=algTest
-MARKOVTEST=markovTest
+MARKOVTEST=metropolisTest
 STEST=samplerTest
 HTEST=hamTest
 ETEST=eigenTest
@@ -28,7 +28,7 @@ ABINHAMTEST=abinhamTest
 ALGABTEST=algAbTest
 BTESTOBJECT=$(TSTBUILD)/testBasis.o
 NNWTESTOBJECT=$(TSTBUILD)/testNnw.o
-MARKOVTESTOBJECT=$(TSTBUILD)/testMarkov.o
+MARKOVTESTOBJECT=$(TSTBUILD)/testMetropolis.o
 ALGTESTOBJECT=$(TSTBUILD)/testAlg.o
 STESTOBJECT=$(TSTBUILD)/testSampler.o
 ETESTOBJECT=$(TSTBUILD)/testEigen.o
@@ -68,7 +68,7 @@ testBasis: $(OBJECTS) $(BTESTOBJECT)
 testAlg: $(OBJECTS) $(ALGTESTOBJECT)	
 	$(CXX)  $(LDFLAGS) $^ -o $(TSTBUILD)/$@ 
 
-testMarkov: $(OBJECTS) $(MARKOVTESTOBJECT)	
+testMetropolis: $(OBJECTS) $(MARKOVTESTOBJECT)	
 	$(CXX)  $(LDFLAGS) $^ -o $(TSTBUILD)/$@ 
 
 testNnw: $(OBJECTS) $(NNWTESTOBJECT)
