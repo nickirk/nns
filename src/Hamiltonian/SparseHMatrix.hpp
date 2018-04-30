@@ -28,6 +28,9 @@ public:
 
 // create a sparse representation of H in subspace
 	void load(Hamiltonian const &H, State const &subspace);
+
+// output the dimension
+	size_t dimension() const {return dim;}
 private:
 // We consider the Hamiltonian H in the space spanned by a the determinants of a given State subspace
 	size_t dim;
@@ -36,7 +39,7 @@ private:
 	std::vector<double> entries;
 // cols are the columns belonging to the values, and rowPos contains the indices of those entries
 // that start a new row
-	std::vector<int> rowPos,cols;
+	std::vector<size_t> rowPos,cols;
 };
 
 
