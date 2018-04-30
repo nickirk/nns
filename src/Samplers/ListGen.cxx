@@ -61,14 +61,16 @@ void ListGen::diffuse(std::vector<detType> &list) const{
    buf = getRandomDeterminant(sC);
    list.push_back(buf);
  }
- coeffType c_i;
- coeffType c_j;
- Eigen::VectorXd lastLayerActivation;
- std::random_device rngd;
- double const normalizerd = static_cast<double>(rngd.max());
- double prandom=rngd()/normalizerd;
- for (size_t i(0); i<list.size(); ++i){
-   prandom=rngd()/normalizerd;
+ coeffType c_i = coeffType();
+ coeffType c_j = coeffType();
+ double prandom = 0.0;
+
+ std::random_device rd;     // only used once to initialise (seed) engine
+ std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+ std::uniform_real_distribution<double> uni;		// Uniform distribution from 0.0 to 1.0
+
+ for (size_t i = 0; i<list.size(); ++i){
+  prandom = uni(rng);
    c_i=NNW.getCoeff(list[i]);
    buf = getRandomConnection(list[i]);
    //buf = getRandomDeterminant(spinConfig);
