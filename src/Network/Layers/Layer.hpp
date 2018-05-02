@@ -29,7 +29,7 @@ public:
   virtual void processSignal() const=0;
   // just for convenience, we want to be able to call process signal with an argument
   // (to prevent unfortunate bugs with the inputlayer, which overrides this method)
-  virtual void processSignal(detType const &det) const{processSignal();};
+  virtual void processSignal(detType const &det) const;
   // update of parameters will be done on network level, not on layer level.
   virtual void backProp(
                         std::vector<Eigen::VectorXd> const &prevDelta, 

@@ -39,4 +39,14 @@ Layer::~Layer(){
 
 }
 
+// Processing an input signal can be done by any Layer, given that the
+// number of neurons is equal to the number of orbitals
+void Layer::processSignal(detType const &det) const{
+  int numStates=det.size();
+  //set the activations into the determinants
+  for (int state=0; state<numStates; ++state){
+    activations[0](state) = det[state]?1.0:-1.0;
+  }
+}
+
 }
