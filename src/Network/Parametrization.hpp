@@ -33,6 +33,16 @@ public:
   virtual VecType calcNablaPars(
 		  State const &input,
 		  nablaType const &outerDerivative) = 0;
+  // Some other derivative
+  virtual VecType calcNablaParsConnected(
+   State const &inputState,
+   nablaType const& dEdC
+   ) = 0;
+  virtual Eigen::MatrixXcd calcdCdwSR(
+    State const &outputState
+  ) = 0;
+  // stochastic reconfiguration derivative
+
 };
 
 } /* namespace networkVMC */
