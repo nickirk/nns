@@ -21,12 +21,4 @@ InputLayer::~InputLayer(){
 
 }
 
-void InputLayer::processSignal(detType const &det) const{
-  int numStates=det.size();
-  //set the activations into the determinants
-  for (int state=0; state<numStates; ++state){
-    activations[0](state) = det[state]?1.0:-1.0;
-  }
-}
-
 }
