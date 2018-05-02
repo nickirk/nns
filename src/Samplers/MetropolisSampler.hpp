@@ -9,7 +9,7 @@
 #define SRC_SAMPLERS_METROPOLISSAMPLER_HPP_
 
 #include "../HilbertSpace/Determinant.hpp"
-#include "../Network/Nnw.hpp"
+#include "../Network/Parametrization.hpp"
 #include "Sampler.hpp"
 
 // Class for sampling determinants using the metropolis algorithm
@@ -18,13 +18,13 @@ namespace networkVMC{
 
 class MetropolisSampler: public Sampler {
 public:
-	MetropolisSampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF, NeuralNetwork const &NNW_):
-			Sampler(H_,fullBasis_,HF),NNW(NNW_),lastCoeff(NNW_.getCoeff(cDet)){};
+	MetropolisSampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF, Parametrization const &para_):
+			Sampler(H_,fullBasis_,HF),para(para_),lastCoeff(para_.getCoeff(cDet)){};
 	virtual ~MetropolisSampler();
 	//Do a markov step
 	virtual void iterate(coeffType &cI, detType &dI) const;
 private:
-	NeuralNetwork const &NNW;
+	Parametrization const &para;
 	mutable coeffType lastCoeff;
 };
 

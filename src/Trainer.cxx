@@ -10,7 +10,8 @@
 
 namespace networkVMC{
 
-Trainer::Trainer(NeuralNetwork &NNW_, Sampler const &msampler_):modelHam(msampler_.getH()),NNW(NNW_), msampler(msampler_) {
+Trainer::Trainer(Parametrization &NNW_, Sampler const &msampler_, Solver &sl_, CostFunction const &cf_):
+		modelHam(msampler_.getH()),NNW(NNW_), msampler(msampler_),sl(sl_),cf(cf_) {
 	inputState.resize(msampler.getNumDets());
 }
 
@@ -21,7 +22,21 @@ Trainer::~Trainer() {
 
 //---------------------------------------------------------------------------------------------------//
 
-void Trainer::train(double learningRate, int method, int iteration){
+void Trainer::train(double learningRate){
+	// only change the learningRate for this iteration
+	auto tmp = sl.getLearningRate();
+	sl.setLearningRate(learningRate);
+	// do the normal train()
+	train();
+	// then reset the learningRate
+	sl.setLearningRate(tmp);
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+
+// prepare an input
+void Trainer::train(){
 	int numDets{msampler.getNumDets()};
 	inputState.resize(numDets);
 	//coupledCoeffsEpoch.clear();
@@ -49,7 +64,20 @@ void Trainer::train(double learningRate, int method, int iteration){
 	  	inputState.coupledCoeffs(i)[j]=NNW.getCoeff(inputState.coupledDets(i)[j]);
 	  }
 	}
-	NNW.updateParameters(method,inputState,learningRate,iteration);
+	updateParameters(inputState);
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+void Trainer::updateParameters(State const &input){
+	// first, get the derivative of the cost function with respect to the
+	// wavefunction coefficients
+	auto dEdC = cf.nabla(input);
+	// add the inner derivative to get the full derivative
+	// of the cost function with respect to the parameters
+	auto dEdPars = NNW.calcNablaPars(input,dEdC);
+	// feed these to the solver
+	sl.update(NNW.pars(),dEdPars,input);
 }
 
 //---------------------------------------------------------------------------------------------------//
@@ -57,7 +85,7 @@ void Trainer::train(double learningRate, int method, int iteration){
 double Trainer::getE() const{
 	// Here, we just output the value of the cost function (usually the energy) of the
 	// network
-	return NNW.getCostFunction()->calc(inputState);
+	return cf.calc(inputState);
 }
 
 //---------------------------------------------------------------------------------------------------//

@@ -18,7 +18,6 @@ InputLayer::InputLayer(std::vector<Eigen::VectorXd> const &inputs_, int size_):
 }
 
 InputLayer::~InputLayer(){
-
 }
 
 }

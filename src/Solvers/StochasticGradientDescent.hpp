@@ -14,17 +14,14 @@ namespace networkVMC {
 
 class StochasticGradientDescent: public Solver {
 public:
-  StochasticGradientDescent(double gamma_):gamma(gamma_){};
+  StochasticGradientDescent(double gamma_):Solver(gamma_){};
   virtual ~StochasticGradientDescent();
   // gradient descent update scheme
   virtual void update(VecType  &w, VecType const &force,
-		  State const &input) const{
+		  State const &input=State()){
   // just walk along the gradient with some stepsize gamma
-	  w-=gamma*force;
+	  w-=learningRate*force;
   }
-private:
-  // a stepsize
-  double gamma;
 };
 
 } /* namespace networkVMC */

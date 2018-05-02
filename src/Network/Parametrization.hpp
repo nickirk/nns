@@ -23,7 +23,7 @@ public:
   Parametrization(){};
   virtual ~Parametrization(){};
   // We need access to the parameters (this is the non-const variant)
-  virtual VecType& pars(){return const_cast<VecType>
+  virtual VecType& pars(){return const_cast<VecType&>
     (static_cast<Parametrization const&>(*this).pars());};
  // It needs to be able to return coefficients somehow
   virtual coeffType getCoeff(detType const &det) const=0;
@@ -33,15 +33,14 @@ public:
   virtual VecType calcNablaPars(
 		  State const &input,
 		  nablaType const &outerDerivative) = 0;
+
   // Some other derivative
-  virtual VecType calcNablaParsConnected(
-   State const &inputState,
-   nablaType const& dEdC
-   ) = 0;
+  virtual VecType calcNablaParsConnected(State const &inputState, nablaType const& dEdC) = 0;
+
+  // stochastic reconfiguration derivative
   virtual Eigen::MatrixXcd calcdCdwSR(
     State const &outputState
   ) = 0;
-  // stochastic reconfiguration derivative
 
 };
 

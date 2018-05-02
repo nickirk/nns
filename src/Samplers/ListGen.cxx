@@ -9,8 +9,9 @@
 
 namespace networkVMC{
 
-ListGen::ListGen(Hamiltonian const &H_, Basis const &fullBasis_, int numDets_, detType const &HF, NeuralNetwork const &NNW_):
-	Sampler(H_,fullBasis_,HF,numDets_),NNW(NNW_),pos(0){
+ListGen::ListGen(Hamiltonian const &H_, Basis const &fullBasis_,
+		detType const &HF, Parametrization const &para_, int numDets_):
+	Sampler(H_,fullBasis_,HF,numDets_),para(para_),pos(0){
 	std::vector<detType> tmp(numDets_,HF);
 	diffuse(tmp);
 }
@@ -26,7 +27,7 @@ void ListGen::iterate(coeffType &cI, detType &dI) const{
 	// Fetch the next entry from the pre-arranged list
 	dI = getDet();
 	// Get its coefficient
-	cI = NNW.getCoeff(dI);
+	cI = para.getCoeff(dI);
 }
 
 //---------------------------------------------------------------------------------------------------//
@@ -58,7 +59,7 @@ void ListGen::diffuse(std::vector<detType> &list) const{
  list=diffuseList;
  detType buf;
  while (list.size() < static_cast<unsigned int>(numDets)){
-   buf = getRandomDeterminant(sC);
+   buf = getRandomDeterminant(fullBasis.getSpinConfig());
    list.push_back(buf);
  }
  coeffType c_i = coeffType();
@@ -71,10 +72,10 @@ void ListGen::diffuse(std::vector<detType> &list) const{
 
  for (size_t i = 0; i<list.size(); ++i){
   prandom = uni(rng);
-   c_i=NNW.getCoeff(list[i]);
+   c_i=para.getCoeff(list[i]);
    buf = getRandomConnection(list[i]);
    //buf = getRandomDeterminant(spinConfig);
-   c_j=NNW.getCoeff(buf);
+   c_j=para.getCoeff(buf);
    //getRandomCoupledState(buf,probUnbias);
    if (prandom - std::pow(std::norm(c_j),2)/std::pow(std::norm(c_i),2)<-1e-8){
      list[i]=buf;

@@ -15,6 +15,7 @@
 #include "Network/Nnw.hpp"
 #include "HilbertSpace/Basis.hpp"
 #include "Samplers/AllSamplers.hpp"
+#include "Solvers/AllSolvers.hpp"
 
 
 #endif /* SRC_NNWLIB_HPP_ */

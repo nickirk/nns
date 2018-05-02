@@ -17,19 +17,17 @@ public:
   ADAM(double learningRate);
   virtual ~ADAM();
   // implementation of the update method
-  void update(VecType &w, VecType const &force) const;
+  void update(VecType &w, VecType const &force, State const &input=State());
 private:
-  // the learningRate (something like a step size)
-  double learningRate;
   // number of parameters to be optimized
   int numPars;
   // iteration counter, as the internal parameters are adjusted over the course
   // of optimization
-  mutable int iteration;
+  int iteration;
 
   // some internal ADAM parameters
-  mutable VecType m,m1,v,v1;
-  mutable double beta1, beta2;
+  VecType m,m1,v,v1;
+  double beta1, beta2;
 };
 
 } /* namespace networkVMC */

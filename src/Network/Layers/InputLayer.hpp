@@ -20,15 +20,15 @@ public:
   virtual ~InputLayer();
   // implement the clone() functionality
   virtual InputLayer* clone() const {return new InputLayer(*this);}
+private:
   // back-propagating on an input layer does not do anything
   virtual void backProp(std::vector<Eigen::VectorXd> const &prevDelta,
                         weightType const &prevWeights){};
   // same for mapping parameters - nothing will happen
   virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint){};
-  void processSignal(detType const &det) const;
   // input layers don't do anything when processing an empty signal
   void processSignal()const{};
-private:
+  // number of neurons (better be the number of orbitals
   int numNrn;
 };
 

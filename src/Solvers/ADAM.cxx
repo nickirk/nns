@@ -9,7 +9,7 @@
 
 namespace networkVMC {
 
-ADAM::ADAM(double learningRate_):learningRate(learningRate_),numPars(0),
+ADAM::ADAM(double learningRate_):Solver(learningRate_),numPars(0),
 		iteration(0),beta1(0.9),beta2(0.999) {
 	m  = Eigen::VectorXd::Zero(numPars);
 	m1  = Eigen::VectorXd::Zero(numPars);
@@ -20,7 +20,7 @@ ADAM::ADAM(double learningRate_):learningRate(learningRate_),numPars(0),
 ADAM::~ADAM() {
 }
 
-void ADAM::update(VecType &w, VecType const &force) const{
+void ADAM::update(VecType &w, VecType const &force, State const &input){
 	// in the first iteration, we learn about the number of parameters
 	if(iteration==0){
 		numPars = w.size();

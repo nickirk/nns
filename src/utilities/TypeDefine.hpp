@@ -22,9 +22,13 @@ namespace networkVMC{
 using coeffType = std::complex<double>;
 using detType = std::vector<bool>;
 //numFilter<depthFilter<lengthFilter>>
+// general eigen vector type for complex numbers, used for parameters etc
+using VecType = Eigen::VectorXd;
 using weightType = std::vector<std::vector<Eigen::Map<Eigen::MatrixXd>>>;
 //numFilter<lengthFilter>
-using biasType = std::vector<Eigen::Map<Eigen::VectorXd>>;
+using biasType = std::vector<Eigen::Map<VecType>>;
+// return type for cost function nabla (derivative with respect to a vector)
+using nablaType = std::vector<VecType>;
 
 }
 #endif /* SRC_UTILITIES_TYPEDEFINE_HPP_ */

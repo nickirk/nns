@@ -18,16 +18,15 @@ public:
   AcceleratedGradientDescent(double learningRate);
   virtual ~AcceleratedGradientDescent();
   // implementation of the update method
-  void update(VecType &w, VecType const &force) const;
+  void update(VecType &w, VecType const &force, State const &input=State());
 private:
-  double learningRate;
   // number of parameters to optimize (will be automatically determined)
   int numPars;
   // some obscure parameters of the accelerated gradient descent
-  mutable double lambdaS1, lambdaS, gammaS, gammaS1;
-  mutable VecType yS, yS1, Egz2;
+  double lambdaS1, lambdaS, gammaS, gammaS1;
+  VecType yS, yS1, Egz2;
   // auxiliary variable to check if we already know the number of parameters
-  mutable bool uninitialized;
+  bool uninitialized;
 };
 
 } /* namespace networkVMC */

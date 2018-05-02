@@ -15,18 +15,15 @@ namespace networkVMC {
 
 class StochasticReconfiguration: public Solver {
 public:
-  StochasticReconfiguration(Parametrization const &par_, double gamma_):
-	  par(par_),gamma(gamma_),iteration(0) {};
+  StochasticReconfiguration(Parametrization &par_, double gamma_):
+	  Solver(gamma_),par(par_),iteration(0) {};
   virtual ~StochasticReconfiguration();
 
   // thus, we only have this version
-  virtual void update(VecType &w, VecType const &force, State const &input)
-    const;
+  virtual void update(VecType &w, VecType const &force, State const &input);
 private:
   // this is a second order solver, so we need the parametrization
   Parametrization &par;
-  // the stepsize
-  double gamma;
   // and an iteration counter
   int iteration;
 };

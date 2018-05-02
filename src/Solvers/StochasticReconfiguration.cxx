@@ -16,11 +16,11 @@ StochasticReconfiguration::~StochasticReconfiguration() {
 
 // Conjugate descent (I ported this from Nnw.cxx and will not touch it)
 void StochasticReconfiguration::update(VecType &w, VecType const &force,
-		  State const &input) const{
+		  State const &input){
 
 	// first, get the input vector's coefficients
 	std::size_t numDets = input.size();
-	VecType ci(numDets);
+	Eigen::VectorXcd ci(numDets);
 	for(std::size_t i = 0; i<numDets; ++ i){
 		ci[i] = input.coeff(i);
 	}
@@ -36,7 +36,7 @@ void StochasticReconfiguration::update(VecType &w, VecType const &force,
 	s = okokp - (ok*ok.adjoint()).real();
         double lambda = std::max(100*std::pow(0.999,iteration), 1e-2);
         s+=s.diagonal().asDiagonal()*lambda;
-	w-=gamma*s.inverse()*force;
+	w-=learningRate*s.inverse()*force;
 	// increase the iteration counter
 	iteration += 1;
 }

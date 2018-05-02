@@ -11,7 +11,7 @@
 namespace networkVMC {
 
 AcceleratedGradientDescent::AcceleratedGradientDescent(double learningRate_):
-  learningRate(learningRate_),numPars(0),lambdaS1(0.0),lambdaS(0.0),gammaS(0.0),
+  Solver(learningRate_),numPars(0),lambdaS1(0.0),lambdaS(0.0),gammaS(0.0),
   gammaS1(0.0),uninitialized(true){
     yS = Eigen::VectorXd::Zero(numPars);
     yS1 = Eigen::VectorXd::Zero(numPars);
@@ -26,7 +26,8 @@ AcceleratedGradientDescent::~AcceleratedGradientDescent() {
 //---------------------------------------------------------------------------------------------------//
 
 // This is ported from Nnw.cxx
-void AcceleratedGradientDescent::update(VecType &w, VecType const &force) const{
+void AcceleratedGradientDescent::update(VecType &w, VecType const &force,
+		State const &input){
   if(uninitialized){
 	numPars = w.size();
     yS = Eigen::VectorXd::Zero(numPars);
