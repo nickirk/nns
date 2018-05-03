@@ -25,7 +25,7 @@ int main(){
   modelHam = generateFermiHubbard(numStates, U, t);
 
 // Cost function setup
-  EnergyCF eCF(modelHam);
+  EnergyEstimator eCF(modelHam);
 
 // Solver setup
   double trainRate(0.1);
@@ -36,14 +36,14 @@ int main(){
 
 // Sampler setup
   detType HF=basis.getDetByIndex(0);
-  ListGen sample(modelHam,basis,HF,par,1000);
+  ListGen sample(modelHam,basis,HF,par,200);
 
 // And optimize the direct parametrization
   Trainer ev(par,sample,sl,eCF);
 
-  for(int i=0;i<1000;++i){
+  for(int i=0;i<10000;++i){
 	  ev.train();
-	  std::cout<<"Energy "<<ev.getE()<<std::endl;
+	  std::cout<<"Energy "<<ev.getE()<<" in iteration "<<i<<std::endl;
   }
 }
 
