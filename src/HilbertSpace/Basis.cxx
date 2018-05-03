@@ -43,9 +43,6 @@ Basis::Basis(SpinConfig const &spinConfig_):
   basis=basisNew;
 }
 
-
-int Basis::getSize() const {return size;}
-
 detType Basis::getDetByIndex(int index) const{
   return basis[index];
 }

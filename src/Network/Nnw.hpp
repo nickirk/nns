@@ -86,13 +86,10 @@ public:
     State const &inputState,
 	nablaType const& dEdC
   );
-  VecType calcNablaParsConnected(
-   State const &inputState,
-   nablaType const& dEdC
-   );
-  Eigen::MatrixXcd calcdCdwSR(
-    State const &outputState
-  );
+  // derivative taking into account connected dets
+  VecType calcNablaParsConnected(State const &inputState,nablaType const&dEdC);
+  // derivative of higher order(?)
+  Eigen::MatrixXcd calcdCdwSR(State const &outputState);
 
 private:
   //Structure of the NNW

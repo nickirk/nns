@@ -15,7 +15,7 @@ namespace networkVMC {
 class StochasticGradientDescent: public Solver {
 public:
   StochasticGradientDescent(double gamma_):Solver(gamma_){};
-  virtual ~StochasticGradientDescent();
+  virtual ~StochasticGradientDescent(){};
   // gradient descent update scheme
   virtual void update(VecType  &w, VecType const &force,
 		  State const &input=State()){

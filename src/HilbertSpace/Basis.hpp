@@ -20,7 +20,7 @@ class Basis{
   public:
     Basis(SpinConfig const &spinConfig_);
 // total size of the many-body basis
-    int getSize() const;
+    int getSize() const {return size;}
 // Return the determinant with index 'index'
     detType getDetByIndex(int index) const;
 // Return the index of the determinant 'det_'

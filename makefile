@@ -1,10 +1,10 @@
-CXX=g++
+CXX=icpc
 ARPACK_INCLUDE_PATH=$(CURDIR)/lib/arpack/arpackpp/include/
 LDFLAGS=-std=c++11 -g -Wall -I$(ARPACK_INCLUDE_PATH)
 EIGEN_PATH=lib/eigen/
 EIGEN_FLAGS=-I$(EIGEN_PATH)
-SOURCEFILES=Samplers/Sampler.cxx Network/Nnw.cxx HilbertSpace/Basis.cxx Hamiltonian/Hamiltonian.cxx HilbertSpace/Determinant.cxx CostFunctions/EnergyCF.cxx CostFunctions/NormCF.cxx CostFunctions/EnergyEstimator.cxx CostFunctions/EnergyCF.cxx Hamiltonian/FermionicHamiltonian.cxx Hamiltonian/AbInitioHamiltonian.cxx Hamiltonian/BosonicHamiltonian.cxx Trainer.cxx Samplers/MetropolisSampler.cxx Samplers/ListGen.cxx CostFunctions/EnergyEsMarkov.cxx Network/Layers/Layer.cxx Network/Layers/DenseLayer.cxx Network/Layers/ConvLayer.cxx Network/Layers/InputLayer.cxx Network/LayerStructure.cxx math/MathFunctions.cxx utilities/nnwUtilities.cxx Hamiltonian/SparseHMatrix.cxx Solvers/AcceleratedGradientDescent.cxx Solvers/ADAM.cxx Solvers/StochasticReconfiguration.cxx
-TESTFILES=testNnw.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx testAlgAb.cxx testRandom.cxx testMetropolis.cxx
+SOURCEFILES=Samplers/Sampler.cxx Network/Nnw.cxx Network/DirectParametrization.cxx HilbertSpace/Basis.cxx Hamiltonian/Hamiltonian.cxx HilbertSpace/Determinant.cxx CostFunctions/EnergyCF.cxx CostFunctions/NormCF.cxx CostFunctions/EnergyEstimator.cxx CostFunctions/EnergyCF.cxx Hamiltonian/FermionicHamiltonian.cxx Hamiltonian/AbInitioHamiltonian.cxx Hamiltonian/BosonicHamiltonian.cxx Trainer.cxx Samplers/MetropolisSampler.cxx Samplers/ListGen.cxx CostFunctions/EnergyEsMarkov.cxx Network/Layers/Layer.cxx Network/Layers/DenseLayer.cxx Network/Layers/ConvLayer.cxx Network/Layers/InputLayer.cxx Network/LayerStructure.cxx math/MathFunctions.cxx utilities/nnwUtilities.cxx Hamiltonian/SparseHMatrix.cxx Solvers/AcceleratedGradientDescent.cxx Solvers/ADAM.cxx Solvers/StochasticReconfiguration.cxx
+TESTFILES=testNnw.cxx testDirect.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx testAlgAb.cxx testRandom.cxx testMetropolis.cxx
 SRC=src
 TST=test
 BUILD=build
@@ -26,6 +26,7 @@ CFTEST=cfTest
 PTTEST=ptTest
 ABINHAMTEST=abinhamTest
 ALGABTEST=algAbTest
+DIRECTTST=directTest
 BTESTOBJECT=$(TSTBUILD)/testBasis.o
 NNWTESTOBJECT=$(TSTBUILD)/testNnw.o
 MARKOVTESTOBJECT=$(TSTBUILD)/testMetropolis.o
@@ -38,6 +39,7 @@ PTTESTOBJECT=$(TSTBUILD)/testPreTrain.o
 ABINHAMTESTOBJECT=$(TSTBUILD)/testAbInitioHam.o
 ALGABTESTOBJECT=$(TSTBUILD)/testAlgAb.o
 RNGTESTOBJECT=$(TSTBUILD)/testRandom.o
+DIRECTTSTOBJECT=$(TSTBUILD)/testDirect.o
 TESTBASISEXEC=build/test/testBasis
 
 $(DIRECTORIES):
@@ -73,6 +75,9 @@ testMetropolis: $(OBJECTS) $(MARKOVTESTOBJECT)
 
 testNnw: $(OBJECTS) $(NNWTESTOBJECT)
 	$(CXX)  $(LDFLAGS) $^ -o $(TSTBUILD)/$@ 
+	
+testDirect: $(OBJECTS) $(DIRECTTSTOBJECT)
+	$(CXX) $(LDFLAGS) $^ -o $(TSTBUILD)/$@
 
 testSampler: $(OBJECTS) $(STESTOBJECT)
 	$(CXX)  $(LDFLAGS) $^ -o $(TSTBUILD)/$@ 
