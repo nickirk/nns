@@ -19,12 +19,11 @@ namespace networkVMC{
 class MetropolisSampler: public Sampler {
 public:
 	MetropolisSampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF, Parametrization const &para_):
-			Sampler(H_,fullBasis_,HF),para(para_),lastCoeff(para_.getCoeff(cDet)){};
+			Sampler(H_,fullBasis_,HF,para_),lastCoeff(para_.getCoeff(cDet)){};
 	virtual ~MetropolisSampler();
 	//Do a markov step
 	virtual void iterate(coeffType &cI, detType &dI) const;
 private:
-	Parametrization const &para;
 	mutable coeffType lastCoeff;
 };
 

@@ -14,6 +14,7 @@
 #include "../utilities/SpinConfig.hpp"
 #include "../utilities/TypeDefine.hpp"
 #include "../Hamiltonian/Hamiltonian.hpp"
+#include "../Network/Parametrization.hpp"
 
 namespace networkVMC{
 
@@ -21,8 +22,9 @@ namespace networkVMC{
 // lists of potentially relevant determinants
 class Sampler{
 public:
-  Sampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF, int numDets_= 100):
-	  H(H_),numDets(numDets_),fullBasis(fullBasis_),cDet(HF){}
+  Sampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
+		  Parametrization const &para_, int numDets_= 100):
+	  H(H_),numDets(numDets_),fullBasis(fullBasis_),para(para_),cDet(HF){}
   virtual ~Sampler(){};
   // and functionalities: get a random coupled determinant
   detType getRandomConnection(detType const &startingPoint) const;
@@ -51,6 +53,8 @@ protected:
   // and the corresponding basis including the information on the number of electrons
   // with a given spin
   Basis const &fullBasis;
+  // sampling depends on the coefficients, as they have to be given alongside the determinants
+  Parametrization const &para;
   // this is the current sample in terms of determinants
   mutable detType cDet;
 };

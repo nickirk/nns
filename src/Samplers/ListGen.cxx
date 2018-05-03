@@ -11,7 +11,7 @@ namespace networkVMC{
 
 ListGen::ListGen(Hamiltonian const &H_, Basis const &fullBasis_,
 		detType const &HF, Parametrization const &para_, int numDets_):
-	Sampler(H_,fullBasis_,HF,numDets_),para(para_),pos(0){
+	Sampler(H_,fullBasis_,HF,para_,numDets_),pos(0){
 	std::vector<detType> tmp(numDets_,HF);
 	diffuse(tmp);
 }

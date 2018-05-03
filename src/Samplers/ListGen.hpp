@@ -17,7 +17,8 @@ namespace networkVMC{
 
 class ListGen : public Sampler{
 public:
-	ListGen(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF, Parametrization const &para_, int numDets_=100);
+	ListGen(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
+			Parametrization const &para_, int numDets_=100);
 	virtual ~ListGen();
 	virtual void iterate(coeffType &cI, detType &dI) const;
 	void diffuse(std::vector<detType> &list) const;
@@ -26,7 +27,6 @@ public:
 	virtual detType getDet() const;
     virtual int getNumDets() const;
 private:
-    Parametrization const &para;
 	mutable std::vector<detType > diffuseList;
 	mutable size_t pos;
 };

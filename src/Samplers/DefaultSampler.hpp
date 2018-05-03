@@ -17,14 +17,16 @@ namespace networkVMC {
 class DefaultSampler : public Sampler{
 public:
 	// It works like the abstract base class, just that it can iterate
-    DefaultSampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF, int numDets_= 100):
-    	Sampler(H_,fullBasis_,HF,numDets_){};
+    DefaultSampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
+    		Parametrization const &para_, int numDets_= 100):
+    	Sampler(H_,fullBasis_,HF,para_,numDets_){};
 	virtual ~DefaultSampler();
-	// We use the
+	// We use the default functionality for iterate()
+	// this class just makes it accessible for testing purposes
 	virtual void iterate(coeffType &cI, detType &dI) const{
 		cDet = getRandomConnection(cDet);
 		dI = getDet();
-		cI = coeffType();
+		cI = para.getCoeff(cDet);
 	}
 };
 

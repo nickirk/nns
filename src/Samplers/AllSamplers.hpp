@@ -11,5 +11,6 @@
 #include "ListGen.hpp"
 #include "MetropolisSampler.hpp"
 #include "Sampler.hpp"
+#include "FullSampler.hpp"
 
 #endif /* SRC_SAMPLERS_ALLSAMPLERS_HPP_ */
