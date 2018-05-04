@@ -74,10 +74,10 @@ public:
     // this is just to prevent code duplication
     void permuteAll(std::vector<std::size_t> const &perm){
     // reorder the content of the state according to the permutation perm
-      applyPermutation(storedDets,perm);
-      applyPermutation(storedCoeffs,perm);
-      applyPermutation(cdets,perm);
-      applyPermutation(ccoeffs,perm);
+      storedDets = applyPermutation(storedDets,perm);
+      storedCoeffs =  applyPermutation(storedCoeffs,perm);
+      cdets = applyPermutation(cdets,perm);
+      ccoeffs = applyPermutation(ccoeffs,perm);
     }
 
 //---------------------------------------------------------------------------------------------------//

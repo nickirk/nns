@@ -61,7 +61,7 @@ class detComparer{
 public:
   detComparer(){};
   // this is a callable object which does nothing but return if a<b for dets
-  bool operator()(detType const &a, detType const &b) const{return a<b;}
+  bool operator()(detType const &a, detType const &b) const{return a>b;}
 };
 
 //---------------------------------------------------------------------------------------------------//
@@ -71,7 +71,7 @@ class coeffComparer{
 public:
   coeffComparer(){};
   // this is another callable object which only returns if a<b (in the sense of absolute value)
-  bool operator()(coeffType const &a, coeffType const &b) const{return std::abs(a)<std::abs(b);}
+  bool operator()(coeffType const &a, coeffType const &b) const{return std::abs(a)>std::abs(b);}
 };
 
 }
