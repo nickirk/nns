@@ -48,6 +48,11 @@ public:
 	EmptyNetworkError(){};
 };
 
+class UnconvergedEigenproblem{
+public:
+	UnconvergedEigenproblem(){};
+};
+
 }
 
 #endif /* ERRORS_HPP_ */

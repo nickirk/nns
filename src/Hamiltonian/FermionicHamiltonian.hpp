@@ -20,9 +20,9 @@ public:
 // The fermi sign is the main difference to the plain Hamiltonian
 	int getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex) const;
 // These generate either a single random state coupled to source (with probability p)
-    detType getRandomCoupledState(detType const &source, double &p) const;
+   virtual detType getRandomCoupledState(detType const &source, double &p) const;
 // or all states coupled to source
-    std::vector<detType> getCoupledStates(detType const &source) const;
+   virtual std::vector<detType> getCoupledStates(detType const &source) const;
 };
 
 FermionicHamiltonian generateFermiHubbard(int dim, double U, double t);

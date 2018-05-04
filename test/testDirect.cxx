@@ -8,27 +8,21 @@
 #include <vector>
 #include <iostream>
 #include "../src/NNWLib.hpp"
+#include "defaultSystem.hpp"
 
 using namespace networkVMC;
 
 int main(){
 
 // Hamiltonian setup
-  int numSites(6);
-  int numStates(2*numSites);
-  int spinUp(3);
-  int spinDown(3);
-  SpinConfig spinConfig(spinUp, spinDown, numStates);
-  Basis basis(spinConfig);
-  FermionicHamiltonian modelHam(numStates);
-  double U{4.}, t{-1};
-  modelHam = generateFermiHubbard(numStates, U, t);
-
+  int numSites = 8;
+  auto modelHam = generateDefaultHubbard(numSites);
+  auto basis = generateDefaultBasis(numSites);
 // Cost function setup
   EnergyEstimator eCF(modelHam);
 
 // Solver setup
-  double trainRate(0.1);
+  double trainRate(0.01);
   ADAM sl(trainRate);
 
 // Parametrization setup
@@ -36,7 +30,7 @@ int main(){
 
 // Sampler setup
   detType HF=basis.getDetByIndex(0);
-  ListGen sample(modelHam,basis,HF,par,200);
+  ListGen sample(modelHam,basis,HF,par);
 
 // And optimize the direct parametrization
   Trainer ev(par,sample,sl,eCF);

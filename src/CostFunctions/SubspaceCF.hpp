@@ -9,7 +9,6 @@
 #define SRC_COSTFUNCTIONS_SUBSPACECF_HPP_
 
 #include <Eigen/Dense>
-#include "../Hamiltonian/SparseHMatrix.hpp"
 #include "CostFunction.hpp"
 #include "../Hamiltonian/Hamiltonian.hpp"
 #include "../utilities/State.hpp"
@@ -28,10 +27,13 @@ public:
 // Value of the cost function
 	double calc(State const &input) const {return distance;}
 private:
+  // The underlying Hamiltonian
 	Hamiltonian const &H;
-	double distance;
-	coeffType subspaceEnergy;
-// auxiliary function for getting the ground state in the space spanned by the determinants of input
+  // cache variable for the distance between input state and subspace eigenstate
+	mutable double distance;
+  // cache variable for subspace energy
+	mutable coeffType subspaceEnergy;
+  // auxiliary function for getting the ground state in the space spanned by the determinants of input
 	State diagonalizeSubspace(State const & input) const;
 };
 
