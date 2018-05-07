@@ -21,7 +21,7 @@ VecType DirectParametrization::calcNablaPars(State const &inputState,
   int j = 0;
   for(int i=0; i<numDets; ++i){
 	  // get the index corresponding to the i-th det of inputState
-	  j = fullBasis.getIndexByDet(inputState.det(i));
+	  j = fullBasis->getIndexByDet(inputState.det(i));
 	  // take the first entry of the nabla-type (this is the real part)
 	  dEdPars[j] = dEdC[i][0];
   }

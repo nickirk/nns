@@ -7,7 +7,7 @@ LDFLAGS=-std=c++11 -g -Wall -I$(ARPACK_INCLUDE_PATH)
 EIGEN_PATH=lib/eigen/
 EIGEN_FLAGS=-I$(EIGEN_PATH)
 SOURCEFILES=CostFunctions/SubspaceCF.cxx Samplers/Sampler.cxx Network/Nnw.cxx Network/DirectParametrization.cxx HilbertSpace/Basis.cxx Hamiltonian/Hamiltonian.cxx HilbertSpace/Determinant.cxx CostFunctions/EnergyCF.cxx CostFunctions/NormCF.cxx CostFunctions/EnergyEstimator.cxx CostFunctions/EnergyCF.cxx Hamiltonian/FermionicHamiltonian.cxx Hamiltonian/AbInitioHamiltonian.cxx Hamiltonian/BosonicHamiltonian.cxx Trainer.cxx Samplers/MetropolisSampler.cxx Samplers/ListGen.cxx CostFunctions/EnergyEsMarkov.cxx Network/Layers/Layer.cxx Network/Layers/DenseLayer.cxx Network/Layers/ConvLayer.cxx Network/Layers/InputLayer.cxx Network/LayerStructure.cxx math/MathFunctions.cxx utilities/nnwUtilities.cxx Hamiltonian/SparseHMatrix.cxx Solvers/AcceleratedGradientDescent.cxx Solvers/ADAM.cxx Solvers/StochasticReconfiguration.cxx Samplers/FullSampler.cxx
-TESTFILES=testStateSort.cxx testNnw.cxx testDirect.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx testAlgAb.cxx testRandom.cxx testMetropolis.cxx
+TESTFILES=defaultSystem.cxx testSubspaceCF.cxx testStateSort.cxx testNnw.cxx testDirect.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx testAlgAb.cxx testRandom.cxx testMetropolis.cxx
 SRC=src
 TST=test
 BUILD=build
@@ -33,6 +33,7 @@ ABINHAMTEST=abinhamTest
 ALGABTEST=algAbTest
 DIRECTTST=directTest
 SORTTST=sortTest
+SCFTST=subspaceCFTest
 BTESTOBJECT=$(TSTBUILD)/testBasis.o
 NNWTESTOBJECT=$(TSTBUILD)/testNnw.o
 MARKOVTESTOBJECT=$(TSTBUILD)/testMetropolis.o
@@ -47,6 +48,8 @@ ALGABTESTOBJECT=$(TSTBUILD)/testAlgAb.o
 RNGTESTOBJECT=$(TSTBUILD)/testRandom.o
 DIRECTTSTOBJECT=$(TSTBUILD)/testDirect.o
 SORTTSTOBJECT=$(TSTBUILD)/testStateSort.o
+SCFTSTOBJECT=$(TSTBUILD)/testSubspaceCF.o
+DEFAULTSOBJECT=$(TSTBUILD)/defaultSystem.o
 TESTBASISEXEC=build/test/testBasis
 
 $(DIRECTORIES):
@@ -83,7 +86,7 @@ testMetropolis: $(OBJECTS) $(MARKOVTESTOBJECT)
 testNnw: $(OBJECTS) $(NNWTESTOBJECT)
 	$(CXX) $^ $(LINKFLAGS) -o $(TSTBUILD)/$@ 
 
-testDirect: $(OBJECTS) $(DIRECTTSTOBJECT)
+testDirect: $(OBJECTS) $(DIRECTTSTOBJECT) $(DEFAULTSOBJECT)
 	$(CXX) $^ $(LINKFLAGS) -o $(TSTBUILD)/$@
 
 testSampler: $(OBJECTS) $(STESTOBJECT)
@@ -105,6 +108,10 @@ testRandom: $(RNGTESTOBJECT)
 	$(CXX)  $(LDFLAGS) $^ -o $(TSTBUILD)/$@
 testSort: $(SORTTSTOBJECT) $(OBJECTS)
 	$(CXX) $^ $(LINKFLAGS) -o $(TSTBUILD)/$@
+	
+testSubspaceCF: $(SCFTSTOBJECT) $(OBJECTS) $(DEFAULTSOBJECT)
+	$(CXX) $^ $(LINKFLAGS) -o $(TSTBUILD)/$@
+  
 testAlgAb: $(OBJECTS) $(ALGABTESTOBJECT)	
 	$(CXX) $^  $(LINKFLAGS) -o $(TSTBUILD)/$@ 
 clean:

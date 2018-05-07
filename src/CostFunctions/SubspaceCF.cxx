@@ -38,7 +38,7 @@ State SubspaceCF::diagonalizeSubspace(State const & input) const{
 	coeffType *energyPtr{&subspaceEnergy};
 	// set up the eigenvalue problem
 	ARCompStdEig<double, SparseHMatrix> eigProblem(HMatrix.dimension(),1,
-			&HMatrix,&SparseHMatrix::MatMul,"SA",0,tol,maxIter,outputVec);
+			&HMatrix,&SparseHMatrix::MatMul,"SR",0,tol,maxIter,outputVec);
 	// solve it and write the eigenvector to output
 	int nconv = eigProblem.EigenValVectors(outputVec,energyPtr);
 	if(nconv == 0) throw UnconvergedEigenproblem();

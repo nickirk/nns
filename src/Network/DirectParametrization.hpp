@@ -20,15 +20,15 @@ namespace networkVMC {
 
 class DirectParametrization: public Parametrization {
 public:
-  DirectParametrization(Basis const &fullBasis_):fullBasis(fullBasis_){
+  DirectParametrization(Basis const &fullBasis_):fullBasis(&fullBasis_){
     // start with a random vector
-    coeffs = Eigen::VectorXd::Random(fullBasis.getSize());
+    coeffs = Eigen::VectorXd::Random(fullBasis->getSize());
   }
   virtual ~DirectParametrization();
 
   // The coefficient of a determinant is just its entry
   coeffType getCoeff(detType const &det) const{
-	  auto i = fullBasis.getIndexByDet(det);
+	  auto i = fullBasis->getIndexByDet(det);
 	  return coeffs[i];
   }
 
@@ -43,7 +43,7 @@ public:
    Eigen::MatrixXcd calcdCdwSR(State const &outputState){};
 
 private:
-  Basis const &fullBasis;
+  Basis const *fullBasis;
   VecType coeffs;
 };
 
