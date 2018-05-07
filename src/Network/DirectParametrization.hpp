@@ -38,9 +38,9 @@ public:
   // inner derivative implementation
   VecType calcNablaPars(State const &inputState, nablaType const &dEdC);
   // Some other derivative
-   VecType calcNablaParsConnected(State const &inputState, nablaType const& dEdC){};
-   // stochastic reconfiguration derivative
-   Eigen::MatrixXcd calcdCdwSR(State const &outputState){};
+  // VecType calcNablaParsConnected(State const &inputState, nablaType const& dEdC){};
+  // stochastic reconfiguration derivative
+  // Eigen::MatrixXcd calcdCdwSR(State const &outputState){};
 
 private:
   Basis const *fullBasis;

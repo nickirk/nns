@@ -34,13 +34,14 @@ public:
 		  State const &input,
 		  nablaType const &outerDerivative) = 0;
 
+// The following features are experimental and not essential to the interface
   // Some other derivative
-  virtual VecType calcNablaParsConnected(State const &inputState, nablaType const& dEdC) = 0;
+  virtual VecType calcNablaParsConnected(State const &inputState, nablaType const& dEdC);
 
   // stochastic reconfiguration derivative
   virtual Eigen::MatrixXcd calcdCdwSR(
     State const &outputState
-  ) = 0;
+  );
 
 };
 
