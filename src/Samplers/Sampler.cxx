@@ -20,7 +20,7 @@ namespace networkVMC{
 // Just take any connected determinant and let the Hamiltonian decide what is connected
 detType Sampler::getRandomConnection(detType const &startingPoint) const{
 	double p{0};
-	return H.getRandomCoupledState(startingPoint, p);
+	return H->getRandomCoupledState(startingPoint, p);
 }
 
 
