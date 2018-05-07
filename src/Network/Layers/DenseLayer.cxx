@@ -49,6 +49,8 @@ void DenseLayer::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
 }
 
 void DenseLayer::processSignal() const{
+  // we can only process signals with the right number of input arguments
+  if(inputs.size()!=weights[0].size()) throw SizeMismatchError(inputs.size(),weights[0].size());
   activations[0]=Eigen::VectorXd::Zero(numNrn);
   z[0]=Eigen::VectorXd::Zero(numNrn);
   for(size_t i(0); i<inputs.size(); i++){

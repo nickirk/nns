@@ -24,8 +24,8 @@ void MetropolisSampler::iterate(coeffType &cI, detType &dI) const{
 	// First, get a random coupled determinant (from cDet)
 	detType tmp{getRandomConnection(cDet)};
 	// And its coefficient
-	coeffType tmpCoeff{NNW.getCoeff(tmp)};
-	if(uni(rng) < std::pow(std::abs(tmpCoeff)/std::abs(lastCoeff),2)){
+	coeffType tmpCoeff{para.getCoeff(tmp)};
+	if(uni(rng) < std::pow(std::norm(tmpCoeff),2)/std::pow(std::norm(lastCoeff),2)){
 		// With probability cJ/cI, accept the move
 		cDet = tmp;
 		lastCoeff = tmpCoeff;

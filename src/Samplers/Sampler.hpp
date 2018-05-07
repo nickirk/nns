@@ -11,10 +11,10 @@
 
 #include "../HilbertSpace/Basis.hpp"
 #include "../HilbertSpace/Determinant.hpp"
-#include "../Network/Nnw.hpp"
 #include "../utilities/SpinConfig.hpp"
 #include "../utilities/TypeDefine.hpp"
 #include "../Hamiltonian/Hamiltonian.hpp"
+#include "../Network/Parametrization.hpp"
 
 namespace networkVMC{
 
@@ -22,20 +22,21 @@ namespace networkVMC{
 // lists of potentially relevant determinants
 class Sampler{
 public:
-  Sampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF, int numDets_= 100):H(H_),numDets(numDets_),fullBasis(fullBasis_),
-											     cDet(HF),sC(fullBasis_.getSpinConfig()){}
+  Sampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
+		  Parametrization const &para_, int numDets_= 100):
+	  H(H_),numDets(numDets_),fullBasis(fullBasis_),para(para_),cDet(HF){}
   virtual ~Sampler(){};
   // and functionalities: get a random coupled determinant
   detType getRandomConnection(detType const &startingPoint) const;
+  // This function is what samplers ought to do: Get a random determinant with some
+  // coefficient
+  virtual void iterate(coeffType &cI, detType &dI) const=0;
+
+  // return either the current det or possibly some stored det (depending on implementation)
   virtual detType getDet() const{return cDet;};
   virtual detType getDet(int i) const{return cDet;};
-  // This function only exists for compatibility with the markov implementation
-  virtual void iterate(coeffType &cI, detType &dI) const{
-	  dI=getRandomConnection(cDet);
-	  // WARNING: The default sampler does not take the coefficients into account
-	  // IT HENCE CANNOT NOT OUTPUT THEM, they default to 0 and have to be set independently
-	  cI = coeffType();
-  }
+
+  // Setters for various properties
   // set the starting point
   void setReference(detType const &start){cDet = start;}
   // set the number of sampled dets
@@ -44,16 +45,18 @@ public:
   virtual int getNumDets() const {return numDets;}
   Hamiltonian const& getH() const{return H;}
 private:
-  // Hamiltonian
+  // Hamiltonian is needed because it defines what is connected to a given determinant
+  // and only connections are sampled
   Hamiltonian const &H;
 protected:
   int numDets;
-  // and the corresponding basis
+  // and the corresponding basis including the information on the number of electrons
+  // with a given spin
   Basis const &fullBasis;
+  // sampling depends on the coefficients, as they have to be given alongside the determinants
+  Parametrization const &para;
   // this is the current sample in terms of determinants
   mutable detType cDet;
-  // the information on the number of electrons with a given spin
-  SpinConfig sC;
 };
 
 inline double dblAbs(double x){if(x>0) return x;return -x;}

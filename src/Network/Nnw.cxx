@@ -13,23 +13,11 @@
 #include "Nnw.hpp"
 
 namespace networkVMC{
-NeuralNetwork::NeuralNetwork(CostFunction const &externalCF):cf(&externalCF), sl(Solver(0.5)){
+NeuralNetwork::NeuralNetwork():Parametrization(){
 
   //initial value for NNW para
   numLayers = 0;
-
-  //inital para for ADAm
-  beta1=0.9;
-  beta2=0.999;
-  //initial value for momentum algo
-  momentumDamping = 0.6;
-  momentum = false;
-
   //initial para for Nesterov's accelerated gradient descent
-  lamdaS1 = 0.;
-  lamdaS =0.;
-  gammaS = 0.;
-  gammaS1 = 0.;
   numNNP = 0;
 
 }
@@ -55,25 +43,6 @@ void NeuralNetwork::initialiseNetwork(){
   for (int layer(0); layer<numLayers; ++layer){
     Layers[layer]->mapPara(adNNP, adNablaNNP, startPoint);
   }
-
-  //-----------------------------------
-
-  generlisedForcePrev = Eigen::VectorXd::Zero(numNNP);
-  //vectors for RMSprop
-  yS = Eigen::VectorXd::Zero(numNNP);
-  yS1 = Eigen::VectorXd::Zero(numNNP);
-  Egz2 = Eigen::VectorXd::Zero(numNNP);
-  m  = Eigen::VectorXd::Zero(numNNP);
-  m1  = Eigen::VectorXd::Zero(numNNP);
-  v  = Eigen::VectorXd::Zero(numNNP);
-  v1  = Eigen::VectorXd::Zero(numNNP);
-
-
-  //vectors for ADAM
-  m  = Eigen::VectorXd::Zero(numNNP);
-  m1  = Eigen::VectorXd::Zero(numNNP);
-  v  = Eigen::VectorXd::Zero(numNNP);
-  v1  = Eigen::VectorXd::Zero(numNNP);
 
 }
 //---------------------------------------------------------------------------//
@@ -117,76 +86,12 @@ coeffType NeuralNetwork::getCoeff(detType const &det) const{
 	return coeffType(output(0),output(1));
 }
 
-//---------------------------------------------------------------------------------------------------//
-
-void NeuralNetwork::updateParameters(
-    int method, State const &outputState, double learningRate,
-    int iteration
-    ){
-  //method corresponds to
-  // 0: Stochastic gradiend desend
-  // 1: Stochastic reconfiguration
-  // 2: Nesterov's Accelerated Gradient Descent
-  // 3: ADAM
-  Eigen::VectorXd generlisedForce=calcNablaNNP(outputState);
-  if (method == 0){
-    sl.update(NNP,generlisedForce);
-    //update weights and biases
-  }
-  //Stochastic reconfiguration
-  else if (method == 1){
-    Eigen::MatrixXcd dCdw=calcdCdwSR(outputState);
-    Eigen::VectorXcd ci(outputState.size());
-    for (size_t i(0); i<outputState.size(); ++i) ci(i) = outputState.coeff(i);
-    sl.update(NNP,generlisedForce,ci,dCdw, iteration);
-  }
-  else if (method ==2){
-     lamdaS1 = (1+std::sqrt(1+4*lamdaS*lamdaS))/2.;
-     gammaS = (1-lamdaS)/(lamdaS1);//*std::exp(-1./100*iteration);
-     double rho=0.9;//*std::exp(-1./100*iteration);
-     Egz2 = rho*Egz2.matrix()+(1-rho)*generlisedForce.array().square().matrix();
-     Egz2 += Eigen::VectorXd::Ones(numNNP)*1e-4;
-     Eigen::VectorXd RMS = (Egz2).array().sqrt();
-     Eigen::VectorXd tau = learningRate * RMS.array().inverse();
-     //yS1 = NNP - learningRate * generlisedForce;
-     yS1 = (NNP.array() -  tau.array() * generlisedForce.array()).matrix();
-     if (iteration == 0) yS=yS1;
-     NNP = (1-gammaS)*yS1 + gammaS*yS;
-     lamdaS = lamdaS1;
-     yS = yS1; 
-  }
-  else if (method == 3){
-    m1 = beta1*m + (1-beta1)*generlisedForce; 
-    v1 = beta2*v + (1-beta2)*generlisedForce.array().square().matrix(); 
-    m = m1;
-    v = v1;
-    m1 = m1/(1-std::pow(beta1,iteration+1));
-    v1 = v1/(1-std::pow(beta2,iteration+1));
-    NNP -= learningRate * (m1.array()/(v1.array().sqrt()+1e-8)).matrix();
-  }
-  else if (method == 4){
-    if (iteration==0) generlisedForcePrev = generlisedForce;
-    double beta = (
-                    generlisedForce.transpose()
-                    *(generlisedForce-generlisedForcePrev)
-                    /(generlisedForcePrev.transpose()*generlisedForcePrev)
-                  )(0);
-    generlisedForce += beta*generlisedForcePrev; 
-    //Eigen::MatrixXcd dCdw=calcdCdwSRSR(inputSignalsEpochs, activationsEpochs, outputState);
-    //std::vector<coeffType> outputCs = outputState.getAllCoeff();
-    //Eigen::Map<Eigen::VectorXcd> ci(&(outputCs[0]),outputCs.size());
-    //Eigen::Map<Eigen::VectorXcd> ci(&(outputState[0].coeff),outputState.size());
-    Eigen::VectorXcd ci(outputState.size());
-    for (size_t i(0); i<outputState.size(); ++i) ci(i) = outputState.coeff(i);
-    NNP -= learningRate * generlisedForce;
-    generlisedForcePrev = generlisedForce;
-  }
-}
-
 //---------------------------------------------------------------------------//
 
 Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const{
 	if(Layers.size()==0) throw EmptyNetworkError();
+  // Note that the first layer always needs to have a number
+  // of neurons equal to the number of orbitals
   Layers[0]->processSignal(det);
   //std::cout << "Acts layer " << 0 << " =" << std::endl;
   //std::cout<< Layers[0]->getActs()[0] << std::endl;
@@ -221,16 +126,15 @@ Eigen::VectorXd NeuralNetwork::backPropagate(
 
 //---------------------------------------------------------------------------//
 
-Eigen::VectorXd NeuralNetwork::calcNablaNNP(
-	   State const &outputState
+Eigen::VectorXd NeuralNetwork::calcNablaPars(
+	   State const &inputState,
+	   nablaType const &dEdC
      ){
-  int numDets = outputState.size();
-  //everytime the backPropagate is called, we should reset nabla* to zero.
+  int numDets = inputState.size();
   Eigen::VectorXd deltaNNP(Eigen::VectorXd::Zero(numNNP));
-  std::vector<Eigen::VectorXd> dEdC = cf->nabla(outputState);
   for (int epoch=0; epoch < numDets; ++epoch){
     // obtain inputSignals and activations of all layers
-    feedForward(outputState.det(epoch));
+    feedForward(inputState.det(epoch));
     // calculate the derivatives of this determinant
     deltaNNP += backPropagate(dEdC[epoch]);
   }
@@ -239,14 +143,13 @@ Eigen::VectorXd NeuralNetwork::calcNablaNNP(
 
 //---------------------------------------------------------------------------------------------------//
 
-Eigen::VectorXd NeuralNetwork::calcNablaNNPMk(
-	   State const &outputState
+VecType NeuralNetwork::calcNablaParsConnected(
+	   State const &inputState,
+	   nablaType const &dEdC
      ){
-  int numDets = outputState.size();
+  int numDets = inputState.size();
   Eigen::VectorXd deltaNNP(Eigen::VectorXd::Zero(numNNP));
   Eigen::VectorXcd deltaNNPc(numNNP);
-  // initialise it to 0!!!
-  std::vector<Eigen::VectorXd> dEdC = cf->nabla(outputState);
   Eigen::Vector2d realMask;
   realMask << 1, 0;
   Eigen::Vector2d imagMask;
@@ -256,22 +159,22 @@ Eigen::VectorXd NeuralNetwork::calcNablaNNPMk(
   Eigen::VectorXd deltaNNPTmpPrev(Eigen::VectorXd::Zero(numNNP));
   for (int epoch(0); epoch < numDets; ++epoch){
     Eigen::VectorXd deltaNNPTmp(Eigen::VectorXd::Zero(numNNP));
-    if (epoch == 0 || (outputState.det(epoch) != outputState.det(epoch-1))){
-      feedForward(outputState.det(epoch));
+    if (epoch == 0 || (inputState.det(epoch) != inputState.det(epoch-1))){
+      feedForward(inputState.det(epoch));
       deltaNNPc.real() = backPropagate(realMask) ;
       deltaNNPc.imag() = -backPropagate(imagMask) ;
       deltaNNPc *=  dEdC[pos](0);
-      deltaNNPc /= std::conj(outputState.coeff(epoch));
+      deltaNNPc /= std::conj(inputState.coeff(epoch));
       deltaNNPTmp += 2 * deltaNNPc.real();
       pos++;
-      std::vector<detType> coupledDets = outputState.coupledDets(epoch);
-      std::vector<coeffType > coupledCoeffs = outputState.coupledCoeffs(epoch);
+      std::vector<detType> coupledDets = inputState.coupledDets(epoch);
+      std::vector<coeffType > coupledCoeffs = inputState.coupledCoeffs(epoch);
       for (size_t i(0); i < coupledDets.size(); ++i){
         feedForward(coupledDets[i]);
         deltaNNPc.real() = backPropagate(realMask) ;
         deltaNNPc.imag() = backPropagate(imagMask) ;
         deltaNNPc *=  dEdC[pos](0);
-        deltaNNPc /= outputState.coeff(epoch);
+        deltaNNPc /= inputState.coeff(epoch);
         deltaNNPTmp += 2 * deltaNNPc.real();
         pos++;
       }
@@ -286,7 +189,7 @@ Eigen::VectorXd NeuralNetwork::calcNablaNNPMk(
 }
 
 //---------------------------------------------------------------------------------------------------//
-Eigen::MatrixXcd NeuralNetwork::calcdCdwSR( 
+Eigen::MatrixXcd NeuralNetwork::calcdCdwSR(
   State  const &outputState
   ){
 //This step produce a complex matrix dCdw. It is done via the same backPropagate

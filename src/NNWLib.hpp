@@ -13,8 +13,10 @@
 #include "CostFunctions/AllCostFunctions.hpp"
 #include "Hamiltonian/AllHamiltonians.hpp"
 #include "Network/Nnw.hpp"
+#include "Network/DirectParametrization.hpp"
 #include "HilbertSpace/Basis.hpp"
 #include "Samplers/AllSamplers.hpp"
+#include "Solvers/AllSolvers.hpp"
 
 
 #endif /* SRC_NNWLIB_HPP_ */

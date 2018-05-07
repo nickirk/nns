@@ -10,7 +10,8 @@
 
 namespace networkVMC{
 
-Trainer::Trainer(NeuralNetwork &NNW_, Sampler const &msampler_):modelHam(msampler_.getH()),NNW(NNW_), msampler(msampler_) {
+Trainer::Trainer(Parametrization &NNW_, Sampler const &msampler_, Solver &sl_, CostFunction const &cf_):
+		modelHam(msampler_.getH()),NNW(NNW_), msampler(msampler_),sl(sl_),cf(cf_) {
 	inputState.resize(msampler.getNumDets());
 }
 
@@ -21,7 +22,21 @@ Trainer::~Trainer() {
 
 //---------------------------------------------------------------------------------------------------//
 
-void Trainer::train(double learningRate, int method, int iteration){
+void Trainer::train(double learningRate){
+	// only change the learningRate for this iteration
+	auto tmp = sl.getLearningRate();
+	sl.setLearningRate(learningRate);
+	// do the normal train()
+	train();
+	// then reset the learningRate
+	sl.setLearningRate(tmp);
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+
+// prepare an input
+void Trainer::train(){
 	int numDets{msampler.getNumDets()};
 	inputState.resize(numDets);
 	//coupledCoeffsEpoch.clear();
@@ -38,23 +53,31 @@ void Trainer::train(double learningRate, int method, int iteration){
 	// TODO this should not be part of the trainer, move it to somewhere in the state
 	for(int i=0; i < numDets; ++i){
 	  msampler.iterate(inputState.coeff(i), inputState.det(i));
-	  //-------------------------------------
-    inputState.coupledDets(i) = modelHam.getCoupledStates(inputState.det(i));
+
+	  // get some coupled determinants and their coefficients to use in the
+	  // energy estimator
+      inputState.coupledDets(i) = modelHam.getCoupledStates(inputState.det(i));
 	  inputState.coupledCoeffs(i).resize(inputState.coupledDets(i).size());
-	  //sampledDets[i] =  msampler.getDet(i);
-	  //sampledCoeffs[i] =  NNW.getCoeff(sampledDets[i]);
-          //NNW.cacheNetworkState();
+
+	  // just get the coefficients from the NNW
 	  for(size_t j=0; j < inputState.coupledDets(i).size(); ++j){
 	  	inputState.coupledCoeffs(i)[j]=NNW.getCoeff(inputState.coupledDets(i)[j]);
 	  }
 	}
-	// sort the list of determinants so that we can avoid 
-        // computing repeated tasks.
-        //coupledCoeffsEpoch.push_back(coupledCoeffs);
-        //coupledDetsEpoch.push_back(coupledDets);
-        //msampler.setReference(sampledDets[numDets-1]);
-	//std::sort(inputState.begin(), inputState.end());
-	NNW.updateParameters(method,inputState,learningRate,iteration);
+	updateParameters(inputState);
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+void Trainer::updateParameters(State const &input){
+	// first, get the derivative of the cost function with respect to the
+	// wavefunction coefficients
+	auto dEdC = cf.nabla(input);
+	// add the inner derivative to get the full derivative
+	// of the cost function with respect to the parameters
+	auto dEdPars = NNW.calcNablaPars(input,dEdC);
+	// feed these to the solver
+	sl.update(NNW.pars(),dEdPars,input);
 }
 
 //---------------------------------------------------------------------------------------------------//
@@ -62,7 +85,7 @@ void Trainer::train(double learningRate, int method, int iteration){
 double Trainer::getE() const{
 	// Here, we just output the value of the cost function (usually the energy) of the
 	// network
-	return NNW.getCostFunction()->calc(inputState);
+	return cf.calc(inputState);
 }
 
 //---------------------------------------------------------------------------------------------------//

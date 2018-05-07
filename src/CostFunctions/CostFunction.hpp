@@ -22,7 +22,7 @@ public:
 	virtual ~CostFunction(){};
 // Two functions have to be present in a cost function: The function itself (calc) and its derivative
 // (nabla)
-	virtual std::vector<Eigen::VectorXd > nabla(State const &input) const = 0;
+	virtual nablaType nabla(State const &input) const = 0;
 	virtual double calc(State const &input) const = 0;
 };
 

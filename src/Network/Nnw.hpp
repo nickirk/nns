@@ -23,19 +23,21 @@
 #include "Layers/DenseLayer.hpp"
 #include "Layers/InputLayer.hpp"
 #include "Layers/Layer.hpp"
-#include "../Solver.hpp"
 #include "../Hamiltonian/Hamiltonian.hpp"
+#include "../Solvers/Solver.hpp"
 #include "LayerStructure.hpp"
+#include "Parametrization.hpp"
 
 namespace networkVMC{
 
 const std::complex<double> ii(0.,1.);
-class NeuralNetwork{
+
+// Neural network parametrization of a wavefunction
+class NeuralNetwork: public Parametrization{
 public:
   NeuralNetwork();
   ~NeuralNetwork();
   NeuralNetwork(NeuralNetwork const &source);
-  NeuralNetwork(CostFunction const &externalCF);
   //construction functions for NNW
   void constrDenseLayer(
       std::vector<Eigen::VectorXd> const &inputs_,
@@ -59,45 +61,41 @@ public:
       );
  */
   void initialiseNetwork();
-  void setCostFunction(CostFunction const &externalCF) {cf = &externalCF;};
-  //functionalities of NNW
-  Eigen::VectorXd feedForward(detType const& det) const;
-  void updateParameters(int method, State const &outputState,
-                        double learningRate, int iteration);
 
-  //interface API
-  coeffType getCoeff(detType const &det) const;
-  CostFunction const* getCostFunction() const {return cf;};
+  // implementation of updateParameters
+  void updateParameters(State const &outputState,
+                        double learningRate, int iteration, int method = 3);
+
+  //implementation of getCoeff()
+  coeffType getCoeff(detType const &det) const; // can throw an EmptyNetworkError if no layers exist
+
+  //implementation of pars()
+  VecType const& pars() const {return NNP;}
+
+  //feed forward: iterative calculate the activations
+  VecType feedForward(detType const& det) const; // can throw an EmptyNetworkError if no layers exist
   Layer* getLayer(int layer){
-	  if(layer<Layers.size() && layer >= 0)
+	  if(static_cast<unsigned int>(layer)<Layers.size() && layer >= 0)
 	  return Layers[layer];
 	  throw OutOfRangeError(layer);
   };
   //Eigen::Map<Eigen::MatrixXd> getWeights(int layer) const {return weights[layer];};
   //Eigen::Map<Eigen::VectorXd> getBiases(int layer) const {return biases[layer];};
 
+  VecType calcNablaPars(
+    State const &inputState,
+	nablaType const& dEdC
+  );
+  // derivative taking into account connected dets
+  VecType calcNablaParsConnected(State const &inputState,nablaType const&dEdC);
+  // derivative of higher order(?)
+  Eigen::MatrixXcd calcdCdwSR(State const &outputState);
+
 private:
   //Structure of the NNW
   LayerStructure Layers;
   //variables for RMSprop
-  double momentumDamping;
-  bool momentum;
-  double lamdaS1;
-  double lamdaS;
-  double gammaS;
-  double gammaS1;
-  Eigen::VectorXd yS;
-  Eigen::VectorXd yS1;
-  Eigen::VectorXd Egz2;
   std::vector<int> sizes;
- //----------------------
- //variables for ADAM
- double beta1;
- double beta2;
- Eigen::VectorXd m;
- Eigen::VectorXd v;
- Eigen::VectorXd m1;
- Eigen::VectorXd v1;
  //---------------------
  //variable for the network
   int numNNP;
@@ -107,19 +105,8 @@ private:
   Eigen::VectorXd nablaNNP;
   std::vector<Eigen::VectorXd> feedIns;
 
-  CostFunction const *cf;
-  Solver sl;
-  Eigen::VectorXd backPropagate(
-    Eigen::VectorXd const &lastLayerFeedBack
-       );
-  Eigen::VectorXd calcNablaNNP(
-    State const &outputState
-       );
-  Eigen::VectorXd calcNablaNNPMk(
-   State const &outputState
-   );
-  Eigen::MatrixXcd calcdCdwSR(
-    State const &outputState
+  VecType backPropagate(
+    VecType const &lastLayerFeedBack
        );
   void copyNetwork(NeuralNetwork const &source);
   //coeffType outputLayer() const {

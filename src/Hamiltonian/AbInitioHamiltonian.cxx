@@ -402,9 +402,9 @@ detType AbInitioHamiltonian::getDoubleExcitation(detType const &source, std::vec
     // generate the next double excitation (deterministic excitation generator)
 
     bool bdoubleexcitfound=false;
-    bool bfirsta,bfirstb,bnewij,bnewa,bnewb;
+    bool bfirsta,bfirstb,bnewij,bnewa;
     int orbi,orbj,orba,orbb;
-    int elecpairs,indij,spinpair;
+    int elecpairs,spinpair;
     int el1{0},el2{0},spinb{0};
     int nel,norbs;
     static int ijind=0;
@@ -421,7 +421,6 @@ detType AbInitioHamiltonian::getDoubleExcitation(detType const &source, std::vec
     bfirsta = false;
     bfirstb = false;
     bnewa = false;
-    bnewb = false;
     
     // orbitals of the last excitation
     if (holes.size()>0){
@@ -459,7 +458,6 @@ detType AbInitioHamiltonian::getDoubleExcitation(detType const &source, std::vec
         // spinpair = 2 -> alpha + beta
         // spinpair = 3 -> beta + alpha
         // spinpair = 4 -> beta + beta
-        indij = (((source_orbs[el2]+1-2)*(source_orbs[el2]+1-1))/2) + source_orbs[el1]+1;
         // this becomes true when there is no longer an allowed orbital a for this i,j 
         // pair and the next one has to be considered
         bnewij = false;

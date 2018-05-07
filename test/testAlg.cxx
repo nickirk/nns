@@ -49,7 +49,7 @@ int main(){
   EnergyEstimator eCF(modelHam);
   //Neural network takes in the size and the cost function.
 
-  NeuralNetwork NNW(eCF);
+  NeuralNetwork NNW;
   NNW.constrInputLayer(numStates);
   //constrConvLayer(inputs, actFunc, lengthFilter, depthFilter, stride)
   cout << "Before constructing ConvLayer" << endl;
@@ -65,7 +65,6 @@ int main(){
   int numDetsToTrain_ = static_cast<int>(basis.getSize()*0.4);
   cout << "numDetsToTrain= ";
   cin >> numDetsToTrain_;
-  int method(3);
   //cout << "Choose solver: 0, 1, 2, 3" << endl;
   //cout << "method 0: gradient descent" << endl;
   //cout << "method 1: stochastic reconfiguration (not working)" << endl;
@@ -75,19 +74,20 @@ int main(){
   string fileName("en");
   //cout << "energy file name=";
   //cin >> fileName;
-  ListGen sampler(modelHam, basis, numDetsToTrain_, HF,NNW);
+  ListGen sampler(modelHam, basis, HF,NNW, numDetsToTrain_);
+  ADAM sl(trainRate);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
-  Trainer ev(NNW,sampler);
+  Trainer ev(NNW,sampler,sl,eCF);
   ofstream myfile1;
   myfile1.open (fileName);
   double energy(0.);
   int count(0);
   std::vector<Eigen::VectorXd> coeffs;
-  for(int l(0); l<10000; ++l){
+  for(int l(0); l<3000; ++l){
     cout << "testAlg.cxx: iteration= " << l << endl;
     sampler.diffuse(list);
-    ev.train(trainRate,method,l);
+    ev.train();
 
     // get the new energy
     energy = ev.getE();

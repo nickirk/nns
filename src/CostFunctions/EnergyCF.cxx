@@ -38,11 +38,11 @@ double EnergyCF::evaluate(State const &input) const{
 }
 
 // Here, we get the derivative of the energy with respect to the coefficients of input
-std::vector<Eigen::VectorXd> EnergyCF::nabla(State const &input) const{
+nablaType EnergyCF::nabla(State const &input) const{
 // To get the derivative, we also need the energy, so first evaluate
 // This also assigns the normalizer
   energy = evaluate(input);
-  std::vector<Eigen::VectorXd> dEdC;
+  nablaType dEdC;
   int numDets = input.size();
   // works similar to computing the energy
   for (int i=0; i < numDets; ++i){

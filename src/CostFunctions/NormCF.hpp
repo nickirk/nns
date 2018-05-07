@@ -21,7 +21,7 @@ class NormCF: public CostFunction{
 public:
 	explicit NormCF(State const &psi_):psi(psi_){};
 // derivative of ||psi - psi_0||^2 with respect to the coefficients of psi
-	std::vector<Eigen::VectorXd > nabla(State const &input) const;
+	nablaType nabla(State const &input) const;
 // value of ||psi - psi_0||^2
 	double calc(State const &input) const;
 private:

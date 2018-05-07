@@ -9,7 +9,6 @@
 #define SRC_COSTFUNCTIONS_SUBSPACECF_HPP_
 
 #include <Eigen/Dense>
-#include "../Hamiltonian/SparseHMatrix.hpp"
 #include "CostFunction.hpp"
 #include "../Hamiltonian/Hamiltonian.hpp"
 #include "../utilities/State.hpp"
@@ -21,16 +20,20 @@ namespace networkVMC{
 // eigenvector to the input state as cost function
 class SubspaceCF: public CostFunction {
 public:
-	SubspaceCF(Hamiltonian const &H_);
+	SubspaceCF(Hamiltonian const &H_):CostFunction(),H(H_),distance(0),subspaceEnergy(coeffType()){};
 	virtual ~SubspaceCF();
 // Derivative with respect to the input's coefficients
-	virtual std::vector<Eigen::VectorXd > nabla(State const &input) const;
+	std::vector<Eigen::VectorXd > nabla(State const &input) const;
 // Value of the cost function
-	virtual double calc(State const &input) const {return distance;}
+	double calc(State const &input) const {return distance;}
 private:
+  // The underlying Hamiltonian
 	Hamiltonian const &H;
-	double distance;
-// auxiliary function for getting the ground state in the space spanned by the determinants of input
+  // cache variable for the distance between input state and subspace eigenstate
+	mutable double distance;
+  // cache variable for subspace energy
+	mutable coeffType subspaceEnergy;
+  // auxiliary function for getting the ground state in the space spanned by the determinants of input
 	State diagonalizeSubspace(State const & input) const;
 };
 
