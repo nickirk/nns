@@ -10,7 +10,8 @@
 
 namespace networkVMC {
 
-AcceleratedGradientDescent::AcceleratedGradientDescent(double learningRate_):
+template <typename T>
+AcceleratedGradientDescent<T>::AcceleratedGradientDescent(double learningRate_):
   Solver(learningRate_),numPars(0),lambdaS1(0.0),lambdaS(0.0),gammaS(0.0),
   gammaS1(0.0),uninitialized(true){
     yS = Eigen::VectorXd::Zero(numPars);
@@ -20,13 +21,15 @@ AcceleratedGradientDescent::AcceleratedGradientDescent(double learningRate_):
 
 //---------------------------------------------------------------------------------------------------//
 
-AcceleratedGradientDescent::~AcceleratedGradientDescent() {
+template <typename T>
+AcceleratedGradientDescent<T>::~AcceleratedGradientDescent() {
 }
 
 //---------------------------------------------------------------------------------------------------//
 
 // This is ported from Nnw.cxx
-void AcceleratedGradientDescent::update(VecType &w, VecType const &force,
+template <typename T>
+void AcceleratedGradientDescent<T>::update(T &w, T const &force,
 		State const &input){
   if(uninitialized){
 	numPars = w.size();
@@ -58,5 +61,7 @@ void AcceleratedGradientDescent::update(VecType &w, VecType const &force,
   lambdaS = lambdaS1;
   yS = yS1;
 }
-
+//instantiate class
+template class AcceleratedGradientDescent<VecType>;
+template class AcceleratedGradientDescent<VecCType>;
 } /* namespace networkVMC */

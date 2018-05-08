@@ -9,13 +9,15 @@
 
 namespace networkVMC {
 
-StochasticReconfiguration::~StochasticReconfiguration() {
+template <typename T>
+StochasticReconfiguration<T>::~StochasticReconfiguration() {
 }
 
 //---------------------------------------------------------------------------------------------------//
 
 // Conjugate descent (I ported this from Nnw.cxx and will not touch it)
-void StochasticReconfiguration::update(VecType &w, VecType const &force,
+template <typename T>
+void StochasticReconfiguration<T>::update(T &w, T const &force,
 		  State const &input){
 
 	// first, get the input vector's coefficients
@@ -40,5 +42,6 @@ void StochasticReconfiguration::update(VecType &w, VecType const &force,
 	// increase the iteration counter
 	iteration += 1;
 }
-
+template class StochasticReconfiguration<VecType>;
+template class StochasticReconfiguration<VecCType>;
 } /* namespace networkVMC */

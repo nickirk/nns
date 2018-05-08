@@ -24,6 +24,7 @@ using detType = std::vector<bool>;
 //numFilter<depthFilter<lengthFilter>>
 // general eigen vector type for complex numbers, used for parameters etc
 using VecType = Eigen::VectorXd;
+using VecCType = Eigen::VectorXcd;
 using weightType = std::vector<std::vector<Eigen::Map<Eigen::MatrixXd>>>;
 //numFilter<lengthFilter>
 using biasType = std::vector<Eigen::Map<VecType>>;
