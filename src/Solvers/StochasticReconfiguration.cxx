@@ -9,14 +9,14 @@
 
 namespace networkVMC {
 
-template <typename T=VecType>
+template <typename T>
 StochasticReconfiguration<T>::~StochasticReconfiguration() {
 }
 
 //---------------------------------------------------------------------------------------------------//
 
 // Conjugate descent (I ported this from Nnw.cxx and will not touch it)
-template <typename T=VecType>
+template <typename T>
 void StochasticReconfiguration<T>::update(T &w, T const &force,
 		  State const &input){
 

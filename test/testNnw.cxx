@@ -39,8 +39,8 @@ int main(){
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
   double energy{0.0};
-  ADAM<> sl(trainRate);
-  Trainer ev(NNW,sampler,sl,eCF);
+  ADAM<VecType> sl(trainRate);
+  Trainer<VecType> ev(NNW,sampler,sl,eCF);
   for(int l(0); l<100; ++l){
     ev.train();
     // get the new energy

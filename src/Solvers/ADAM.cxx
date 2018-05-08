@@ -41,6 +41,6 @@ void ADAM<T>::update(T &w, T const &force, State const &input){
     w -= Solver<T>::learningRate * (m1.array()/(v1.array().sqrt()+1e-8)).matrix();
 }
 //instatiate class
-template class ADAM<VecType>;
 template class ADAM<VecCType>;
+template class ADAM<VecType>;
 } /* namespace networkVMC */

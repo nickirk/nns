@@ -75,10 +75,10 @@ int main(){
   //cout << "energy file name=";
   //cin >> fileName;
   ListGen sampler(modelHam, basis, HF,NNW, numDetsToTrain_);
-  ADAM<> sl(trainRate);
+  ADAM<VecType> sl(trainRate);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
-  Trainer ev(NNW,sampler,sl,eCF);
+  Trainer<VecType> ev(NNW,sampler,sl,eCF);
   ofstream myfile1;
   myfile1.open (fileName);
   double energy(0.);

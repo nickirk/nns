@@ -12,7 +12,7 @@
 
 namespace networkVMC {
 template <typename T=VecType>
-class StochasticGradientDescent: public Solver<> {
+class StochasticGradientDescent: public Solver<T> {
 public:
   StochasticGradientDescent(double gamma_):Solver(gamma_){};
   virtual ~StochasticGradientDescent(){};
@@ -20,7 +20,7 @@ public:
   virtual void update(T  &w, T const &force,
 		  State const &input=State()){
   // just walk along the gradient with some stepsize gamma
-	  w-=Solver::learningRate*force;
+	  w-=Solver<T>::learningRate*force;
   }
 };
 

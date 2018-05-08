@@ -15,7 +15,8 @@
 namespace networkVMC{
 
 // Class doing the minimization in a force-field given by force by different schemes
-template<typename T=VecType> class Solver {
+template<typename T=VecType>
+class Solver {
 public:
   // all solvers have a train rate/step size parameter
   Solver(double learningRate_):learningRate(learningRate_){};

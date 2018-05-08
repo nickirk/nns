@@ -12,7 +12,8 @@
 
 namespace networkVMC {
 
-template<typename T=VecType> class ADAM: public Solver<T> {
+template<typename T=VecType>
+class ADAM: public Solver<T> {
 public:
   ADAM(double learningRate);
   virtual ~ADAM();

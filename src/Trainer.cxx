@@ -14,20 +14,21 @@
 #include <iostream>
 
 namespace networkVMC{
-
-Trainer::Trainer(Parametrization &NNW_, Sampler const &msampler_, Solver<> &sl_, CostFunction const &cf_):
+template <typename T>
+Trainer<T>::Trainer(Parametrization &NNW_, Sampler const &msampler_, Solver<T> &sl_, CostFunction const &cf_):
 		modelHam(msampler_.getH()),NNW(NNW_), msampler(msampler_),sl(sl_),cf(cf_) {
 	inputState.resize(msampler.getNumDets());
 }
 
 //---------------------------------------------------------------------------------------------------//
-
-Trainer::~Trainer() {
+template <typename T>
+Trainer<T>::~Trainer() {
 }
 
 //---------------------------------------------------------------------------------------------------//
 
-void Trainer::train(double learningRate){
+template <typename T>
+void Trainer<T>::train(double learningRate){
 	// only change the learningRate for this iteration
 	auto tmp = sl.getLearningRate();
 	sl.setLearningRate(learningRate);
@@ -41,7 +42,8 @@ void Trainer::train(double learningRate){
 
 
 // prepare an input
-void Trainer::train(){
+template <typename T>
+void Trainer<T>::train(){
 	int numDets{msampler.getNumDets()};
 	inputState.resize(numDets);
 	//coupledCoeffsEpoch.clear();
@@ -73,7 +75,8 @@ void Trainer::train(){
 
 //---------------------------------------------------------------------------------------------------//
 
-void Trainer::updateParameters(State const &input){
+template <typename T>
+void Trainer<T>::updateParameters(State const &input){
 	// first, get the derivative of the cost function with respect to the
 	// wavefunction coefficients
 	auto dEdC = cf.nabla(input);
@@ -86,7 +89,8 @@ void Trainer::updateParameters(State const &input){
 
 //---------------------------------------------------------------------------------------------------//
 
-double Trainer::getE() const{
+template <typename T>
+double Trainer<T>::getE() const{
 	// Here, we just output the value of the cost function (usually the energy) of the
 	// network
 	return cf.calc(inputState);
@@ -94,9 +98,12 @@ double Trainer::getE() const{
 
 //---------------------------------------------------------------------------------------------------//
 
-State  Trainer::getState() const{
+template <typename T>
+State  Trainer<T>::getState() const{
 	// This is for testing and debugging purpose, only
 	return inputState;
 }
+//instantiate class
+template class Trainer<VecType>;
 
 }
