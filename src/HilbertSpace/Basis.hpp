@@ -22,11 +22,11 @@ class Basis{
 // total size of the many-body basis
     int getSize() const {return size;}
 // Return the determinant with index 'index'
-    detType getDetByIndex(int index) const;
+    detType getDetByIndex(int index) const; // can throw an OutOfRangeError
 // Return the index of the determinant 'det_'
-    int getIndexByDet(detType const & det_) const;
+    int getIndexByDet(detType const & det_) const; // can throw an InvalidDeterminantError
 // Return the alpha/beta spin distribution
-    SpinConfig getSpinConfig() const {return spinConfig;};
+    SpinConfig const& getSpinConfig() const {return spinConfig;};
   private:
     int numEle;
     SpinConfig spinConfig;
