@@ -12,12 +12,12 @@
 
 namespace networkVMC {
 
-class ADAM: public Solver {
+template<typename T=VecType> class ADAM: public Solver<T> {
 public:
   ADAM(double learningRate);
   virtual ~ADAM();
   // implementation of the update method
-  void update(VecType &w, VecType const &force, State const &input=State());
+  void update(T &w, T const &force, State const &input=State());
 private:
   // number of parameters to be optimized
   int numPars;
@@ -26,7 +26,7 @@ private:
   int iteration;
 
   // some internal ADAM parameters
-  VecType m,m1,v,v1;
+  T m,m1,v,v1;
   double beta1, beta2;
 };
 

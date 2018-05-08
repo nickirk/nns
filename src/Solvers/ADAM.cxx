@@ -8,26 +8,28 @@
 #include "ADAM.hpp"
 
 namespace networkVMC {
-
-ADAM::ADAM(double learningRate_):Solver(learningRate_),numPars(0),
+template <typename T>
+ADAM<T>::ADAM(double learningRate_):Solver<T>(learningRate_),numPars(0),
 		iteration(0),beta1(0.9),beta2(0.999) {
-	m  = Eigen::VectorXd::Zero(numPars);
-	m1  = Eigen::VectorXd::Zero(numPars);
-	v  = Eigen::VectorXd::Zero(numPars);
-	v1  = Eigen::VectorXd::Zero(numPars);
+	m  = T::Zero(numPars);
+	m1  = T::Zero(numPars);
+	v  = T::Zero(numPars);
+	v1  = T::Zero(numPars);
 }
 
-ADAM::~ADAM() {
+template <typename T>
+ADAM<T>::~ADAM() {
 }
 
-void ADAM::update(VecType &w, VecType const &force, State const &input){
+template <typename T>
+void ADAM<T>::update(T &w, T const &force, State const &input){
 	// in the first iteration, we learn about the number of parameters
 	if(iteration==0){
 		numPars = w.size();
-		m  = Eigen::VectorXd::Zero(numPars);
-		m1  = Eigen::VectorXd::Zero(numPars);
-		v  = Eigen::VectorXd::Zero(numPars);
-		v1  = Eigen::VectorXd::Zero(numPars);
+		m  = T::Zero(numPars);
+		m1  = T::Zero(numPars);
+		v  = T::Zero(numPars);
+		v1  = T::Zero(numPars);
 	}
 	iteration+=1;
     m1 = beta1*m + (1-beta1)*force;
@@ -36,7 +38,9 @@ void ADAM::update(VecType &w, VecType const &force, State const &input){
     v = v1;
     m1 = m1/(1-std::pow(beta1,iteration));
     v1 = v1/(1-std::pow(beta2,iteration));
-    w -= learningRate * (m1.array()/(v1.array().sqrt()+1e-8)).matrix();
+    w -= Solver<T>::learningRate * (m1.array()/(v1.array().sqrt()+1e-8)).matrix();
 }
-
+//instatiate class
+template class ADAM<VecType>;
+template class ADAM<VecCType>;
 } /* namespace networkVMC */

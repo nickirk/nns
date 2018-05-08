@@ -15,7 +15,7 @@
 
 namespace networkVMC{
 
-Trainer::Trainer(Parametrization &NNW_, Sampler const &msampler_, Solver &sl_, CostFunction const &cf_):
+Trainer::Trainer(Parametrization &NNW_, Sampler const &msampler_, Solver<> &sl_, CostFunction const &cf_):
 		modelHam(msampler_.getH()),NNW(NNW_), msampler(msampler_),sl(sl_),cf(cf_) {
 	inputState.resize(msampler.getNumDets());
 }

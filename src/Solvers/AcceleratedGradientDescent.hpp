@@ -13,7 +13,7 @@
 namespace networkVMC {
 
 // Nesterov's Accelerated Gradient Descent solver
-class AcceleratedGradientDescent: public Solver {
+class AcceleratedGradientDescent: public Solver<> {
 public:
   AcceleratedGradientDescent(double learningRate);
   virtual ~AcceleratedGradientDescent();

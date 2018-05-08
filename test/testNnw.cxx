@@ -39,12 +39,13 @@ int main(){
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
   double energy{0.0};
-  ADAM sl(trainRate);
+  ADAM<> sl(trainRate);
   Trainer ev(NNW,sampler,sl,eCF);
   for(int l(0); l<100; ++l){
     ev.train();
     // get the new energy
     energy = ev.getE();
+    std::cout << "iteration=" << l << std::endl;
     std::cout<<"Energy "<<energy<<std::endl;
     // update the list of determinants used in the sampler
     //sampler.diffuse(list,spinConfig);

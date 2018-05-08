@@ -75,7 +75,7 @@ int main(){
   //cout << "energy file name=";
   //cin >> fileName;
   ListGen sampler(modelHam, basis, HF,NNW, numDetsToTrain_);
-  ADAM sl(trainRate);
+  ADAM<> sl(trainRate);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
   Trainer ev(NNW,sampler,sl,eCF);
