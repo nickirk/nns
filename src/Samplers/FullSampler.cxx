@@ -6,6 +6,8 @@
  */
 
 #include "FullSampler.hpp"
+#include "../HilbertSpace/Basis.hpp"
+#include "../Network/Parametrization.hpp"
 
 namespace networkVMC {
 
@@ -20,8 +22,8 @@ FullSampler::~FullSampler() {
 
 void FullSampler::iterate(coeffType &cI, detType &dI) const{
   // No sampling involved: We take the next determinant from the list
-  dI = fullBasis.getDetByIndex(pos);
-  cI = para.getCoeff(dI);
+  dI = fullBasis->getDetByIndex(pos);
+  cI = para->getCoeff(dI);
   pos +=1;
   // And in case we reached the end, start anew
   if(pos>=numDets) pos -= numDets;

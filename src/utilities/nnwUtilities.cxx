@@ -24,9 +24,9 @@ void preTrain(Parametrization &network, State const &target, Sampler const &msam
 // Caveat: All determinants not present in the state do not matter
 // i.e. their coefficients are treated as unknown
 	//std::vector<detType > list = target.getDets();
-	ADAM sl(trainRate);
+	ADAM<VecType> sl(trainRate);
 	// set up the trainer
-	Trainer ev(network,msampler,sl,stateDistance);
+	Trainer<VecType> ev(network,msampler,sl,stateDistance);
     // Train the network
 	int const maxTrainCount = 1000;
 	for(int i = 0; i < maxTrainCount;++i){

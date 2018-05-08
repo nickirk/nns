@@ -8,9 +8,8 @@
 #ifndef SRC_SAMPLERS_METROPOLISSAMPLER_HPP_
 #define SRC_SAMPLERS_METROPOLISSAMPLER_HPP_
 
-#include "../HilbertSpace/Determinant.hpp"
-#include "../Network/Parametrization.hpp"
 #include "Sampler.hpp"
+#include "../Network/Parametrization.hpp"
 
 // Class for sampling determinants using the metropolis algorithm
 

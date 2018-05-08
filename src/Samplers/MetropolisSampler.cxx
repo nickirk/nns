@@ -10,7 +10,7 @@
 #include <random>
 #include <cmath>
 
-#include "../Hamiltonian/Hamiltonian.hpp"
+#include "../Network/Parametrization.hpp"
 
 namespace networkVMC{
 MetropolisSampler::~MetropolisSampler() {
@@ -24,7 +24,7 @@ void MetropolisSampler::iterate(coeffType &cI, detType &dI) const{
 	// First, get a random coupled determinant (from cDet)
 	detType tmp{getRandomConnection(cDet)};
 	// And its coefficient
-	coeffType tmpCoeff{para.getCoeff(tmp)};
+	coeffType tmpCoeff{para->getCoeff(tmp)};
 	if(uni(rng) < std::pow(std::norm(tmpCoeff),2)/std::pow(std::norm(lastCoeff),2)){
 		// With probability cJ/cI, accept the move
 		cDet = tmp;

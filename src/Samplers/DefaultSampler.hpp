@@ -26,7 +26,7 @@ public:
 	virtual void iterate(coeffType &cI, detType &dI) const{
 		cDet = getRandomConnection(cDet);
 		dI = getDet();
-		cI = para.getCoeff(cDet);
+		cI = para->getCoeff(cDet);
 	}
 };
 

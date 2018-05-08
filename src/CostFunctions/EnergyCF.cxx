@@ -6,6 +6,8 @@
  */
 
 #include "EnergyCF.hpp"
+#include "../utilities/State.hpp"
+#include "../Hamiltonian/Hamiltonian.hpp"
 
 #include <vector>
 #include <complex>

@@ -5,13 +5,11 @@
  * All rights reserved
  */
 
-#include <stdio.h>
 #include <vector>
-#include <random>
 #include <math.h>
 #include <algorithm>
-#include <stdio.h>
-#include <iostream>
+#include <numeric>
+#include <iterator>
 #include "Basis.hpp"
 
 namespace networkVMC{
@@ -26,9 +24,10 @@ Basis::Basis(SpinConfig const &spinConfig_):
 	  listOfOrbNum.push_back(i);
   }
   createBasisDet(0, numEle);
-  std::vector<detType> basisNew;
-  int numSpinUp(0);
-  int numSpinDown(0);
+  std::vector<detType> basisNew{0};
+  std::vector<int> indexBasisNew{0};
+  int numSpinUp{0};
+  int numSpinDown{0};
   for (size_t s(0); s<basis.size(); s++){
     numSpinDown=0;
     numSpinUp=0;
@@ -36,8 +35,9 @@ Basis::Basis(SpinConfig const &spinConfig_):
     	numSpinUp+= (basis[s][2*i])?1:0;
     	numSpinDown+= (basis[s][2*i+1])?1:0;
     }
-    if ((numSpinUp == spinConfig(1)) & (numSpinDown == spinConfig(-1)))
+    if ((numSpinUp == spinConfig(1)) & (numSpinDown == spinConfig(-1))){
       basisNew.push_back(basis[s]);
+    }
   }
   size = basisNew.size();
   basis=basisNew;
@@ -48,8 +48,13 @@ detType Basis::getDetByIndex(int index) const{
 }
 
 int Basis::getIndexByDet(detType const & det_) const{
-  int pos = std::find(basis.begin(), basis.end(), det_)-basis.begin();
-  return indexBasis[pos];
+  // Look for the determinant in the basis
+  auto pos = std::find(basis.begin(), basis.end(), det_);
+  // and get it's index
+  auto dist = std::distance(basis.begin(),pos);
+  // If we did not find the determinant, something went wrong
+  if(dist==basis.size()) throw OutOfRangeError(dist);
+  return dist;
 }
 
 int Basis::calcSize(int numOrb_, int numEle_){
@@ -63,8 +68,6 @@ void Basis::createBasisDet(int offset, int numEle_){
     for (size_t i = 0; i < combination.size(); ++i){
       create(tmpDet,combination[i]);
     }
-    indexBasis.push_back(indexOfDet++);
-    //std::cout << "index= " << indexOfDet << std::endl;
     //std::cout << "intCast= " << tmpDet.intCast() << std::endl;
     basis.push_back(tmpDet);
     return;

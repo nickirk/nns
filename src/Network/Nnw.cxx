@@ -88,7 +88,7 @@ coeffType NeuralNetwork::getCoeff(detType const &det) const{
 
 //---------------------------------------------------------------------------//
 
-Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const{
+VecType NeuralNetwork::feedForward(detType const& det) const{
 	if(Layers.size()==0) throw EmptyNetworkError();
   // Note that the first layer always needs to have a number
   // of neurons equal to the number of orbitals
@@ -108,8 +108,8 @@ Eigen::VectorXd NeuralNetwork::feedForward(detType const& det) const{
 
 //---------------------------------------------------------------------------//
 
-Eigen::VectorXd NeuralNetwork::backPropagate(
-       Eigen::VectorXd const &lastLayerFeedBack
+VecType NeuralNetwork::backPropagate(
+       VecType const &lastLayerFeedBack
      ){
   //everytime the backPropagate is called, we should reset nabla* to zero.
   nablaNNP *= 0.;

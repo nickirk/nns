@@ -20,16 +20,22 @@ namespace networkVMC {
 
 class DirectParametrization: public Parametrization {
 public:
-  DirectParametrization(Basis const &fullBasis_):fullBasis(fullBasis_){
+  DirectParametrization(Basis const &fullBasis_):fullBasis(&fullBasis_){
     // start with a random vector
-    coeffs = Eigen::VectorXd::Random(fullBasis.getSize());
+    coeffs = Eigen::VectorXd::Random(fullBasis->getSize());
   }
   virtual ~DirectParametrization();
 
   // The coefficient of a determinant is just its entry
   coeffType getCoeff(detType const &det) const{
-	  auto i = fullBasis.getIndexByDet(det);
-	  return coeffs[i];
+	  try{
+	    auto i = fullBasis->getIndexByDet(det);
+	    return coeffs[i];
+	  }
+	  catch (OutOfRangeError const&){
+		  // If the fed determinant is not valid, this is a problem
+		  throw InvalidDeterminantError();
+	  }
   }
 
   VecType const& pars() const{
@@ -38,12 +44,14 @@ public:
   // inner derivative implementation
   VecType calcNablaPars(State const &inputState, nablaType const &dEdC);
   // Some other derivative
-   VecType calcNablaParsConnected(State const &inputState, nablaType const& dEdC){};
-   // stochastic reconfiguration derivative
-   Eigen::MatrixXcd calcdCdwSR(State const &outputState){};
+  // VecType calcNablaParsConnected(State const &inputState, nablaType const& dEdC){};
+  // stochastic reconfiguration derivative
+  // Eigen::MatrixXcd calcdCdwSR(State const &outputState){};
 
 private:
-  Basis const &fullBasis;
+  // The basis to which we refer
+  Basis const *fullBasis;
+  // directly store the coefficients
   VecType coeffs;
 };
 

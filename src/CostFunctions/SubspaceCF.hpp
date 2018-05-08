@@ -10,10 +10,10 @@
 
 #include <Eigen/Dense>
 #include "CostFunction.hpp"
-#include "../Hamiltonian/Hamiltonian.hpp"
-#include "../utilities/State.hpp"
 
 namespace networkVMC{
+
+class Hamiltonian;
 
 // This cost function diagonalizes H in the subspace spanned by the
 // sampled basis states and takes the distance of the resulting lowest
@@ -35,6 +35,10 @@ private:
 	mutable coeffType subspaceEnergy;
   // auxiliary function for getting the ground state in the space spanned by the determinants of input
 	State diagonalizeSubspace(State const & input) const;
+
+  // Has a reference member, so assignment is not a thing
+  SubspaceCF& operator=(SubspaceCF const &source);
+  SubspaceCF& operator=(SubspaceCF &&source);
 };
 
 }

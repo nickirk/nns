@@ -8,24 +8,28 @@
 #ifndef SRC_TRAINER_HPP_
 #define SRC_TRAINER_HPP_
 
-#include "Network/Parametrization.hpp"
-#include "HilbertSpace/Determinant.hpp"
-#include "Samplers/Sampler.hpp"
 #include "utilities/State.hpp"
 #include "utilities/TypeDefine.hpp"
-#include "CostFunctions/CostFunction.hpp"
 #include "Solvers/Solver.hpp"
 
 namespace networkVMC{
+
+// forward declaration for more efficient compilation
+
+class CostFunction;
+class Sampler;
+class Parametrization;
+class Hamiltonian;
 
 // wrapper class for optimizing parameters
 // We take a parametrization, a sampler, a solver and a cost function
 // then some magic happens and the parameters are optimized with respect to
 // the cost function
+template <typename T=VecType>
 class Trainer {
 public:
-// supply a sampler, a Hamiltonian and the Parametrization
-	Trainer(Parametrization &NNW_, Sampler const &msampler, Solver &sl, CostFunction const &cf);
+// supply a Parametrization, a sampler, a solver and the cost function
+	Trainer(Parametrization &NNW_, Sampler const &msampler, Solver<T> &sl, CostFunction const &cf);
 // train() tries to optimize the parameters of the NNW with respect to its cost function
 	void train();
 // optionally set the learning rate for this step
@@ -44,11 +48,15 @@ private:
 	Parametrization &NNW;
 	Sampler const &msampler;
 	// the solver that optimizes the parameters (changes its parameters)
-	Solver &sl;
+	Solver<T> &sl;
 	CostFunction const &cf;
 
 	// This is only for debugging
 	State inputState;
+
+	// Has a reference member, so assignment is not a thing
+	Trainer& operator=(Trainer const &source);
+	Trainer& operator=(Trainer &&source);
 
 };
 

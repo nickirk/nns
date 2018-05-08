@@ -11,6 +11,9 @@
 #include <complex>
 #include <iostream>
 
+#include "../utilities/State.hpp"
+#include "../Hamiltonian/Hamiltonian.hpp"
+
 namespace networkVMC{
 
 double EnergyEsMarkov::evaluate(State const &input) const{

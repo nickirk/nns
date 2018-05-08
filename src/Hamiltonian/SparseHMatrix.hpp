@@ -11,10 +11,11 @@
 #include <vector>
 
 #include "../utilities/TypeDefine.hpp"
-#include "Hamiltonian.hpp"
-#include "../utilities/State.hpp"
 
 namespace networkVMC{
+
+class Hamiltonian;
+class State;
 
 class SparseHMatrix {
 // Class for translating a second quantized Hamiltonian into a sparse matrix
@@ -39,7 +40,7 @@ private:
 	std::vector<double> entries;
 // cols are the columns belonging to the values, and rowPos contains the indices of those entries
 // that start a new row
-	std::vector<size_t> rowPos,cols;
+	std::vector<std::size_t> rowPos,cols;
 };
 
 

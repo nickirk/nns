@@ -10,10 +10,11 @@
 
 #include <Eigen/Dense>
 #include "../utilities/TypeDefine.hpp"
-#include "CostFunction.hpp"
 #include "../utilities/State.hpp"
-
+#include "CostFunction.hpp"
 namespace networkVMC{
+
+class State;
 
 // Cost function that measures the distance ||psi - psi_0||^2
 

@@ -9,8 +9,6 @@
 
 #include <math.h>
 
-#include "../utilities/TypeDefine.hpp"
-
 namespace networkVMC{
 
 std::vector<Eigen::VectorXd > NormCF::nabla(State const &input) const{

@@ -1,5 +1,5 @@
 #include "Hamiltonian.hpp"
-
+#include "../HilbertSpace/Determinant.hpp"
 #include <random>
 #include <cmath>
 #include <vector>

@@ -11,16 +11,16 @@
 #include "Solver.hpp"
 
 namespace networkVMC {
-
-class StochasticGradientDescent: public Solver {
+template <typename T=VecType>
+class StochasticGradientDescent: public Solver<T> {
 public:
   StochasticGradientDescent(double gamma_):Solver(gamma_){};
   virtual ~StochasticGradientDescent(){};
   // gradient descent update scheme
-  virtual void update(VecType  &w, VecType const &force,
+  virtual void update(T  &w, T const &force,
 		  State const &input=State()){
   // just walk along the gradient with some stepsize gamma
-	  w-=learningRate*force;
+	  w-=Solver<T>::learningRate*force;
   }
 };
 

@@ -12,15 +12,15 @@
 #include "../Network/Parametrization.hpp"
 
 namespace networkVMC {
-
-class StochasticReconfiguration: public Solver {
+template <typename T=VecType>
+class StochasticReconfiguration: public Solver<> {
 public:
   StochasticReconfiguration(Parametrization &par_, double gamma_):
 	  Solver(gamma_),par(par_),iteration(0) {};
   virtual ~StochasticReconfiguration();
 
   // thus, we only have this version
-  virtual void update(VecType &w, VecType const &force, State const &input);
+  virtual void update(T &w, T const &force, State const &input);
 private:
   // this is a second order solver, so we need the parametrization
   Parametrization &par;

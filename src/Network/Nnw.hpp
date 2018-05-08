@@ -37,7 +37,6 @@ class NeuralNetwork: public Parametrization{
 public:
   NeuralNetwork();
   ~NeuralNetwork();
-  NeuralNetwork(NeuralNetwork const &source);
   //construction functions for NNW
   void constrDenseLayer(
       std::vector<Eigen::VectorXd> const &inputs_,

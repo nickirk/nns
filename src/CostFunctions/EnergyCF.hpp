@@ -13,11 +13,11 @@
 #include "../utilities/TypeDefine.hpp"
 #include "CostFunction.hpp"
 #include "Eigen/Dense"
-#include "../Hamiltonian/Hamiltonian.hpp"
-#include "../utilities/State.hpp"
 // This cost function tries to minimize the energy expectation value
 
 namespace networkVMC{
+
+class Hamiltonian;
 
 class EnergyCF: public CostFunction{
 public:
@@ -35,6 +35,10 @@ private:
 	mutable double energy;
 	mutable double normalizerCoeff;
 	double evaluate(State const &input) const;
+
+	// Has a reference member, so assignment is not a thing
+	EnergyCF& operator=(EnergyCF const &source);
+	EnergyCF& operator=(EnergyCF &&source);
 };
 
 }

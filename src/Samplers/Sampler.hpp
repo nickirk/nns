@@ -9,14 +9,16 @@
 
 #include <vector>
 
-#include "../HilbertSpace/Basis.hpp"
 #include "../HilbertSpace/Determinant.hpp"
 #include "../utilities/SpinConfig.hpp"
 #include "../utilities/TypeDefine.hpp"
-#include "../Hamiltonian/Hamiltonian.hpp"
-#include "../Network/Parametrization.hpp"
 
 namespace networkVMC{
+
+// Forward declaration to make compilation faster
+class Hamiltonian;
+class Basis;
+class Parametrization;
 
 // Base class for sampling, these objects take some input state and a Hamiltonian and generate
 // lists of potentially relevant determinants
@@ -24,7 +26,7 @@ class Sampler{
 public:
   Sampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
 		  Parametrization const &para_, int numDets_= 100):
-	  H(H_),numDets(numDets_),fullBasis(fullBasis_),para(para_),cDet(HF){}
+	  H(&H_),numDets(numDets_),fullBasis(&fullBasis_),para(&para_),cDet(HF){}
   virtual ~Sampler(){};
   // and functionalities: get a random coupled determinant
   detType getRandomConnection(detType const &startingPoint) const;
@@ -43,25 +45,26 @@ public:
   virtual void setNumDets(int newNum){numDets=newNum;}
   // get the number of dets
   virtual int getNumDets() const {return numDets;}
-  Hamiltonian const& getH() const{return H;}
+  Hamiltonian const& getH() const{return (*H);}
+
 private:
   // Hamiltonian is needed because it defines what is connected to a given determinant
   // and only connections are sampled
-  Hamiltonian const &H;
+  Hamiltonian const *H;
 protected:
   int numDets;
   // and the corresponding basis including the information on the number of electrons
   // with a given spin
-  Basis const &fullBasis;
+  Basis const *fullBasis;
   // sampling depends on the coefficients, as they have to be given alongside the determinants
-  Parametrization const &para;
+  Parametrization const *para;
   // this is the current sample in terms of determinants
   mutable detType cDet;
 };
 
 inline double dblAbs(double x){if(x>0) return x;return -x;}
 void removeDuplicate(std::vector<detType> &list);
-detType getRandomDeterminant(SpinConfig const &spinConfig);
+detType getRandomDeterminant(Basis const &fullBasis);
 
 }
 #endif

@@ -12,10 +12,10 @@
 #include <Eigen/Dense>
 #include "../utilities/TypeDefine.hpp"
 #include "CostFunction.hpp"
-#include "../Hamiltonian/Hamiltonian.hpp"
-#include "../utilities/State.hpp"
 
 namespace networkVMC{
+
+class Hamiltonian;
 
 class EnergyEstimator: public CostFunction{
 public:
@@ -28,6 +28,10 @@ private:
 	mutable double energy;
 	mutable double normalizerCoeff;
 	double evaluate(State const &input) const;
+
+	// Has a reference member, so assignment is not a thing
+	EnergyEstimator& operator=(EnergyEstimator const &source);
+	EnergyEstimator& operator=(EnergyEstimator &&source);
 };
 
 }

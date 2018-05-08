@@ -11,6 +11,9 @@
 #include <vector>
 #include <complex>
 
+#include "../Hamiltonian/Hamiltonian.hpp"
+#include "../utilities/State.hpp"
+
 namespace networkVMC{
 
 double EnergyEstimator::evaluate(State const &input) const{
