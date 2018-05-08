@@ -8,15 +8,17 @@
 #ifndef SRC_TRAINER_HPP_
 #define SRC_TRAINER_HPP_
 
-#include "Network/Parametrization.hpp"
-#include "HilbertSpace/Determinant.hpp"
-#include "Samplers/Sampler.hpp"
 #include "utilities/State.hpp"
 #include "utilities/TypeDefine.hpp"
-#include "CostFunctions/CostFunction.hpp"
-#include "Solvers/Solver.hpp"
 
 namespace networkVMC{
+
+// forward declaration for more efficient compilation
+class Solver;
+class CostFunction;
+class Sampler;
+class Parametrization;
+class Hamiltonian;
 
 // wrapper class for optimizing parameters
 // We take a parametrization, a sampler, a solver and a cost function

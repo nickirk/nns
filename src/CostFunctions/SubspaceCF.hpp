@@ -10,10 +10,10 @@
 
 #include <Eigen/Dense>
 #include "CostFunction.hpp"
-#include "../Hamiltonian/Hamiltonian.hpp"
-#include "../utilities/State.hpp"
 
 namespace networkVMC{
+
+class Hamiltonian;
 
 // This cost function diagonalizes H in the subspace spanned by the
 // sampled basis states and takes the distance of the resulting lowest

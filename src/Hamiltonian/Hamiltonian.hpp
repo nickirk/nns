@@ -1,8 +1,8 @@
 #ifndef HAMILTONIAN_CLASS
 #define HAMILTONIAN_CLASS
 
-#include "../HilbertSpace/Determinant.hpp"
 #include "../utilities/Errors.hpp"
+#include "../utilities/TypeDefine.hpp"
 
 namespace networkVMC{
 

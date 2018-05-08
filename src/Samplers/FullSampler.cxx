@@ -6,6 +6,8 @@
  */
 
 #include "FullSampler.hpp"
+#include "../HilbertSpace/Basis.hpp"
+#include "../Network/Parametrization.hpp"
 
 namespace networkVMC {
 

@@ -6,6 +6,7 @@
  */
 
 #include "ListGen.hpp"
+#include "../Network/Parametrization.hpp"
 
 namespace networkVMC{
 
@@ -59,7 +60,7 @@ void ListGen::diffuse(std::vector<detType> &list) const{
  list=diffuseList;
  detType buf;
  while (list.size() < static_cast<unsigned int>(numDets)){
-   buf = getRandomDeterminant(fullBasis->getSpinConfig());
+   buf = getRandomDeterminant(*fullBasis);
    list.push_back(buf);
  }
  coeffType c_i = coeffType();

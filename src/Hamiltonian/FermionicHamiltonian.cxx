@@ -7,6 +7,7 @@
 
 #include <random>
 #include "FermionicHamiltonian.hpp"
+#include "../HilbertSpace/Determinant.hpp"
 
 namespace networkVMC{
 

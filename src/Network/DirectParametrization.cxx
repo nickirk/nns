@@ -6,6 +6,7 @@
  */
 
 #include "DirectParametrization.hpp"
+#include "../utilities/State.hpp"
 
 namespace networkVMC {
 

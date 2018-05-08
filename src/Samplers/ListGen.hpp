@@ -8,9 +8,6 @@
 #ifndef SRC_HEADERS_LISTGEN_HPP_
 #define SRC_HEADERS_LISTGEN_HPP_
 
-#include "../HilbertSpace/Determinant.hpp"
-#include "../Network/Parametrization.hpp"
-#include "../utilities/SpinConfig.hpp"
 #include "Sampler.hpp"
 
 namespace networkVMC{

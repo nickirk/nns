@@ -28,8 +28,14 @@ public:
 
   // The coefficient of a determinant is just its entry
   coeffType getCoeff(detType const &det) const{
-	  auto i = fullBasis->getIndexByDet(det);
-	  return coeffs[i];
+	  try{
+	    auto i = fullBasis->getIndexByDet(det);
+	    return coeffs[i];
+	  }
+	  catch (OutOfRangeError const&){
+		  // If the fed determinant is not valid, this is a problem
+		  throw InvalidDeterminantError();
+	  }
   }
 
   VecType const& pars() const{
@@ -43,7 +49,9 @@ public:
   // Eigen::MatrixXcd calcdCdwSR(State const &outputState){};
 
 private:
+  // The basis to which we refer
   Basis const *fullBasis;
+  // directly store the coefficients
   VecType coeffs;
 };
 

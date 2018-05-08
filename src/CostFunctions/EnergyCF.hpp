@@ -13,11 +13,11 @@
 #include "../utilities/TypeDefine.hpp"
 #include "CostFunction.hpp"
 #include "Eigen/Dense"
-#include "../Hamiltonian/Hamiltonian.hpp"
-#include "../utilities/State.hpp"
 // This cost function tries to minimize the energy expectation value
 
 namespace networkVMC{
+
+class Hamiltonian;
 
 class EnergyCF: public CostFunction{
 public:

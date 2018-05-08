@@ -53,6 +53,11 @@ public:
 	UnconvergedEigenproblem(){};
 };
 
+class InvalidDeterminantError{
+public:
+	InvalidDeterminantError(){};
+};
+
 }
 
 #endif /* ERRORS_HPP_ */

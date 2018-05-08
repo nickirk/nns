@@ -10,7 +10,7 @@
 #include <random>
 #include <cmath>
 
-#include "../Hamiltonian/Hamiltonian.hpp"
+#include "../Network/Parametrization.hpp"
 
 namespace networkVMC{
 MetropolisSampler::~MetropolisSampler() {

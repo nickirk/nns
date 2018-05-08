@@ -12,10 +12,10 @@
 #include <Eigen/Dense>
 #include "../utilities/TypeDefine.hpp"
 #include "CostFunction.hpp"
-#include "../Hamiltonian/Hamiltonian.hpp"
-#include "../utilities/State.hpp"
 
 namespace networkVMC{
+
+class Hamiltonian;
 
 class EnergyEstimator: public CostFunction{
 public:

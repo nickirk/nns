@@ -6,6 +6,11 @@
  */
 
 #include "Trainer.hpp"
+#include "Hamiltonian/Hamiltonian.hpp"
+#include "Samplers/Sampler.hpp"
+#include "Solvers/Solver.hpp"
+#include "CostFunctions/CostFunction.hpp"
+#include "Network/Parametrization.hpp"
 #include <iostream>
 
 namespace networkVMC{
@@ -53,7 +58,6 @@ void Trainer::train(){
 	// TODO this should not be part of the trainer, move it to somewhere in the state
 	for(int i=0; i < numDets; ++i){
 	  msampler.iterate(inputState.coeff(i), inputState.det(i));
-
 	  // get some coupled determinants and their coefficients to use in the
 	  // energy estimator
       inputState.coupledDets(i) = modelHam.getCoupledStates(inputState.det(i));
