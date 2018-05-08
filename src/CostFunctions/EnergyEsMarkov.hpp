@@ -28,6 +28,10 @@ private:
 	mutable double energy;
 	mutable double normalizerCoeff;
 	double evaluate(State const &input) const;
+
+	// Has a reference member, so assignment is not a thing
+	EnergyEsMarkov& operator=(EnergyEsMarkov const &source);
+	EnergyEsMarkov& operator=(EnergyEsMarkov &&source);
 };
 
 }

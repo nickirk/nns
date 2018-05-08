@@ -24,7 +24,7 @@ namespace networkVMC{
 // the cost function
 class Trainer {
 public:
-// supply a sampler, a Hamiltonian and the Parametrization
+// supply a Parametrization, a sampler, a solver and the cost function
 	Trainer(Parametrization &NNW_, Sampler const &msampler, Solver &sl, CostFunction const &cf);
 // train() tries to optimize the parameters of the NNW with respect to its cost function
 	void train();
@@ -49,6 +49,10 @@ private:
 
 	// This is only for debugging
 	State inputState;
+
+	// Has a reference member, so assignment is not a thing
+	Trainer& operator=(Trainer const &source);
+	Trainer& operator=(Trainer &&source);
 
 };
 

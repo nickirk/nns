@@ -35,6 +35,10 @@ private:
 	mutable coeffType subspaceEnergy;
   // auxiliary function for getting the ground state in the space spanned by the determinants of input
 	State diagonalizeSubspace(State const & input) const;
+
+  // Has a reference member, so assignment is not a thing
+  SubspaceCF& operator=(SubspaceCF const &source);
+  SubspaceCF& operator=(SubspaceCF &&source);
 };
 
 }
