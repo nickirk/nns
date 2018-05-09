@@ -49,7 +49,7 @@ int main(){
   EnergyEstimator eCF(modelHam);
   //Neural network takes in the size and the cost function.
 
-  NeuralNetwork NNW;
+  NeuralNetwork<VecType> NNW;
   NNW.constrInputLayer(numStates);
   //constrConvLayer(inputs, actFunc, lengthFilter, depthFilter, stride)
   cout << "Before constructing ConvLayer" << endl;
@@ -74,7 +74,7 @@ int main(){
   string fileName("en");
   //cout << "energy file name=";
   //cin >> fileName;
-  ListGen sampler(modelHam, basis, HF,NNW, numDetsToTrain_);
+  ListGen<> sampler(modelHam, basis, HF,NNW, numDetsToTrain_);
   ADAM<VecType> sl(trainRate);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer

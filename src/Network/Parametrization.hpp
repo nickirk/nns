@@ -18,7 +18,7 @@ class State;
 // This is the base class for any parametrization of the wave function
 // It is an abstract parametrization that can be updated to be optimized
 // with respect to a given cost function
-
+template<typename T=VecType>
 class Parametrization {
 public:
   Parametrization(){};
@@ -26,26 +26,27 @@ public:
  // It needs to be able to return coefficients somehow
   virtual coeffType getCoeff(detType const &det) const=0; // Can throw an invalidDeterminantError
   // base method for returning the parameters (as a single vector)
-  virtual VecType const& pars() const = 0;
+  virtual T const& pars() const = 0;
   // We also need write access to the parameters (this is the non-const variant)
-  virtual VecType& pars(){return const_cast<VecType&>
+  virtual T& pars(){return const_cast<T&>
     (static_cast<Parametrization const&>(*this).pars());};
 // Obtain the inner derivative dX/dPars with given dX/dC (C are coefficients)
-  virtual VecType calcNablaPars(
+  virtual T calcNablaPars(
 		  State const &input,
 		  nablaType const &outerDerivative) = 0;
 
 // The following features are experimental and not essential to the interface
   // Some other derivative
-  virtual VecType calcNablaParsConnected(State const &inputState, nablaType const& dEdC)
+  virtual T calcNablaParsConnected(State const &inputState, nablaType const& dEdC)
   	  {return calcNablaPars(inputState,dEdC);}
 
   // stochastic reconfiguration derivative
-  virtual Eigen::MatrixXcd calcdCdwSR(
-    State const &outputState
-  ){};
+  //virtual Eigen::MatrixXcd calcdCdwSR(
+  //  State const &outputState
+  //){};
 
 };
+
 
 } /* namespace networkVMC */
 

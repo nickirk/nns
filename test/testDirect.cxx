@@ -23,17 +23,17 @@ int main(){
 
 // Solver setup
   double trainRate(0.01);
-  ADAM sl(trainRate);
+  ADAM<> sl(trainRate);
 
 // Parametrization setup
-  DirectParametrization par(basis);
+  DirectParametrization<> par(basis);
 
 // Sampler setup
   detType HF=basis.getDetByIndex(0);
   ListGen sample(modelHam,basis,HF,par);
 
 // And optimize the direct parametrization
-  Trainer ev(par,sample,sl,eCF);
+  Trainer<> ev(par,sample,sl,eCF);
 
   for(int i=0;i<10000;++i){
 	  ev.train();

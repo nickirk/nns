@@ -32,12 +32,14 @@ void removeDuplicate(std::vector<detType> &list){
  list.erase( it, list.end() );
 }
 
+
+
 // This creates some random determinant from a given Basis
 detType getRandomDeterminant(Basis const &fullBasis){
   // Essentially, we just get a random number and then return the corresponding det
   std::random_device rd;     // only used once to initialise (seed) engine
   std::mt19937 rng{rd()};    // random-number engine used (Mersenne-Twister in this case)
-  std::uniform_int_distribution<int> uni(0,fullBasis.getSize()); // guaranteed unbiased
+  std::uniform_int_distribution<int> uni(0,fullBasis.getSize()-1); // guaranteed unbiased
   auto randomDet = fullBasis.getDetByIndex(uni(rng));
   return randomDet; 
 }

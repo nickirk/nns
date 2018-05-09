@@ -48,7 +48,7 @@ nablaType EnergyCF::nabla(State const &input) const{
   int numDets = input.size();
   // works similar to computing the energy
   for (int i=0; i < numDets; ++i){
-    Eigen::VectorXd dEdC_i=Eigen::VectorXd::Zero(2);
+    coeffType dEdC_i;
     std::complex<double> A(0.,0.);
     for (int j=0; j < numDets; ++j){
       coeffType c_j=input.coeff(j);
@@ -61,8 +61,8 @@ nablaType EnergyCF::nabla(State const &input) const{
     // re-use the normalizer from evaluate
     A /= normalizerCoeff;
     // And assign to the output
-    dEdC_i[0] = 2. * std::real( A*std::conj(1.));
-    dEdC_i[1] = 2. * std::real( A*std::conj(std::complex<double>(0.0,1.0)));
+    dEdC_i.real(2. * std::real( A*std::conj(1.)));
+    dEdC_i.imag(2. * std::real( A*std::conj(std::complex<double>(0.0,1.0))));
     dEdC.push_back(dEdC_i);
   }
   return dEdC;

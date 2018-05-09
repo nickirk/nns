@@ -26,7 +26,9 @@ class Hamiltonian{
   void initMatrixStorage(bool bspin_orbs);
   // get the Hamiltonian matrix element between two configurations alpha 
   // and beta
+  // can throw an InvalidDeterminantError or SizeMismatchError if alpha/beta do not make sense
   double operator()(detType const &alpha, detType const &beta) const;
+
   void printMatrix(int N);
   // the commutation relation of the underlying creation/annihilation operators goes in here
   virtual int getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex) const =0;

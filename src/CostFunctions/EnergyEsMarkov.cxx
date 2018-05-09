@@ -36,21 +36,23 @@ double EnergyEsMarkov::evaluate(State const &input) const{
   return energyVal;
 }
 
-std::vector<Eigen::VectorXd> EnergyEsMarkov::nabla(State const &input) const{
+nablaType EnergyEsMarkov::nabla(State const &input) const{
   energy = evaluate(input);
   int numDets = input.size();
-  std::vector<Eigen::VectorXd> dEdC;
-  Eigen::VectorXd dEdC_i=Eigen::VectorXd::Zero(1);
+  nablaType dEdC;
+  coeffType dEdC_i;
   for (int i=0; i < numDets; ++i){
     //coeffType c_i = input.getCoeff(i);
     if (i == 0 || input.det(i) != input.det(i-1)){
       double A(0.);
       A = (H(input.det(i), input.det(i)) - energy );
-      dEdC_i(0) = 2. * (A);
+      dEdC_i.real(2. * (A));
+      dEdC_i.imag(0.);
       dEdC.push_back(dEdC_i);
       for (size_t j=0; j < input.coupledDets(i).size(); ++j){
         A = H(input.det(i),input.coupledDets(i)[j]);
-        dEdC_i(0) = 2. * A;
+        dEdC_i.real(2. * A);
+        dEdC_i.imag(0.);
         dEdC.push_back(dEdC_i);
       }
     }

@@ -12,21 +12,20 @@
 #include "../HilbertSpace/Determinant.hpp"
 #include "../utilities/SpinConfig.hpp"
 #include "../utilities/TypeDefine.hpp"
-
+#include "../Network/Parametrization.hpp"
 namespace networkVMC{
 
 // Forward declaration to make compilation faster
 class Hamiltonian;
 class Basis;
-class Parametrization;
 
 // Base class for sampling, these objects take some input state and a Hamiltonian and generate
 // lists of potentially relevant determinants
 class Sampler{
 public:
   Sampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
-		  Parametrization const &para_, int numDets_= 100):
-	  H(&H_),numDets(numDets_),fullBasis(&fullBasis_),para(&para_),cDet(HF){}
+		  int numDets_= 100):
+	  H(&H_),numDets(numDets_),fullBasis(&fullBasis_),cDet(HF){}
   virtual ~Sampler(){};
   // and functionalities: get a random coupled determinant
   detType getRandomConnection(detType const &startingPoint) const;
@@ -56,8 +55,6 @@ protected:
   // and the corresponding basis including the information on the number of electrons
   // with a given spin
   Basis const *fullBasis;
-  // sampling depends on the coefficients, as they have to be given alongside the determinants
-  Parametrization const *para;
   // this is the current sample in terms of determinants
   mutable detType cDet;
 };

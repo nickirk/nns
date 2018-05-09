@@ -11,16 +11,18 @@
 
 namespace networkVMC{
 
-std::vector<Eigen::VectorXd > NormCF::nabla(State const &input) const{
-	std::vector<Eigen::VectorXd > cfBuf(input.size());
+nablaType NormCF::nabla(State const &input) const{
+	nablaType cfBuf(input.size());
 	for(std::size_t i=0;i<input.size();++i){
-		Eigen::VectorXd buf;
-		buf = Eigen::VectorXd::Zero(2);
+		coeffType buf0;
+		Eigen::VectorXd buf = Eigen::VectorXd::Zero(2);
 		for(size_t j=0;j<input.size();++j){
 			buf[0] += std::real(input.coeff(j) - psi.coeff(j));
 			buf[1] += std::imag(input.coeff(j) - psi.coeff(j));
 		}
-		cfBuf[i] = 2*buf;
+		buf0.real(buf[0]);
+		buf0.imag(buf[1]);
+		cfBuf[i] = 2*buf0;
 	}
 	return cfBuf;
 }

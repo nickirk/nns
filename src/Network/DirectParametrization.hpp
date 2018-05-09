@@ -17,8 +17,8 @@ namespace networkVMC {
 
 // here we parametrize the wave function by its coefficients
 // it is mainly for testing purposes
-
-class DirectParametrization: public Parametrization {
+template <typename T=VecType>
+class DirectParametrization: public Parametrization<T> {
 public:
   DirectParametrization(Basis const &fullBasis_):fullBasis(&fullBasis_){
     // start with a random vector
@@ -38,13 +38,13 @@ public:
 	  }
   }
 
-  VecType const& pars() const{
+  T const& pars() const{
 	  return coeffs;
   }
   // inner derivative implementation
-  VecType calcNablaPars(State const &inputState, nablaType const &dEdC);
+  T calcNablaPars(State const &inputState, nablaType const &dEdC);
   // Some other derivative
-  // VecType calcNablaParsConnected(State const &inputState, nablaType const& dEdC){};
+  // T calcNablaParsConnected(State const &inputState, nablaType const& dEdC){};
   // stochastic reconfiguration derivative
   // Eigen::MatrixXcd calcdCdwSR(State const &outputState){};
 
@@ -52,7 +52,7 @@ private:
   // The basis to which we refer
   Basis const *fullBasis;
   // directly store the coefficients
-  VecType coeffs;
+  T coeffs;
 };
 
 } /* namespace networkVMC */

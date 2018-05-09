@@ -23,7 +23,7 @@ public:
 	SubspaceCF(Hamiltonian const &H_):CostFunction(),H(H_),distance(0),subspaceEnergy(coeffType()){};
 	virtual ~SubspaceCF();
 // Derivative with respect to the input's coefficients
-	std::vector<Eigen::VectorXd > nabla(State const &input) const;
+	nablaType nabla(State const &input) const;
 // Value of the cost function
 	double calc(State const &input) const {return distance;}
 private:

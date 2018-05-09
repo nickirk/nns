@@ -29,7 +29,7 @@ using weightType = std::vector<std::vector<Eigen::Map<Eigen::MatrixXd>>>;
 //numFilter<lengthFilter>
 using biasType = std::vector<Eigen::Map<VecType>>;
 // return type for cost function nabla (derivative with respect to a vector)
-using nablaType = std::vector<VecType>;
+using nablaType = std::vector<coeffType>;
 
 }
 #endif /* SRC_UTILITIES_TYPEDEFINE_HPP_ */

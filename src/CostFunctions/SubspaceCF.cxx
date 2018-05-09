@@ -17,7 +17,7 @@ namespace networkVMC{
 SubspaceCF::~SubspaceCF() {
 }
 
-std::vector<Eigen::VectorXd > SubspaceCF::nabla(State const &input) const{
+nablaType SubspaceCF::nabla(State const &input) const{
   auto dist = NormCF(diagonalizeSubspace(input));
   distance = dist.calc(input);
   return dist.nabla(input);

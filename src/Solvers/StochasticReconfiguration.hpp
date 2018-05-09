@@ -15,7 +15,7 @@ namespace networkVMC {
 template <typename T=VecType>
 class StochasticReconfiguration: public Solver<> {
 public:
-  StochasticReconfiguration(Parametrization &par_, double gamma_):
+  StochasticReconfiguration(Parametrization<T> &par_, double gamma_):
 	  Solver(gamma_),par(par_),iteration(0) {};
   virtual ~StochasticReconfiguration();
 
@@ -23,7 +23,7 @@ public:
   virtual void update(T &w, T const &force, State const &input);
 private:
   // this is a second order solver, so we need the parametrization
-  Parametrization &par;
+  Parametrization<T> &par;
   // and an iteration counter
   int iteration;
 };

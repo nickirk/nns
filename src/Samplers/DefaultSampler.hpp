@@ -13,13 +13,13 @@
 namespace networkVMC {
 
 // This is just the Default sampler made accessible
-
+template <typename T=VecType>
 class DefaultSampler : public Sampler{
 public:
 	// It works like the abstract base class, just that it can iterate
     DefaultSampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
-    		Parametrization const &para_, int numDets_= 100):
-    	Sampler(H_,fullBasis_,HF,para_,numDets_){};
+    		Parametrization<T> const &para_, int numDets_= 100):
+    	Sampler(H_,fullBasis_,HF,numDets_),para(para_){};
 	virtual ~DefaultSampler();
 	// We use the default functionality for iterate()
 	// this class just makes it accessible for testing purposes
@@ -28,6 +28,10 @@ public:
 		dI = getDet();
 		cI = para->getCoeff(cDet);
 	}
+private:
+	  // sampling depends on the coefficients, as they have to be given alongside the determinants
+	    Parametrization<T> const &para;
+
 };
 
 } /* namespace networkVMC */
