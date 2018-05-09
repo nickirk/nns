@@ -188,11 +188,11 @@ double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
     for (int i=0;i<d;++i){
         diff=static_cast<int>(alpha[i])-static_cast<int>(beta[i]);
         if (diff>0){
-            // holes in alpha
+            // holes created in alpha
             holes.push_back(i+1);
         }
         if (diff<0){
-            // particles in beta
+            // particles created in beta
             excitations.push_back(i+1);
         }
         else{
@@ -242,8 +242,9 @@ double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
         paritysign = -1.0;
     }
 
-
     if (holes.size()==0){
+    	// do a consistency check if there are actually any electrons in the determinants
+    	if(same.size()==0) throw InvalidDeterminantError();
         // diagonal Hamiltonian matrix element, i.e. alpha = beta
         double diagonalTerm{0.0};
         int indi{0},indj{0};
@@ -254,7 +255,7 @@ double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
             diagonalTerm += this->getMatrixElement(indi,indi);
         }
         int idn{0},idx{0};
-        for(size_t i=0;(i<same.size()-1);++i){
+        for(size_t i=0;i<same.size()-1;++i){
             for(size_t j=(i+1);j<same.size();++j){
                 // \sum_j>i <ij|ij> - <ij|ji>
                 // need to ensure that alpha(j) > alpha(i) which 
