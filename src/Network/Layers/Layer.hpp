@@ -35,7 +35,7 @@ public:
                         std::vector<Eigen::VectorXd> const &prevDelta, 
                         weightType const &prevWeights
                         )=0;
-  virtual void backProp(Eigen::VectorXd const &prevDelta){};
+  virtual void backProp(coeffType const &prevDelta){};
   virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint)=0;
   //virtual void initialise(Eigen::VectorXd const &NNP);
   //interface for accessing data

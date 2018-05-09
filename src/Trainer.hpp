@@ -11,6 +11,7 @@
 #include "utilities/State.hpp"
 #include "utilities/TypeDefine.hpp"
 #include "Solvers/Solver.hpp"
+#include "Network/Parametrization.hpp"
 
 namespace networkVMC{
 
@@ -18,7 +19,7 @@ namespace networkVMC{
 
 class CostFunction;
 class Sampler;
-class Parametrization;
+//class Parametrization;
 class Hamiltonian;
 
 // wrapper class for optimizing parameters
@@ -29,7 +30,7 @@ template <typename T=VecType>
 class Trainer {
 public:
 // supply a Parametrization, a sampler, a solver and the cost function
-	Trainer(Parametrization &NNW_, Sampler const &msampler, Solver<T> &sl, CostFunction const &cf);
+	Trainer(Parametrization<T> &NNW_, Sampler const &msampler, Solver<T> &sl, CostFunction const &cf);
 // train() tries to optimize the parameters of the NNW with respect to its cost function
 	void train();
 // optionally set the learning rate for this step
@@ -45,7 +46,7 @@ public:
 private:
 	Hamiltonian const &modelHam;
 	// the parameterization of the wave function
-	Parametrization &NNW;
+	Parametrization<T> &NNW;
 	Sampler const &msampler;
 	// the solver that optimizes the parameters (changes its parameters)
 	Solver<T> &sl;

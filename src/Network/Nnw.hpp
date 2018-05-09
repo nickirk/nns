@@ -33,7 +33,8 @@ namespace networkVMC{
 const std::complex<double> ii(0.,1.);
 
 // Neural network parametrization of a wavefunction
-class NeuralNetwork: public Parametrization{
+template<typename T=VecType>
+class NeuralNetwork: public Parametrization<T>{
 public:
   NeuralNetwork();
   ~NeuralNetwork();
@@ -88,7 +89,7 @@ public:
   // derivative taking into account connected dets
   VecType calcNablaParsConnected(State const &inputState,nablaType const&dEdC);
   // derivative of higher order(?)
-  Eigen::MatrixXcd calcdCdwSR(State const &outputState);
+  //Eigen::MatrixXcd calcdCdwSR(State const &outputState);
 
 private:
   //Structure of the NNW
@@ -105,7 +106,7 @@ private:
   std::vector<Eigen::VectorXd> feedIns;
 
   VecType backPropagate(
-    VecType const &lastLayerFeedBack
+    coeffType const &lastLayerFeedBack
        );
   void copyNetwork(NeuralNetwork const &source);
   //coeffType outputLayer() const {

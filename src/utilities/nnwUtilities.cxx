@@ -16,7 +16,7 @@
 
 namespace networkVMC{
 
-void preTrain(Parametrization &network, State const &target, Sampler const &msampler, double trainRate){
+void preTrain(Parametrization<VecType> &network, State const &target, Sampler const &msampler, double trainRate){
 // Trains the network to represent some state target
 // Then, set the cost function to the L2-distance to target
 	NormCF stateDistance(target);

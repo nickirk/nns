@@ -9,22 +9,24 @@
 #include "../Network/Parametrization.hpp"
 
 namespace networkVMC{
-
-ListGen::ListGen(Hamiltonian const &H_, Basis const &fullBasis_,
-		detType const &HF, Parametrization const &para_, int numDets_):
-	Sampler(H_,fullBasis_,HF,para_,numDets_),pos(0){
+template <typename T>
+ListGen<T>::ListGen(Hamiltonian const &H_, Basis const &fullBasis_,
+		detType const &HF, Parametrization<T> const &para_, int numDets_):
+	Sampler(H_,fullBasis_,HF,numDets_),para(&para_),pos(0){
 	std::vector<detType> tmp(numDets_,HF);
 	diffuse(tmp);
 }
 
 //---------------------------------------------------------------------------------------------------//
 
-ListGen::~ListGen() {
+template <typename T>
+ListGen<T>::~ListGen() {
 }
 
 //---------------------------------------------------------------------------------------------------//
 
-void ListGen::iterate(coeffType &cI, detType &dI) const{
+template <typename T>
+void ListGen<T>::iterate(coeffType &cI, detType &dI) const{
 	// Fetch the next entry from the pre-arranged list
 	dI = getDet();
 	// Get its coefficient
@@ -33,13 +35,15 @@ void ListGen::iterate(coeffType &cI, detType &dI) const{
 
 //---------------------------------------------------------------------------------------------------//
 
-detType ListGen::getDet(int i) const{
+template <typename T>
+detType ListGen<T>::getDet(int i) const{
   return diffuseList[i];
 }
 
 //---------------------------------------------------------------------------------------------------//
 
-detType ListGen::getDet() const{
+template <typename T>
+detType ListGen<T>::getDet() const{
 	pos += 1;
 	// cycle through the list, if we reach the end, start from the beginning
 	if(pos > diffuseList.size()){
@@ -52,11 +56,13 @@ detType ListGen::getDet() const{
 
 //---------------------------------------------------------------------------------------------------//
 
-int ListGen::getNumDets() const{return diffuseList.size();}
+template <typename T>
+int ListGen<T>::getNumDets() const{return diffuseList.size();}
 
 //---------------------------------------------------------------------------------------------------//
 
-void ListGen::diffuse(std::vector<detType> &list) const{
+template <typename T>
+void ListGen<T>::diffuse(std::vector<detType> &list) const{
  list=diffuseList;
  detType buf;
  while (list.size() < static_cast<unsigned int>(numDets)){
@@ -85,5 +91,7 @@ void ListGen::diffuse(std::vector<detType> &list) const{
  removeDuplicate(list);
  diffuseList = list;
 }
-
+//instantiate class
+template class ListGen<VecType>;
+template class ListGen<VecCType>;
 }

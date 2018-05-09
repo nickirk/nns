@@ -75,8 +75,11 @@ void DenseLayer::backProp(std::vector<Eigen::VectorXd> const &prevDelta,
 }
 
 void DenseLayer::backProp(
-    Eigen::VectorXd const &prevDelta
+    coeffType const &prevDelta_
     ){
+	//conversion from coeffType to VectorXd
+	Eigen::VectorXd prevDelta;
+	prevDelta << prevDelta_.real(), prevDelta_.imag();
     deltas[0] = 
     (prevDelta.array() * 
     (z[0].unaryExpr(actFuncPrime)).array()).matrix();

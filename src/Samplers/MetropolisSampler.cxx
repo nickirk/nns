@@ -13,10 +13,13 @@
 #include "../Network/Parametrization.hpp"
 
 namespace networkVMC{
-MetropolisSampler::~MetropolisSampler() {
+
+template<typename T>
+MetropolisSampler<T>::~MetropolisSampler() {
 }
 
-void MetropolisSampler::iterate(coeffType &cI, detType &dI) const{
+template<typename T>
+void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI) const{
 	// set up the rng
 	std::random_device rd;     // only used once to initialise (seed) engine
 	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
@@ -34,5 +37,7 @@ void MetropolisSampler::iterate(coeffType &cI, detType &dI) const{
 	cI = lastCoeff;
 	dI = cDet;
 }
-
+//instantiate class
+template class MetropolisSampler<VecType>;
+template class MetropolisSampler<VecCType>;
 }

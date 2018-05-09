@@ -11,11 +11,11 @@
 #include "Sampler.hpp"
 
 namespace networkVMC{
-
+template<typename T=VecType>
 class ListGen : public Sampler{
 public:
 	ListGen(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
-			Parametrization const &para_, int numDets_=100);
+			Parametrization<T> const &para_, int numDets_=100);
 	virtual ~ListGen();
 	virtual void iterate(coeffType &cI, detType &dI) const;
 	void diffuse(std::vector<detType> &list) const;
@@ -25,6 +25,8 @@ public:
     virtual int getNumDets() const;
 private:
 	mutable std::vector<detType > diffuseList;
+  // sampling depends on the coefficients, as they have to be given alongside the determinants
+    Parametrization<T> const *para;
 	mutable size_t pos;
 };
 

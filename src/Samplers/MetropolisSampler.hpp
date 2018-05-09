@@ -14,15 +14,17 @@
 // Class for sampling determinants using the metropolis algorithm
 
 namespace networkVMC{
-
+template <typename T=VecType>
 class MetropolisSampler: public Sampler {
 public:
-	MetropolisSampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF, Parametrization const &para_):
-			Sampler(H_,fullBasis_,HF,para_),lastCoeff(para_.getCoeff(cDet)){};
+	MetropolisSampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF, Parametrization<T> const &para_):
+			Sampler(H_,fullBasis_,HF),para(&para_),lastCoeff(para_.getCoeff(cDet)){};
 	virtual ~MetropolisSampler();
 	//Do a markov step
 	virtual void iterate(coeffType &cI, detType &dI) const;
 private:
+  // sampling depends on the coefficients, as they have to be given alongside the determinants
+    Parametrization<T> const *para;
 	mutable coeffType lastCoeff;
 };
 

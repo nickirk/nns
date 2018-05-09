@@ -28,7 +28,7 @@ public:
                         std::vector<Eigen::VectorXd> const &prevDelta,
                         weightType const &prevWeights
                         );
-  virtual void backProp(Eigen::VectorXd const &prevDelta);
+  virtual void backProp(coeffType const &prevDelta);
   virtual void mapPara(double *adNNP, double *adNablaNNP, int &startPoint);
   virtual int getNumPara() const{return numPara;};
   //want to achieve the effect of returning reference instead of making a 
