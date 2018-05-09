@@ -24,7 +24,7 @@ int main(){
   modelHam = generateFermiHubbard(numStates, U, t);
   vector<detType> list;
   EnergyEstimator eCF(modelHam);
-  NeuralNetwork NNW;
+  NeuralNetwork<VecType> NNW;
 
   NNW.constrInputLayer(numStates);
   NNW.constrDenseLayer(NNW.getLayer(0)->getActs(), "Tanh", 10*numStates);
@@ -34,7 +34,7 @@ int main(){
   detType HF=basis.getDetByIndex(0);
   //cout << "HF intCast=" << verbatimCast(HF) << endl;
   //list.push_back(HF);
-  ListGen sampler(modelHam, basis, HF,NNW);
+  ListGen<> sampler(modelHam, basis, HF,NNW);
   //ListGen sampler(modelHam, basis, 100, HF,NNW);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer

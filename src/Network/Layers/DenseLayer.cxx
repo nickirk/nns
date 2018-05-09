@@ -78,7 +78,7 @@ void DenseLayer::backProp(
     coeffType const &prevDelta_
     ){
 	//conversion from coeffType to VectorXd
-	Eigen::VectorXd prevDelta;
+	Eigen::VectorXd prevDelta(2);
 	prevDelta << prevDelta_.real(), prevDelta_.imag();
     deltas[0] = 
     (prevDelta.array() * 
