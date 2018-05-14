@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <iostream>
-#include "../src/Determinant.hpp"
-#include "../src/Basis.hpp"
+
+#include "../src/HilbertSpace/Basis.hpp"
+#include "../src/HilbertSpace/Determinant.hpp"
 //Basis.cxx and Basis.hpp have been tested and passed
 using namespace std;
+using namespace networkVMC;
 
 int main(){
   int numSites(8);

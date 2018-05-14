@@ -6,15 +6,15 @@
  */
 
 #include <iostream>
-#include "../src/Hamiltonian.hpp"
-#include "../src/CostFunction.hpp"
-#include "../src/EnergyCF.hpp"
-#include "../src/Determinant.hpp"
+
+#include "../src/NNWLib.hpp"
+
+using namespace networkVMC;
 
 int main(){
 	int numSites{3}, numStates{2*numSites};;
 	double U{4}, t{-1};
-	Hamiltonian modelHam = generateHubbard(numStates,U,t);
+	FermionicHamiltonian modelHam = generateFermiHubbard(numStates,U,t);
 	EnergyCF eCF(modelHam);
 	detType D1(numStates, false);
 	detType D2 = D1;
@@ -22,14 +22,13 @@ int main(){
 	create(D1,2);
 	create(D2,0);
 	create(D2,4);
-	coeffType coeff = Eigen::VectorXd::Zero(2);
-	coeff[0] = 1.0;
+	coeffType coeff = 1.0;
 	std::vector<coeffType > TwoCoeffs(2,coeff);
 	std::vector<detType > HFArr(2);
 	HFArr[0] = D1;
 	HFArr[1] = D2;
 	State HF(HFArr,TwoCoeffs);
-	std::vector<coeffType > dE = eCF.nabla(HF);
+	auto dE = eCF.nabla(HF);
 	std::cout << "Energy " << eCF.calc(HF) << std::endl;
 	std::cout << "Derivative " << dE[0] << std::endl;
 }

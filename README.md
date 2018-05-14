@@ -23,7 +23,7 @@ for the seed and its connection from the neural network. Decide to move to
 
 3. Calculating
 ```math
-E(\{W_i\})^{(t)}=\frac{<\Psi^{(t)}|H|\Psi^{(t)}>}{<\Psi^{(t)}|\Psi^{(t)}>}=\frac{\sum_{i}^N\sum_{j'}C_i^*C_j<i|H|j>}{\sum_i|C_i|^2}\\
+E(\{W_i\})^{(t)}=\frac{<\Psi^{(t)}|H|\Psi^{(t)}>}{<\Psi^{(t)}|\Psi^{(t)}>}=\frac{\sum_{i}^N\sum_{j'}C_i^*C_j<i|H|j>}{\sum_i|C_i|^2}
 =\left<C_jH_{ij}/C_i^*\right>_M
 ```
 where the prime on the $`j`$ index means sum over the determinants which are connected to each $`i`$ determinant in the list. In the futuer, we should move to a stochastic version to sum over the connected determinants. In the last step, we adopt the Metropolis sampling and calculate the expectation value via the average of a Markov chain process.
@@ -45,15 +45,15 @@ E(\{W_i\})=E(\{C_i(\{W_k\})\})
 so we can write the derivative as a sum
 
 ```math
-\frac{\partial E}{\partial W_i}=\sum_j\left(\frac{\partial E}{\partial C^*_j}\frac{\partial C_j^*}{\partial W_i}+\frac{\partial E}{\partial C_j}\frac{\partial C_j}{\partial W_i}\right)\\
+\frac{\partial E}{\partial W_i}=\sum_j\left(\frac{\partial E}{\partial C^*_j}\frac{\partial C_j^*}{\partial W_i}+\frac{\partial E}{\partial C_j}\frac{\partial C_j}{\partial W_i}\right)
 =\sum_j\left(2Re(\frac{\partial E}{\partial C_j^*})\frac{\partial Re(C_j^*)}{\partial W_i}+2 Imag(\frac{\partial E}{\partial C_j^*}\frac{\partial Imag(C_j^*)}{\partial W_i})\right)
 ```
 
 where
 
-```math
-\frac{\partial E}{\partial C_j^*}=\frac{\partial <\Psi|H|\Psi>/<\Psi|\Psi>}{\partial C_j^*}\\
-=\frac{\sum_iC_iH_{ji}-EC_j}{\sum_i|C_i|^2}\\
+```math 
+\frac{\partial E}{\partial C_j^*}=\frac{\partial <\Psi|H|\Psi>/<\Psi|\Psi>}{\partial C_j^*}
+=\frac{\sum_iC_iH_{ji}-EC_j}{\sum_i|C_i|^2}
 =\left<\frac{H_{ji}-E\delta_{ij}}{C^*_i}\right>_M
 ```
 
@@ -69,10 +69,10 @@ This is borrowed from CC4S code to make sure that when different contributors co
 - Derived classes should end with the name of the super class, unless it is kind of obvious (BinaryFtodLoader)
 - Methods are in camelCase, starting with a lower case character. They should have verb character. (solve, normalize, not loader)
 - Instances of classes and types are named in camelCase, preferably according to the class name they are an instance of. (Parser parser, int maxIterations)
-- Mathematical objects, such as numbers and tensors, may additionally be named according to the mathematical symbol nomenclature (int n, Tensor<> Vabij).
+- Mathematical objects, such as numbers and tensors, may additionally be named according to the  ematical symbol nomenclature (int n, Tensor<> Vabij).
 - Acronyms should be treated as a normal word. (FtodLoader, not FTODLoader)
 
-##Doing test
+## Doing test
 
 The test files are under the test directory. In principle, each implemented functionality should have a test file and pass the test.
 

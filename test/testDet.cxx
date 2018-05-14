@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <iostream>
-#include "../src/Determinant.hpp"
-#include "../src/Basis.hpp"
+
+#include "../src/HilbertSpace/Basis.hpp"
+#include "../src/HilbertSpace/Determinant.hpp"
 //Determinant.hpp/.cxx have been tested and passed.
+
+using namespace networkVMC;
 int main(){
   detType det(5,0);
   detType det1(det);
