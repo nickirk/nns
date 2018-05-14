@@ -15,6 +15,8 @@
 #include <algorithm>
 #include <cmath>
 #include <random>
+#include <numeric>
+#include <functional>
 #include "../HilbertSpace/Determinant.hpp"
 #include "AbInitioHamiltonian.hpp"
 #include "../utilities/Errors.hpp"
@@ -1413,7 +1415,7 @@ detType AbInitioHamiltonian::getRandomCoupledState(detType const &source, double
     // random excitation generator: randomly pick a connected determinant
 
     int exflag;
-    double pdoubles;
+    //double pdoubles;
     detType target;
     std::vector<int> holes,particles;
     double rand;
@@ -1423,7 +1425,7 @@ detType AbInitioHamiltonian::getRandomCoupledState(detType const &source, double
     std::vector<int> noccs,nunoccs;
 
     exflag = 3;
-    pdoubles = 0.0;
+    //pdoubles = 0.0;
     target = source;
 
 
@@ -1477,7 +1479,7 @@ detType AbInitioHamiltonian::getRandomCoupledState(detType const &source, double
     nexcit = nsingleexcit + ndoubleexcit;
 
     // use relative number of single and double excitations for probability
-    pdoubles = static_cast<double>(ndoubleexcit)/static_cast<double>(nexcit);
+    //pdoubles = static_cast<double>(ndoubleexcit)/static_cast<double>(nexcit);
 
     // exflag = 3: single or double excitation
     // exflag = 1: single excitations only
@@ -1580,7 +1582,7 @@ double AbInitioHamiltonian::calcGenProp(detType const &source, detType const &ta
     // evaluate the generation probability
 
     double pgen;
-    double pdouble;
+    //double pdouble;
     double diff;
     int nexcit,nsingleexcit,ndoubleexcit,exflag;
     int elecwnoexcit,ispin,nexcita,nexcitb,nexcitotherway;
@@ -1589,7 +1591,7 @@ double AbInitioHamiltonian::calcGenProp(detType const &source, detType const &ta
     std::vector<int> spin;
     int elecpairs,norbs,nel;
 
-    pdouble = 0.0;
+    //pdouble = 0.0;
     pgen = 0.0;
     nexcita = 0;
     nexcitb = 0;
@@ -1689,7 +1691,7 @@ double AbInitioHamiltonian::calcGenProp(detType const &source, detType const &ta
     nexcit = nsingleexcit + ndoubleexcit;
 
     // use relative number of single and double excitations for probability
-    pdouble = static_cast<double>(ndoubleexcit)/static_cast<double>(nexcit);
+    //pdouble = static_cast<double>(ndoubleexcit)/static_cast<double>(nexcit);
 
 
 
@@ -1719,7 +1721,7 @@ double AbInitioHamiltonian::calcGenProp(detType const &source, detType const &ta
 
         // p_single = 1 - p_double
         // pgen = p_single * p(i) * p(a|i) * n/(n-elecwnoexcit)
-        pgen = (1.0 - pdouble) / (static_cast<double>(nexcita*(nel-elecwnoexcit)));
+        pgen = (1.0 - pdoubles) / (static_cast<double>(nexcita*(nel-elecwnoexcit)));
 
         return pgen;
 
@@ -1785,7 +1787,7 @@ double AbInitioHamiltonian::calcGenProp(detType const &source, detType const &ta
         }
 
         // p_gen = p_double * p(ij) * [p(a|ij)p(b|a,ij) + p(b|ij)p(a|b,ij)]
-        pgen = pdouble*((1.0/static_cast<double>(nexcitb)) + (1.0/static_cast<double>(nexcitotherway))) / 
+        pgen = pdoubles*((1.0/static_cast<double>(nexcitb)) + (1.0/static_cast<double>(nexcitotherway))) / 
             (static_cast<double>(elecpairs*(nexcita - nforbiddenorbs)));
 
         return pgen;
@@ -1794,5 +1796,1454 @@ double AbInitioHamiltonian::calcGenProp(detType const &source, detType const &ta
     return pgen;
 
 }
+
+
+
+void AbInitioHamiltonian::excit_store::construct_class_count() {
+    // fill in information necessary for random excitation generation
+
+    // get the occupied spin orbitals
+    source_orbs = getOccupiedPositions(source);
+
+    excitmat[0][0] = -1;
+    excitmat[0][1] = -1;
+    excitmat[1][0] = -1;
+    excitmat[1][1] = -1;
+    target = source;
+    pgen = 0.0;
+
+    nel = source_orbs.size();
+    norbs = source.size();
+    nalphaels = 0;
+    nbetaels = 0;
+    // number of occupied and unoccupied alpha and beta spin electrons
+    for (size_t i=0; i<source_orbs.size(); ++i){
+        if ((source_orbs[i]%2) == 0){
+            // alpha spin
+            nalphaels += 1;
+        }
+        else{
+            // beta spin
+            nbetaels += 1;
+        }
+    }
+    nalphaholes = (source.size()/2) - nalphaels;
+    nbetaholes = (source.size()/2) - nbetaels;
+
+    // number of electron pairs
+    aa_elec_pairs = nalphaels*(nalphaels-1)/2;
+    bb_elec_pairs = nbetaels*(nbetaels-1)/2;
+    ab_elec_pairs = nalphaels*nbetaels;
+
+    bfilled = true;
+
+}
+
+
+double AbInitioHamiltonian::excit_store::pgen_single_excit_cs(AbInitioHamiltonian const &H, int src, int tgt) {
+    // evaluate the generation probability for a single excitation
+
+    double cum_sum=0.0;
+    double hel=0.0;
+    double cpt_tgt=0.0;
+    int idi,ida;
+    double pgen_single;
+
+    pgen_single = 0.0;
+
+    // the electron involved in the excitation is picked uniformly
+    pgen_single = 1.0 / static_cast<double>(nel);
+
+    idi = 0;
+    ida = 0;
+    idi = H.getId(src+1);
+
+    cpt_tgt = 0.0;
+    cum_sum = 0.0;
+
+    // construct the cumulative list of connection strengths
+    if ((src%2)==0){
+        // alpha spin orbital
+        cum_sum = 0.0;
+        for (size_t i=0; i<norbs; i+= 2){
+            if (not source[i]){
+                // orbital is not in the source determinant
+                // get Hamiltonian matrix element
+                hel = 0.0;
+                ida = H.getId(i+1);
+                std::vector<int> idsrc;
+                for (size_t j=0; j<source_orbs.size(); ++j){
+                    idsrc.push_back(H.getId(source_orbs[j]+1));
+                    if (source_orbs[j] == src){
+                        continue;
+                    }
+                    hel += H.getMatrixElement(idi,idsrc[j],ida,idsrc[j]); 
+                    if ((src%2) == (source_orbs[j]%2)){
+                        hel -= H.getMatrixElement(idi,idsrc[j],idsrc[j],ida);
+                    }
+                }
+                hel += H.getMatrixElement(idi,ida);
+                cum_sum += std::fabs(hel);
+                if (i == tgt){
+                    cpt_tgt = std::fabs(hel);
+                }
+            }
+        }
+    }
+    else{
+        // beta spin orbital
+        cum_sum = 0.0;
+        for (size_t i=1; i<norbs; i+=2){
+            if (not source[i]){
+                // orbital is not in the source determinant
+                // get Hamiltonian matrix element
+                hel = 0.0;
+                ida = H.getId(i+1);
+                std::vector<int> idsrc;
+                for (size_t j=0; j<source_orbs.size(); ++j){
+                    idsrc.push_back(H.getId(source_orbs[j]+1));
+                    if (source_orbs[j] == src){
+                        continue;
+                    }
+                    hel += H.getMatrixElement(idi,idsrc[j],ida,idsrc[j]);
+                    if ((src%2) == (source_orbs[j]%2)){
+                        hel -= H.getMatrixElement(idi,idsrc[j],idsrc[j],ida);
+                    }
+                }
+                hel += H.getMatrixElement(idi,ida);
+                cum_sum += std::fabs(hel);
+                if (i == tgt){
+                    cpt_tgt = std::fabs(hel);
+                }
+            }
+        }
+    }
+
+    // the generation probability
+    if (std::fabs(cum_sum) < 1e-12){
+        pgen_single = 0.0;
+    }
+    else{
+        pgen_single *= (cpt_tgt/cum_sum);
+    }
+
+    return pgen_single;
+}
+
+
+
+int AbInitioHamiltonian::excit_store::select_single_hole(AbInitioHamiltonian const &H, int src, double &pgen) {
+    // select a hole for a single excitation
+
+    // set up the random number generator
+    // initialise the seed engine
+    std::random_device rd;
+    // use Mersenne-Twister random number generator
+    std::mt19937 rng(rd());
+    // uniform distribution from 0.0 to 1.0
+    std::uniform_real_distribution<double> uniform_dist(0.0,1.0);
+    std::vector<double> cdf_single_a;
+    std::vector<int> holes_a;
+    double cum_sum=0.0;
+    double hel=0.0;
+    int nexcit=0;
+    int idi,ida;
+    int tgt = -1;
+
+    pgen = 0.0;
+
+    idi = 0;
+    ida = 0;
+    idi = H.getId(src+1);
+
+    // maximum number of available holes if no symmetry and 
+    // spin information are considered
+    int nelem = norbs-nel;
+
+    // construct the cumulative list of connection strengths
+    if ((src%2)==0){
+        // alpha spin orbital
+        cum_sum = 0.0;
+        for (size_t i=0; i<norbs; i+= 2){
+            if (not source[i]){
+                // orbital is not in the source determinant
+                // get Hamiltonian matrix element
+                nexcit += 1;
+                hel = 0.0;
+                ida = H.getId(i+1);
+                std::vector<int> idsrc;
+                for (size_t j=0; j<source_orbs.size(); ++j){
+                    idsrc.push_back(H.getId(source_orbs[j]+1));
+                    if (source_orbs[j] == src){
+                        continue;
+                    }
+                    hel += H.getMatrixElement(idi,idsrc[j],ida,idsrc[j]); 
+                    if ((src%2) == (source_orbs[j]%2)){
+                        hel -= H.getMatrixElement(idi,idsrc[j],idsrc[j],ida);
+                    }
+                }
+                hel += H.getMatrixElement(idi,ida);
+                cum_sum += std::fabs(hel);
+                holes_a.push_back(i);
+                cdf_single_a.push_back(cum_sum);
+            }
+        }
+    }
+    else{
+        // beta spin orbital
+        cum_sum = 0.0;
+        for (size_t i=1; i<norbs; i+=2){
+            if (not source[i]){
+                // orbital is not in the source determinant
+                // get Hamiltonian matrix element
+                hel = 0.0;
+                nexcit += 1;
+                ida = H.getId(i+1);
+                std::vector<int> idsrc;
+                for (size_t j=0; j<source_orbs.size(); ++j){
+                    idsrc.push_back(H.getId(source_orbs[j]+1));
+                    if (source_orbs[j] == src){
+                        continue;
+                    }
+                    hel += H.getMatrixElement(idi,idsrc[j],ida,idsrc[j]);
+                    if ((src%2) == (source_orbs[j]%2)){
+                        hel -= H.getMatrixElement(idi,idsrc[j],idsrc[j],ida);
+                    }
+                }
+                hel += H.getMatrixElement(idi,ida);
+                cum_sum += std::fabs(hel);
+                holes_a.push_back(i);
+                cdf_single_a.push_back(cum_sum);
+            }
+        }
+    }
+
+    // pick a particular hole a for use
+    if ((nexcit == 0) or (std::fabs(cum_sum) < 1e-12)){
+        // no available excitation
+        tgt = -1;
+        pgen = 0.0;
+
+        return tgt;
+    }
+    else if (nexcit > nelem){
+        throw OutOfRangeError(nexcit);
+    }
+    else{
+        double hel_picked = uniform_dist(rng)*cum_sum;
+        std::vector<double>::iterator up;
+        up = std::upper_bound(cdf_single_a.begin(),cdf_single_a.end(),hel_picked);
+        int orbind = up - cdf_single_a.begin();
+        tgt = holes_a[orbind];
+
+        // the generation probability
+        if (orbind > 0){
+            pgen = (cdf_single_a[orbind]-cdf_single_a[orbind-1])/cum_sum;
+        }
+        else{
+            pgen = cdf_single_a[orbind]/cum_sum;
+        }
+
+        return tgt;
+    }
+}
+
+
+
+detType AbInitioHamiltonian::excit_store::gen_single_excit_cs(AbInitioHamiltonian const &H) {
+    // generate a single excitation
+
+    // set up the random number generator
+    // initialise the seed engine
+    std::random_device rd;
+    // use Mersenne-Twister random number generator
+    std::mt19937 rng(rd());
+    // uniform distribution from 0.0 to 1.0
+    std::uniform_real_distribution<double> uniform_dist(0.0,1.0);
+
+    // pick an electron at random with uniform probability
+    // floor: greatest integer <= x
+    //int elec = 1 + std::floor((uniform_dist(rng)*nel));
+    int elec = std::floor((uniform_dist(rng)*nel));
+    int src = source_orbs[elec];
+
+    // select the target hole by connection strength
+    int tgt = this->select_single_hole(H,src,pgen);
+    if (tgt < 0){
+        target.clear();
+        excitmat[0][0] = -1;
+        excitmat[0][1] = -1;
+        excitmat[1][0] = -1;
+        excitmat[1][1] = -1;
+
+        return target;
+    }
+
+    // generate the new determinant
+    target = source;
+    annihilate(target,src);
+    create(target,tgt);
+    excitmat[1][0] = -1;
+    excitmat[1][1] = -1;
+    excitmat[0][0] = src;
+    excitmat[0][1] = tgt;
+
+    pgen /= static_cast<double>(nel);
+
+    return target;
+
+}
+
+
+
+std::vector<int> AbInitioHamiltonian::excit_store::pick_biased_elecs(AbInitioHamiltonian const &H, std::vector<int> &elecs){
+    // pick a pair of electrons
+    
+    // set up the random number generator
+    // initialise the seed engine
+    std::random_device rd;
+    // use Mersenne-Twister random number generator
+    std::mt19937 rng(rd());
+    // uniform distribution from 0.0 to 1.0
+    std::uniform_real_distribution<double> uniform_dist(0.0,1.0);
+    std::vector<int> alpha_num;
+    std::vector<int> beta_num;
+    int alpha_req=0;
+    int beta_req=0;
+    std::vector<int> src;
+
+    elecs.clear();
+    src.clear();
+
+    // pick the n-th alpha or beta electrons from the determinant
+    // according to the availability of pairs and the weighting of 
+    // opposite-spin pairs relative to same-spin ones
+    double rand = uniform_dist(rng);
+    if (rand < H.pparallel){
+        // same spin pair
+        pgen = H.pparallel / static_cast<double>(aa_elec_pairs+bb_elec_pairs);
+        rand = (rand/H.pparallel)*static_cast<double>(aa_elec_pairs+bb_elec_pairs);
+        int id = std::floor(rand);
+        if (id < aa_elec_pairs){
+            // alpha alpha spin pair
+            alpha_req = 2;
+            beta_req = 0;
+            // which alpha spin electrons ?
+            // triangular indexing system
+            alpha_num.push_back(std::ceil((1+std::sqrt(9 + 8*static_cast<double>(id)))/2));
+            alpha_num.push_back(id+1-((alpha_num[0]-1)*(alpha_num[0]-2))/2);
+        }
+        else{
+            // beta beta spin pair
+            alpha_req = 0;
+            beta_req = 2;
+            // which beta spin electrons ?
+            // triangular indexing system
+            id -= aa_elec_pairs;
+            beta_num.push_back(std::ceil((1+std::sqrt(9+8*static_cast<double>(id)))/2));
+            beta_num.push_back(id+1-((beta_num[0]-1)*(beta_num[0]-2))/2);
+        }
+    }
+    else{
+        // opposite spin pair
+        alpha_req = 1;
+        beta_req = 1;
+        pgen = (1.0-H.pparallel)/static_cast<double>(ab_elec_pairs);
+        rand = ((rand - H.pparallel)/(1.0 - H.pparallel))*ab_elec_pairs;
+        int id = std::floor(rand);
+        alpha_num.push_back(1+(id % nalphaels));
+        beta_num.push_back(1+std::floor(id/static_cast<double>(nalphaels)));
+
+    }
+
+    
+    // loop through the source determinant and choose the relevant electrons
+    int alpha_count = 0;
+    int beta_count = 0;
+    int elecs_found = 0;
+
+    for (size_t i=0; i<source_orbs.size(); ++i){
+        if ((source_orbs[i]%2)==0){
+            // alpha spin 
+            alpha_count += 1;
+            if (alpha_req > 0){
+                if (alpha_count == alpha_num[alpha_req-1]){
+                    // found an alpha electron
+                    elecs_found += 1;
+                    elecs.push_back(i);
+                    alpha_req -= 1;
+                }
+            }
+        }
+        else{
+            // beta spin
+            beta_count += 1;
+            if (beta_req > 0){
+                if (beta_count == beta_num[beta_req-1]){
+                    // found a beta electron
+                    elecs_found += 1;
+                    elecs.push_back(i);
+                    beta_req -= 1;
+                }
+            }
+        }
+        if ((alpha_req==0) and (beta_req==0)){
+            break;
+        }
+    }
+
+    // the spin orbitals
+    src.push_back(source_orbs[elecs[0]]);
+    src.push_back(source_orbs[elecs[1]]);
+
+    return src;
+
+}
+
+
+
+double AbInitioHamiltonian::excit_store::opp_spin_pair_contribution(AbInitioHamiltonian const &H, int i, int j, int a, int b){
+    // the contribution for a pair of opposite spin electrons
+
+    int idi = H.getId(i+1);
+    int idj = H.getId(j+1);
+    int ida = H.getId(a+1);
+    int idb = H.getId(b+1);
+    double contrib = 0.0;
+
+    if (H.part_exact and (b > 0)){
+        // include sqrt(abs(<ij|ab>))
+        // this can only be used if <ij|ba> = 0
+        contrib = std::max(std::sqrt(std::fabs(H.getMatrixElement(idi,idj,ida,idb))),1e-5);
+    }
+    else if (H.lin_exact){
+        if (b > 0){
+            // include abs(<ij|ab>)
+            // this can only be used if <ij|ba> = 0
+            contrib = std::fabs(H.getMatrixElement(idi,idj,ida,idb));
+        }
+        else{
+            // select the first orbital linearly
+            contrib = 1.0;
+        }
+    }
+    else{
+        // include the contribution of this terms sqrt(<ii|aa>)
+        contrib = std::sqrt(std::fabs(H.getMatrixElement(idi,idi,ida,ida)));
+    }
+
+    return contrib;
+
+}
+
+
+double AbInitioHamiltonian::excit_store::same_spin_pair_contribution(AbInitioHamiltonian const &H, int i, int j, int a, int b){
+    // the contribution for a pair of same spin electrons
+    int idi = H.getId(i+1);
+    int idj = H.getId(j+1);
+    int ida = H.getId(a+1);
+    int idb = H.getId(b+1);
+    double contrib = 0.0;
+
+    if (H.part_exact and (b > 0)){
+        // include sqrt(abs(<ij|ab>-<ij|ba>))
+        contrib = std::max(std::sqrt(std::fabs(H.getMatrixElement(idi,idj,ida,idb)-H.getMatrixElement(idi,idj,idb,ida))),1e-5);
+    }
+    else if (H.lin_exact){
+        if (b > 0){
+            // include abs(<ij|ab>-<ij|ba>)
+            contrib = std::fabs(H.getMatrixElement(idi,idj,ida,idb)-H.getMatrixElement(idi,idj,idb,ida));
+        }
+        else{
+            // select the first orbital linearly
+            contrib = 1.0;
+        }
+    }
+    else{
+        // include the contribution of this terms sqrt(<ii|aa>+<jj|aa>)
+        contrib = std::sqrt(std::fabs(H.getMatrixElement(idi,idi,ida,ida)+H.getMatrixElement(idj,idj,ida,ida)));
+    }
+
+    return contrib;
+
+
+
+}
+
+
+
+std::vector<int> AbInitioHamiltonian::excit_store::select_double_holes(AbInitioHamiltonian const &H, std::vector<int> const &src, std::vector<double> &cum_sum, std::vector<double> &cpt){
+    // for a double excitation pick a pair of holes using <e1e1|h1h1> and 
+    // <e2e2|h2h2> for the probability distribution
+
+
+    // set up the random number generator
+    // initialise the seed engine
+    std::random_device rd;
+    // use Mersenne-Twister random number generator
+    std::mt19937 rng(rd());
+    // uniform distribution from 0.0 to 1.0
+    std::uniform_real_distribution<double> uniform_dist(0.0,1.0);
+    std::vector<int> alpha_num;
+    int nexcita,nexcitb;
+    std::vector<double> cdf_a,cdf_b;
+    std::vector<int> holes_a,holes_b;
+    std::vector<int> tgt;
+
+    // for a parallel spin pair without the part_exact and lin_exact 
+    // schemes the CDFs need not be recomputed
+
+    if ((src[0]%2) == (src[1]%2)){
+        // same spin pair
+       
+        cum_sum.clear();
+        cum_sum.assign(2,0.0);
+        //cum_sum.push_back(0.0);
+        //cum_sum.push_back(0.0);
+        nexcita = 0;
+        nexcitb = 0;
+
+        if ((src[0]%2)==1){
+            // beta spin pair
+            for (size_t i=1; i<norbs; i+=2){
+                if (not source[i]){
+                    // spin orbital is vacant
+                    cum_sum[0] += this->same_spin_pair_contribution(H,src[0],src[1],i,-1);
+                        nexcita += 1;
+                        cdf_a.push_back(cum_sum[0]);
+                        holes_a.push_back(i);
+                }
+            }
+        }
+        else{
+            // alpha spin pair
+            for (size_t i=0; i<norbs; i+=2){
+                if (not source[i]){
+                    // spin orbital is vacant
+                    cum_sum[0] += this->same_spin_pair_contribution(H,src[0],src[1],i,-1);
+                        nexcita += 1;
+                        cdf_a.push_back(cum_sum[0]);
+                        holes_a.push_back(i);
+                }
+            }
+        }
+
+        // if there are no available hole pairs
+        if ((nexcita==0) or (std::fabs(cum_sum[0])<1e-12)){
+            tgt.clear();
+            tgt.assign(2,-1);
+            //tgt.push_back(-1);
+            //tgt.push_back(-1);
+            
+            return tgt;
+        }
+
+        // choose a value to pick orbital a
+        double hel_picked_a = uniform_dist(rng)*cum_sum[0];
+        std::vector<double>::iterator up;
+        up = std::upper_bound(cdf_a.begin(),cdf_a.end(),hel_picked_a);
+        int orbind_a = up - cdf_a.begin();
+        tgt.push_back(holes_a[orbind_a]);
+
+        // the generation probability
+        if (orbind_a > 0){
+            cpt.push_back(cdf_a[orbind_a]-cdf_a[orbind_a-1]);
+        }
+        else{
+            cpt.push_back(cdf_a[orbind_a]);
+        }
+
+        // the CDF for the orbital b is the same for b<a
+        //vector<double> cdf_b(cdf_a.begin(),(cdf_a.begin()+orbind_a+1-1));
+        //vector<int> holes_b(holes_a.begin(),(holes_a.begin()+orbind_a+1-1));
+        std::vector<double> cdf_b(cdf_a.begin(),(cdf_a.begin()+orbind_a));
+        std::vector<int> holes_b(holes_a.begin(),(holes_a.begin()+orbind_a));
+        // for b>=a it is the CDF with the contribution of a removed
+        nexcitb = nexcita -1;
+        // if there are no available hole pairs
+        if ((nexcitb==0) or (std::fabs(cum_sum[0]-cpt[0])<1e-12)){
+            tgt.clear();
+            tgt.assign(2,-1);
+            //tgt.push_back(-1);
+            //tgt.push_back(-1);
+            
+            return tgt;
+        }
+
+        for (size_t i=orbind_a; i<(cdf_a.size()-1); ++i){
+            cdf_b.push_back(cdf_a[i+1]-cpt[0]);
+            holes_b.push_back(holes_a[i+1]);
+        }
+
+        cum_sum[1] = cum_sum[0] - cpt[0];
+
+        // choose a value to pick orbital b
+        double hel_picked_b = uniform_dist(rng)*cum_sum[1];
+        std::vector<double>::iterator up2;
+        up2 = std::upper_bound(cdf_b.begin(),cdf_b.end(),hel_picked_b);
+        int orbind_b = up2 - cdf_b.begin();
+        tgt.push_back(holes_b[orbind_b]);
+
+        // the generation probability
+        if (orbind_b > 0){
+            cpt.push_back(cdf_b[orbind_b]-cdf_b[orbind_b-1]);
+        }
+        else{
+            cpt.push_back(cdf_b[orbind_b]);
+        }
+
+
+        return tgt;
+
+    }
+    else{
+        tgt.clear();
+        tgt.assign(2,-1);
+        //tgt.push_back(-1);
+        //tgt.push_back(-1);
+        
+        return tgt;
+    }
+
+}
+
+
+int AbInitioHamiltonian::excit_store::select_double_hole(AbInitioHamiltonian const &H, std::vector<int> const &src, int const &orb_pair, double &cum_sum, double &cpt){
+    // for a double excitation pick a pair of holes using <e1e1|h1h1> and 
+    // <e2e2|h2h2> for the probability distribution
+
+
+    // set up the random number generator
+    // initialise the seed engine
+    std::random_device rd;
+    // use Mersenne-Twister random number generator
+    std::mt19937 rng(rd());
+    // uniform distribution from 0.0 to 1.0
+    std::uniform_real_distribution<double> uniform_dist(0.0,1.0);
+    std::vector<int> alpha_num;
+    int nexcit;
+    std::vector<double> cdf;
+    std::vector<int> holes;
+    int tgt=0;
+
+    // for a parallel spin pair without the part_exact and lin_exact 
+    // schemes the CDFs need not be recomputed
+
+    if ((src[0]%2) == (src[1]%2)){
+        // same spin pair
+        
+        cum_sum = 0.0;
+        nexcit = 0;
+
+        if ((src[0]%2)==1){
+            // beta spin pair
+            for (size_t i=1; i<norbs; i+=2){
+                if ((not source[i]) and (i!=orb_pair)){
+                    // spin orbital is vacant
+                    cum_sum += this->same_spin_pair_contribution(H,src[0],src[1],i,orb_pair);
+                    nexcit += 1;
+                    cdf.push_back(cum_sum);
+                    holes.push_back(i);
+                }
+            }
+        }
+        else{
+            // alpha spin pair
+            for (size_t i=0; i<norbs; i+=2){
+                if ((not source[i]) and (i!=orb_pair)){
+                    // spin orbital is vacant
+                    cum_sum += this->same_spin_pair_contribution(H,src[0],src[1],i,orb_pair);
+                    nexcit += 1;
+                    cdf.push_back(cum_sum);
+                    holes.push_back(i);
+                }
+            }
+        }
+    }
+    else{
+        // opposite spin pair
+        // only the electron-hole interactions with the same spin is required
+
+        cum_sum = 0.0;
+        nexcit = 0;
+        
+        if (orb_pair < 0){
+            if ((src[0]%2)==1){
+                // beta spin pair
+                for (size_t i=1; i<norbs; i+=2){
+                    if ((not source[i]) and (i!=orb_pair)){
+                        // spin orbital is vacant
+                        cum_sum += this->opp_spin_pair_contribution(H,src[0],src[1],i,orb_pair);
+                        nexcit += 1;
+                        cdf.push_back(cum_sum);
+                        holes.push_back(i);
+                    }
+                }
+            }
+            else{
+                // alpha spin pair
+                for (size_t i=0; i<norbs; i+=2){
+                    if ((not source[i]) and (i!=orb_pair)){
+                        // spin orbital is vacant
+                        cum_sum += this->opp_spin_pair_contribution(H,src[0],src[1],i,orb_pair);
+                        nexcit += 1;
+                        cdf.push_back(cum_sum);
+                        holes.push_back(i);
+                    }
+                }
+            }
+        }
+        else{
+            if ((orb_pair%2)==0){
+                // beta spin since first orital is alpha spin
+                for (size_t i=1; i<norbs; i+=2){
+                    if ((not source[i]) and (i!=orb_pair)){
+                        // spin orbital is vacant
+                        cum_sum += this->opp_spin_pair_contribution(H,src[0],src[1],i,orb_pair);
+                        nexcit += 1;
+                        cdf.push_back(cum_sum);
+                        holes.push_back(i);
+                    }
+                }
+            }
+            else{
+                // alpha spin since first orbital is beta spin
+                for (size_t i=0; i<norbs; i+=2){
+                    if ((not source[i]) and (i!=orb_pair)){
+                        // spin orbital is vacant
+                        cum_sum += this->opp_spin_pair_contribution(H,src[0],src[1],i,orb_pair);
+                        nexcit += 1;
+                        cdf.push_back(cum_sum);
+                        holes.push_back(i);
+                    }
+                }
+            }
+
+        }
+        
+    }
+
+    // if there are no available hole pairs
+    if ((nexcit==0) or (std::fabs(cum_sum)<1e-12)){
+        tgt = -1;
+        
+        return tgt;
+    }
+
+    // choose a value 
+    double hel_picked = uniform_dist(rng)*cum_sum;
+    std::vector<double>::iterator up;
+    up = std::upper_bound(cdf.begin(),cdf.end(),hel_picked);
+    int orbind = up - cdf.begin();
+    tgt = holes[orbind];
+
+    // the generation probability
+    if (orbind > 0){
+        cpt = cdf[orbind]-cdf[orbind-1];
+    }
+    else{
+        cpt = cdf[orbind];
+    }
+
+        
+    return tgt;
+
+}
+
+
+double AbInitioHamiltonian::excit_store::pgen_select_double_hole(AbInitioHamiltonian const &H, std::vector<int> const &src, int const &orb_pair, double &cum_sum, int const &tgt){
+    // for a double excitation pick a pair of holes using <e1e1|h1h1> and 
+    // <e2e2|h2h2> for the probability distribution
+
+
+    double cpt=0.0;
+    double tmp=0.0;
+
+    // for a parallel spin pair without the part_exact and lin_exact 
+    // schemes the CDFs need not be recomputed
+
+    if ((src[0]%2) == (src[1]%2)){
+        // same spin pair
+        
+        cum_sum = 0.0;
+        tmp = 0.0;
+        cpt = 0.0;
+
+        if ((src[0]%2)==1){
+            // beta spin pair
+            for (size_t i=1; i<norbs; i+=2){
+                if ((not source[i]) and (i!=orb_pair)){
+                    // spin orbital is vacant
+                    tmp = this->same_spin_pair_contribution(H,src[0],src[1],i,orb_pair);
+                    cum_sum += tmp;
+                    if (i==tgt){
+                        cpt = tmp;
+                    }
+                }
+            }
+        }
+        else{
+            // alpha spin pair
+            for (size_t i=0; i<norbs; i+=2){
+                if ((not source[i]) and (i!=orb_pair)){
+                    // spin orbital is vacant
+                    tmp = this->same_spin_pair_contribution(H,src[0],src[1],i,orb_pair);
+                    cum_sum += tmp;
+                    if (i==tgt) cpt = tmp;
+                }
+            }
+        }
+    }
+    else{
+        // opposite spin pair
+        // only the electron-hole interactions with the same spin is required
+
+        cum_sum = 0.0;
+        tmp = 0.0;
+        cpt = 0.0;
+        
+        if ((tgt%2)==(src[0]%2)){
+            if ((tgt%2)==1){
+                // beta spin pair
+                for (size_t i=1; i<norbs; i+=2){
+                    if ((not source[i]) and (i!=orb_pair)){
+                        // spin orbital is vacant
+                        tmp = this->opp_spin_pair_contribution(H,src[0],src[1],i,orb_pair);
+                        cum_sum += tmp;
+                        if (i==tgt){
+                            cpt = tmp;
+                        }
+                    }
+                }
+            }
+            else{
+                // alpha spin pair
+                for (size_t i=0; i<norbs; i+=2){
+                    if ((not source[i]) and (i!=orb_pair)){
+                        // spin orbital is vacant
+                        tmp = this->opp_spin_pair_contribution(H,src[0],src[1],i,orb_pair);
+                        cum_sum += tmp;
+                        if (i==tgt){
+                            cpt = tmp;
+                        }
+                    }
+                }
+            }
+        }
+        else{
+            if ((tgt%2)==1){
+                // beta spin pair
+                for (size_t i=1; i<norbs; i+=2){
+                    if ((not source[i]) and (i!=orb_pair)){
+                        // spin orbital is vacant
+                        tmp = this->opp_spin_pair_contribution(H,src[1],src[0],i,orb_pair);
+                        cum_sum += tmp;
+                        if (i==tgt){
+                            cpt = tmp;
+                        }
+                    }
+                }
+            }
+            else{
+                // alpha spin pair
+                for (size_t i=0; i<norbs; i+=2){
+                    if ((not source[i]) and (i!=orb_pair)){
+                        // spin orbital is vacant
+                        tmp = this->opp_spin_pair_contribution(H,src[1],src[0],i,orb_pair);
+                        cum_sum += tmp;
+                        if (i==tgt){
+                            cpt = tmp;
+                        }
+                    }
+                }
+            }
+ 
+        }
+        
+    }
+
+        
+    return cpt;
+
+}
+
+
+
+detType AbInitioHamiltonian::excit_store::gen_double_excit_cs(AbInitioHamiltonian const &H) {
+    // generate a double excitation
+
+    std::vector<double> cpt_pair,int_cpt,sum_pair,cum_sum;
+    std::vector<int> elecs;
+    std::vector<int> tgt;
+    tgt.assign(2,-1);
+
+    // select a pair of electrons
+    std::vector<int> src = this->pick_biased_elecs(H,elecs);
+
+
+    // select the two target holes by approximate connection 
+    // strength
+    if ((not H.part_exact) and (not H.lin_exact) and ((src[0]%2)==(src[1]%2))){
+        // in this case the CDFs are the same
+        std::vector<int> tgt = this->select_double_holes(H,src,cum_sum,int_cpt);
+    }
+    else{
+        //std::vector<int> tgt;
+        //tgt.assign(2,-1);
+        int_cpt.assign(2,0.0);
+        cum_sum.assign(2,0.0);
+
+        tgt[0] = this->select_double_hole(H,src,-1,cum_sum[0],int_cpt[0]);
+
+        if (tgt[0] > -1){
+            tgt[1] = this->select_double_hole(H,src,tgt[0],cum_sum[1],int_cpt[1]);
+        }
+    }
+
+    // check that the two electrons have not been excited into the 
+    // same orbitals
+    if (std::any_of(tgt.begin(),tgt.end(), [](const int i) {return i<0;})){
+        pgen = 0.0;
+        excitmat[0][0] = -1;
+        excitmat[0][1] = -1;
+        excitmat[1][0] = -1;
+        excitmat[1][1] = -1;
+        target.clear();
+    }
+
+    // adjust the probabilities: if the two holes are selected from 
+    // the same list, they could have been selected in any order
+    cpt_pair.assign(2,0.0);
+    sum_pair.assign(2,0.0);
+    if ((tgt[0]%2)==(tgt[1]%2)){
+        if (H.part_exact or H.lin_exact){
+            cpt_pair[0] = this->pgen_select_double_hole(H,src,-1,sum_pair[0],tgt[1]);
+            cpt_pair[1] = this->pgen_select_double_hole(H,src,tgt[1],sum_pair[1],tgt[0]);
+        }
+        else{
+            cpt_pair[0] = int_cpt[1];
+            cpt_pair[1] = int_cpt[0];
+            sum_pair[0] = cum_sum[0];
+            sum_pair[1] = cum_sum[0] - int_cpt[1];
+        }
+        //double prod_int_cpt = std::accumulate(int_cpt.begin(),int_cpt.end(),1,std::multiplies<double>());
+        double prod_int_cpt = int_cpt[0]*int_cpt[1];
+        //double prod_cum_sum = std::accumulate(cum_sum.begin(),cum_sum.end(),1,std::multiplies<double>());
+        double prod_cum_sum = cum_sum[0]*cum_sum[1];
+        //double prod_cpt_pair = std::accumulate(cpt_pair.begin(),cpt_pair.end(),1,std::multiplies<double>());
+        double prod_cpt_pair = cpt_pair[0]*cpt_pair[1];
+        //double prod_sum_pair = std::accumulate(sum_pair.begin(),sum_pair.end(),1,std::multiplies<double>());
+        double prod_sum_pair = sum_pair[0]*sum_pair[1];
+        pgen *= (prod_int_cpt/prod_cum_sum + prod_cpt_pair/prod_sum_pair);
+    }
+    else{
+        //double prod_int_cpt = std::accumulate(int_cpt.begin(),int_cpt.end(),1,std::multiplies<double>());
+        double prod_int_cpt = int_cpt[0]*int_cpt[1];
+        //double prod_cum_sum = std::accumulate(cum_sum.begin(),cum_sum.end(),1,std::multiplies<double>());
+        double prod_cum_sum = cum_sum[0]*cum_sum[1];
+        pgen *= (prod_int_cpt/prod_cum_sum);
+    }
+
+    // generate the new determinant
+    target = source;
+    annihilate(target,src[0]);
+    annihilate(target,src[1]);
+    create(target,tgt[0]);
+    create(target,tgt[1]);
+    excitmat[0][0] = src[0];
+    excitmat[1][0] = src[0];
+    if ((src[0]%2)==(tgt[0]%2)){
+        excitmat[0][1] = tgt[0];
+        excitmat[1][1] = tgt[1];
+    }
+    else{
+        excitmat[0][1] = tgt[1];
+        excitmat[1][1] = tgt[0];
+    }
+
+    return target;
+
+}
+
+
+
+void AbInitioHamiltonian::excit_store::gen_rand_excit_cs(AbInitioHamiltonian const &H) {
+    // generate a random excitation
+
+    // set up the random number generator
+    // initialise the seed engine
+    std::random_device rd;
+    // use Mersenne-Twister random number generator
+    std::mt19937 rng(rd());
+    // uniform distribution from 0.0 to 1.0
+    std::uniform_real_distribution<double> uniform_dist(0.0,1.0);
+
+
+    // get information on the number of alpha and beta soin 
+    // electrons and holes for the determinant
+    this->construct_class_count();
+
+    // decide whether a single or double excitation is done
+    if (uniform_dist(rng) < H.psingles){
+        // single excitation
+        target = this->gen_single_excit_cs(H);
+        pgen *= H.psingles;
+    }
+    else{
+        // double excitation
+        target = this->gen_double_excit_cs(H);
+        pgen *= H.pdoubles;
+    }
+
+    return;
+
+}
+
+
+
+void AbInitioHamiltonian::excit_store::calc_pgen_cs(AbInitioHamiltonian const &H, std::vector<int> const &src, std::vector<int> const &tgt) {
+    // calculate the generation probability
+    
+    std::vector<double> cpt_pair,int_cpt,sum_pair,cum_sum;
+    std::vector<int> tmptgt = tgt;
+    cpt_pair.assign(2,0.0);
+    int_cpt.assign(2,0.0);
+    cum_sum.assign(2,0.0);
+    sum_pair.assign(2,0.0);
+
+    if ((src[0] >= 0) and (src[1] < 0)){
+        // single excitation
+        pgen = H.psingles * this->pgen_single_excit_cs(H,src[0],tmptgt[0]);
+    }
+    else if ((src[0] >= 0) and (src[1] >= 0)){
+        // double eccitation
+        pgen = H.pdoubles;
+
+        // biasing of selection of electron pair
+        if ((src[0]%2)==(src[1]%2)){
+            pgen *= H.pparallel / static_cast<double>(aa_elec_pairs + \
+                    bb_elec_pairs);
+        }
+        else{
+            pgen *= (1.0-H.pparallel) / static_cast<double>(ab_elec_pairs);
+        }
+
+        // ensure that the target orbitals match the source orbitals
+        if (((src[0]%2)!=(tgt[0]%2)) or ((src[1]%2)!=(tgt[1]%2))){
+            tmptgt[0] = tgt[1];
+            tmptgt[1] = tgt[0];
+        }
+    
+        int_cpt[0] = this->pgen_select_double_hole(H,src,-1,cum_sum[0],tmptgt[0]);
+        int_cpt[1] = this->pgen_select_double_hole(H,src,tmptgt[0],cum_sum[1],tmptgt[1]);
+
+        // deal with the cases when there are no available excitation
+        if (std::any_of(cum_sum.begin(),cum_sum.end(), [](const double i) \
+                    {return std::fabs(i)<1e-12;})){
+            cum_sum[0] = 0.0;
+            cum_sum[1] = 0.0;
+            int_cpt[0] = 0.0;
+            int_cpt[1] = 0.0;
+        }
+
+        // adjust the probabilities: if the two holes are selected from the 
+        // same list, they could have been selected either way round
+        cpt_pair.assign(2,0.0);
+        sum_pair.assign(2,0.0);
+        if ((tmptgt[0]%2)==(tmptgt[1]%2)){
+            if (H.part_exact or H.lin_exact){
+                cpt_pair[0] = this->pgen_select_double_hole(H,src,-1,sum_pair[0],tmptgt[1]);
+                cpt_pair[1] = this->pgen_select_double_hole(H,src,tmptgt[1],sum_pair[1],tmptgt[0]);
+            }
+            else{
+                cpt_pair[0] = int_cpt[1];
+                cpt_pair[1] = int_cpt[0];
+                sum_pair[0] = cum_sum[0];
+                sum_pair[1] = cum_sum[0] - int_cpt[1];
+            }
+            // deal with the cases when there are no available excitation
+            if (std::any_of(sum_pair.begin(),sum_pair.end(), [](const double i) \
+                        {return std::fabs(i)<1e-12;})){
+                sum_pair[0] = 0.0;
+                sum_pair[1] = 0.0;
+                cpt_pair[0] = 0.0;
+                cpt_pair[1] = 0.0;
+            }
+            double prod_int_cpt = std::accumulate(int_cpt.begin(),int_cpt.end(),1,std::multiplies<double>());
+            double prod_cum_sum = std::accumulate(cum_sum.begin(),cum_sum.end(),1,std::multiplies<double>());
+            double prod_cpt_pair = std::accumulate(cpt_pair.begin(),cpt_pair.end(),1,std::multiplies<double>());
+            double prod_sum_pair = std::accumulate(sum_pair.begin(),sum_pair.end(),1,std::multiplies<double>());
+            pgen *= (prod_int_cpt/prod_cum_sum + prod_cpt_pair/prod_sum_pair);
+        }
+        else{
+            double prod_int_cpt = std::accumulate(int_cpt.begin(),int_cpt.end(),1,std::multiplies<double>());
+            double prod_cum_sum = std::accumulate(cum_sum.begin(),cum_sum.end(),1,std::multiplies<double>());
+            pgen *= (prod_int_cpt/prod_cum_sum);
+        }
+
+    }
+    else{
+        // neither single nor double excitation
+        pgen = 0.0;
+    }
+
+    return;
+
+}
+
+
+
+void AbInitioHamiltonian::set_probabilities(detType example_det){
+    // set appropriate initial values for the probabilities based
+    // on an example determinant
+
+    int nel,nalpha,nbeta,norbs;
+
+    // number of spin orbitals
+    norbs = example_det.size();
+
+    // number of alpha, beta spin electrons
+    nel = 0;
+    nalpha = 0;
+    nbeta = 0;
+    for (size_t i=0; i<example_det.size(); ++i){
+        if (example_det[i]){
+            // electron
+            nel += 1;
+            if ((i%2)==0){
+                // alpha spin
+                nalpha += 1;
+            }
+            else{
+                // beta spin
+                nbeta += 1;
+            }
+        }
+    }
+
+    // number of parallel spin pairs
+    int parallel_pairs = (nalpha*(nalpha-1)/2) + (nbeta*(nbeta-1)/2);
+    // number of opposite spin pairs
+    int opp_pairs = nalpha*nbeta;
+
+    // p_parallel + p_opposite = 1
+    pparallel = static_cast<double>(parallel_pairs)/static_cast<double>(parallel_pairs+opp_pairs);
+
+    // number of single excitations
+    int nsingleexcit = (nalpha*((norbs/2)-nalpha)) + (nbeta*((norbs/2)-nbeta));
+
+    // number of double excitations
+    // aa-pairs + bb-pairs + ab-pairs
+    int ndoubleexcit = ((nalpha*(nalpha-1)/2)*(((norbs/2)-nalpha)*((norbs/2)-nalpha-1)/2)) +\
+                       ((nbeta*(nbeta-1)/2)*(((norbs/2)-nbeta)*((norbs/2)-nbeta-1)/2)) +\
+                       (nalpha*nbeta*((norbs/2)-nalpha)*((norbs/2)-nbeta));
+
+    // p_singles + p_doubles = 1
+    psingles = static_cast<double>(nsingleexcit)/static_cast<double>(nsingleexcit+ndoubleexcit);
+    pdoubles = 1.0 - psingles;
+
+    std::cout << "\n Setting the probabilities to their initial values: \n" << std::endl;
+    std::cout << "p_singles: " << psingles << std::endl;
+    std::cout << "p_doubles: " << pdoubles << std::endl;
+    std::cout << "p_parallel: " << pparallel << std::endl;
+
+    return;
+}
+
+
+void AbInitioHamiltonian::set_probabilities_bias(detType example_det, int exflag){
+    // set appropriate initial values for the probabilities based
+    // on an example determinant
+
+    int nel,nalpha,nbeta,norbs;
+
+    // number of spin orbitals
+    norbs = example_det.size();
+
+    bbias_sd = false;
+    bbias_po = false;
+
+    if (exflag==1){
+        // no adjustment needed since only single excitations a generated
+        minsingle = 0;
+        mindouble = 0;
+        minparadouble = 0;
+        minoppdouble = 0;
+        bbias_sd = false;
+        bbias_po = false;
+    }
+    else{
+        // adjust probabilities
+
+        // number of alpha, beta spin electrons
+        nel = 0;
+        nalpha = 0;
+        nbeta = 0;
+        for (size_t i=0; i<example_det.size(); ++i){
+            if (example_det[i]){
+                // electron
+                nel += 1;
+                if ((i%2)==0){
+                    // alpha spin
+                    nalpha += 1;
+                }
+                else{
+                    // beta spin
+                    nbeta += 1;
+                }
+            }
+        }
+
+        // number of parallel spin pairs
+        int parallel_pairs = (nalpha*(nalpha-1)/2) + (nbeta*(nbeta-1)/2);
+        // number of opposite spin pairs
+        int opp_pairs = nalpha*nbeta;
+
+        // p_parallel + p_opposite = 1
+        pparallel = static_cast<double>(parallel_pairs)/static_cast<double>(parallel_pairs+opp_pairs);
+
+        // number of single excitations
+        int nsingleexcit = (nalpha*((norbs/2)-nalpha)) + (nbeta*((norbs/2)-nbeta));
+
+        // number of double excitations
+        // aa-pairs + bb-pairs + ab-pairs
+        int ndoubleexcit = ((nalpha*(nalpha-1)/2)*(((norbs/2)-nalpha)*((norbs/2)-nalpha-1)/2)) +\
+                           ((nbeta*(nbeta-1)/2)*(((norbs/2)-nbeta)*((norbs/2)-nbeta-1)/2)) +\
+                           (nalpha*nbeta*((norbs/2)-nalpha)*((norbs/2)-nbeta));
+
+        // at least 10 percent of the total number of excitation should be generated
+        minsingle = static_cast<int>(0.1*static_cast<double>(nsingleexcit));
+        mindouble = static_cast<int>(0.1*static_cast<double>(ndoubleexcit));
+        minparadouble = static_cast<int>(0.1*static_cast<double>(parallel_pairs));
+        minoppdouble = static_cast<int>(0.1*static_cast<double>(opp_pairs));
+
+        if (exflag == 2){
+            bbias_sd = false;
+            bbias_po = true;
+            if ((parallel_pairs==0) or (opp_pairs==0)){
+                bbias_po = false;
+                bbias_sd = false;
+            }
+        }
+        else if (exflag == 3){
+            bbias_po = true;
+            bbias_sd = true;
+            if ((parallel_pairs==0) or (opp_pairs==0)){
+                bbias_po = false;
+            }
+            if ((nsingleexcit==0) or (ndoubleexcit==0)){
+                bbias_sd = false;
+            }
+
+        }
+
+        if (bbias_sd){
+            std::cout << "\n Biasing p_singles / p_doubles" << std::endl;
+            std::cout << "Minimum values: " << minsingle << " " << mindouble << "\n" << std::endl;
+        }
+        if (bbias_po){
+            std::cout << "\n Biasing p_parallel / p_oppposite" << std::endl;
+            std::cout << "Minimum values: " << mindouble << " " << minparadouble << " " << minoppdouble << "\n" << std::endl;
+        }
+    }
+}
+
+
+void AbInitioHamiltonian::check_probabilities(excit_store const &excitation, double hel, int nspawns){
+//void AbInitioHamiltonian::check_probabilities(double hel, int nspawns){
+    // for updating these parameters
+
+    double prob_ratio = 0.0;
+    double hel_ratio = 0.0;
+
+    if (excitation.excitmat[1][0]<0){
+        // single excitation
+        prob_ratio = excitation.pgen/psingles;
+        hel_ratio = std::fabs(hel)/(prob_ratio*static_cast<double>(nspawns));
+        max_hel_single_ratio = std::max(max_hel_single_ratio,hel_ratio);
+        nsingle += 1;
+    }
+    else{
+        // double excitation
+        prob_ratio = excitation.pgen/pdoubles;
+        hel_ratio = std::fabs(hel)/(prob_ratio*static_cast<double>(nspawns));;
+        max_hel_double_ratio = std::max(max_hel_double_ratio,hel_ratio);
+        ndouble += 1;
+
+        // distinguish between opposite and parallel spin
+        if ((excitation.excitmat[0][0]%2)==(excitation.excitmat[1][0]%2)){
+            // parallel spin
+            prob_ratio /= pparallel;
+            hel_ratio = std::fabs(hel)/prob_ratio;
+
+            max_hel_para_double_ratio = std::max(max_hel_para_double_ratio,hel_ratio);
+            nparadouble += 1;
+        }
+        else{
+            // opposite spin
+            prob_ratio /= (1.0-pparallel);
+            hel_ratio = std::fabs(hel)/prob_ratio;
+
+            max_hel_opp_double_ratio = std::max(max_hel_opp_double_ratio,hel_ratio);
+            noppdouble += 1;
+        }
+    }
+}
+
+
+void AbInitioHamiltonian::adjust_probabilities(){
+    // adjust the probabilities
+
+    double psingles_new,pdoubles_new,pparallel_new;
+
+    psingles_new = psingles;
+    pdoubles_new = pdoubles;
+    pparallel_new = pparallel;
+
+    // check tahat there have been enough excitations
+    // of each type
+    bool enough_single = false;
+    bool enough_double = false;
+    bool enough_paradouble = false;
+    bool enough_oppdouble = false;
+    if (nsingle > minsingle){
+        enough_single = true;
+    }
+    else if (bbias_po and (not bbias_sd)){
+        enough_single = true;
+    }
+    if (ndouble > mindouble){
+        enough_double = true;
+    }
+    if (nparadouble > minparadouble){
+        enough_paradouble = true;
+    }
+    if (noppdouble > minoppdouble){
+        enough_oppdouble = true;
+    }
+
+    if (bbias_po){
+        if (enough_single and enough_double){
+            pparallel_new = max_hel_para_double_ratio / \
+                            (max_hel_para_double_ratio + max_hel_opp_double_ratio);
+            psingles_new = max_hel_single_ratio*pparallel_new / \
+                           (max_hel_single_ratio*pparallel_new + max_hel_para_double_ratio);
+            pdoubles_new = 1.0 - psingles_new;
+        }
+        else{
+            pparallel_new = pparallel;
+            psingles_new = psingles;
+            pdoubles_new = 1.0 - psingles_new;
+        }
+
+        if (enough_single and enough_double and bbias_sd){
+            if ((std::fabs(psingles_new-psingles)/psingles) > 1e-4){
+                psingles = psingles_new;
+                pdoubles = pdoubles_new;
+            }
+        }
+
+        if (enough_paradouble and enough_oppdouble and bbias_po){
+            if ((std::fabs(pparallel_new - pparallel)/pparallel) > 1e-4){
+                pparallel = pparallel_new;
+            }
+        }
+    }
+    else if (bbias_sd and (not bbias_po)){
+        if (enough_single and enough_double){
+            psingles_new = max_hel_single_ratio / \
+                           (max_hel_single_ratio + max_hel_double_ratio);
+            pdoubles_new = 1.0 - psingles_new;
+        }
+        else{
+            psingles_new = psingles;
+            pdoubles_new = 1.0 - psingles_new;
+        }
+
+        if (enough_single and enough_double and bbias_sd){
+            if ((std::fabs(psingles_new-psingles)/psingles) > 1e-4){
+                psingles = psingles_new;
+                pdoubles = pdoubles_new;
+            }
+        }
+    }
+
+
+    max_hel_single_ratio = 0.0;
+    max_hel_double_ratio = 0.0;
+    max_hel_para_double_ratio = 0.0;
+    max_hel_opp_double_ratio = 0.0;
+    nsingle = 0;
+    ndouble = 0;
+    nparadouble = 0;
+    noppdouble = 0;
+
+    return;
+}
+
+
+detType AbInitioHamiltonian::getRandomCoupledState_cs(detType const &source, double &p) const{
+    // random excitation generator: randomly pick a connected determinant biased according to 
+    // the strength of the connecting Hamiltonian matrix elements
+
+    detType target = source;
+
+    excit_store excit(source);
+
+    excit.gen_rand_excit_cs(*this);
+
+    p = excit.pgen;
+    target = excit.target;
+
+    return target;
+}
+
+double AbInitioHamiltonian::calcGenProp_cs(detType const &source, detType const &target) const{
+    // evaluate the generation probability biased according to 
+    // the strength of the connecting Hamiltonian matrix elements
+
+    double p = 0.0;
+    double diff = 0.0;
+
+    std::vector<int> src,tgt;
+    //src.assign(2,-1);
+    //tgt.assign(2,-1);
+    
+    excit_store excit(source);
+
+    // get information on the number of alpha and beta soin 
+    // electrons and holes for the determinant
+    excit.construct_class_count();
+    excit.target = target;
+
+    // get the source and target orbitals of the excitation
+    for (size_t i=0; i<source.size(); ++i){
+        diff = static_cast<int>(source[i]) - static_cast<int>(target[i]);
+        if (diff > 0){
+            // holes in source
+            src.push_back(i);
+        }
+        if (diff < 0){
+            // particles in tgt
+            tgt.push_back(i);
+        }
+    }
+    if (src.size() < 2){
+        src.push_back(-1);
+    }
+    if (tgt.size() < 2){
+        tgt.push_back(-1);
+    }
+    if (src.size() != tgt.size()){
+        throw SizeMismatchError(src.size(),tgt.size());
+    }
+
+    excit.calc_pgen_cs(*this,src,tgt);
+
+    p = excit.pgen;
+    
+    return p;
+}
+
 
 }
