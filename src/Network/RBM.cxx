@@ -107,7 +107,7 @@ namespace networkVMC
         Eigen::VectorXcd result= Eigen::VectorXcd::Zero(numPars);
         for(int i=0;i<input.size();i++)
         {
-            result = result + outerDerivative[i]*dCdW.col(i);
+            result += (outerDerivative[i]*dCdW.col(i)).conjugate();
         }
         return result;
     }

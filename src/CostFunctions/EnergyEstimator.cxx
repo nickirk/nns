@@ -57,9 +57,13 @@ nablaType EnergyEstimator::nabla(State const &input) const{
     }
     A -=  energy * c_i;
     A /= normalizerCoeff;
-    dEdC_i.real(2. * std::real( A*std::conj(1.)));
-    dEdC_i.imag(2. * std::real( A*std::conj(std::complex<double>(0.0,1.0))));
-    dEdC[i]=(dEdC_i);
+    //dEdC_i.real(2. * std::real( A*std::conj(coeffType(1.,0.))));
+    //dEdC_i.imag(2. * std::real( A*std::conj(coeffType(0.,1.))));
+    //dEdC[i]=dEdC_i;
+    // use the conjugate to make real and complex parametrization the same form
+    // for real para, inside the para, use conj again to obtain the correct 
+    // gradient. See Nnw.cxx backpropagate().
+    dEdC[i]=(2 * std::conj(A));
   }
   return dEdC;
 }

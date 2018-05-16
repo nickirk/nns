@@ -123,12 +123,9 @@ VecType NeuralNetwork<T>::backPropagate(
   //everytime the backPropagate is called, we should reset nabla* to zero.
   nablaNNP *= 0.;
   // Does not work with empty networks
-  //convert complex to vector2d;
-  Eigen::VectorXd dEdC_i(Eigen::VectorXd::Zero(2));
-  dEdC_i[0]=lastLayerFeedBack.real();
-  dEdC_i[1]=lastLayerFeedBack.imag();
   if(Layers.size()==0) throw EmptyNetworkError();
-  Layers[numLayers-1]->backProp(lastLayerFeedBack);
+  // use the conjugate of lastLayerFeedBack
+  Layers[numLayers-1]->backProp(std::conj(lastLayerFeedBack));
   for (size_t layer(numLayers-2); layer > 0; layer--){
     Layers[layer]->backProp(Layers[layer+1]->getDeltas(),
                             Layers[layer+1]->getWeights());
