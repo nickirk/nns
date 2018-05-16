@@ -13,10 +13,10 @@
 
 namespace networkVMC {
 template <typename T=VecType>
-class StochasticReconfiguration: public Solver<> {
+class StochasticReconfiguration: public Solver<T> {
 public:
   StochasticReconfiguration(Parametrization<T> &par_, double gamma_):
-	  Solver(gamma_),par(par_),iteration(0) {};
+	  Solver<T>(gamma_),par(par_),iteration(0) {};
   virtual ~StochasticReconfiguration();
 
   // thus, we only have this version

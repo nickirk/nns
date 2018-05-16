@@ -3,3 +3,11 @@
 *~
 *.d
 /Debug/
+# VS Code files
+.vscode
+# Latex temporary files
+*.aux
+*.fls
+*.fdb_latexmk
+*.log
+*.synctex.gz

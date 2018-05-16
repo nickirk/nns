@@ -13,6 +13,7 @@
 #include "CostFunctions/AllCostFunctions.hpp"
 #include "Hamiltonian/AllHamiltonians.hpp"
 #include "Network/Nnw.hpp"
+#include "Network/RBM.hpp"
 #include "Network/DirectParametrization.hpp"
 #include "HilbertSpace/Basis.hpp"
 #include "Samplers/AllSamplers.hpp"

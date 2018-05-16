@@ -1,10 +1,10 @@
 CXX=icpc
 LINKFLAGS=$(LDFLAGS) 
-LDFLAGS=-std=c++11 -g -Wall
+LDFLAGS=-std=c++11 -ggdb -Wall
 EIGEN_PATH=lib/eigen/
 EIGEN_FLAGS=-I$(EIGEN_PATH)
-SOURCEFILES=Samplers/Sampler.cxx Network/Nnw.cxx Network/DirectParametrization.cxx HilbertSpace/Basis.cxx Hamiltonian/Hamiltonian.cxx HilbertSpace/Determinant.cxx CostFunctions/EnergyCF.cxx CostFunctions/NormCF.cxx CostFunctions/EnergyEstimator.cxx CostFunctions/EnergyCF.cxx Hamiltonian/FermionicHamiltonian.cxx Hamiltonian/AbInitioHamiltonian.cxx Hamiltonian/BosonicHamiltonian.cxx Trainer.cxx Samplers/MetropolisSampler.cxx Samplers/ListGen.cxx CostFunctions/EnergyEsMarkov.cxx Network/Layers/Layer.cxx Network/Layers/DenseLayer.cxx Network/Layers/ConvLayer.cxx Network/Layers/InputLayer.cxx Network/LayerStructure.cxx math/MathFunctions.cxx utilities/nnwUtilities.cxx Hamiltonian/SparseHMatrix.cxx Solvers/ADAM.cxx Samplers/FullSampler.cxx
-TESTFILES=defaultSystem.cxx testSubspaceCF.cxx testStateSort.cxx testNnw.cxx testDirect.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx testAlgAb.cxx testRandom.cxx testMetropolis.cxx
+SOURCEFILES=Samplers/Sampler.cxx Network/Nnw.cxx Network/RBM.cxx Network/DirectParametrization.cxx HilbertSpace/Basis.cxx Hamiltonian/Hamiltonian.cxx HilbertSpace/Determinant.cxx CostFunctions/EnergyCF.cxx CostFunctions/NormCF.cxx CostFunctions/EnergyEstimator.cxx CostFunctions/EnergyCF.cxx Hamiltonian/FermionicHamiltonian.cxx Hamiltonian/AbInitioHamiltonian.cxx Hamiltonian/BosonicHamiltonian.cxx Trainer.cxx Samplers/MetropolisSampler.cxx Samplers/ListGen.cxx CostFunctions/EnergyEsMarkov.cxx Network/Layers/Layer.cxx Network/Layers/DenseLayer.cxx Network/Layers/ConvLayer.cxx Network/Layers/InputLayer.cxx Network/LayerStructure.cxx math/MathFunctions.cxx utilities/nnwUtilities.cxx Hamiltonian/SparseHMatrix.cxx Solvers/ADAM.cxx Solvers/AcceleratedGradientDescent.cxx Samplers/FullSampler.cxx
+TESTFILES=defaultSystem.cxx testSubspaceCF.cxx testStateSort.cxx testNnw.cxx testRBM.cxx testDirect.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx testAlgAb.cxx testRandom.cxx testMetropolis.cxx
 SRC=src
 TST=test
 BUILD=build
@@ -19,6 +19,7 @@ OPTIMOBJ=$(patsubst %.cxx,$(PROFILE)/%.o,$(SOURCEFILES))
 DEPENDENCIES=$(patsubst %.cxx,$(DDIR)/%.d,$(SOURCEFILES)) $(patsubst %.cxx,$(TSTDDIR)/%.d,$(TESTFILES))
 BTEST=basisTest
 NNWTEST=nnwTest
+RBMTEST=rbmTest
 ALGTEST=algTest
 MARKOVTEST=metropolisTest
 STEST=samplerTest
@@ -33,6 +34,7 @@ SORTTST=sortTest
 SCFTST=subspaceCFTest
 BTESTOBJECT=$(TSTBUILD)/testBasis.o
 NNWTESTOBJECT=$(TSTBUILD)/testNnw.o
+RBMTESTOBJECT=$(TSTBUILD)/testRBM.o
 MARKOVTESTOBJECT=$(TSTBUILD)/testMetropolis.o
 ALGTESTOBJECT=$(TSTBUILD)/testAlg.o
 STESTOBJECT=$(TSTBUILD)/testSampler.o
@@ -81,6 +83,9 @@ testMetropolis: $(OBJECTS) $(MARKOVTESTOBJECT)
 	$(CXX)  $^ $(LINKFLAGS) -o $(TSTBUILD)/$@ 
 
 testNnw: $(OBJECTS) $(NNWTESTOBJECT)
+	$(CXX) $^ $(LINKFLAGS) -o $(TSTBUILD)/$@ 
+
+testRBM: $(OBJECTS) $(RBMTESTOBJECT)
 	$(CXX) $^ $(LINKFLAGS) -o $(TSTBUILD)/$@ 
 
 testDirect: $(OBJECTS) $(DIRECTTSTOBJECT) $(DEFAULTSOBJECT)

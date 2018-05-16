@@ -18,7 +18,7 @@ int main(){
   //int numHidden1(2*numSites);
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
-  double trainRate(0.1);
+  double trainRate(0.005);
   //cout << "input training rate=";
   //cin >> trainRate;
   //generate basis, the basis class constructor takes in the spin configurations.
@@ -48,23 +48,17 @@ int main(){
   std::cout<<"Listsize= "<<list.size()<<std::endl;
   EnergyEstimator eCF(modelHam);
   //Neural network takes in the size and the cost function.
-
-  NeuralNetwork<VecType> NNW;
+  NeuralNetwork<> NNW;
   NNW.constrInputLayer(numStates);
-  //constrConvLayer(inputs, actFunc, lengthFilter, depthFilter, stride)
   cout << "Before constructing ConvLayer" << endl;
-  //NNW.constrConvLayer(NNW.getLayer(0)->getActs(), "Tanh", 4, 5, 1);
   NNW.constrDenseLayer(NNW.getLayer(0)->getActs(), "Tanh", 10*numStates);
   NNW.constrDenseLayer(NNW.getLayer(1)->getActs(), "Linear", 2);
   NNW.initialiseNetwork();
-  cout << "After iniialise Network" << endl;
+  //cout << "After iniialise Network" << endl;
   // numDetsToTrain_ is the total number you want to keep in the list 
   // during the training process. By default it is the whole Hilbert space.
   // But for a stochastic diffuse process, much less is needed. One should 
   // test to see how many is suitable for different systems.
-  int numDetsToTrain_ = static_cast<int>(basis.getSize()*0.4);
-  cout << "numDetsToTrain= ";
-  cin >> numDetsToTrain_;
   //cout << "Choose solver: 0, 1, 2, 3" << endl;
   //cout << "method 0: gradient descent" << endl;
   //cout << "method 1: stochastic reconfiguration (not working)" << endl;
@@ -74,7 +68,7 @@ int main(){
   string fileName("en");
   //cout << "energy file name=";
   //cin >> fileName;
-  ListGen<> sampler(modelHam, basis, HF,NNW, numDetsToTrain_);
+  FullSampler<VecType> sampler(modelHam, basis, HF,NNW);
   ADAM<VecType> sl(trainRate);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
@@ -86,7 +80,7 @@ int main(){
   std::vector<Eigen::VectorXd> coeffs;
   for(int l(0); l<3000; ++l){
     cout << "testAlg.cxx: iteration= " << l << endl;
-    sampler.diffuse(list);
+    //sampler.diffuse(list);
     ev.train();
 
     // get the new energy

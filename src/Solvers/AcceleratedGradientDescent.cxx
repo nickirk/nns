@@ -12,11 +12,11 @@ namespace networkVMC {
 
 template <typename T>
 AcceleratedGradientDescent<T>::AcceleratedGradientDescent(double learningRate_):
-  Solver(learningRate_),numPars(0),lambdaS1(0.0),lambdaS(0.0),gammaS(0.0),
+  Solver<T>(learningRate_),numPars(0),lambdaS1(0.0),lambdaS(0.0),gammaS(0.0),
   gammaS1(0.0),uninitialized(true){
-    yS = Eigen::VectorXd::Zero(numPars);
-    yS1 = Eigen::VectorXd::Zero(numPars);
-    Egz2 = Eigen::VectorXd::Zero(numPars);
+    yS = T::Zero(numPars);
+    yS1 = T::Zero(numPars);
+    Egz2 = T::Zero(numPars);
 }
 
 //---------------------------------------------------------------------------------------------------//
@@ -33,9 +33,9 @@ void AcceleratedGradientDescent<T>::update(T &w, T const &force,
 		State const &input){
   if(uninitialized){
 	numPars = w.size();
-    yS = Eigen::VectorXd::Zero(numPars);
-    yS1 = Eigen::VectorXd::Zero(numPars);
-    Egz2 = Eigen::VectorXd::Zero(numPars);
+    yS = T::Zero(numPars);
+    yS1 = T::Zero(numPars);
+    Egz2 = T::Zero(numPars);
   }
   // we can only proceed, if the same number of parameters is given in each update
   if(w.size()!=numPars) throw SizeMismatchError(w.size(),numPars);
@@ -45,9 +45,9 @@ void AcceleratedGradientDescent<T>::update(T &w, T const &force,
   gammaS = (1-lambdaS)/(lambdaS1);//*std::exp(-1./100*iteration);
   double rho=0.9;//*std::exp(-1./100*iteration);
   Egz2 = rho*Egz2.matrix()+(1-rho)*force.array().square().matrix();
-  Egz2 += Eigen::VectorXd::Ones(numPars)*1e-4;
-  Eigen::VectorXd RMS = (Egz2).array().sqrt();
-  Eigen::VectorXd tau = learningRate * RMS.array().inverse();
+  Egz2 += T::Ones(numPars)*1e-4;
+  T RMS = (Egz2).array().sqrt();
+  T tau = Solver<T>::learningRate * RMS.array().inverse();
   //yS1 = NNP - learningRate * generlisedForce;
   yS1 = (w.array() -  tau.array() * force.array()).matrix();
 

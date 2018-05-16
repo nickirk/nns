@@ -14,7 +14,7 @@ namespace networkVMC {
 template <typename T=VecType>
 class StochasticGradientDescent: public Solver<T> {
 public:
-  StochasticGradientDescent(double gamma_):Solver(gamma_){};
+  StochasticGradientDescent(double gamma_):Solver<T>(gamma_){};
   virtual ~StochasticGradientDescent(){};
   // gradient descent update scheme
   virtual void update(T  &w, T const &force,
