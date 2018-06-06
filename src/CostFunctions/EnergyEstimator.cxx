@@ -63,7 +63,7 @@ nablaType EnergyEstimator::nabla(State const &input) const{
     // use the conjugate to make real and complex parametrization the same form
     // for real para, inside the para, use conj again to obtain the correct 
     // gradient. See Nnw.cxx backpropagate().
-    dEdC[i]=(2 * std::conj(A));
+    dEdC[i]=(2.0 * std::conj(A));
   }
   return dEdC;
 }

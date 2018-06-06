@@ -21,7 +21,7 @@ nablaType NormCF::nabla(State const &input) const{
     buf0 = std::conj(input.coeff(i)-psi.coeff(i));
 		//buf0.real(buf[0]);
 		//buf0.imag(0.);
-		cfBuf[i] = 2*buf0;
+		cfBuf[i] = 2.0*buf0;
 	}
 	return cfBuf;
 }
