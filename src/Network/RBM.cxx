@@ -26,6 +26,7 @@ namespace networkVMC
         a.normalize();
         b.normalize();
         w.normalize();
+
     }
 
     RBM::~RBM()
@@ -91,6 +92,7 @@ namespace networkVMC
     {
         Eigen::MatrixXcd result(numPars, outputState.size());
         
+        #pragma omp parallel for
         for(int i=0;i<outputState.size();i++)
         {
             Eigen::Map<Eigen::VectorXcd> da(result.data()+i*numPars+a_offset, sizeInput);
@@ -105,10 +107,22 @@ namespace networkVMC
     {
         Eigen::MatrixXcd dCdW=calcdCdwSR(input);
         Eigen::VectorXcd result= Eigen::VectorXcd::Zero(numPars);
-        for(int i=0;i<input.size();i++)
+
+        //There is no reduction for vectors of Eigen, so we use critical section instead.
+        //Note: OpenMP 4.0 supports custom reduction. But it is not supported in my current gcc.
+        #pragma omp parallel
         {
-            result += (outerDerivative[i]*dCdW.col(i)).conjugate();
+            Eigen::VectorXcd private_result= Eigen::VectorXcd::Zero(numPars);
+            #pragma omp for
+            for(int i=0;i<input.size();i++)
+            {
+                private_result += (outerDerivative[i]*dCdW.col(i)).conjugate();
+            }
+
+            #pragma omp critical
+            result+=private_result;
         }
+
         return result;
     }
 
