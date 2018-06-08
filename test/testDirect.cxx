@@ -15,14 +15,14 @@ using namespace networkVMC;
 int main(){
 
 // Hamiltonian setup
-  int numSites = 8;
+  int numSites = 6;
   auto modelHam = generateDefaultHubbard(numSites);
   auto basis = generateDefaultBasis(numSites);
 // Cost function setup
   EnergyEstimator eCF(modelHam);
 
 // Solver setup
-  double trainRate(0.01);
+  double trainRate(0.001);
   ADAM<> sl(trainRate);
 
 // Parametrization setup
@@ -30,7 +30,7 @@ int main(){
 
 // Sampler setup
   detType HF=basis.getDetByIndex(0);
-  ListGen sample(modelHam,basis,HF,par);
+  FullSampler<> sample(modelHam,basis,HF,par);
 
 // And optimize the direct parametrization
   Trainer<> ev(par,sample,sl,eCF);

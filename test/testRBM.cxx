@@ -16,7 +16,7 @@ int main(){
   int spinDown(3);
   SpinConfig spinConfig(spinUp, spinDown, numStates);
   int numHidden(10);
-  double trainRate(0.01);
+  double trainRate(0.001);
   Basis basis(spinConfig);
   FermionicHamiltonian modelHam(numStates);
   double U{4.}, t{-1};
@@ -43,14 +43,14 @@ int main(){
   ofstream myfile1;
   myfile1.open ("en1");
   for(int l(0); l<3000; ++l){
-    trainRate *= exp(-0.0002);
+    //trainRate *= exp(-0.0002);
     ev.train(trainRate);
     // get the new energy
     energy = ev.getE();
     auto states=ev.getState();
-    for(size_t s=0; s<states.size(); ++s){
-      cout << "C_" << s << "= " << states.coeff(s) << endl;
-    }
+    //for(size_t s=0; s<states.size(); ++s){
+    //  cout << "C_" << s << "= " << states.coeff(s) << endl;
+    //}
     std::cout << "iteration=" << l << std::endl;
     std::cout << "trainRate=" << trainRate << std::endl;
     std::cout<<"Energy "<<energy<<std::endl;
