@@ -19,7 +19,7 @@ MetropolisSampler<T>::~MetropolisSampler() {
 }
 
 template<typename T>
-void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI) const{
+void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, int i) const{
 	// set up the rng
 	std::random_device rd;     // only used once to initialise (seed) engine
 	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)

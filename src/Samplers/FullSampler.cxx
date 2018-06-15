@@ -22,13 +22,11 @@ FullSampler<T>::~FullSampler() {
 }
 
 template <typename T>
-void FullSampler<T>::iterate(coeffType &cI, detType &dI) const{
-  // No sampling involved: We take the next determinant from the list
-  dI = fullBasis->getDetByIndex(pos);
+void FullSampler<T>::iterate(coeffType &cI, detType &dI, int i) const{
+  if(i >= numDets) i = 0;
+  // No sampling involved: We take the i-th determinant from the list
+  dI = fullBasis->getDetByIndex(i);
   cI = para->getCoeff(dI);
-  pos +=1;
-  // And in case we reached the end, start anew
-  if(pos>=numDets) pos -= numDets;
 }
 //instantiate class
 template class FullSampler<VecType>;

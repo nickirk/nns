@@ -17,7 +17,10 @@ public:
 	ListGen(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
 			Parametrization<T> const &para_, int numDets_=100);
 	virtual ~ListGen();
-	virtual void iterate(coeffType &cI, detType &dI) const;
+	// create a dynamic polymorphic copy
+	virtual ListGen* clone() const {return new ListGen(*this);}
+	// get the i-th entry
+	virtual void iterate(coeffType &cI, detType &dI, int i) const;
 	void diffuse(std::vector<detType> &list) const;
 	void setDiffuseList(std::vector<detType > const &list){diffuseList=list;};
 	virtual detType getDet(int i) const;

@@ -19,18 +19,20 @@ public:
 	// It works like the abstract base class, just that it can iterate
     DefaultSampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
     		Parametrization<T> const &para_, int numDets_= 100):
-    	Sampler(H_,fullBasis_,HF,numDets_),para(para_){};
+    	Sampler(H_,fullBasis_,HF,numDets_),para(&para_){};
 	virtual ~DefaultSampler();
+	// create a dynamic polymorphic copy
+	virtual DefaultSampler* clone() const {return new DefaultSampler(*this);}
 	// We use the default functionality for iterate()
 	// this class just makes it accessible for testing purposes
-	virtual void iterate(coeffType &cI, detType &dI) const{
+	virtual void iterate(coeffType &cI, detType &dI, int i) const{
 		cDet = getRandomConnection(cDet);
 		dI = getDet();
 		cI = para->getCoeff(cDet);
 	}
 private:
 	  // sampling depends on the coefficients, as they have to be given alongside the determinants
-	    Parametrization<T> const &para;
+	    Parametrization<T> const *para;
 
 };
 

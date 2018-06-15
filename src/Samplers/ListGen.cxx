@@ -27,9 +27,9 @@ ListGen<T>::~ListGen() {
 //---------------------------------------------------------------------------------------------------//
 
 template <typename T>
-void ListGen<T>::iterate(coeffType &cI, detType &dI) const{
+void ListGen<T>::iterate(coeffType &cI, detType &dI, int i) const{
 	// Fetch the next entry from the pre-arranged list
-	dI = getDet();
+	dI = getDet(i);
 	// Get its coefficient
 	cI = para->getCoeff(dI);
 }
@@ -38,7 +38,18 @@ void ListGen<T>::iterate(coeffType &cI, detType &dI) const{
 
 template <typename T>
 detType ListGen<T>::getDet(int i) const{
-  return diffuseList[i];
+  if(i < diffuseList.size() && i >= 0){
+    return diffuseList[i];
+  }
+  else if(i >= diffuseList.size()){
+	  // if we exceed the list size, generate a new one and start from the beginning
+	  diffuse(diffuseList);
+	  return getDet(0);
+  }
+  else{
+	  // we passed a negative index, this is trouble
+	  throw OutOfRangeError(i);
+  }
 }
 
 //---------------------------------------------------------------------------------------------------//

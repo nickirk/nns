@@ -12,6 +12,7 @@
 #include "CostFunctions/CostFunction.hpp"
 #include "Network/Parametrization.hpp"
 #include <iostream>
+#include <memory>
 
 namespace networkVMC{
 template <typename T>
@@ -44,22 +45,23 @@ void Trainer<T>::train(double learningRate){
 // prepare an input
 template <typename T>
 void Trainer<T>::train(){
+	// the sampler dictates how many determinants we use
 	int numDets{msampler.getNumDets()};
 	inputState.resize(numDets);
-	//coupledCoeffsEpoch.clear();
-        //coupledDetsEpoch.clear();
-	//sampledDet.resize(numDets);
-	//sampledCoeff.resize(numDets);
-	//Get the first coefficient + determinant
-	//inputState[0].det = msampler.getDet();
-	//inputState[0].coeff = NNW.getCoeff(inputState[0].det);
 
 	// And now, for the chosen number of samples, get the respective determinants and
 	// coefficients
 	std::cout<<"numdets "<<numDets<<'\n';
 	// TODO this should not be part of the trainer, move it to somewhere in the state
+#pragma omp parallel
+	{
+	// sampling is not threadsafe, so each thread creates it's own sampler
+    std::unique_ptr<Sampler> samplerThread(msampler.clone());
+#pragma omp for
 	for(int i=0; i < numDets; ++i){
-	  msampler.iterate(inputState.coeff(i), inputState.det(i));
+      // iterate the sampler: This also requires the iteration as an input, as
+	  // some samplers pre-fetch the ensemble of determinants
+	  samplerThread->iterate(inputState.coeff(i), inputState.det(i),i);
 	  // get some coupled determinants and their coefficients to use in the
 	  // energy estimator
       inputState.coupledDets(i) = modelHam.getCoupledStates(inputState.det(i));
@@ -69,6 +71,7 @@ void Trainer<T>::train(){
 	  for(size_t j=0; j < inputState.coupledDets(i).size(); ++j){
 	  	inputState.coupledCoeffs(i)[j]=NNW.getCoeff(inputState.coupledDets(i)[j]);
 	  }
+	}
 	}
 	updateParameters(inputState);
 }
