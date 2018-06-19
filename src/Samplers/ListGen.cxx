@@ -84,7 +84,7 @@ void ListGen<T>::diffuse(std::vector<detType> &list) const{
  coeffType c_i = coeffType();
  coeffType c_j = coeffType();
  double prandom = 0.0;
-
+ double pEx = 0.0;
  std::random_device rd;     // only used once to initialise (seed) engine
  std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
  std::uniform_real_distribution<double> uni;		// Uniform distribution from 0.0 to 1.0
@@ -92,7 +92,7 @@ void ListGen<T>::diffuse(std::vector<detType> &list) const{
  for (size_t i = 0; i<list.size(); ++i){
   prandom = uni(rng);
    c_i=para->getCoeff(list[i]);
-   buf = getRandomConnection(list[i]);
+   buf = getRandomConnection(list[i],pEx);
    //buf = getRandomDeterminant(spinConfig);
    c_j=para->getCoeff(buf);
    //getRandomCoupledState(buf,probUnbias);
@@ -103,6 +103,8 @@ void ListGen<T>::diffuse(std::vector<detType> &list) const{
  removeDuplicate(list);
  diffuseList = list;
 }
+
+//---------------------------------------------------------------------------//
 //instantiate class
 template class ListGen<VecType>;
 template class ListGen<VecCType>;

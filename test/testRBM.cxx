@@ -32,7 +32,8 @@ int main(){
   //cout << "HF intCast=" << verbatimCast(HF) << endl;
   //list.push_back(HF);
   //ListGen<VecCType> sampler(modelHam, basis, HF, rbm, 200);
-  FullSampler<VecCType> sampler(modelHam, basis, HF, rbm);
+  //FullSampler<VecCType> sampler(modelHam, basis, HF, rbm);
+  MetropolisSampler<VecCType> sampler(modelHam, basis, HF, rbm);
   //ListGen sampler(modelHam, basis, 100, HF,rbm);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
@@ -42,7 +43,7 @@ int main(){
   Trainer<VecCType> ev(rbm, sampler, sl, eCF);
   ofstream myfile1;
   myfile1.open ("en1");
-  for(int l(0); l<3000; ++l){
+  for(int l(0); l<1000; ++l){
     //trainRate *= exp(-0.0002);
     ev.train(trainRate);
     // get the new energy

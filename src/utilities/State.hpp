@@ -21,6 +21,8 @@ namespace networkVMC{
 class State{
 public:
 	State():storedDets(std::vector<detType>(0)), storedCoeffs(std::vector<coeffType>(0)){};
+	// create an empty State of size size_
+	State(int size_):State(){resize(size_);}
 	State(detType const &det_, coeffType const &coeff_):
 		storedDets(std::vector<detType>(1,det_)), storedCoeffs(std::vector<coeffType>(1,coeff_)) {};
 	State(std::vector<detType> const &dets_, std::vector<coeffType> const &coeffs_):storedDets(dets_),storedCoeffs(coeffs_){

@@ -34,6 +34,7 @@ class Hamiltonian{
   virtual int getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex) const =0;
   // this is the excitation generation, we should move it to an extra class
   virtual detType getRandomCoupledState(detType const &source, double &p) const = 0;
+  virtual double getExcitationProb(detType const &source, detType const &target) = 0;
   // this generates all states coupled to source
   virtual std::vector<detType> getCoupledStates(detType const &source) const = 0;
   virtual ~Hamiltonian(){};

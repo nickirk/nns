@@ -26,7 +26,8 @@ public:
 	// We use the default functionality for iterate()
 	// this class just makes it accessible for testing purposes
 	virtual void iterate(coeffType &cI, detType &dI, int i) const{
-		cDet = getRandomConnection(cDet);
+		double p;
+		cDet = getRandomConnection(cDet,p);
 		dI = getDet();
 		cI = para->getCoeff(cDet);
 	}

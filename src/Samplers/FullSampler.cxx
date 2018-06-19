@@ -16,10 +16,14 @@ FullSampler<T>::FullSampler(Hamiltonian const &H_, Basis const &fullBasis_,
 	Sampler(H_,fullBasis_,HF,fullBasis_.getSize()),para(&para_),pos(0){
 }
 
+//---------------------------------------------------------------------------//
+
 template <typename T>
 FullSampler<T>::~FullSampler() {
 	// TODO Auto-generated destructor stub
 }
+
+//---------------------------------------------------------------------------//
 
 template <typename T>
 void FullSampler<T>::iterate(coeffType &cI, detType &dI, int i) const{

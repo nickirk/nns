@@ -18,11 +18,17 @@
 namespace networkVMC{
 
 // Just take any connected determinant and let the Hamiltonian decide what is connected
-detType Sampler::getRandomConnection(detType const &startingPoint) const{
-	double p{0};
+detType Sampler::getRandomConnection(detType const &startingPoint, double &p) const{
 	return H->getRandomCoupledState(startingPoint, p);
 }
 
+//---------------------------------------------------------------------------//
+
+double Sampler::getConnectionProb(detType const &source, detType const &target) const{
+	return H->getExcitationProb(source,target);
+}
+
+//---------------------------------------------------------------------------//
 
 // Go through a list of dets and remove duplicates (generic function)
 void removeDuplicate(std::vector<detType> &list){
@@ -32,7 +38,7 @@ void removeDuplicate(std::vector<detType> &list){
  list.erase( it, list.end() );
 }
 
-
+//---------------------------------------------------------------------------//
 
 // This creates some random determinant from a given Basis
 detType getRandomDeterminant(Basis const &fullBasis){

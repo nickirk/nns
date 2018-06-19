@@ -17,7 +17,7 @@ class excit_store;
 
 class AbInitioHamiltonian: public Hamiltonian {
 public:
-    AbInitioHamiltonian(int dimension):Hamiltonian(dimension){psingles=0.0; pdoubles=0.0; pparallel=0.0;};
+    AbInitioHamiltonian(int dimension):Hamiltonian(dimension){};
 	virtual ~AbInitioHamiltonian();
 	int getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex) const;
     // count the number of connected states
@@ -28,10 +28,6 @@ public:
     detType getSingleExcitation(detType const &source, std::vector<int> const &source_orbs, std::vector<int> &holes, std::vector<int> &particles, int &exflag, bool &ballexcitfound) const;
     // return the next double excitation (deterministic excitation generator)
     detType getDoubleExcitation(detType const &source, std::vector<int> const &source_orbs, std::vector<int> &holes, std::vector<int> &particles, int &exflag, bool &ballexcitfound) const;
-    // randomly generate a single excitation excitation (random excitation generator)
-    detType genSingleExcitation(detType const &source, std::vector<int> const &source_orbs, std::vector<int> &holes, std::vector<int> &particles, double &pGet, double pdoubnew, std::vector<int> noccs, std::vector<int> nunoccs) const;
-    // randomly generate a double excitation excitation (random excitation generator)
-    detType genDoubleExcitation(detType const &source, std::vector<int> const &source_orbs, std::vector<int> &holes, std::vector<int> &particles, double &pGet, double pdoubnew, std::vector<int> noccs, std::vector<int> nunoccs) const;
     // random excitation generator: randomly generates one connected determinant
     detType getRandomCoupledState(detType const &source, double &p) const;
     // deterministic excitation generator: generates all connected determinants
@@ -42,37 +38,6 @@ public:
     // calculate the generation probability biased according to the connecting
     // Hamiltonian matrix element
     double calcGenProp_cs(detType const &source, detType const &target) const;
-
-    // a class for the excitation generation
-    // forward declaration
-    class excit_store;
-    // probabilities for the random excitation generation
-    // single and / or double excitations ?
-    //int exflag;
-    // probability of generating a single excitation
-    double psingles;
-    // probability of generating a double excitation
-    double pdoubles;
-    // probability of generating a parallel spin double excitation
-    double pparallel;
-    // dynamic adjustment of the probabilities
-    bool bbias_sd;
-    bool bbias_po;
-    // which part of the excitation generator
-    bool lin_exact = false;
-    bool part_exact = true;
-    // set values for the generation probabilities based on the number 
-    // of electrons and holes
-    void set_probabilities(detType example_det);
-    // initialise these parameters
-    void set_probabilities_bias(detType example_det, int exflag);
-    // for updating these parameters
-    void check_probabilities(excit_store const &excitation, double hel, int nspawns);
-    //void check_probabilities(double hel, int nspawns);
-    void adjust_probabilities();
-
-
-
 private:
     // for the dynamic adjustment of the probabilities
     int minsingle;
@@ -87,25 +52,11 @@ private:
     int ndouble;
     int nparadouble;
     int noppdouble;
-
-    // for the excitation generation
-    // return the next electron pair (for the deterministic excitation generator)
-    void getElecPair(std::vector<int> const &source_orbs, int &el1, int &el2, int &spinpair, int &ind) const;
-    // pick a random electron pair (random excitation generator)
-    std::vector<int> pickElecPair(std::vector<int> const &source_orbs, std::vector<int> &spin, int &elecpairs) const;
-    // could the number of forbidden spin orbitals (random excitation generator)
-    int countForbiddenOrbs(std::vector<int> const &spins, std::vector<int> nunoccs) const;
-    // pick orbital a of an ij->ab excitation (random excitation generator)
-    int pickOrbA(detType const &source, std::vector<int> const &spins, std::vector<int> noccs, std::vector<int> unoccs, int norbs, int nel, int nforbiddenorbs, int &nexcita, int &aspin, bool &baorbfail) const;
-    // pick orbital b of an ij->ab excitation (random excitation generator)
-    int pickOrbB(detType const &source, std::vector<int> const &spins, std::vector<int> noccs, std::vector<int> unoccs, int norbs, int nel, int nforbiddenorbs, int aorb, int aspin, int &nexcitb, int &bspin, int &nexcitotherway) const;
-
-
 };
 
 // definition of nested class
 
-class AbInitioHamiltonian::excit_store{
+class excit_store{
 
     public:
 
@@ -125,10 +76,6 @@ class AbInitioHamiltonian::excit_store{
         excit_store(detType source_det){source=source_det; bfilled=false;};
         // fill in information necessary for random excitation generation
         void construct_class_count();
-        // generate a single excitation
-        detType gen_single_excit_cs(AbInitioHamiltonian const &H);
-        // generate a double excitation
-        detType gen_double_excit_cs(AbInitioHamiltonian const &H);
         // generate a random excitation
         void gen_rand_excit_cs(AbInitioHamiltonian const &H);
         // calculate the generation probability

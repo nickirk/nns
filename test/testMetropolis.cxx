@@ -25,7 +25,7 @@ int main(){
   modelHam = generateFermiHubbard(numStates, U, t);
   // The cost function does not matter, we only need the NNW to get
   EnergyEstimator eCF(modelHam);
-  NeuralNetwork NNW(eCF);
+  NeuralNetwork<> NNW(eCF);
   // set up the NNW
   NNW.constrInputLayer(numStates);
   NNW.constrDenseLayer(NNW.getLayer(0)->getActs(), "Tanh", 10*numStates);
@@ -34,14 +34,14 @@ int main(){
 
   detType HF=basis.getDetByIndex(0);
   // and the sampler
-  MetropolisSampler sampler(modelHam, basis, HF,NNW);
+  MetropolisSampler<> sampler(modelHam, basis, HF,NNW);
 
   coeffType cCoeff = coeffType();
   coeffType lastCoeff = coeffType();
   detType cDet = detType();
   for(int i = 0; i<100; ++i){
 	  lastCoeff = cCoeff;
-	  sampler.iterate(cCoeff,cDet);
+	  sampler.iterate(cCoeff,cDet,i);
 	  std::cout<<cCoeff<<" with fraction "<<lastCoeff/cCoeff<<std::endl;
   }
 }
