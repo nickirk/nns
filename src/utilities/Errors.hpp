@@ -48,6 +48,11 @@ public:
 	EmptyNetworkError(){};
 };
 
+class NoExcitationFound{
+public:
+	NoExcitationFound(){};
+};
+
 class UnconvergedEigenproblem{
 public:
 	UnconvergedEigenproblem(){};

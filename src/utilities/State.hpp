@@ -47,8 +47,10 @@ public:
 	std::vector<coeffType>const& coupledCoeffs(int i) const{return ccoeffs[i];}
 
 	// same as above: prevent code duplication
-	std::vector<detType>& coupledDets(int i) {return const_cast<std::vector<detType > &>(static_cast<State const &>((*this)).coupledDets(i));}
-	std::vector<coeffType>& coupledCoeffs(int i){return const_cast<std::vector<coeffType> &>(static_cast<State const &>((*this)).coupledCoeffs(i));}
+	std::vector<detType>& coupledDets(int i) {return
+			const_cast<std::vector<detType > &>(static_cast<State const &>((*this)).coupledDets(i));}
+	std::vector<coeffType>& coupledCoeffs(int i){return
+			const_cast<std::vector<coeffType> &>(static_cast<State const &>((*this)).coupledCoeffs(i));}
 
 	// vector utilities
 	void clear() {storedDets.clear(); storedCoeffs.clear(); cdets.clear(); ccoeffs.clear();}
