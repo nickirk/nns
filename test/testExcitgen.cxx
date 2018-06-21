@@ -10,7 +10,7 @@ double eps{1e-10};
 void testExcitgen(ExcitationGenerator &eg, detType const &HF);
 
 void testProbUpdater(detType const &HF){
-	ProbUpdater pBiasGen(HF);
+	ExcitationGenerator::ProbUpdater pBiasGen(HF);
 	assert(std::fabs(pBiasGen.pParallel() - 0.333333) < 0.001);
 }
 
