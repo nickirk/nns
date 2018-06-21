@@ -21,7 +21,7 @@ using namespace networkVMC;
 int main(){
 	int numSites{3}, numStates{2*numSites};;
 	double U{4}, t{-1};
-	FermionicHamiltonian modelHam = generateFermiHubbard(numStates,U,t);
+	auto modelHam = generateFermiHubbard(numStates,U,t);
 	EnergyCF eCF(modelHam);
 // Two types of coefficients: 0 and 1 in the target state
 	coeffType coeffZero;

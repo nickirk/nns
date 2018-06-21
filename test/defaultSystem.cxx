@@ -9,13 +9,11 @@
 
 using namespace networkVMC;
 
-FermionicHamiltonian generateDefaultHubbard(int numSites){
+FermiHubbardHamiltonian generateDefaultHubbard(int numSites){
  // Hamiltonian setup
   int numStates = 2*numSites;
-  FermionicHamiltonian modelHam(numStates);
   double U{4.}, t{-1};
-  modelHam = generateFermiHubbard(numStates, U, t);
-  return modelHam;
+  return generateFermiHubbard(numStates, U, t);
 }
 
 Basis generateDefaultBasis(int numSites){

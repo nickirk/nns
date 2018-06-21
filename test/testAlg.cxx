@@ -24,7 +24,7 @@ int main(){
   //generate basis, the basis class constructor takes in the spin configurations.
   Basis basis(spinConfig);
   //generate hamiltonian
-  FermionicHamiltonian modelHam(numStates);
+  FermiHubbardHamiltonian modelHam(numStates);
   double U{4.}, t{-1};
   modelHam = generateFermiHubbard(numStates, U, t);
   

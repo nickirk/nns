@@ -18,7 +18,7 @@ int main(){
   int numHidden(10);
   double trainRate(0.001);
   Basis basis(spinConfig);
-  FermionicHamiltonian modelHam(numStates);
+  FermiHubbardHamiltonian modelHam(numStates);
   double U{4.}, t{-1};
   modelHam = generateFermiHubbard(numStates, U, t);
   vector<detType> list;
@@ -32,15 +32,15 @@ int main(){
   //cout << "HF intCast=" << verbatimCast(HF) << endl;
   //list.push_back(HF);
   //ListGen<VecCType> sampler(modelHam, basis, HF, rbm, 200);
-  //FullSampler<VecCType> sampler(modelHam, basis, HF, rbm);
-  MetropolisSampler<VecCType> sampler(modelHam, basis, HF, rbm);
+  FullSampler<VecCType> sampler(modelHam, basis, HF, rbm);
+  //MetropolisSampler<VecCType> sampler(modelHam, basis, HF, rbm);
   //ListGen sampler(modelHam, basis, 100, HF,rbm);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
   double energy{0.0};
   //AcceleratedGradientDescent<VecCType> sl(trainRate);
   ADAM<VecCType> sl(trainRate);
-  Trainer<VecCType> ev(rbm, sampler, sl, eCF);
+  Trainer<VecCType> ev(rbm, sampler, sl, eCF,modelHam);
   ofstream myfile1;
   myfile1.open ("en1");
   for(int l(0); l<1000; ++l){
