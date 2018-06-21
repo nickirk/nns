@@ -30,7 +30,8 @@ template <typename T=VecType>
 class Trainer {
 public:
 // supply a Parametrization, a sampler, a solver and the cost function
-	Trainer(Parametrization<T> &NNW_, Sampler const &msampler, Solver<T> &sl, CostFunction const &cf);
+	Trainer(Parametrization<T> &NNW_, Sampler const &msampler,
+			Solver<T> &sl, CostFunction const &cf, Hamiltonian const &H_);
 // train() tries to optimize the parameters of the NNW with respect to its cost function
 	void train();
 // optionally set the learning rate for this step

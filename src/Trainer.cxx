@@ -15,9 +15,12 @@
 #include <memory>
 
 namespace networkVMC{
+
+// TODO: Add more constructors, with default arguments
 template <typename T>
-Trainer<T>::Trainer(Parametrization<T> &NNW_, Sampler const &msampler_, Solver<T> &sl_, CostFunction const &cf_):
-		modelHam(msampler_.getH()),NNW(NNW_), msampler(msampler_),sl(sl_),cf(cf_) {
+Trainer<T>::Trainer(Parametrization<T> &NNW_, Sampler const &msampler_,
+		Solver<T> &sl_, CostFunction const &cf_, Hamiltonian const& H_):
+		modelHam(H_),NNW(NNW_), msampler(msampler_),sl(sl_),cf(cf_) {
 	inputState.resize(msampler.getNumDets());
 }
 
