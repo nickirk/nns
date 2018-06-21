@@ -27,6 +27,8 @@ public:
 	virtual detType generateExcitation(detType const &source, double &pGen) = 0;
 	// 	b) get the probability for an excitation from source to target
 	virtual double getExcitationProb(detType const &source, detType const &target) = 0;
+	// maintains the pDoubles/pParallel for our non-trivial excitgens
+	class ProbUpdater;
 };
 
 

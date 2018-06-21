@@ -12,15 +12,16 @@
 
 namespace networkVMC {
 
-ProbUpdater::ProbUpdater() {
+ExcitationGenerator::ProbUpdater::ProbUpdater() {
 }
 
-ProbUpdater::~ProbUpdater() {
+ExcitationGenerator::ProbUpdater::~ProbUpdater() {
 }
 
 //---------------------------------------------------------------------------------------------------//
 
-void ProbUpdater::setProbabilities(detType example_det){
+void ExcitationGenerator::ProbUpdater::setProbabilities(
+		detType example_det){
     // set appropriate initial values for the probabilities based
     // on an example determinant
 
@@ -75,7 +76,7 @@ void ProbUpdater::setProbabilities(detType example_det){
 
 //---------------------------------------------------------------------------------------------------//
 
-void ProbUpdater::setProbabilitiesParallelBias(
+void ExcitationGenerator::ProbUpdater::setProbabilitiesParallelBias(
 		detType example_det, int exflag){
     // set appropriate initial values for the probabilities based
     // on an example determinant
@@ -175,7 +176,7 @@ void ProbUpdater::setProbabilitiesParallelBias(
 
 //---------------------------------------------------------------------------------------------------//
 
-void ProbUpdater::checkProbabilities(
+void ExcitationGenerator::ProbUpdater::checkProbabilities(
 		ExcitmatType const &excitmat, double hel, int nspawns, double pGen){
     // for updating these parameters
 
@@ -217,7 +218,7 @@ void ProbUpdater::checkProbabilities(
     }
 }
 
-void ProbUpdater::adjustProbabilities(){
+void ExcitationGenerator::ProbUpdater::adjustProbabilities(){
     // adjust the probabilities
 
     double pSingles_new,pDoubles_new,pParallel_new;

@@ -9,12 +9,13 @@
 #define SRC_HAMILTONIAN_EXCITATIONGENERATORS_PROBUPDATER_HPP_
 
 #include "../../utilities/TypeDefine.hpp"
+#include "ExcitationGenerator.hpp"
 
 namespace networkVMC {
 
 class ExcitmatType;
 
-class ProbUpdater {
+class ExcitationGenerator::ProbUpdater {
 public:
 	ProbUpdater();
 	explicit ProbUpdater(detType const &exampleDet){
