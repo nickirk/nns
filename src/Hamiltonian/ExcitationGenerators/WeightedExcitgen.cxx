@@ -11,6 +11,7 @@
 #include "../../utilities/TypeDefine.hpp"
 #include "../../utilities/Errors.hpp"
 #include "../Hamiltonian.hpp"
+#include <iostream>
 
 namespace networkVMC {
 
@@ -211,7 +212,7 @@ detType WeightedExcitgen::generateDoubleExcit(detType const &source){
     sum_pair.assign(2,0.0);
     if ((tgt[0]%2)==(tgt[1]%2)){
         if (H->partExact() or H->linExact()){
-            cpt_pair[0] = pGenSelectDoubleHole(source,src,-1,sum_pair[0],tgt[1]);
+        	cpt_pair[0] = pGenSelectDoubleHole(source,src,-1,sum_pair[0],tgt[1]);
             cpt_pair[1] = pGenSelectDoubleHole(source,src,tgt[1],sum_pair[1],tgt[0]);
         }
         else{
@@ -615,7 +616,9 @@ double WeightedExcitgen::getExcitationProb(
     if (src.size() != tgt.size()){
         throw SizeMismatchError(src.size(),tgt.size());
     }
-
+// TODO WARNING the ordering of tgt is not necessarily the same as in
+// the generation. In some cases, the probability depends on the order
+// of tgt, then, this will return another probability
    return calcPgen(source,src,tgt);
 }
 
@@ -674,7 +677,7 @@ double WeightedExcitgen::calcPgen(detType const &source, std::vector<int> const 
         sum_pair.assign(2,0.0);
         if ((tmptgt[0]%2)==(tmptgt[1]%2)){
             if (H->partExact() or H->linExact()){
-                cpt_pair[0] = pGenSelectDoubleHole(source,src,-1,sum_pair[0],tmptgt[1]);
+            	cpt_pair[0] = pGenSelectDoubleHole(source,src,-1,sum_pair[0],tmptgt[1]);
                 cpt_pair[1] = pGenSelectDoubleHole(source,src,tmptgt[1],sum_pair[1],tmptgt[0]);
             }
             else{
