@@ -2,7 +2,7 @@
  * WeightedSelector.cxx
  *
  *  Created on: Jun 19, 2018
- *      Author: guther
+ *      Author: Lauretta Schwarz, guther
  */
 
 #include "WeightedSelector.hpp"
@@ -11,6 +11,7 @@
 #include <vector>
 #include <cmath>
 #include <iterator>
+#include <iostream>
 
 namespace networkVMC{
 
@@ -142,7 +143,7 @@ int WeightedSelector::selectSingleHole(int src, double &pgen) {
 //---------------------------------------------------------------------------------------------------//
 
 int WeightedSelector::selectDoubleHole(std::vector<int> const &src,
-		std::size_t orb_pair, double &cum_sum, double &cpt){
+		int orb_pair, double &cum_sum, double &cpt){
     // for a double excitation pick a pair of holes using <e1e1|h1h1> and
     // <e2e2|h2h2> for the probability distribution
 
@@ -245,7 +246,7 @@ int WeightedSelector::selectDoubleHole(std::vector<int> const &src,
                 for (size_t i=0; i<norbs; i+=2){
                     if ((not source[i]) and (i!=orb_pair)){
                         // spin orbital is vacant
-                        cum_sum += oppSpinPairContribution(src[0],src[1],i,orb_pair);
+                        cum_sum += this->oppSpinPairContribution(src[0],src[1],i,orb_pair);
                         nexcit += 1;
                         cdf.push_back(cum_sum);
                         holes.push_back(i);
@@ -328,6 +329,7 @@ double WeightedSelector::oppSpinPairContribution(int i, int j, int a, int b){
     int idb = H.getId(b+1);
     double contrib = 0.0;
 
+
     if (H.partExact() and (b > 0)){
         // include sqrt(abs(<ij|ab>))
         // this can only be used if <ij|ba> = 0
@@ -348,7 +350,6 @@ double WeightedSelector::oppSpinPairContribution(int i, int j, int a, int b){
         // include the contribution of this terms sqrt(<ii|aa>)
         contrib = std::sqrt(std::fabs(H.getMatrixElement(idi,idi,ida,ida)));
     }
-
     return contrib;
 
 }

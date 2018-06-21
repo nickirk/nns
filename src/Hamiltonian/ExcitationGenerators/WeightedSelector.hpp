@@ -28,7 +28,7 @@ public:
     // select a hole for a single excitation
     int selectSingleHole(int src, double &pgen);
     // select two holes based on a cumulative list
-    int selectDoubleHole(std::vector<int> const &src, std::size_t orb_pair, double &cum_sum, double &cpt);
+    int selectDoubleHole(std::vector<int> const &src, int orb_pair, double &cum_sum, double &cpt);
     std::vector<int> selectDoubleHoles(std::vector<int> const &src,
     		std::vector<double> &cum_sum, std::vector<double> &cpt);
 
