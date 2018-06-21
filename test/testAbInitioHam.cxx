@@ -15,7 +15,7 @@
 #include "../src/CostFunctions/EnergyCF.hpp"
 #include "../src/CostFunctions/EnergyEstimator.hpp"
 #include "../src/Hamiltonian/AbInitioHamiltonian.hpp"
-#include "../src/Hamiltonian/FermionicHamiltonian.hpp"
+#include "../src/Hamiltonian/ExcitationGenerators/AllExcitationGenerators.hpp"
 #include "../src/Network/Nnw.hpp"
 #include "../src/HilbertSpace/Basis.hpp"
 #include "../src/HilbertSpace/Determinant.hpp"
@@ -48,7 +48,7 @@ int main(){
   //generate hamiltonian
   AbInitioHamiltonian modelHam(numStates);
   //double U{2.}, t{-1};
-  string file_name = "../run/FCIDUMP"; 
+  string file_name = "run/FCIDUMP_abinitio";
   modelHam = readAbInitioHamiltonian(numStates, file_name);
   //// test Hubbard Hamiltonian
   //FermionicHamiltonian modelHam(numStates);
@@ -214,6 +214,7 @@ int main(){
 
   if (test_gen_rand == 1){
       // test uniform random excitation generator
+	  UniformExcitgen excitgen(basis.getDetByIndex(0));
 
       cout << "************************************************" << endl;
       cout << "\n Random excitation generator\n" << endl;
@@ -237,9 +238,6 @@ int main(){
           std::vector<detType> CoupledDeterminants = modelHam.getCoupledStates(basis.getDetByIndex(i));
           std::sort(CoupledDeterminants.begin(),CoupledDeterminants.end(),compare_det);
 
-          // set the probabilities for the random excitation generation
-          modelHam.set_probabilities(basis.getDetByIndex(i));
-
           // histograms
           //std::vector<int> singlescount;
           //std::vector<double> singleshist;
@@ -261,7 +259,8 @@ int main(){
           while (counter <= iterations){
 
               pgen = 0.0;
-              detType target = modelHam.getRandomCoupledState(basis.getDetByIndex(i),pgen);
+              detType target = excitgen.generateExcitation(
+            		  basis.getDetByIndex(i),pgen);
 
               // find the determinant in the list and get its position
               int pos = std::find(CoupledDeterminants.begin(),CoupledDeterminants.end(),target) - 
@@ -285,7 +284,8 @@ int main(){
               }
 
               // second way of evaluation generation probability
-              double pgen_2 = modelHam.calcGenProp(basis.getDetByIndex(i),target);
+              double pgen_2 = excitgen.getExcitationProb(
+            		  basis.getDetByIndex(i),target);
 
               if (std::fabs(pgen-pgen_2) > 1e-10){
                   cout << "\n \n !!!!!! Error! !!!!! \n" << endl;
@@ -338,12 +338,13 @@ int main(){
   }
   else if (test_gen_rand == 2){
       // random excitation generator
+	  WeightedExcitgen excitgen(modelHam,basis.getDetByIndex(0));
       // weighted according to approximations to Hamiltonian matrix elements
      
       cout << "************************************************" << endl;
       cout << "\n Random weighted excitation generator\n" << endl;
       cout << "************************************************" << endl;
-      for (int i=0; i<basis.getSize(); ++i){
+      for (int i=0; i<1; ++i){
           cout << "\n \n Considering the source determinant:" << endl;
           cout << "   ";
           std::vector<int> positions = getOccupiedPositions(basis.getDetByIndex(i));
@@ -361,9 +362,6 @@ int main(){
           cout << " Total number of excitations: " << nexcit << endl;
           std::vector<detType> CoupledDeterminants = modelHam.getCoupledStates(basis.getDetByIndex(i));
           std::sort(CoupledDeterminants.begin(),CoupledDeterminants.end(),compare_det);
-
-          // set the probabilities for the random excitation generation
-          modelHam.set_probabilities(basis.getDetByIndex(i));
           
           // histograms
           //std::vector<int> singlescount;
@@ -382,11 +380,12 @@ int main(){
 
           int counter = 1;
           double pgen=0.0;
-          int iterations = 10000;
+          int iterations = 10;
           while (counter <= iterations){
 
               pgen = 0.0;
-              detType target = modelHam.getRandomCoupledState_cs(basis.getDetByIndex(i),pgen);
+              detType target = excitgen.generateExcitation(
+            		  basis.getDetByIndex(i),pgen);
 
               // find the determinant in the list and get its position
               int pos = std::find(CoupledDeterminants.begin(),CoupledDeterminants.end(),target) - 
@@ -410,8 +409,8 @@ int main(){
               }
 
               // second way of evaluation generation probability
-              double pgen_2 = modelHam.calcGenProp_cs(basis.getDetByIndex(i),target);
-
+              double pgen_2 = excitgen.getExcitationProb(basis.getDetByIndex(i),target);
+              std::cout << "probs: " << pgen << " " << pgen_2 <<std::endl;
               if (std::fabs(pgen-pgen_2) > 1e-10){
                   cout << "\n \n !!!!!! Error! !!!!! \n" << endl;
                   cout << " Evaluated generation probabilities don't agree ! \n \n" << endl;

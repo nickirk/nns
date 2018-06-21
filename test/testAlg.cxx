@@ -72,7 +72,7 @@ int main(){
   ADAM<VecType> sl(trainRate);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
-  Trainer<VecType> ev(NNW,sampler,sl,eCF);
+  Trainer<VecType> ev(NNW,sampler,sl,eCF,modelHam);
   ofstream myfile1;
   myfile1.open (fileName);
   double energy(0.);
