@@ -17,6 +17,8 @@ namespace networkVMC{
 template <typename T=VecType>
 class MetropolisSampler: public Sampler {
 public:
+	MetropolisSampler(ExcitationGenerator const &eG_, Basis const &fullBasis_, detType const &HF, Parametrization<T> const &para_):
+			Sampler(eG_,fullBasis_,HF),para(&para_),lastCoeff(para_.getCoeff(cDet)){};
 	MetropolisSampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF, Parametrization<T> const &para_):
 			Sampler(H_,fullBasis_,HF),para(&para_),lastCoeff(para_.getCoeff(cDet)){};
 	virtual ~MetropolisSampler();

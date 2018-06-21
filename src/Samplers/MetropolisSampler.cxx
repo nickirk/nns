@@ -9,6 +9,7 @@
 
 #include <random>
 #include <cmath>
+#include <iostream>
 
 #include "../Network/Parametrization.hpp"
 
@@ -35,6 +36,9 @@ void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, int i) const{
 	double pEx, pBack;
 	// First, get a random coupled determinant (from cDet)
 	detType tmp{getRandomConnection(cDet,pEx)};
+	printDet(cDet);
+	std::cout<<"generated"<<std::endl;
+	printDet(tmp);
 	// And its coefficient
 	coeffType tmpCoeff{para->getCoeff(tmp)};
 	// unbiasing with generation probability in principle necessary (unless prob. is symmetric)

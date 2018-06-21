@@ -14,6 +14,8 @@ namespace networkVMC{
 template<typename T=VecType>
 class ListGen : public Sampler{
 public:
+	ListGen(ExcitationGenerator const &eG_, Basis const &fullBasis_, detType const &HF,
+			Parametrization<T> const &para_, int numDets_=100);
 	ListGen(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
 			Parametrization<T> const &para_, int numDets_=100);
 	virtual ~ListGen();

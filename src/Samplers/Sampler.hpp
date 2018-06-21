@@ -9,9 +9,12 @@
 
 #include <vector>
 
+#include "../Hamiltonian/ExcitationGenerators/ExcitationGenerator.hpp"
+#include "../Hamiltonian/ExcitationGenerators/defaultExcitgensMap.hpp"
 #include "../HilbertSpace/Determinant.hpp"
 #include "../utilities/SpinConfig.hpp"
 #include "../utilities/TypeDefine.hpp"
+#include "../utilities/DeepCpyUniquePtr.hpp"
 #include "../Network/Parametrization.hpp"
 namespace networkVMC{
 
@@ -23,9 +26,12 @@ class Basis;
 // lists of potentially relevant determinants
 class Sampler{
 public:
-  Sampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
-		  int numDets_= 100):
-	  H(&H_),numDets(numDets_),fullBasis(&fullBasis_),cDet(HF){}
+  // explicit constructor
+  Sampler(ExcitationGenerator const &eG_, Basis const &fullBasis_,
+		  detType const &HF, int numDets_= 100);
+  // construct the ExcitationGenerator implicitly from the Hamiltonian
+  Sampler(Hamiltonian const &H_, Basis const &fullBasis_,
+		  detType const &HF, int numDets_ = 100);
   virtual ~Sampler(){};
   virtual Sampler* clone() const = 0;
   // and functionalities: get a random coupled determinant
@@ -48,12 +54,15 @@ public:
   virtual void setNumDets(int newNum){numDets=newNum;}
   // get the number of dets
   virtual int getNumDets() const {return numDets;}
-  Hamiltonian const& getH() const{return (*H);}
 
 private:
-  // Hamiltonian is needed because it defines what is connected to a given determinant
-  // and only connections are sampled
-  Hamiltonian const *H;
+  // excitation generator that does the sampling of determinants
+  // it is owned by the sampler, so we can also create it in the
+  // background, it does not need to be user-specified
+  mutable DeepCpyUniquePtr<ExcitationGenerator> excitGen;
+  //ExcitationGenerator *excitGen;
+  // is mutable because the excitation generator changes its behaviour
+  // over iterations, but this is not visible outisde
 protected:
   int numDets;
   // and the corresponding basis including the information on the number of electrons

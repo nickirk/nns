@@ -17,9 +17,15 @@ template <typename T=VecType>
 class DefaultSampler : public Sampler{
 public:
 	// It works like the abstract base class, just that it can iterate
+    DefaultSampler(ExcitationGenerator const &eG_, Basis const &fullBasis_, detType const &HF,
+    		Parametrization<T> const &para_, int numDets_= 100):
+    	Sampler(eG_,fullBasis_,HF,numDets_),para(&para_){};
+
+	// It works like the abstract base class, just that it can iterate
     DefaultSampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
     		Parametrization<T> const &para_, int numDets_= 100):
     	Sampler(H_,fullBasis_,HF,numDets_),para(&para_){};
+
 	virtual ~DefaultSampler();
 	// create a dynamic polymorphic copy
 	virtual DefaultSampler* clone() const {return new DefaultSampler(*this);}
