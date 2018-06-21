@@ -53,6 +53,15 @@ private:
     int noppdouble;
     bool bbiasSd;
     bool bbiasPo;
+
+    // for paralellization: threaded probabilities
+    static std::vector<double> threadedPDoubles;
+    static std::vector<double> threadedPParallel;
+    // if the threaded-p values on this thread have already been set
+    static std::vector<bool> threadedPSet;
+    // methods for handling the threaded p-storage
+    void setThreadP();
+    void readThreadP();
 };
 
 } /* namespace networkVMC */

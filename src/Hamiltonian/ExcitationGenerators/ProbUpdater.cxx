@@ -2,20 +2,42 @@
  * probUpdater.cxx
  *
  *  Created on: Jun 19, 2018
- *      Author: guther
+ *      Author: Lauretta Schwarz, guther
  */
 
 #include "ProbUpdater.hpp"
 #include "ExcitmatType.hpp"
 #include <cmath>
 #include <iostream>
+#include <omp.h>
 
 namespace networkVMC {
+
+// here we store the probabilities obtained on a thread globally
+std::vector<double> ExcitationGenerator::ProbUpdater::threadedPParallel = std::vector<double>(omp_get_num_threads(),0.0);
+std::vector<double> ExcitationGenerator::ProbUpdater::threadedPDoubles = std::vector<double>(omp_get_num_threads(),0.0);
+// this marks if we already set the threaded probabilities on this thread
+std::vector<bool> ExcitationGenerator::ProbUpdater::threadedPSet = std::vector<bool>(omp_get_num_threads(),false);
 
 ExcitationGenerator::ProbUpdater::ProbUpdater() {
 }
 
 ExcitationGenerator::ProbUpdater::~ProbUpdater() {
+}
+
+void ExcitationGenerator::ProbUpdater::setThreadP(){
+	int threadID = omp_get_thread_num();
+	threadedPParallel[threadID] = pParallelInternal;
+	threadedPParallel[threadID] = pDoublesInternal;
+	if(not threadedPSet[threadID]) threadedPSet[threadID] = true;
+};
+
+void ExcitationGenerator::ProbUpdater::readThreadP(){
+	int threadID = omp_get_thread_num();
+	if(threadedPSet[threadID]){
+		pParallelInternal = threadedPParallel[omp_get_thread_num()];
+		pDoublesInternal = threadedPDoubles[omp_get_thread_num()];
+	}
 }
 
 //---------------------------------------------------------------------------------------------------//
@@ -72,6 +94,7 @@ void ExcitationGenerator::ProbUpdater::setProbabilities(
     std::cout << "p_singles: " << pSingles << std::endl;
     std::cout << "p_doubles: " << pDoublesInternal << std::endl;
     std::cout << "p_parallel: " << pParallelInternal << std::endl;
+
 }
 
 //---------------------------------------------------------------------------------------------------//
