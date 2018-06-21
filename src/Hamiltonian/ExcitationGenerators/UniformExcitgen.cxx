@@ -7,12 +7,15 @@
 
 #include "UniformExcitgen.hpp"
 #include <vector>
-#include "../HilbertSpace/Determinant.cxx"
+#include "../../HilbertSpace/Determinant.hpp"
 
 namespace networkVMC {
 
-UniformExcitgen::UniformExcitgen(detType const &HF){
-	setProbabilities(HF);
+UniformExcitgen::UniformExcitgen(detType const &HF):
+	clonableExcitgen<UniformExcitgen>(){
+	pBiasGen.setProbabilities(HF);
+	pParallel = pBiasGen.pParallel();
+	pDoubles = pBiasGen.pDoubles();
 }
 
 //---------------------------------------------------------------------------------------------------//
@@ -22,17 +25,17 @@ UniformExcitgen::~UniformExcitgen() {
 
 //---------------------------------------------------------------------------------------------------//
 
-detType UniformExcitgen::generateExcitation(detType const &source, double &pGet) const{
+detType UniformExcitgen::generateExcitation(detType const &source, double &pGet){
 
     // random excitation generator: randomly pick a connected determinant
 
-    int exflag;
+    int exflag{0};
     //double pdoubles;
     detType target;
     std::vector<int> holes,particles;
-    double rand;
+    double rand{0.0};
     std::random_device rng;
-    int nsingleexcit,ndoubleexcit,nexcit;
+    int nsingleexcit{0},ndoubleexcit{0};
     double const normalisation=static_cast<double>(rng.max()); // minimal potentially returned values is 0
     std::vector<int> noccs,nunoccs;
 
@@ -88,7 +91,6 @@ detType UniformExcitgen::generateExcitation(detType const &source, double &pGet)
             ((noccs[1]*(noccs[1]-1)/2)*(nunoccs[1]*(nunoccs[1]-1)/2)) +
             (noccs[0]*noccs[1]*nunoccs[0]*nunoccs[1]);
     }
-    nexcit = nsingleexcit + ndoubleexcit;
 
     // use relative number of single and double excitations for probability
     //pdoubles = static_cast<double>(ndoubleexcit)/static_cast<double>(nexcit);
@@ -139,11 +141,11 @@ detType UniformExcitgen::genSingleExcitation(detType const &source, std::vector<
 
     // randomly pick a single excitation (random excitation generator)
 
-    int attempts,npairs,elecwnoexcit,nexcit;
+    int attempts{0},npairs{0},elecwnoexcit{0},nexcit{0};
     detType target;
-    double rand;
-    int iorb,aorb,ielec,aelec,ispin;
-    int nel,norbs;
+    double rand{0.0};
+    int iorb{0},aorb{0},ielec{0},aelec{0},ispin{0};
+    int nel{0},norbs{0};
     std::random_device rng;
     double const normalisation=static_cast<double>(rng.max()); // minimal potentially returned values is 0
 
@@ -306,17 +308,12 @@ detType UniformExcitgen::genDoubleExcitation(detType const &source, std::vector<
     // randomly generate a double excitation (random excitation generator)
 
     detType target=source;
-    int nexcita,nexcitb,nexcitotherway;
-    bool baorbfail;
-    int elecpairs,nel,norbs;
-    int aorb,aspin,borb,bspin;
-    int nforbiddenorbs;
+    int nexcita{0},nexcitb{0},nexcitotherway{0};
+    bool baorbfail{true};
+    int elecpairs{0},nel{0},norbs{0};
+    int aorb{0},aspin{0},borb{0},bspin{0};
+    int nforbiddenorbs{0};
     std::vector<int> elecs,spin;
-
-    nexcita = 0;
-    nexcitb = 0;
-    nexcitotherway = 0;
-    baorbfail = true;
 
     // number of electrons and spin orbitals
     nel = source_orbs.size();
@@ -367,68 +364,231 @@ detType UniformExcitgen::genDoubleExcitation(detType const &source, std::vector<
     particles.push_back(aorb);
     particles.push_back(borb);
 
-
     return target;
 
 }
 
 //---------------------------------------------------------------------------------------------------//
 
-void UniformExcitgen::setProbabilities(detType example_det){
-    // set appropriate initial values for the probabilities based
-    // on an example determinant
+double UniformExcitgen::getExcitationProb(detType const &source, detType const &target){
 
-    int nel,nalpha,nbeta,norbs;
+    // evaluate the generation probability of the uniform generation
+	// from source to target
 
-    // number of spin orbitals
-    norbs = example_det.size();
+    double pgen;
+    //double pdouble;
+    double diff;
+    int nexcit,nsingleexcit,ndoubleexcit,exflag;
+    int elecwnoexcit,ispin,nexcita,nexcitb,nexcitotherway;
+    std::vector<int> holes,particles;
+    std::vector<int> noccs,nunoccs;
+    std::vector<int> spin;
+    int elecpairs,norbs,nel;
 
-    // number of alpha, beta spin electrons
-    nel = 0;
-    nalpha = 0;
-    nbeta = 0;
-    for (size_t i=0; i<example_det.size(); ++i){
-        if (example_det[i]){
-            // electron
-            nel += 1;
-            if ((i%2)==0){
-                // alpha spin
-                nalpha += 1;
-            }
-            else{
-                // beta spin
-                nbeta += 1;
-            }
+    //pdouble = 0.0;
+    pgen = 0.0;
+    nexcita = 0;
+    nexcitb = 0;
+    nexcitotherway = 0;
+
+
+    exflag = 3;
+
+    // get the particles and holes involved in this excitation
+    for (size_t i=0; i<source.size(); ++i){
+        diff = static_cast<int>(source[i]) - static_cast<int>(target[i]);
+        if (diff > 0){
+            // holes
+            holes.push_back(i);
+        }
+        else if (diff < 0){
+            // particles
+            particles.push_back(i);
         }
     }
 
-    // number of parallel spin pairs
-    int parallel_pairs = (nalpha*(nalpha-1)/2) + (nbeta*(nbeta-1)/2);
-    // number of opposite spin pairs
-    int opp_pairs = nalpha*nbeta;
+    if ((holes.size() != particles.size()) || (holes.size() > 2)){
+        pgen = 0.0;
 
-    // p_parallel + p_opposite = 1
-    pParallel = static_cast<double>(parallel_pairs)/static_cast<double>(parallel_pairs+opp_pairs);
+        return pgen;
+    }
 
-    // number of single excitations
-    int nsingleexcit = (nalpha*((norbs/2)-nalpha)) + (nbeta*((norbs/2)-nbeta));
+    if (holes.size() == 0){
+        // source and target determinant are the same
 
-    // number of double excitations
-    // aa-pairs + bb-pairs + ab-pairs
-    int ndoubleexcit = ((nalpha*(nalpha-1)/2)*(((norbs/2)-nalpha)*((norbs/2)-nalpha-1)/2)) +\
-                       ((nbeta*(nbeta-1)/2)*(((norbs/2)-nbeta)*((norbs/2)-nbeta-1)/2)) +\
-                       (nalpha*nbeta*((norbs/2)-nalpha)*((norbs/2)-nbeta));
+        pgen = 0.0;
 
-    // p_singles + p_doubles = 1
-    double pSingles = static_cast<double>(nsingleexcit)/static_cast<double>(nsingleexcit+ndoubleexcit);
-    pDoubles = 1.0 - pSingles;
+        return pgen;
+    }
 
-    std::cout << "\n Setting the probabilities to their initial values: \n" << std::endl;
-    std::cout << "p_singles: " << pSingles << std::endl;
-    std::cout << "p_doubles: " << pDoubles << std::endl;
-    std::cout << "p_parallel: " << pParallel << std::endl;
+    // get the occupied spin orbitals
+    std::vector<int> source_orbs = getOccupiedPositions(source);
 
-    return;
+    // number of occupied and unoccupied alpha and beta spin orbitals
+    // noccs[0] : number of occupied alpha spin orbitals
+    // noccs[1] : number of occupied beta spin orbitals
+    // nunoccs[0] : number of unoccupied alpha spin orbitals
+    // nunoccs[1] : number of unoccupied beta spin orbitals
+    noccs.push_back(0);
+    noccs.push_back(0);
+    nunoccs.push_back(0);
+    nunoccs.push_back(0);
+
+    for (size_t i=0; i<source_orbs.size(); ++i){
+        //if (source[i]){
+        if ((source_orbs[i]%2)==0){
+            // alpha spin
+            noccs[0] += 1;
+        }
+        else{
+            // beta spin
+            noccs[1] += 1;
+        }
+        //}
+    }
+    for (size_t i=0; i<noccs.size(); ++i){
+        nunoccs[i] = (source.size()/2) - noccs[i];
+    }
+
+    // ensure that holes and particles have the same spin
+    if (holes.size()==2){
+        if ((holes[0]%2)!=(particles[0]%1)){
+            // swap particles
+            int tmp{0};
+            tmp = particles[0];
+            particles[0] = particles[1];
+            particles[1] = tmp;
+        }
+    }
+
+    norbs = source.size();
+    nel = source_orbs.size();
+
+    // for generation probabilities
+    // number of excitations
+    nsingleexcit = 0;
+    ndoubleexcit = 0;
+    if ((exflag==1)||(exflag==3)){
+
+        // single excitations
+        nsingleexcit = (noccs[0]*nunoccs[0]) + (noccs[1]*nunoccs[1]);
+
+    }
+    if ((exflag==2)||(exflag==3)){
+        // double excitations
+
+        // alpha-alpha, beta-beta, alpha-beta pairs
+        ndoubleexcit = ((noccs[0]*(noccs[0]-1)/2)*(nunoccs[0]*(nunoccs[0]-1)/2)) +
+            ((noccs[1]*(noccs[1]-1)/2)*(nunoccs[1]*(nunoccs[1]-1)/2)) +
+            (noccs[0]*noccs[1]*nunoccs[0]*nunoccs[1]);
+    }
+    nexcit = nsingleexcit + ndoubleexcit;
+
+    // use relative number of single and double excitations for probability
+    //pdouble = static_cast<double>(ndoubleexcit)/static_cast<double>(nexcit);
+
+
+
+    if (holes.size() == 1){
+        // single excitaition
+
+        // number of electrons with no available excitation
+        elecwnoexcit = 0;
+        for (size_t i=0; i<nunoccs.size(); ++i){
+            if (nunoccs[i]==0){
+                elecwnoexcit += nunoccs[i];
+            }
+        }
+
+        // spin of the electron
+        if ((holes[0]%2)==0){
+            // alpha
+            ispin = 0;
+        }
+        else{
+            //beta spin
+            ispin = 1;
+        }
+
+        // number of single excitation for electron i
+        nexcita = nunoccs[ispin];
+
+        // p_single = 1 - p_double
+        // pgen = p_single * p(i) * p(a|i) * n/(n-elecwnoexcit)
+        pgen = (1.0 - pDoubles) / (static_cast<double>(nexcita*(nel-elecwnoexcit)));
+
+        return pgen;
+
+    }
+    else{
+        // double excitaiton
+
+        // number of electron pairs
+        elecpairs = (nel*(nel-1))/2;
+
+        // spin of electron
+        for (size_t i=0; i< holes.size(); ++i){
+            if ((holes[i]%2)==0){
+                // alpha
+                spin.push_back(0);
+            }
+            else{
+                //beta spin
+                spin.push_back(1);
+            }
+        }
+
+        int nforbiddenorbs = countForbiddenOrbs(spin,nunoccs);
+
+        // number of orbitals to select a from
+        if (spin[0] != spin [1]){
+            // alpha beta pair
+            nexcita = norbs - nel;
+        }
+        else{
+            if (spin[0]==0){
+                // alpha
+                nexcita = (norbs/2) - noccs[0];
+            }
+            else{
+                //beta
+                nexcita = (norbs/2) - noccs[1];
+            }
+        }
+
+        // number of orbitals to select b from given that a has been selected
+        if (spin[0] != spin[1]){
+            // alpha beta pair
+            if (spin[0]==0){
+                // a is alpha
+                nexcitb = nunoccs[1];
+                nexcitotherway = nunoccs[0];
+            }
+            else{
+                // a is beta
+                nexcitb = nunoccs[0];
+                nexcitotherway = nunoccs[1];
+            }
+        }
+        else{
+            // alpha alpha / beta beta
+            nexcitb = nunoccs[spin[0]];
+            nexcitotherway = nunoccs[spin[0]];
+
+            // need to ensure that b is not picked again
+            nexcitb -= 1;
+            nexcitotherway -= 1;
+        }
+
+        // p_gen = p_double * p(ij) * [p(a|ij)p(b|a,ij) + p(b|ij)p(a|b,ij)]
+        pgen = pDoubles*((1.0/static_cast<double>(nexcitb)) + (1.0/static_cast<double>(nexcitotherway))) /
+            (static_cast<double>(elecpairs*(nexcita - nforbiddenorbs)));
+
+        return pgen;
+    }
+
+    return pgen;
+
 }
 
 } /* namespace networkVMC */

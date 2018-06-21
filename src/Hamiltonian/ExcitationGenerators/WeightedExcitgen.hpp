@@ -12,28 +12,55 @@
 //generation probabilities
 
 #include "ExcitationGenerator.hpp"
-
-class Hamiltonian;
+#include "ProbUpdater.hpp"
+#include "ExcitmatType.hpp"
+#include "../Hamiltonian.hpp"
 
 namespace networkVMC {
 
-class WeightedExcitgen: public ExcitationGenerator {
+class WeightedExcitgen: public clonableExcitgen<WeightedExcitgen> {
 public:
-	WeightedExcitgen();
+	// constructed from a Hamiltonian to get the weights and a
+	// determinant to use as a starting guess for the bias pDoubles
+	WeightedExcitgen(Hamiltonian const &H_, detType const &HF);
 	virtual ~WeightedExcitgen();
 
 	// interface for excitation generation
-	virtual detType generateExcitation(detType const &source, double &pGen) const ;
-	virtual double getExcitationProb(detType const &source, detType const &target) const;
+	virtual detType generateExcitation(detType const &source, double &pGen);
+	virtual double getExcitationProb(detType const &source, detType const &target);
 
 private:
     // generate a single excitation
-    detType generateSingleExcit();
+    detType generateSingleExcit(detType const &source);
+    // can throw a NoExcitFound exception
     // generate a double excitation
-    detType generateDoubleExcit();
-    std::vector<int> WeightedExcitgen::pickBiasedElecs(std::vector<int> &elecs, detType const &source);
-    double pParallel, pDoubles, pGen;
+    detType generateDoubleExcit(detType const &source);
+    // can throw a NoExcitFound exception
 
+    // pick two electrons
+    std::vector<int> pickBiasedElecs(
+    		std::vector<int> &elecs, detType const &source);
+
+    // compute the probability to generate an excitation moving the electrons
+    // src to the orbitals tgt
+    double calcPgen(detType const &source,std::vector<int> const &src,
+    		std::vector<int> const &tgt);
+    // calculate the generation probability for a single excitation
+    double pGenSingleExcitCs(detType const &source, int srcOrb, int tgt);
+    // calculate the generation probability for selecting holes in a doule excitation
+    double pGenSelectDoubleHole(
+    		detType const &source, std::vector<int> const &srcOrbs,
+			int const &orb_pair, double &cum_sum, int const &tgt);
+
+    // Initialize all the internal variables
+    void constructClassCount(detType const &source);
+
+    ProbUpdater pBiasGen;
+    double pParallel, pDoubles, pgen;
+    // auxiliary matrix for internal excitation communication
+    ExcitmatType excitmat;
+    // orbitals occupied in a source
+    std::vector<int> sourceOrbs;
     // indicate whether all variables are filled
     bool bfilled;
     // number of spin orbitals

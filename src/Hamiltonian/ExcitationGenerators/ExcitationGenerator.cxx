@@ -21,7 +21,7 @@ int countForbiddenOrbs(std::vector<int> const &spins, std::vector<int> nunoccs){
 
     // count the number of forbidden spin orbitals (required in random excitation generator)
 
-    int nforbiddenorbs;
+    int nforbiddenorbs{0};
 
     nforbiddenorbs = 0;
 
@@ -69,11 +69,11 @@ std::vector<int> pickElecPair(std::vector<int> const &source_orbs, std::vector<i
     // use a triangular indexing system in order to pick one electron pairs using just one single random
     // number for each pair
 
-    int nel;
-    double rand;
+    int nel{0};
+    double rand{0.0};
     std::vector<int> elecs;
     std::vector<int> orbs;
-    int el1,el2;
+    int el1{0},el2{0};
     std::random_device rng;
     double const normalisation=static_cast<double>(rng.max()); // minimal potentially returned values is 0
 
@@ -122,10 +122,10 @@ int pickOrbA(detType const &source, std::vector<int> const &spins, std::vector<i
 
     // pick orbital a in an ij->ab excitation (random excitation generator)
 
-    int attemptsa,attemptsoverall;
-    int aelec;
-    int aorb,counter;
-    double rand;
+    int attemptsa{0},attemptsoverall{0};
+    int aelec{0};
+    int aorb{0},counter{0};
+    double rand{0.0};
     std::random_device rng;
     double const normalisation=static_cast<double>(rng.max()); // minimal potentially returned values is 0
 
@@ -331,10 +331,10 @@ int pickOrbB(detType const &source, std::vector<int> const &spins, std::vector<i
 
     // pick orbital b in an ij->ab excitation (random excitation generator)
 
-    int borb;
-    int attemptsb,counter;
-    double rand;
-    int belec;
+    int borb{0};
+    int attemptsb{0},counter{0};
+    double rand{0.0};
+    int belec{0};
     std::random_device rng;
     double const normalisation=static_cast<double>(rng.max()); // minimal potentially returned values is 0
 
