@@ -90,7 +90,6 @@ void Hamiltonian::setMatrixElement(int p, int q, int r, int s, double newEntry){
         pqrs = (qs*(qs-1))/2 + pr;
     }
 
-
     twoBodyEntries[pqrs-1]=newEntry;
 }
 
@@ -142,7 +141,6 @@ double Hamiltonian::getMatrixElement(int p, int q, int r, int s) const {
     else{
         pqrs = (qs*(qs-1))/2 + pr;
     }
-
 
     double u_pqrs = 0.0; 
     u_pqrs = twoBodyEntries[pqrs-1];
