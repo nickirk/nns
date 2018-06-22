@@ -23,7 +23,7 @@ public:
 	// create a dynamic polymorphic copy
 	virtual MetropolisSampler* clone() const {return new MetropolisSampler(*this);}
 	//Do a markov step
-	virtual void iterate(coeffType &cI, detType &dI, int i) const;
+	virtual void iterate(coeffType &cI, detType &dI, double &weight, int i) const;
 private:
   // sampling depends on the coefficients, as they have to be given alongside the determinants
     Parametrization<T> const *para;

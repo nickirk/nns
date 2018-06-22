@@ -19,7 +19,8 @@ class Hamiltonian;
 
 class EnergyEsMarkov: public CostFunction{
 public:
-	explicit EnergyEsMarkov(Hamiltonian const &H_):CostFunction(),H(H_),energy(0.0),normalizerCoeff(0.0){};
+	explicit EnergyEsMarkov(Hamiltonian const &H_):
+    CostFunction(),H(H_),energy(0.0),normalizerCoeff(0.0){};
 	nablaType nabla(State const &input) const;
 	double calc(State const &input) const {return energy;};
     double getNormalizer(){return normalizerCoeff;};

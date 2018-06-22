@@ -74,6 +74,14 @@ public:
   bool operator()(coeffType const &a, coeffType const &b) const{return std::abs(a)>std::abs(b);}
 };
 
+// functor for comparing weights
+class weightComparer{
+public:
+  weightComparer(){};
+  // this is another callable object which only returns if a<b (in the sense of absolute value)
+  bool operator()(double const &a, double const &b) const{return a>b;}
+};
+
 }
 
 #endif /* SRC_UTILITIES_SORTING_HPP_ */

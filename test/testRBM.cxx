@@ -25,14 +25,11 @@ int main(){
   RBM rbm(numStates, numHidden);
 
   detType HF=basis.getDetByIndex(0);
-  //State target(std::vector<detType>(basis.getSize(),HF), 
-  //    std::vector<coeffType>(basis.getSize(),coeffType(10.,1.)));
-  EnergyEstimator eCF(modelHam);
-  //NormCF eCF(target);
-  //cout << "HF intCast=" << verbatimCast(HF) << endl;
-  //list.push_back(HF);
-  //ListGen<VecCType> sampler(modelHam, basis, HF, rbm, 200);
-  FullSampler<VecCType> sampler(modelHam, basis, HF, rbm);
+  EnergyEsMarkov eCF(modelHam); 
+  // EnergyEsMarkov cost funciton
+  // works only with Markov Chain sampler.
+  // Don't not use it for other samplers.
+  MarkovSampler<VecCType> sampler(modelHam, basis, HF, rbm);
   //ListGen sampler(modelHam, basis, 100, HF,rbm);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer

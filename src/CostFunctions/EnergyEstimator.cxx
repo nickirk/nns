@@ -75,4 +75,4 @@ nablaType EnergyEstimator::nabla(State const &input) const{
   return dEdC;
 }
 
-}
+

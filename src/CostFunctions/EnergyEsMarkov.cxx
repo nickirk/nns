@@ -19,17 +19,20 @@ namespace networkVMC{
 double EnergyEsMarkov::evaluate(State const &input) const{
   double energyVal{0.0};
   normalizerCoeff=0.0;
-  double Hij(0.);
   int numDets = input.size();
+  
+  #pragma omp parallel for reduction(+:energyVal)
   for (int i=0; i < numDets; ++i){
+    double Hij(0.);
     coeffType c_i=input.coeff(i);
     std::vector<coeffType> coupledC_j = input.coupledCoeffs(i);
     std::vector<detType> coupledDets = input.coupledDets(i);
     Hij = H(input.det(i), input.det(i));
     energyVal += std::real(c_i * Hij/c_i);
     for (size_t j=0; j < coupledC_j.size(); ++j){
+        // don't forget to unbias using the Pgen. TODO
       Hij = H(input.det(i), coupledDets[j]);
-      energyVal += std::real(coupledC_j[j] * Hij / c_i );
+      energyVal += std::real(coupledC_j[j]* Hij / c_i );
     }
   }
   energyVal /= numDets;
@@ -39,22 +42,32 @@ double EnergyEsMarkov::evaluate(State const &input) const{
 nablaType EnergyEsMarkov::nabla(State const &input) const{
   energy = evaluate(input);
   int numDets = input.size();
-  nablaType dEdC;
-  coeffType dEdC_i;
+  int numCoupledDets = input.coupledDets(0).size();
+  // spaceSize = size of sampled dets and their coupled ones
+  int spaceSize = numDets * (numCoupledDets + 1);
+  nablaType dEdC(coeffType(0.,0.),spaceSize) ;
+  #pragma omp parallel for
+  //not thread safe
+  //assume we know the whole space size, reserve space
   for (int i=0; i < numDets; ++i){
-    //coeffType c_i = input.getCoeff(i);
-    if (i == 0 || input.det(i) != input.det(i-1)){
-      double A(0.);
-      A = (H(input.det(i), input.det(i)) - energy );
-      dEdC_i.real(2. * (A));
-      dEdC_i.imag(0.);
-      dEdC.push_back(dEdC_i);
-      for (size_t j=0; j < input.coupledDets(i).size(); ++j){
-        A = H(input.det(i),input.coupledDets(i)[j]);
-        dEdC_i.real(2. * A);
-        dEdC_i.imag(0.);
-        dEdC.push_back(dEdC_i);
-      }
+    coeffType dEdCtmp;
+    coeffType c_i = input.getCoeff(i);
+//  if (i == 0 || input.det(i) != input.det(i-1)){
+//  checking repeated dets should be done in the sampler, not here
+//  put all the weighting step here instead of inside of RBM
+    dEdCtmp = (H(input.det(i), input.det(i)) - energy)/std::conj(c_i);
+    // add weights
+    dEdC[i] = dEdCtmp / numDets;
+    std::vector<coeffType> coupledC_j = input.coupledCoeffs(i);
+    std::vector<detType> coupledDets = input.coupledDets(i);
+    std::vector<double> coupledWeights = input.coupledWeights(i);
+    // make sure the coupleDets.size() are the same for different i
+    for (size_t j=0; j < numCoupledDets; ++j){
+      // don't forget to unbias using the Pgen. TODO
+      // in the excitgen, the weight should be updated with pgen
+      dEdCtmp = H(input.det(i),coupledDets[j])/std::conj(c_i);
+      // unbias with numCoupledDets and Pgen
+      dEdC[i+j+1]=dEdCtmp / numCoupledDets / coupledWeights[j] ;
     }
   }
   return dEdC;

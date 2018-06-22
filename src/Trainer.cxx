@@ -51,28 +51,37 @@ void Trainer<T>::train(){
 
 	// And now, for the chosen number of samples, get the respective determinants and
 	// coefficients
-	std::cout<<"numdets "<<numDets<<'\n';
-	// TODO this should not be part of the trainer, move it to somewhere in the state
 #pragma omp parallel
 	{
 	// sampling is not threadsafe, so each thread creates it's own sampler
     std::unique_ptr<Sampler> samplerThread(msampler.clone());
 #pragma omp for
 	for(int i=0; i < numDets; ++i){
-      // iterate the sampler: This also requires the iteration as an input, as
+    // iterate the sampler: This also requires the iteration as an input, as
 	  // some samplers pre-fetch the ensemble of determinants
-	  samplerThread->iterate(inputState.coeff(i), inputState.det(i),i);
+	  samplerThread->iterate(
+        inputState.coeff(i), inputState.det(i), inputState.weight(i),i
+        );
 	  // get some coupled determinants and their coefficients to use in the
 	  // energy estimator
-      inputState.coupledDets(i) = modelHam.getCoupledStates(inputState.det(i));
+    inputState.coupledDets(i) = modelHam.getCoupledStates(inputState.det(i));
 	  inputState.coupledCoeffs(i).resize(inputState.coupledDets(i).size());
+	  inputState.coupledWeights(i).resize(inputState.coupledDets(i).size());
 
 	  // just get the coefficients from the NNW
+    // also set the weight of the coupled dets
 	  for(size_t j=0; j < inputState.coupledDets(i).size(); ++j){
 	  	inputState.coupledCoeffs(i)[j]=NNW.getCoeff(inputState.coupledDets(i)[j]);
+      // at this stage every weight is 1.
+      inputState.coupledWeights(i)[j]=1;
 	  }
 	}
 	}
+  //inputState.reduce();
+  // count the repeatations, inside State? 
+  // count the repeated determinants, update the weights or use hash table
+  // in the sampler to count the number. TODO
+
 	updateParameters(inputState);
 }
 
