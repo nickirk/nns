@@ -2499,7 +2499,7 @@ int AbInitioHamiltonian::excit_store::select_double_hole(AbInitioHamiltonian con
                 for (size_t i=1; i<norbs; i+=2){
                     if ((not source[i]) and (i!=orb_pair)){
                         // spin orbital is vacant
-                        cum_sum += this->opp_spin_pair_contribution(H,src[0],src[1],i,orb_pair);
+                        cum_sum += this->opp_spin_pair_contribution(H,src[1],src[0],i,orb_pair);
                         nexcit += 1;
                         cdf.push_back(cum_sum);
                         holes.push_back(i);
@@ -2511,7 +2511,7 @@ int AbInitioHamiltonian::excit_store::select_double_hole(AbInitioHamiltonian con
                 for (size_t i=0; i<norbs; i+=2){
                     if ((not source[i]) and (i!=orb_pair)){
                         // spin orbital is vacant
-                        cum_sum += this->opp_spin_pair_contribution(H,src[0],src[1],i,orb_pair);
+                        cum_sum += this->opp_spin_pair_contribution(H,src[1],src[0],i,orb_pair);
                         nexcit += 1;
                         cdf.push_back(cum_sum);
                         holes.push_back(i);
@@ -2751,7 +2751,7 @@ detType AbInitioHamiltonian::excit_store::gen_double_excit_cs(AbInitioHamiltonia
     create(target,tgt[0]);
     create(target,tgt[1]);
     excitmat[0][0] = src[0];
-    excitmat[1][0] = src[0];
+    excitmat[1][0] = src[1];
     if ((src[0]%2)==(tgt[0]%2)){
         excitmat[0][1] = tgt[0];
         excitmat[1][1] = tgt[1];
@@ -2869,15 +2869,21 @@ void AbInitioHamiltonian::excit_store::calc_pgen_cs(AbInitioHamiltonian const &H
                 cpt_pair[0] = 0.0;
                 cpt_pair[1] = 0.0;
             }
-            double prod_int_cpt = std::accumulate(int_cpt.begin(),int_cpt.end(),1,std::multiplies<double>());
-            double prod_cum_sum = std::accumulate(cum_sum.begin(),cum_sum.end(),1,std::multiplies<double>());
-            double prod_cpt_pair = std::accumulate(cpt_pair.begin(),cpt_pair.end(),1,std::multiplies<double>());
-            double prod_sum_pair = std::accumulate(sum_pair.begin(),sum_pair.end(),1,std::multiplies<double>());
+            //double prod_int_cpt = std::accumulate(int_cpt.begin(),int_cpt.end(),1,std::multiplies<double>());
+            double prod_int_cpt = int_cpt[0]*int_cpt[1];
+            //double prod_cum_sum = std::accumulate(cum_sum.begin(),cum_sum.end(),1,std::multiplies<double>());
+            double prod_cum_sum = cum_sum[0]*cum_sum[1];
+            //double prod_cpt_pair = std::accumulate(cpt_pair.begin(),cpt_pair.end(),1,std::multiplies<double>());
+            double prod_cpt_pair = cpt_pair[0]*cpt_pair[1];
+            //double prod_sum_pair = std::accumulate(sum_pair.begin(),sum_pair.end(),1,std::multiplies<double>());
+            double prod_sum_pair = sum_pair[0]*sum_pair[1];
             pgen *= (prod_int_cpt/prod_cum_sum + prod_cpt_pair/prod_sum_pair);
         }
         else{
-            double prod_int_cpt = std::accumulate(int_cpt.begin(),int_cpt.end(),1,std::multiplies<double>());
-            double prod_cum_sum = std::accumulate(cum_sum.begin(),cum_sum.end(),1,std::multiplies<double>());
+            //double prod_int_cpt = std::accumulate(int_cpt.begin(),int_cpt.end(),1,std::multiplies<double>());
+            double prod_int_cpt = int_cpt[0]*int_cpt[1];
+            //double prod_cum_sum = std::accumulate(cum_sum.begin(),cum_sum.end(),1,std::multiplies<double>());
+            double prod_cum_sum = cum_sum[0]*cum_sum[1];
             pgen *= (prod_int_cpt/prod_cum_sum);
         }
 
