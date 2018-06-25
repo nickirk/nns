@@ -246,7 +246,7 @@ detType WeightedExcitgen::generateDoubleExcit(detType const &source){
     create(target,tgt[0]);
     create(target,tgt[1]);
     excitmat(0,0) = src[0];
-    excitmat(1,0) = src[0];
+    excitmat(1,0) = src[1];
     if ((src[0]%2)==(tgt[0]%2)){
         excitmat(0,1) = tgt[0];
         excitmat(1,1) = tgt[1];
