@@ -20,7 +20,10 @@ namespace networkVMC{
 template <typename T>
 Trainer<T>::Trainer(Parametrization<T> &NNW_, Sampler const &msampler_,
 		Solver<T> &sl_, CostFunction const &cf_, Hamiltonian const& H_):
-		modelHam(H_),NNW(NNW_), msampler(msampler_),sl(sl_),cf(cf_) {
+		modelHam(H_),NNW(NNW_), msampler(msampler_),sl(sl_),
+		// here, we make sure that the cost function and the
+		// sampler are compatible
+		cf(cf_.setUpCF(msampler_.type())) {
 	inputState.resize(msampler.getNumDets());
 }
 

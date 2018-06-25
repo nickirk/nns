@@ -5,7 +5,7 @@
  *      Author: Liao
  */
 
-#include "EnergyEstimator.hpp"
+#include "EnergyEsPreFetched.hpp"
 
 #include <iostream>
 #include <vector>
@@ -16,7 +16,7 @@
 
 namespace networkVMC{
 
-double EnergyEstimator::evaluate(State const &input) const{
+double EnergyEsPreFetched::evaluate(State const &input) const{
   //std::complex<double> normalizerCoeffComplex(0.,0.);
   int numDets = input.size();
   double energyVal{0.0};
@@ -45,7 +45,7 @@ double EnergyEstimator::evaluate(State const &input) const{
   return energyVal;
 }
 
-nablaType EnergyEstimator::nabla(State const &input) const{
+nablaType EnergyEsPreFetched::nabla(State const &input) const{
   energy = evaluate(input);
   int numDets = input.size();
   std::vector<coeffType> dEdC(numDets, coeffType(0.,0.));

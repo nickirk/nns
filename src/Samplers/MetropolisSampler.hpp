@@ -26,6 +26,8 @@ public:
 	virtual MetropolisSampler* clone() const {return new MetropolisSampler(*this);}
 	//Do a markov step
 	virtual void iterate(coeffType &cI, detType &dI, int i) const;
+	// this is a markov-type sampler
+	SamplerType type() const {return Markov;}
 private:
   // sampling depends on the coefficients, as they have to be given alongside the determinants
     Parametrization<T> const *para;

@@ -199,7 +199,8 @@ detType WeightedExcitgen::generateDoubleExcit(detType const &source){
             				src,tgt[0],cum_sum[1],int_cpt[1]);
         }
     }
-
+    std::cout << "Input for gen: "<<tgt[0] << " " << tgt[1] << std::endl;
+    std::cout << "Output: " << cum_sum[0] << " " << cum_sum[1] << std::endl;
     // check that the two electrons have not been excited into the
     // same orbitals
     if (std::any_of(tgt.begin(),tgt.end(), [](const int i) {return i<0;})){
@@ -367,8 +368,7 @@ std::vector<int> WeightedExcitgen::pickBiasedElecs(std::vector<int> &elecs, detT
 
 //---------------------------------------------------------------------------------------------------//
 
-double WeightedExcitgen::pGenSelectDoubleHole(detType const &source, std::vector<int> const &src,
-		int const &orb_pair, double &cum_sum, int const &tgt){
+double WeightedExcitgen::pGenSelectDoubleHole(detType const &source, std::vector<int> const &src, int const &orb_pair, double &cum_sum, int const &tgt){
     // for a double excitation pick a pair of holes using <e1e1|h1h1> and
     // <e2e2|h2h2> for the probability distribution
 
@@ -430,7 +430,7 @@ double WeightedExcitgen::pGenSelectDoubleHole(detType const &source, std::vector
                         tmp = selector.oppSpinPairContribution(src[0],src[1],i,orb_pair);
                         cum_sum += tmp;
                         if (i==tgt){
-                            cpt = tmp;
+                            cpt = tmp;			 
                         }
                     }
                 }
@@ -476,6 +476,10 @@ double WeightedExcitgen::pGenSelectDoubleHole(detType const &source, std::vector
                         if (i==tgt){
                             cpt = tmp;
                         }
+			std::cout << "pGen contrib: "<<tmp<<std::endl;
+			std::cout << "from orbs: " << src[0] << " " 
+				  << src[1] << " " << i << " " << orb_pair << std::endl;
+
                     }
                 }
             }
@@ -661,7 +665,8 @@ double WeightedExcitgen::calcPgen(detType const &source, std::vector<int> const 
 
         int_cpt[0] = pGenSelectDoubleHole(source,src,-1,cum_sum[0],tmptgt[0]);
         int_cpt[1] = pGenSelectDoubleHole(source,src,tmptgt[0],cum_sum[1],tmptgt[1]);
-
+        std::cout << "Input for calc: "<<tmptgt[0] << " " << tmptgt[1] << std::endl;
+        std::cout << "Output: " << cum_sum[0] << " "<<cum_sum[1] << std::endl;
         // deal with the cases when there are no available excitation
         if (std::any_of(cum_sum.begin(),cum_sum.end(), [](const double i) \
                     {return std::fabs(i)<1e-12;})){

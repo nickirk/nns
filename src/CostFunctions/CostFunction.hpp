@@ -25,6 +25,12 @@ public:
 // (nabla)
 	virtual nablaType nabla(State const &input) const = 0;
 	virtual double calc(State const &input) const = 0;
+
+// This is for increased safety, we can set up the CF depending
+// on the type of the sampler, to avoid using invalid combinations
+	virtual CostFunction const& setUpCF(SamplerType const &sT) const{
+		return *this;
+	}
 };
 
 }

@@ -55,6 +55,9 @@ public:
   // get the number of dets
   virtual int getNumDets() const {return numDets;}
 
+  // for attributing CostFunctions
+  virtual SamplerType type() const {return PreFetched;}
+
 private:
   // excitation generator that does the sampling of determinants
   // it is owned by the sampler, so we can also create it in the

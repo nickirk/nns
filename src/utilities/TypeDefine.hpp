@@ -31,5 +31,10 @@ using biasType = std::vector<Eigen::Map<VecType>>;
 // return type for cost function nabla (derivative with respect to a vector)
 using nablaType = std::vector<coeffType>;
 
+// Supertypes for samplers and Hamiltonians to set defaults
+// and avoid invalid combinations
+enum SamplerType {Markov, PreFetched};
+enum HType {Hubbard, AbInitio, Constant};
+
 }
 #endif /* SRC_UTILITIES_TYPEDEFINE_HPP_ */

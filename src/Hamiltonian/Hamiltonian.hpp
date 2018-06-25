@@ -6,8 +6,6 @@
 
 namespace networkVMC{
 
-enum HType {Hubbard, AbInitio, Constant};
-
 class Hamiltonian{
  public:
   // constructors

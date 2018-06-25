@@ -9,8 +9,7 @@
 #define SRC_COSTFUNCTIONS_ALLCOSTFUNCTIONS_HPP_
 
 #include "EnergyCF.hpp"
-#include "EnergyEsMarkov.hpp"
-#include "EnergyEstimator.hpp"
+#include "EnergyEs.hpp"
 #include "NormCF.hpp"
 #include "SubspaceCF.hpp"
 

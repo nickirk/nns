@@ -1,12 +1,12 @@
 /*
- * EnergyEsMarkov.hpp
+ * EnergyEstimator.hpp
  * based on EnergyCF.hpp
- *  Created on: Jan 29, 2018
+ *  Created on: Nov 08, 2017
  *      Author: Liao
  */
 
-#ifndef SRC_COSTFUNCTIONS_ENERGYESMARKOV_HPP_
-#define SRC_COSTFUNCTIONS_ENERGYESMARKOV_HPP_
+#ifndef SRC_COSTFUNCTIONS_ENERGYESPREFETCHED_HPP_
+#define SRC_COSTFUNCTIONS_ENERGYESPREFETCHED_HPP_
 
 #include <vector>
 #include <Eigen/Dense>
@@ -18,7 +18,7 @@ namespace networkVMC{
 
 class Hamiltonian;
 
-class EnergyEsMarkov: public CostFunction{
+class EnergyEsPreFetched: public CostFunction{
 public:
 	// Do it like this: We cannot generate EnergyEsMarkov
 	// directly, this has to be done via EnergyEs
@@ -30,20 +30,20 @@ public:
 private:
     // Make sure this is not manually constructed, but only via
     // EnergyEs. This way, we cannot attribute the wrong CF to a sampler
-	explicit EnergyEsMarkov(Hamiltonian const &H_):
+	explicit EnergyEsPreFetched(Hamiltonian const &H_):
 		CostFunction(),H(H_),energy(0.0),normalizerCoeff(0.0){};
 
-	// Hamiltonian, to which the energy referes
+	// Hamiltonian to which the CFs energy refers
 	Hamiltonian const& H;
 	mutable double energy;
 	mutable double normalizerCoeff;
 	double evaluate(State const &input) const;
 
 	// Has a reference member, so assignment is not a thing
-	EnergyEsMarkov& operator=(EnergyEsMarkov const &source);
-	EnergyEsMarkov& operator=(EnergyEsMarkov &&source);
+	EnergyEsPreFetched& operator=(EnergyEsPreFetched const &source);
+	EnergyEsPreFetched& operator=(EnergyEsPreFetched &&source);
 };
 
 }
 
-#endif /* SRC_COSTFUNCTIONS_ENERGYESMARKOV_HPP_ */
+#endif /* SRC_COSTFUNCTIONS_ENERGYESPREFETCHED_HPP_ */

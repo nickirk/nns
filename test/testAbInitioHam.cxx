@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 #include "../src/CostFunctions/EnergyCF.hpp"
-#include "../src/CostFunctions/EnergyEstimator.hpp"
+#include "../src/CostFunctions/EnergyEsPreFetched.hpp"
 #include "../src/Hamiltonian/AbInitioHamiltonian.hpp"
 #include "../src/Hamiltonian/ExcitationGenerators/AllExcitationGenerators.hpp"
 #include "../src/Network/Nnw.hpp"

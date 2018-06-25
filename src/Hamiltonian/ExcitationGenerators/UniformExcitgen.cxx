@@ -2,7 +2,7 @@
  * UniformExcitgen.cxx
  *
  *  Created on: Jun 15, 2018
- *      Author: guther
+ *      Author: Lauretta Schwarz, guther
  */
 
 #include "UniformExcitgen.hpp"
