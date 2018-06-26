@@ -1,7 +1,7 @@
 /*
  * EnergyEs.cxx
  *
- *  Created on: Jun 23, 2018
+ *  Created on: Jun 26, 2018
  *      Author: guther
  */
 
@@ -17,17 +17,17 @@ EnergyEs::EnergyEs(Hamiltonian const &H_):H(H_) {
 EnergyEs::~EnergyEs() {
 }
 
-CostFunction const& EnergyEs::setUpCF(SamplerType const &sT) const{
+std::unique_ptr<CostFunction> EnergyEs::setUpCF(SamplerType const &sT) const{
 	// create the energy estimator belonging to the sampler-type
 	switch(sT){
 	case Markov:
 		// for markov-type samplers, use EnergyEsMarkov
-		return EnergyEsMarkov(H);
+		return std::unique_ptr<CostFunction>(new EnergyEsMarkov(H));
 		break;
 	case PreFetched:
 	default:
 		// by default, use the pre-fetched version (i.e. the 'normal')
-		return EnergyEsPreFetched(H);
+		return std::unique_ptr<CostFunction>(new EnergyEsPreFetched(H));
 	}
 }
 
