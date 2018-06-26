@@ -35,7 +35,6 @@ detType UniformExcitgen::generateExcitation(detType const &source, double &pGet)
     std::vector<int> holes,particles;
     double rand{0.0};
     std::random_device rng;
-    int nsingleexcit{0},ndoubleexcit{0};
     double const normalisation=static_cast<double>(rng.max()); // minimal potentially returned values is 0
     std::vector<int> noccs,nunoccs;
 
@@ -72,28 +71,6 @@ detType UniformExcitgen::generateExcitation(detType const &source, double &pGet)
     for (size_t i=0; i<noccs.size(); ++i){
         nunoccs[i] = (source.size()/2) - noccs[i];
     }
-
-    // for generation probabilities
-    // number of excitations
-    nsingleexcit = 0;
-    ndoubleexcit = 0;
-    if ((exflag==1)||(exflag==3)){
-
-        // single excitations
-        nsingleexcit = (noccs[0]*nunoccs[0]) + (noccs[1]*nunoccs[1]);
-
-    }
-    if ((exflag==2)||(exflag==3)){
-        // double excitations
-
-        // alpha-alpha, beta-beta, alpha-beta pairs
-        ndoubleexcit = ((noccs[0]*(noccs[0]-1)/2)*(nunoccs[0]*(nunoccs[0]-1)/2)) +
-            ((noccs[1]*(noccs[1]-1)/2)*(nunoccs[1]*(nunoccs[1]-1)/2)) +
-            (noccs[0]*noccs[1]*nunoccs[0]*nunoccs[1]);
-    }
-
-    // use relative number of single and double excitations for probability
-    //pdoubles = static_cast<double>(ndoubleexcit)/static_cast<double>(nexcit);
 
     // exflag = 3: single or double excitation
     // exflag = 1: single excitations only
@@ -378,7 +355,6 @@ double UniformExcitgen::getExcitationProb(detType const &source, detType const &
     double pgen;
     //double pdouble;
     double diff;
-    int nexcit,nsingleexcit,ndoubleexcit,exflag;
     int elecwnoexcit,ispin,nexcita,nexcitb,nexcitotherway;
     std::vector<int> holes,particles;
     std::vector<int> noccs,nunoccs;
@@ -390,9 +366,6 @@ double UniformExcitgen::getExcitationProb(detType const &source, detType const &
     nexcita = 0;
     nexcitb = 0;
     nexcitotherway = 0;
-
-
-    exflag = 3;
 
     // get the particles and holes involved in this excitation
     for (size_t i=0; i<source.size(); ++i){
@@ -463,31 +436,6 @@ double UniformExcitgen::getExcitationProb(detType const &source, detType const &
 
     norbs = source.size();
     nel = source_orbs.size();
-
-    // for generation probabilities
-    // number of excitations
-    nsingleexcit = 0;
-    ndoubleexcit = 0;
-    if ((exflag==1)||(exflag==3)){
-
-        // single excitations
-        nsingleexcit = (noccs[0]*nunoccs[0]) + (noccs[1]*nunoccs[1]);
-
-    }
-    if ((exflag==2)||(exflag==3)){
-        // double excitations
-
-        // alpha-alpha, beta-beta, alpha-beta pairs
-        ndoubleexcit = ((noccs[0]*(noccs[0]-1)/2)*(nunoccs[0]*(nunoccs[0]-1)/2)) +
-            ((noccs[1]*(noccs[1]-1)/2)*(nunoccs[1]*(nunoccs[1]-1)/2)) +
-            (noccs[0]*noccs[1]*nunoccs[0]*nunoccs[1]);
-    }
-    nexcit = nsingleexcit + ndoubleexcit;
-
-    // use relative number of single and double excitations for probability
-    //pdouble = static_cast<double>(ndoubleexcit)/static_cast<double>(nexcit);
-
-
 
     if (holes.size() == 1){
         // single excitaition

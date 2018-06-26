@@ -173,7 +173,7 @@ int WeightedSelector::selectDoubleHole(std::vector<int> const &src,
         if ((src[0]%2)==1){
             // beta spin pair
             for (size_t i=1; i<norbs; i+=2){
-                if ((not source[i]) and (i!=orb_pair)){
+                if ((not source[i]) and (static_cast<int>(i)!=orb_pair)){
                     // spin orbital is vacant
                     cum_sum += this->sameSpinPairContribution(src[0],src[1],i,orb_pair);
                     nexcit += 1;
@@ -185,7 +185,7 @@ int WeightedSelector::selectDoubleHole(std::vector<int> const &src,
         else{
             // alpha spin pair
             for (size_t i=0; i<norbs; i+=2){
-                if ((not source[i]) and (i!=orb_pair)){
+                if ((not source[i]) and (static_cast<int>(i)!=orb_pair)){
                     // spin orbital is vacant
                     cum_sum += this->sameSpinPairContribution(src[0],src[1],i,orb_pair);
                     nexcit += 1;
@@ -206,7 +206,7 @@ int WeightedSelector::selectDoubleHole(std::vector<int> const &src,
             if ((src[0]%2)==1){
                 // beta spin pair
                 for (size_t i=1; i<norbs; i+=2){
-                    if ((not source[i]) and (i!=orb_pair)){
+                    if ((not source[i]) and (static_cast<int>(i)!=orb_pair)){
                         // spin orbital is vacant
                         cum_sum += this->oppSpinPairContribution(src[0],src[1],i,orb_pair);
                         nexcit += 1;
@@ -218,7 +218,7 @@ int WeightedSelector::selectDoubleHole(std::vector<int> const &src,
             else{
                 // alpha spin pair
                 for (size_t i=0; i<norbs; i+=2){
-                    if ((not source[i]) and (i!=orb_pair)){
+                    if ((not source[i]) and (static_cast<int>(i)!=orb_pair)){
                         // spin orbital is vacant
                         cum_sum += this->oppSpinPairContribution(src[0],src[1],i,orb_pair);
                         nexcit += 1;
@@ -232,7 +232,7 @@ int WeightedSelector::selectDoubleHole(std::vector<int> const &src,
             if ((orb_pair%2)==0){
                 // beta spin since first orital is alpha spin
                 for (size_t i=1; i<norbs; i+=2){
-                    if ((not source[i]) and (i!=orb_pair)){
+                    if ((not source[i]) and (static_cast<int>(i)!=orb_pair)){
                         // spin orbital is vacant
                         cum_sum += this->oppSpinPairContribution(src[1],src[0],i,orb_pair);
                         nexcit += 1;
@@ -244,7 +244,7 @@ int WeightedSelector::selectDoubleHole(std::vector<int> const &src,
             else{
                 // alpha spin since first orbital is beta spin
                 for (size_t i=0; i<norbs; i+=2){
-                    if ((not source[i]) and (i!=orb_pair)){
+                    if ((not source[i]) and (static_cast<int>(i)!=orb_pair)){
                         // spin orbital is vacant
                         cum_sum += this->oppSpinPairContribution(src[1],src[0],i,orb_pair);
                         nexcit += 1;

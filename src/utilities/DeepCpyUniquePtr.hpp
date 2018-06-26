@@ -27,9 +27,8 @@ public:
 
 //---------------------------------------------------------------------------//
 
-	DeepCpyUniquePtr(DeepCpyUniquePtr &&source){
-		resource = source.resource;
-		source.resource = nullptr;
+	DeepCpyUniquePtr(DeepCpyUniquePtr &&source):resource(nullptr){
+		std::swap(source.resource,resource);
 	}
 
 //---------------------------------------------------------------------------//
@@ -43,10 +42,12 @@ public:
 //---------------------------------------------------------------------------//
 
 	DeepCpyUniquePtr& operator=(DeepCpyUniquePtr &&source){
-		// move ownership of the resource
-		resource = source.resource;
-		// invalidate the source-ptr
-		source.resource = nullptr;
+		// first, get rid of the managed resource
+		delete resource;
+		// set the resource to null
+		resource = nullptr;
+		// swap with source
+		std::swap(source.resource,resource);
 		return *this;
 	}
 

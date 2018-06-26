@@ -13,9 +13,9 @@
 #include <complex>
 #include <string>
 #include <Eigen/Dense>
+#include "../CostFunctions/CostFunction.hpp"
 #include "../HilbertSpace/Basis.hpp"
 #include "../HilbertSpace/Determinant.hpp"
-#include "../CostFunctions/CostFunction.hpp"
 #include "../utilities/State.hpp"
 #include "../utilities/TypeDefine.hpp"
 #include "../math/MathFunctions.hpp"

@@ -8,9 +8,9 @@
 #define RBM_DEFINED
 
 #include <Eigen/Dense>
+#include "../CostFunctions/CostFunction.hpp"
 #include "Parametrization.hpp"
 #include "../utilities/State.hpp"
-#include "../CostFunctions/CostFunction.hpp"
 
 namespace networkVMC
 {
@@ -28,8 +28,8 @@ namespace networkVMC
             ~RBM();
 
         private:
+            int sizeHidden;
             int sizeInput;
-            int sizeHidden;        
             int numPars;
             int a_offset;
             int b_offset;

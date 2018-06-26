@@ -45,7 +45,7 @@ Basis::Basis(SpinConfig const &spinConfig_):
 
 detType Basis::getDetByIndex(int index) const{
   // do some bound checking
-  if(index>=basis.size() || index < 0) throw OutOfRangeError(index);
+  if(static_cast<size_t>(index)>=basis.size() || index < 0) throw OutOfRangeError(index);
   return basis[index];
 }
 
@@ -55,7 +55,7 @@ int Basis::getIndexByDet(detType const & det_) const{
   // and get it's index
   auto dist = std::distance(basis.begin(),pos);
   // If we did not find the determinant, something went wrong
-  if(dist==basis.size()) throw InvalidDeterminantError();
+  if(static_cast<size_t>(dist)==basis.size()) throw InvalidDeterminantError();
   return dist;
 }
 
