@@ -10,6 +10,7 @@
 
 #include <Eigen/Dense>
 #include "CostFunction.hpp"
+#include "../utilities/State.hpp"
 
 namespace networkVMC{
 
@@ -20,6 +21,7 @@ class Hamiltonian;
 // eigenvector to the input state as cost function
 class SubspaceCF: public CostFunction {
 public:
+	// SubspaceCF creation/destruction
 	SubspaceCF(Hamiltonian const &H_):CostFunction(),H(H_),distance(0),subspaceEnergy(coeffType()){};
 	virtual ~SubspaceCF();
 // Derivative with respect to the input's coefficients

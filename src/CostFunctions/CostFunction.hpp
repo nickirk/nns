@@ -10,6 +10,7 @@
 
 #include <Eigen/Dense>
 #include "../utilities/TypeDefine.hpp"
+#include <memory>
 
 namespace networkVMC{
 
@@ -26,10 +27,13 @@ public:
 	virtual nablaType nabla(State const &input) const = 0;
 	virtual double calc(State const &input) const = 0;
 
-// This is for increased safety, we can set up the CF depending
-// on the type of the sampler, to avoid using invalid combinations
-	virtual CostFunction const& setUpCF(SamplerType const &sT) const{
-		return *this;
+	// Make the CostFunction clonable - as we have multiple inheritance, CRTP is
+	// not such a good idea
+	virtual CostFunction* clone() const = 0;
+
+	// By default, the setup just returns a copy of the CF
+	virtual std::unique_ptr<CostFunction> setUpCF(SamplerType const &sT) const {
+		return std::unique_ptr<CostFunction>(this->clone());
 	}
 };
 
