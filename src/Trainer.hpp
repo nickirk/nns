@@ -12,6 +12,7 @@
 #include "utilities/TypeDefine.hpp"
 #include "Solvers/Solver.hpp"
 #include "Network/Parametrization.hpp"
+#include <memory>
 
 namespace networkVMC{
 
@@ -51,7 +52,8 @@ private:
 	Sampler const &msampler;
 	// the solver that optimizes the parameters (changes its parameters)
 	Solver<T> &sl;
-	CostFunction const &cf;
+	// The trainer owns a cost function
+	std::unique_ptr<CostFunction> cf;
 
 	// This is only for debugging
 	State inputState;

@@ -9,10 +9,11 @@
 #include "Hamiltonian/Hamiltonian.hpp"
 #include "Samplers/Sampler.hpp"
 #include "Solvers/Solver.hpp"
-#include "CostFunctions/CostFunction.hpp"
 #include "Network/Parametrization.hpp"
 #include <iostream>
 #include <memory>
+
+#include "CostFunctions/CostFunction.hpp"
 
 namespace networkVMC{
 
@@ -62,7 +63,7 @@ void Trainer<T>::train(){
 #pragma omp parallel
 	{
 	// sampling is not threadsafe, so each thread creates it's own sampler
-    std::unique_ptr<Sampler> samplerThread(msampler.clone());
+    thread_local std::unique_ptr<Sampler> samplerThread(msampler.clone());
 #pragma omp for
 	for(int i=0; i < numDets; ++i){
       // iterate the sampler: This also requires the iteration as an input, as
@@ -88,7 +89,7 @@ template <typename T>
 void Trainer<T>::updateParameters(State const &input){
 	// first, get the derivative of the cost function with respect to the
 	// wavefunction coefficients
-	auto dEdC = cf.nabla(input);
+	auto dEdC = cf->nabla(input);
 	// add the inner derivative to get the full derivative
 	// of the cost function with respect to the parameters
 	auto dEdPars = NNW.calcNablaPars(input,dEdC);
@@ -102,7 +103,7 @@ template <typename T>
 double Trainer<T>::getE() const{
 	// Here, we just output the value of the cost function (usually the energy) of the
 	// network
-	return cf.calc(inputState);
+	return cf->calc(inputState);
 }
 
 //---------------------------------------------------------------------------------------------------//
