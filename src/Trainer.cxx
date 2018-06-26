@@ -20,11 +20,14 @@ namespace networkVMC{
 // TODO: Add more constructors, with default arguments
 template <typename T>
 Trainer<T>::Trainer(Parametrization<T> &NNW_, Sampler const &msampler_,
-		Solver<T> &sl_, CostFunction const &cf_, Hamiltonian const& H_):
+		Solver<T> &sl_, CostFunction &cf_, Hamiltonian const& H_):
 		modelHam(H_),NNW(NNW_), msampler(msampler_),sl(sl_),
 		// here, we make sure that the cost function and the
 		// sampler are compatible
-		cf(cf_.setUpCF(msampler_.type())) {
+		cf(cf_) {
+	// make sure the cost function and the sampler are compatible
+	cf.setUpCF(msampler.type());
+	// prepare the input state
 	inputState.resize(msampler.getNumDets());
 }
 
@@ -89,7 +92,7 @@ template <typename T>
 void Trainer<T>::updateParameters(State const &input){
 	// first, get the derivative of the cost function with respect to the
 	// wavefunction coefficients
-	auto dEdC = cf->nabla(input);
+	auto dEdC = cf.nabla(input);
 	// add the inner derivative to get the full derivative
 	// of the cost function with respect to the parameters
 	auto dEdPars = NNW.calcNablaPars(input,dEdC);
@@ -103,13 +106,13 @@ template <typename T>
 double Trainer<T>::getE() const{
 	// Here, we just output the value of the cost function (usually the energy) of the
 	// network
-	return cf->calc(inputState);
+	return cf.calc(inputState);
 }
 
 //---------------------------------------------------------------------------------------------------//
 
 template <typename T>
-State  Trainer<T>::getState() const{
+State const &Trainer<T>::getState() const{
 	// This is for testing and debugging purpose, only
 	return inputState;
 }

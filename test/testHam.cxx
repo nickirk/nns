@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <Eigen/Eigenvalues>
-#include "../src/Hamiltonian/FermionicHamiltonian.hpp"
+#include "../src/Hamiltonian/FermiHubbardHamiltonian.hpp"
 #include "../src/HilbertSpace/Basis.hpp"
 #include "../src/HilbertSpace/Determinant.hpp"
 using namespace std;
@@ -20,7 +20,7 @@ int main(){
   cout << "input training rate=";
   cin >> trainRate;
   Basis basis(spinConfig);
-  FermionicHamiltonian modelHam(numStates);
+  FermiHubbardHamiltonian modelHam(numStates);
   cout << "Basis size= " << basis.getSize() << endl;
   cout << "Hamiltonian size= " << modelHam.getNumOrbs() << endl;
   cout << "print out Ham element" << endl;

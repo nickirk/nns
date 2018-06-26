@@ -14,7 +14,7 @@ using namespace networkVMC;
 int main(){
 	int numSites{3}, numStates{2*numSites};;
 	double U{4}, t{-1};
-	FermionicHamiltonian modelHam = generateFermiHubbard(numStates,U,t);
+	FermiHubbardHamiltonian modelHam = generateFermiHubbard(numStates,U,t);
 	EnergyCF eCF(modelHam);
 	detType D1(numStates, false);
 	detType D2 = D1;

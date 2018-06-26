@@ -17,6 +17,7 @@ namespace networkVMC{
 // Abstract base class for cost functions
 
 class State;
+class CFPars;
 
 class CostFunction{
 public:
@@ -31,10 +32,8 @@ public:
 	// not such a good idea
 	virtual CostFunction* clone() const = 0;
 
-	// By default, the setup just returns a copy of the CF
-	virtual std::unique_ptr<CostFunction> setUpCF(SamplerType const &sT) const {
-		return std::unique_ptr<CostFunction>(this->clone());
-	}
+	// By default, the setup just returns a copy of the CF, so do nothing
+	virtual void setUpCF(SamplerType const &sT) {};
 };
 
 }

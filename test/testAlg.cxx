@@ -46,7 +46,7 @@ int main(){
   }
   detsIntcast.close();
   std::cout<<"Listsize= "<<list.size()<<std::endl;
-  EnergyEsPreFetched eCF(modelHam);
+  EnergyEs eCF(modelHam);
   //Neural network takes in the size and the cost function.
   NeuralNetwork<> NNW;
   NNW.constrInputLayer(numStates);
@@ -90,6 +90,7 @@ int main(){
     count++;
     if(count%1 == 0){
       auto states=ev.getState();
+      // A horrible construct to get the normalizer of the trainer's cost function copy
       double normalizer=eCF.getNormalizer();
       ofstream outputC;
       outputC.open("coeff.txt");

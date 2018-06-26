@@ -29,7 +29,7 @@ public:
 	virtual nablaType nabla(State const &input) const;
 
 	// Allow for polymorphic copy
-	virtual CostFunction* clone() const {return new EnergyCF(*this);}
+	virtual EnergyCF* clone() const {return new EnergyCF(*this);}
 private:
 	double evaluate(State const &input) const;
 };

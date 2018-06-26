@@ -9,6 +9,8 @@
 #define SRC_COSTFUNCTIONS_ENERGYES_HPP_
 
 #include "CostFunction.hpp"
+#include "EnergyCFBaseClass.hpp"
+#include "../utilities/DeepCpyUniquePtr.hpp"
 
 namespace networkVMC {
 
@@ -18,17 +20,21 @@ class EnergyEs: public CostFunction {
 public:
 	EnergyEs(Hamiltonian const &H_);
 	virtual ~EnergyEs();
-	virtual std::unique_ptr<CostFunction> setUpCF(SamplerType const &sT) const;
+	virtual void setUpCF(SamplerType const &sT);
 
-// Even though this is never gonna be used, it has to be defined
-// TODO route these definitions via the correct EnergyEs
-	nablaType nabla(State const &input) const {return nablaType();}
-	double calc(State const &input) const {return 0.0;};
+// The operations are actually performed by another EnergyCF (worker)
+	nablaType nabla(State const &input) const {return worker->nabla(input);}
+	double calc(State const &input) const {return worker->calc(input);};
+
+	double getNormalizer() const {return worker->getNormalizer();}
 
 	// Allow for polymorphic copy
-	virtual CostFunction* clone() const {return new EnergyEs(*this);}
+	virtual EnergyEs* clone() const {return new EnergyEs(*this);}
 private:
 	Hamiltonian const& H;
+	// this is not a stand-alone CF, the work is done by another,
+	// owned CF
+	DeepCpyUniquePtr<EnergyCFBaseClass> worker;
 };
 
 } /* namespace networkVMC */

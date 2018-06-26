@@ -28,7 +28,7 @@ public:
 	nablaType nabla(State const &input) const;
 
 	// Allow for polymorphic copy
-	virtual CostFunction* clone() const {return new EnergyEsPreFetched(*this);}
+	virtual EnergyEsPreFetched* clone() const {return new EnergyEsPreFetched(*this);}
 private:
     // Make sure this is not manually constructed, but only via
     // EnergyEs. This way, we cannot attribute the wrong CF to a sampler

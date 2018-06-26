@@ -10,7 +10,11 @@
 
 #include "../Network/Nnw.hpp"
 #include "../Samplers/Sampler.hpp"
+#include "../CostFunctions/NormCF.hpp"
+#include "../Solvers/ADAM.hpp"
+#include "../Trainer.hpp"
 #include "State.hpp"
+#include <iostream>
 
 namespace networkVMC{
 

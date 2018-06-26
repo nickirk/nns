@@ -32,7 +32,7 @@ class Trainer {
 public:
 // supply a Parametrization, a sampler, a solver and the cost function
 	Trainer(Parametrization<T> &NNW_, Sampler const &msampler,
-			Solver<T> &sl, CostFunction const &cf, Hamiltonian const &H_);
+			Solver<T> &sl, CostFunction &cf, Hamiltonian const &H_);
 // train() tries to optimize the parameters of the NNW with respect to its cost function
 	void train();
 // optionally set the learning rate for this step
@@ -41,7 +41,9 @@ public:
 	void getNextCoeff(coeffType &cI, detType &dI);
 	double getE() const;
 // read out the current state of the NNW
-	State getState() const;
+	State const& getState() const;
+// For testing purposes: get the cost function
+	CostFunction const & getCF() const {return cf;}
 // update the parameters of the Parametrization
 	void updateParameters(State const &input);
 	virtual ~Trainer();
@@ -52,8 +54,8 @@ private:
 	Sampler const &msampler;
 	// the solver that optimizes the parameters (changes its parameters)
 	Solver<T> &sl;
-	// The trainer owns a cost function
-	std::unique_ptr<CostFunction> cf;
+	// The cost function with respect to which we optimize (is set up to fit the sampler)
+	CostFunction &cf;
 
 	// This is only for debugging
 	State inputState;

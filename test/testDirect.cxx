@@ -19,7 +19,7 @@ int main(){
   auto modelHam = generateDefaultHubbard(numSites);
   auto basis = generateDefaultBasis(numSites);
 // Cost function setup
-  EnergyEsPreFetched eCF(modelHam);
+  EnergyEs eCF(modelHam);
 
 // Solver setup
   double trainRate(0.001);
@@ -33,7 +33,7 @@ int main(){
   FullSampler<> sample(modelHam,basis,HF,par);
 
 // And optimize the direct parametrization
-  Trainer<> ev(par,sample,sl,eCF);
+  Trainer<> ev(par,sample,sl,eCF,modelHam);
 
   for(int i=0;i<10000;++i){
 	  ev.train();
