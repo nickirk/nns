@@ -30,7 +30,6 @@ double EnergyEsPreFetched::evaluate(State const &input) const{
       std::vector<coeffType> coupledC_j = input.coupledCoeffs(i);
       std::vector<detType> coupledDets = input.coupledDets(i);
       norm += std::norm(c_i);
-      int tid = omp_get_thread_num();
       //sign_i = (output_Cs[i]-0. < 1e-8)?-1:0;
       Hij = H(input.det(i), input.det(i));
       energyVal += std::real(std::conj(c_i) * c_i * Hij);

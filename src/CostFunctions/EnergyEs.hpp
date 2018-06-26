@@ -8,8 +8,6 @@
 #ifndef SRC_COSTFUNCTIONS_ENERGYES_HPP_
 #define SRC_COSTFUNCTIONS_ENERGYES_HPP_
 
-
-#include "EnergyCFBaseClass.hpp"
 #include "CostFunction.hpp"
 
 namespace networkVMC {

@@ -13,35 +13,29 @@
 #include "../utilities/TypeDefine.hpp"
 #include "CostFunction.hpp"
 #include "EnergyEs.hpp"
+#include "EnergyCFBaseClass.hpp"
 
 namespace networkVMC{
 
 class Hamiltonian;
 
-class EnergyEsPreFetched: public CostFunction{
+class EnergyEsPreFetched: public EnergyCFBaseClass{
 public:
-	// Do it like this: We cannot generate EnergyEsMarkov
+	// Do it like this: We cannot generate EnergyEsPreFetched
 	// directly, this has to be done via EnergyEs
 	friend EnergyEs;
 
 	nablaType nabla(State const &input) const;
-	double calc(State const &input) const {return energy;};
-    double getNormalizer(){return normalizerCoeff;};
+
+	// Allow for polymorphic copy
+	virtual CostFunction* clone() const {return new EnergyEsPreFetched(*this);}
 private:
     // Make sure this is not manually constructed, but only via
     // EnergyEs. This way, we cannot attribute the wrong CF to a sampler
 	explicit EnergyEsPreFetched(Hamiltonian const &H_):
-		CostFunction(),H(H_),energy(0.0),normalizerCoeff(0.0){};
+		EnergyCFBaseClass(H_){};
 
-	// Hamiltonian to which the CFs energy refers
-	Hamiltonian const& H;
-	mutable double energy;
-	mutable double normalizerCoeff;
 	double evaluate(State const &input) const;
-
-	// Has a reference member, so assignment is not a thing
-	EnergyEsPreFetched& operator=(EnergyEsPreFetched const &source);
-	EnergyEsPreFetched& operator=(EnergyEsPreFetched &&source);
 };
 
 }
