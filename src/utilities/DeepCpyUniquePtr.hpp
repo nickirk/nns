@@ -14,15 +14,17 @@ namespace networkVMC {
 template<typename T>
 class DeepCpyUniquePtr {
 public:
-	DeepCpyUniquePtr();
+	DeepCpyUniquePtr():resource(nullptr){};
 	DeepCpyUniquePtr(T *source):resource(source){};
 
 // Copy/Move operations (constructors/assignment operators)
 
 //---------------------------------------------------------------------------//
 
-	DeepCpyUniquePtr(DeepCpyUniquePtr const &source){
-		makeClone(source);
+	DeepCpyUniquePtr(DeepCpyUniquePtr const &source):resource(nullptr){
+		if(source.resource != nullptr){
+			makeClone(source);
+		}
 	}
 
 //---------------------------------------------------------------------------//
@@ -42,11 +44,8 @@ public:
 //---------------------------------------------------------------------------//
 
 	DeepCpyUniquePtr& operator=(DeepCpyUniquePtr &&source){
-		// first, get rid of the managed resource
-		delete resource;
-		// set the resource to null
-		resource = nullptr;
-		// swap with source
+		// swap with source - deallocation will be done automatically in
+		// destruction of source
 		std::swap(source.resource,resource);
 		return *this;
 	}
