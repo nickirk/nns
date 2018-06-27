@@ -30,6 +30,9 @@ public:
 
 	// Allow for polymorphic copy
 	virtual EnergyEsMarkov* clone() const {return new EnergyEsMarkov(*this);}
+
+	// For sake of completeness, we specify that this requires connections
+	virtual bool connectionsRequired() const {return true;}
 private:
     // Make sure this is not manually constructed, but only via
     // EnergyEs. This way, we cannot attribute the wrong CF to a sampler

@@ -30,6 +30,9 @@ public:
 
 	// Allow for polymorphic copy
 	virtual EnergyEs* clone() const {return new EnergyEs(*this);}
+
+	// the energy estimators do need connections
+	virtual bool connectionsRequired() const {return true;}
 private:
 	Hamiltonian const& H;
 	// this is not a stand-alone CF, the work is done by another,

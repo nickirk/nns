@@ -12,7 +12,6 @@
 #include "Network/Parametrization.hpp"
 #include <iostream>
 #include <memory>
-
 #include "CostFunctions/CostFunction.hpp"
 
 namespace networkVMC{
@@ -74,12 +73,15 @@ void Trainer<T>::train(){
 	  samplerThread->iterate(inputState.coeff(i), inputState.det(i),i);
 	  // get some coupled determinants and their coefficients to use in the
 	  // energy estimator
-      inputState.coupledDets(i) = modelHam.getCoupledStates(inputState.det(i));
-	  inputState.coupledCoeffs(i).resize(inputState.coupledDets(i).size());
+	  // Only required if the CF needs it
+	  if(cf.connectionsRequired()){
+		  inputState.coupledDets(i) = modelHam.getCoupledStates(inputState.det(i));
+		  inputState.coupledCoeffs(i).resize(inputState.coupledDets(i).size());
 
-	  // just get the coefficients from the NNW
-	  for(size_t j=0; j < inputState.coupledDets(i).size(); ++j){
-	  	inputState.coupledCoeffs(i)[j]=NNW.getCoeff(inputState.coupledDets(i)[j]);
+		  // just get the coefficients from the NNW
+		  for(size_t j=0; j < inputState.coupledDets(i).size(); ++j){
+			inputState.coupledCoeffs(i)[j]=NNW.getCoeff(inputState.coupledDets(i)[j]);
+		  }
 	  }
 	}
 	}

@@ -34,6 +34,9 @@ public:
 
 	// By default, the setup just returns a copy of the CF, so do nothing
 	virtual void setUpCF(SamplerType const &sT) {};
+
+	// If we need connected determinants separately contained in the state
+	virtual bool connectionsRequired() const {return false;}
 };
 
 }
