@@ -13,6 +13,7 @@
 #include <iostream>
 #include <memory>
 #include "CostFunctions/CostFunction.hpp"
+#include "utilities/InputStateGenerator.hpp"
 
 namespace networkVMC{
 
@@ -61,30 +62,12 @@ void Trainer<T>::train(){
 	// And now, for the chosen number of samples, get the respective determinants and
 	// coefficients
 	std::cout<<"numdets "<<numDets<<'\n';
-	// TODO this should not be part of the trainer, move it to somewhere in the state
-#pragma omp parallel
-	{
-	// sampling is not threadsafe, so each thread creates it's own sampler
-    thread_local std::unique_ptr<Sampler> samplerThread(msampler.clone());
-#pragma omp for
-	for(int i=0; i < numDets; ++i){
-      // iterate the sampler: This also requires the iteration as an input, as
-	  // some samplers pre-fetch the ensemble of determinants
-	  samplerThread->iterate(inputState.coeff(i), inputState.det(i),i);
-	  // get some coupled determinants and their coefficients to use in the
-	  // energy estimator
-	  // Only required if the CF needs it
-	  if(cf.connectionsRequired()){
-		  inputState.coupledDets(i) = modelHam.getCoupledStates(inputState.det(i));
-		  inputState.coupledCoeffs(i).resize(inputState.coupledDets(i).size());
 
-		  // just get the coefficients from the NNW
-		  for(size_t j=0; j < inputState.coupledDets(i).size(); ++j){
-			inputState.coupledCoeffs(i)[j]=NNW.getCoeff(inputState.coupledDets(i)[j]);
-		  }
-	  }
-	}
-	}
+	// create the input State
+	InputStateGenerator<T> isg(msampler,modelHam, NNW);
+	// the number of connections required is passed via the cost function
+	inputState = isg.generate(cf.connectionsRequired());
+
 	updateParameters(inputState);
 }
 

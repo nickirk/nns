@@ -18,7 +18,8 @@ class Hamiltonian;
 
 class EnergyEs: public CostFunction {
 public:
-	EnergyEs(Hamiltonian const &H_);
+	// uses the required number of connections and the Hamiltonian
+	EnergyEs(Hamiltonian const &H_, int numCons_=20);
 	virtual ~EnergyEs();
 	virtual void setUpCF(SamplerType const &sT);
 
@@ -32,12 +33,14 @@ public:
 	virtual EnergyEs* clone() const {return new EnergyEs(*this);}
 
 	// the energy estimators do need connections
-	virtual bool connectionsRequired() const {return true;}
+	virtual int connectionsRequired() const {return numCons;}
 private:
 	Hamiltonian const& H;
 	// this is not a stand-alone CF, the work is done by another,
 	// owned CF
 	DeepCpyUniquePtr<EnergyCFBaseClass> worker;
+	// number of connected states to be taken into account
+	int numCons;
 };
 
 } /* namespace networkVMC */

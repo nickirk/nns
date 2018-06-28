@@ -32,14 +32,16 @@ public:
 	virtual EnergyEsMarkov* clone() const {return new EnergyEsMarkov(*this);}
 
 	// For sake of completeness, we specify that this requires connections
-	virtual bool connectionsRequired() const {return true;}
+	virtual int connectionsRequired() const {return numCons;}
 private:
     // Make sure this is not manually constructed, but only via
     // EnergyEs. This way, we cannot attribute the wrong CF to a sampler
-	explicit EnergyEsMarkov(Hamiltonian const &H_):
-		EnergyCFBaseClass(H_){};
+	explicit EnergyEsMarkov(Hamiltonian const &H_,int numCons_):
+		EnergyCFBaseClass(H_),numCons(numCons_){};
 
 	double evaluate(State const &input) const;
+
+	int numCons;
 };
 
 }

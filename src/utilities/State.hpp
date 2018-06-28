@@ -54,12 +54,12 @@ public:
 
 	// vector utilities
 	void clear() {storedDets.clear(); storedCoeffs.clear(); cdets.clear(); ccoeffs.clear();}
-	void resize(int i) {storedDets.resize(i); storedCoeffs.resize(i); cdets.resize(i); ccoeffs.resize(i);}
+	void resize(int i) {storedDets.resize(i); storedCoeffs.resize(i); cdets.resize(i); ccoeffs.resize(i);pGenConnections.resize(i);}
 	size_t size()const{return storedDets.size();}
 
 //---------------------------------------------------------------------------------------------------//
 
-
+	std::vector<double>& pGenCons(int i) {return pGenConnections[i];}
 
 //---------------------------------------------------------------------------------------------------//
 	// sort the storedDets + storedCoeffs according to determinant order
@@ -97,7 +97,7 @@ private:
 	std::vector<std::vector<detType> > cdets;
 	std::vector<std::vector<coeffType >> ccoeffs;
 
-	std::vector<double> pGenConnections;
+	std::vector<std::vector<double> > pGenConnections;
 };
 
 }

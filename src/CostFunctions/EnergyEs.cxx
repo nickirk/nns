@@ -12,8 +12,8 @@
 
 namespace networkVMC {
 
-EnergyEs::EnergyEs(Hamiltonian const &H_):H(H_),
-		worker(new EnergyCF(H)){
+EnergyEs::EnergyEs(Hamiltonian const &H_, int numCons_):H(H_),
+		worker(new EnergyCF(H)), numCons(numCons_){
 }
 
 EnergyEs::~EnergyEs() {
@@ -24,12 +24,12 @@ void EnergyEs::setUpCF(SamplerType const &sT){
 	switch(sT){
 	case Markov:
 		// for markov-type samplers, use EnergyEsMarkov
-		worker = DeepCpyUniquePtr<EnergyCFBaseClass>(new EnergyEsMarkov(H));
+		worker = DeepCpyUniquePtr<EnergyCFBaseClass>(new EnergyEsMarkov(H,numCons));
 		break;
 	case PreFetched:
 	default:
 		// by default, use the pre-fetched version (i.e. the 'normal')
-		worker = DeepCpyUniquePtr<EnergyCFBaseClass>(new EnergyEsPreFetched(H));
+		worker = DeepCpyUniquePtr<EnergyCFBaseClass>(new EnergyEsPreFetched(H,numCons));
 	}
 }
 

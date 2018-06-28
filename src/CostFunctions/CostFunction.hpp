@@ -36,7 +36,8 @@ public:
 	virtual void setUpCF(SamplerType const &sT) {};
 
 	// If we need connected determinants separately contained in the state
-	virtual bool connectionsRequired() const {return false;}
+	// (formally returns the number of such connections, which is 0 by default)
+	virtual int connectionsRequired() const {return 0;}
 };
 
 }

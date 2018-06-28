@@ -28,6 +28,9 @@ public:
 	nablaType nabla(State const &input) const;
 // Value of the cost function
 	double calc(State const &input) const {return distance;}
+
+	// Allow for polymorphic copy
+	virtual CostFunction* clone() const {return new SubspaceCF(*this);}
 private:
   // The underlying Hamiltonian
 	Hamiltonian const &H;
@@ -40,7 +43,6 @@ private:
 
   // Has a reference member, so assignment is not a thing
   SubspaceCF& operator=(SubspaceCF const &source);
-  SubspaceCF& operator=(SubspaceCF &&source);
 };
 
 }

@@ -27,7 +27,7 @@ int main(){
   detType HF=basis.getDetByIndex(0);
   //State target(std::vector<detType>(basis.getSize(),HF), 
   //    std::vector<coeffType>(basis.getSize(),coeffType(10.,1.)));
-  EnergyEs eCF(modelHam);
+  EnergyEs eCF(modelHam,30);
   //NormCF eCF(target);
   //cout << "HF intCast=" << verbatimCast(HF) << endl;
   //list.push_back(HF);
@@ -48,7 +48,7 @@ int main(){
     ev.train(trainRate);
     // get the new energy
     energy = ev.getE();
-    auto states=ev.getState();
+    //auto states=ev.getState();
     //for(size_t s=0; s<states.size(); ++s){
     //  cout << "C_" << s << "= " << states.coeff(s) << endl;
     //}

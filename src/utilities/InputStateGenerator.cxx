@@ -24,11 +24,9 @@ InputStateGenerator<T>::~InputStateGenerator() {
 }
 
 template<typename T>
-State InputStateGenerator<T>::generate(bool connections) const{
+State InputStateGenerator<T>::generate(int numCons) const{
 	// set up a state of the matching size
 	int numDets{msampler.getNumDets()};
-	// TODO: Set the number of connections to be sampled
-	int numCons{msampler.getNumDets()};
 	State outputState(numDets);
 
 #pragma omp parallel
@@ -43,9 +41,9 @@ State InputStateGenerator<T>::generate(bool connections) const{
 	  // get some coupled determinants and their coefficients to use in the
 	  // energy estimator
 	  // Only required if the CF needs it
-	  if(connections){
+	  if(numCons > 0){
 		  //outputState.coupledDets(i) = H.getCoupledStates(outputState.det(i));
-		  outputState.coupledDets(i) = sampleConnections(H,outputState.det(i),numCons,outputState.pGenCons());
+		  outputState.coupledDets(i) = sampleConnections(H,outputState.det(i),numCons,outputState.pGenCons(i));
 		  outputState.coupledCoeffs(i).resize(outputState.coupledDets(i).size());
 
 		  // just get the coefficients from the NNW

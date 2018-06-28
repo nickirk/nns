@@ -29,7 +29,7 @@ public:
 	virtual ~InputStateGenerator();
 
 	// create an input state, with connections indicating if connections are to be sampled
-	State generate(bool connections) const;
+	State generate(int numCons) const;
 private:
 	Sampler const &msampler;
 	Hamiltonian const &H;
