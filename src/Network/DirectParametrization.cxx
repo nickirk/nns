@@ -35,4 +35,5 @@ T DirectParametrization<T>::calcNablaPars(State const &inputState,
 //---------------------------------------------------------------------------//
 //instantiate class
 template class DirectParametrization<VecType>;
+template class DirectParametrization<VecCType>;
 } /* namespace networkVMC */

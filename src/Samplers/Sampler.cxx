@@ -34,7 +34,7 @@ Sampler::Sampler(Hamiltonian const &H_, Basis const &fullBasis_,
 
 //---------------------------------------------------------------------------//
 
-// Just take any connected determinant and let the Hamiltonian decide what is connected
+// Just take any connected determinant and let the Excitation generator decide what is connected
 detType Sampler::getRandomConnection(detType const &startingPoint, double &p) const{
 	return excitGen->generateExcitation(startingPoint, p);
 }

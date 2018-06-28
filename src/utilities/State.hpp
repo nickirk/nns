@@ -58,6 +58,10 @@ public:
 	size_t size()const{return storedDets.size();}
 
 //---------------------------------------------------------------------------------------------------//
+
+
+
+//---------------------------------------------------------------------------------------------------//
 	// sort the storedDets + storedCoeffs according to determinant order
 	void sortDet(){
 	// first, get the permutation used for sorting
@@ -92,6 +96,8 @@ private:
 	// preliminary implementation of coupled stuff
 	std::vector<std::vector<detType> > cdets;
 	std::vector<std::vector<coeffType >> ccoeffs;
+
+	std::vector<double> pGenConnections;
 };
 
 }
