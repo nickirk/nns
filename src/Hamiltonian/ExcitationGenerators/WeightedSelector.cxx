@@ -18,7 +18,7 @@ namespace networkVMC{
 WeightedSelector::~WeightedSelector() {
 }
 
-int WeightedSelector::selectSingleHole(int src, double &pgen) {
+int WeightedSelector::selectSingleHole(int src, double &pgen, double &helOut) {
     // select a hole for a single excitation
 
     // set up the random number generator
@@ -267,9 +267,8 @@ int WeightedSelector::selectDoubleHole(std::vector<int> const &src,
 
     // choose a value
     double hel_picked = uniform_dist(rng)*cum_sum;
-    std::vector<double>::iterator up;
-    up = std::upper_bound(cdf.begin(),cdf.end(),hel_picked);
-    int orbind = up - cdf.begin();
+    auto up = std::upper_bound(cdf.begin(),cdf.end(),hel_picked);
+    int orbind = std::distance(cdf.begin(),up);
     tgt = holes[orbind];
 
     // the generation probability

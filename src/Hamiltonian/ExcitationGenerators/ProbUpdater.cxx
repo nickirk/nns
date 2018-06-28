@@ -8,35 +8,57 @@
 #include "ProbUpdater.hpp"
 #include "ExcitmatType.hpp"
 #include <cmath>
+#include <algorithm>
 #include <iostream>
-#include <omp.h>
 
 namespace networkVMC {
 
-// here we store the probabilities obtained on a thread globally
-std::vector<double> ExcitationGenerator::ProbUpdater::threadedPParallel = std::vector<double>(omp_get_num_threads(),0.0);
-std::vector<double> ExcitationGenerator::ProbUpdater::threadedPDoubles = std::vector<double>(omp_get_num_threads(),0.0);
-// this marks if we already set the threaded probabilities on this thread
-std::vector<bool> ExcitationGenerator::ProbUpdater::threadedPSet = std::vector<bool>(omp_get_num_threads(),false);
-
-ExcitationGenerator::ProbUpdater::ProbUpdater() {
+// common update function, loading the values of the probabilities into external variables
+void setNewBiases(ExcitationGenerator::ProbUpdater &pBiasGen, double &pDoubles, double &pParallel){
+	pBiasGen.adjustProbabilities();
+	pParallel = pBiasGen.pParallel();
+	pDoubles = pBiasGen.pDoubles();
 }
+
+//---------------------------------------------------------------------------------------------------//
+
+// utility for the statistics members: addition means adding up the number of occurences and
+// taking the maximum of the maximal values
+ExcitationGenerator::ProbUpdater::gatheredData&	ExcitationGenerator::ProbUpdater::gatheredData::operator+=(
+			ExcitationGenerator::ProbUpdater::gatheredData const &rhs){
+	this->nsingle += rhs.nsingle;
+	this->ndouble += rhs.ndouble;
+	this->nparadouble += rhs.nparadouble;
+	this->noppdouble += rhs.noppdouble;
+    this->max_hel_single_ratio = std::max(this->max_hel_single_ratio,rhs.max_hel_single_ratio);
+    this->max_hel_double_ratio = std::max(this->max_hel_double_ratio,rhs.max_hel_double_ratio);
+    this->max_hel_para_double_ratio = std::max(this->max_hel_para_double_ratio,rhs.max_hel_para_double_ratio);
+    this->max_hel_opp_double_ratio = std::max(this->max_hel_opp_double_ratio,rhs.max_hel_opp_double_ratio);
+
+    return *this;
+}
+
+// default statistics: empty, i.e. no data was gathered
+ExcitationGenerator::ProbUpdater::gatheredData::gatheredData():
+		nsingle(0),ndouble(0),nparadouble(0),noppdouble(0),
+		max_hel_single_ratio(0.0),max_hel_double_ratio(0.0),max_hel_para_double_ratio(0.0),max_hel_opp_double_ratio(0.0){
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+ExcitationGenerator::ProbUpdater::gatheredData ExcitationGenerator::ProbUpdater::globalStatistics = gatheredData();
 
 ExcitationGenerator::ProbUpdater::~ProbUpdater() {
 }
 
-void ExcitationGenerator::ProbUpdater::setThreadP(){
-	int threadID = omp_get_thread_num();
-	threadedPParallel[threadID] = pParallelInternal;
-	threadedPParallel[threadID] = pDoublesInternal;
-	if(not threadedPSet[threadID]) threadedPSet[threadID] = true;
-};
+//---------------------------------------------------------------------------------------------------//
 
-void ExcitationGenerator::ProbUpdater::readThreadP(){
-	int threadID = omp_get_thread_num();
-	if(threadedPSet[threadID]){
-		pParallelInternal = threadedPParallel[omp_get_thread_num()];
-		pDoublesInternal = threadedPDoubles[omp_get_thread_num()];
+void ExcitationGenerator::ProbUpdater::globalizeMax(){
+// we update the global statistics with the data from this thread
+// this has to be done in a serial manner
+#pragma omp critical (globalize)
+	{
+		globalStatistics += localStatistics;
 	}
 }
 
@@ -211,15 +233,15 @@ void ExcitationGenerator::ProbUpdater::checkProbabilities(
         // single excitation
         prob_ratio = pGen/pSingles;
         hel_ratio = std::fabs(hel)/(prob_ratio*static_cast<double>(nspawns));
-        max_hel_single_ratio = std::max(max_hel_single_ratio,hel_ratio);
-        nsingle += 1;
+        localStatistics.max_hel_single_ratio = std::max(localStatistics.max_hel_single_ratio,hel_ratio);
+        localStatistics.nsingle += 1;
     }
     else{
         // double excitation
         prob_ratio = pGen/pDoublesInternal;
         hel_ratio = std::fabs(hel)/(prob_ratio*static_cast<double>(nspawns));;
-        max_hel_double_ratio = std::max(max_hel_double_ratio,hel_ratio);
-        ndouble += 1;
+        localStatistics.max_hel_double_ratio = std::max(localStatistics.max_hel_double_ratio,hel_ratio);
+        localStatistics.ndouble += 1;
 
         // distinguish between opposite and parallel spin
         if ((excitmat(0,0)%2)==(excitmat(1,0)%2)){
@@ -227,18 +249,21 @@ void ExcitationGenerator::ProbUpdater::checkProbabilities(
             prob_ratio /= pParallelInternal;
             hel_ratio = std::fabs(hel)/prob_ratio;
 
-            max_hel_para_double_ratio = std::max(max_hel_para_double_ratio,hel_ratio);
-            nparadouble += 1;
+            localStatistics.max_hel_para_double_ratio = std::max(localStatistics.max_hel_para_double_ratio,hel_ratio);
+            localStatistics.nparadouble += 1;
         }
         else{
             // opposite spin
             prob_ratio /= (1.0-pParallelInternal);
             hel_ratio = std::fabs(hel)/prob_ratio;
 
-            max_hel_opp_double_ratio = std::max(max_hel_opp_double_ratio,hel_ratio);
-            noppdouble += 1;
+            localStatistics.max_hel_opp_double_ratio = std::max(localStatistics.max_hel_opp_double_ratio,hel_ratio);
+            localStatistics.noppdouble += 1;
         }
     }
+
+// this is only of relevance when going multi-threaded: It stores does a reduction of max_hel_* by taking the maximum
+    globalizeMax();
 }
 
 void ExcitationGenerator::ProbUpdater::adjustProbabilities(){
@@ -257,28 +282,30 @@ void ExcitationGenerator::ProbUpdater::adjustProbabilities(){
     bool enough_double = false;
     bool enough_paradouble = false;
     bool enough_oppdouble = false;
-    if (nsingle > minsingle){
+    if (globalStatistics.nsingle > minsingle){
         enough_single = true;
     }
     else if (bbiasPo and (not bbiasSd)){
         enough_single = true;
     }
-    if (ndouble > mindouble){
+    if (globalStatistics.ndouble > mindouble){
         enough_double = true;
     }
-    if (nparadouble > minparadouble){
+    if (globalStatistics.nparadouble > minparadouble){
         enough_paradouble = true;
     }
-    if (noppdouble > minoppdouble){
+    if (globalStatistics.noppdouble > minoppdouble){
         enough_oppdouble = true;
     }
 
     if (bbiasPo){
         if (enough_single and enough_double){
-            pParallel_new = max_hel_para_double_ratio / \
-                            (max_hel_para_double_ratio + max_hel_opp_double_ratio);
-            pSingles_new = max_hel_single_ratio*pParallel_new / \
-                           (max_hel_single_ratio*pParallel_new + max_hel_para_double_ratio);
+            pParallel_new = globalStatistics.max_hel_para_double_ratio / \
+                            (globalStatistics.max_hel_para_double_ratio
+                            		+ globalStatistics.max_hel_opp_double_ratio);
+            pSingles_new = globalStatistics.max_hel_single_ratio*pParallel_new / \
+                           (globalStatistics.max_hel_single_ratio*pParallel_new
+                        		   + globalStatistics.max_hel_para_double_ratio);
             pDoubles_new = 1.0 - pSingles_new;
         }
         else{
@@ -302,8 +329,8 @@ void ExcitationGenerator::ProbUpdater::adjustProbabilities(){
     }
     else if (bbiasSd and (not bbiasPo)){
         if (enough_single and enough_double){
-            pSingles_new = max_hel_single_ratio / \
-                           (max_hel_single_ratio + max_hel_double_ratio);
+            pSingles_new = globalStatistics.max_hel_single_ratio / \
+                           (globalStatistics.max_hel_single_ratio + globalStatistics.max_hel_double_ratio);
             pDoubles_new = 1.0 - pSingles_new;
         }
         else{
@@ -319,17 +346,8 @@ void ExcitationGenerator::ProbUpdater::adjustProbabilities(){
         }
     }
 
-
-    max_hel_single_ratio = 0.0;
-    max_hel_double_ratio = 0.0;
-    max_hel_para_double_ratio = 0.0;
-    max_hel_opp_double_ratio = 0.0;
-    nsingle = 0;
-    ndouble = 0;
-    nparadouble = 0;
-    noppdouble = 0;
-
-    return;
+    localStatistics = gatheredData();
+    globalStatistics = gatheredData();
 }
 
 

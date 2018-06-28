@@ -43,6 +43,9 @@ public:
   // the only way to parallelize this is to pass the iteration count, too
   virtual void iterate(coeffType &cI, detType &dI, int i) const=0;
 
+  // update the bias used for excitation generation in iterate()
+  void updateBiases()const {excitGen->updateBiases();}
+
   // return either the current det or possibly some stored det (depending on implementation)
   virtual detType getDet() const{return cDet;};
   virtual detType getDet(int i) const{return cDet;};
@@ -63,7 +66,6 @@ private:
   // it is owned by the sampler, so we can also create it in the
   // background, it does not need to be user-specified
   mutable DeepCpyUniquePtr<ExcitationGenerator> excitGen;
-  //ExcitationGenerator *excitGen;
   // is mutable because the excitation generator changes its behaviour
   // over iterations, but this is not visible outisde
 protected:

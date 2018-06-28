@@ -36,6 +36,24 @@ public:
     void checkProbabilities(ExcitmatType const &excitmat, double hel, int nspawns, double pGen);
     void adjustProbabilities();
 private:
+    // This is what we accumulate during sampling
+    struct gatheredData{
+    	// collection of POD
+        int nsingle;
+        int ndouble;
+        int nparadouble;
+        int noppdouble;
+        double max_hel_single_ratio;
+        double max_hel_double_ratio;
+        double max_hel_para_double_ratio;
+        double max_hel_opp_double_ratio;
+
+        // default initialization: all data members 0
+        gatheredData();
+        // accumulation: add up the integers, take the max of the floats
+        gatheredData& operator+=(gatheredData const &rhs);
+    };
+
     // the relevant probabilities
     double pDoublesInternal, pParallelInternal;
     // for the dynamic adjustment of the probabilities
@@ -43,26 +61,16 @@ private:
     int mindouble;
     int minparadouble;
     int minoppdouble;
-    double max_hel_single_ratio;
-    double max_hel_double_ratio;
-    double max_hel_para_double_ratio;
-    double max_hel_opp_double_ratio;
-    int nsingle;
-    int ndouble;
-    int nparadouble;
-    int noppdouble;
+    gatheredData localStatistics;
     bool bbiasSd;
     bool bbiasPo;
 
-    // for paralellization: threaded probabilities
-    static std::vector<double> threadedPDoubles;
-    static std::vector<double> threadedPParallel;
-    // if the threaded-p values on this thread have already been set
-    static std::vector<bool> threadedPSet;
-    // methods for handling the threaded p-storage
-    void setThreadP();
-    void readThreadP();
+    // for paralellization: thread-global containers for gathered data
+    static gatheredData globalStatistics;
+    void globalizeMax();
 };
+
+void setNewBiases(ExcitationGenerator::ProbUpdater &pBiasGen, double &pDoubles, double &pParallel);
 
 } /* namespace networkVMC */
 

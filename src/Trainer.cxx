@@ -68,6 +68,10 @@ void Trainer<T>::train(){
 	// the number of connections required is passed via the cost function
 	inputState = isg.generate(cf.connectionsRequired());
 
+	// use the data obtained in generation of the input state to
+	// set new biases for the sampling
+	msampler.updateBiases();
+
 	updateParameters(inputState);
 }
 

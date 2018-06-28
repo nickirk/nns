@@ -19,6 +19,9 @@ public:
 	virtual ~UniformExcitgen();
 	virtual detType generateExcitation(detType const &source, double &pGen) ;
 	virtual double getExcitationProb(detType const &source, detType const &target);
+
+	// update the biases pDoubles/pParallel
+	virtual void updateBiases();
 private:
 	// have separate methods for generating single/double excits
 	detType genSingleExcitation(detType const &source, std::vector<int> const &source_orbs,

@@ -29,12 +29,14 @@ public:
 	virtual detType generateExcitation(detType const &source, double &pGen);
 	virtual double getExcitationProb(detType const &source, detType const &target);
 
+	// update the biases pDoubles/pParallel
+	virtual void updateBiases();
 private:
     // generate a single excitation
-    detType generateSingleExcit(detType const &source);
+    detType generateSingleExcit(detType const &source, double &hel);
     // can throw a NoExcitFound exception
     // generate a double excitation
-    detType generateDoubleExcit(detType const &source);
+    detType generateDoubleExcit(detType const &source, double &hel);
     // can throw a NoExcitFound exception
 
     // pick two electrons

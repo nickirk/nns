@@ -29,6 +29,7 @@ public:
 	virtual double getExcitationProb(detType const &source, detType const &target) = 0;
 	// maintains the pDoubles/pParallel for our non-trivial excitgens
 	class ProbUpdater;
+	virtual void updateBiases(){};
 };
 
 

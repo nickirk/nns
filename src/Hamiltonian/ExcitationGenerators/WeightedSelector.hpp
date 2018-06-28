@@ -25,8 +25,8 @@ public:
 	WeightedSelector(Hamiltonian const &H_, detType const &source_):
 		H(H_),source(source_),norbs(source_.size()){};
 	virtual ~WeightedSelector();
-    // select a hole for a single excitation
-    int selectSingleHole(int src, double &pgen);
+    // select a hole for a single excitation (hel is the matrix element of that excitation)
+    int selectSingleHole(int src, double &pgen, double &hel);
     // select two holes based on a cumulative list
     int selectDoubleHole(std::vector<int> const &src, int orb_pair, double &cum_sum, double &cpt);
     std::vector<int> selectDoubleHoles(std::vector<int> const &src,

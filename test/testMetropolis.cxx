@@ -23,6 +23,7 @@ void runMetropolisTest(Sampler const &tst){
 		  tst.iterate(cCoeff,cDet,i);
 		  std::cout<<cCoeff<<" with fraction "<<lastCoeff/cCoeff<<std::endl;
 	  }
+	  tst.updateBiases();
 }
 
 int main(){
@@ -31,9 +32,7 @@ int main(){
   // then the Hamiltonian
   Basis basis = generateDefaultBasis(numSites);
   auto modelHam = generateDefaultHubbard(numSites);
-  double U{4.}, t{-1};
-  // The cost function does not matter, we only need the para to get
-  // the coeffs
+  // The cost function does not matter, we only need the para to get the coeffs
   DirectParametrization<> para(basis);
 
   detType HF=basis.getDetByIndex(0);

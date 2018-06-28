@@ -8,12 +8,12 @@
 #include "UniformExcitgen.hpp"
 #include <vector>
 #include "../../HilbertSpace/Determinant.hpp"
+#include "ExcitmatType.hpp"
 
 namespace networkVMC {
 
 UniformExcitgen::UniformExcitgen(detType const &HF):
-	clonableExcitgen<UniformExcitgen>(){
-	pBiasGen.setProbabilities(HF);
+	clonableExcitgen<UniformExcitgen>(),pBiasGen(ProbUpdater(HF)){
 	pParallel = pBiasGen.pParallel();
 	pDoubles = pBiasGen.pDoubles();
 }
@@ -21,6 +21,13 @@ UniformExcitgen::UniformExcitgen(detType const &HF):
 //---------------------------------------------------------------------------------------------------//
 
 UniformExcitgen::~UniformExcitgen() {
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+// call the ProbUpdater to get new values for pDoubles/pParallel
+void UniformExcitgen::updateBiases(){
+	setNewBiases(pBiasGen,pDoubles,pParallel);
 }
 
 //---------------------------------------------------------------------------------------------------//
@@ -95,16 +102,27 @@ detType UniformExcitgen::generateExcitation(detType const &source, double &pGet)
         pdoubnew = pDoubles;
     }
 
+    ExcitmatType exmat;
     // call the respective single or double excitation generators
     if (ic==2){
         // double excitation
         target = this->genDoubleExcitation(source, source_orbs, holes, particles, pGet, pdoubnew, noccs, nunoccs);
+        // this part of exmat is only assigned for doubles (default is -1, singles keep that)
+        exmat(1,0) = holes[1];
+        exmat(1,1) = particles[1];
     }
     else{
         // single excitation
         target = this->genSingleExcitation(source, source_orbs, holes, particles, pGet, pdoubnew, noccs, nunoccs);
     }
 
+    // assume particles + holes are not empty
+    // TODO: Add exception safety
+    exmat(0,0) = holes[0];
+    exmat(0,1) = particles[0];
+
+    // Using a uniform excitgen is like having a molecular Hamiltonian with all integrals being 1.0
+    pBiasGen.checkProbabilities(exmat,1.0,1,pGet);
 
     return target;
 

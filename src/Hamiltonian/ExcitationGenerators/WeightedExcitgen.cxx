@@ -11,6 +11,7 @@
 #include "../../utilities/TypeDefine.hpp"
 #include "../../utilities/Errors.hpp"
 #include "../Hamiltonian.hpp"
+#include "ProbUpdater.hpp"
 #include <iostream>
 
 namespace networkVMC {
@@ -24,6 +25,13 @@ WeightedExcitgen::WeightedExcitgen(Hamiltonian const &H_, detType const &HF):
 //---------------------------------------------------------------------------------------------------//
 
 WeightedExcitgen::~WeightedExcitgen() {
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+// call the ProbUpdater to get new values for pDoubles/pParallel
+void WeightedExcitgen::updateBiases(){
+	setNewBiases(pBiasGen,pDoubles,pParallel);
 }
 
 //---------------------------------------------------------------------------------------------------//
@@ -90,15 +98,16 @@ detType WeightedExcitgen::generateExcitation(
 	// return variable
 	detType target = source;
 	// decide whether a single or double excitation is done
+	double hel{0.0};
 	try{
 	if (uniform_dist(rng) < 1 - pDoubles){
 		// single excitation
-		target = generateSingleExcit(source);
+		target = generateSingleExcit(source,hel);
 		pgen *= (1- pDoubles);
 	}
 	else{
 		// double excitation
-		target = generateDoubleExcit(source);
+		target = generateDoubleExcit(source,hel);
 		pgen *= pDoubles;
 	}
 	}
@@ -110,12 +119,15 @@ detType WeightedExcitgen::generateExcitation(
 	// assing the probability
 	pGen = pgen;
 
+	// update the probupdater
+	pBiasGen.checkProbabilities(excitmat,hel,1,pGen);
+
 	return target;
 }
 
 //---------------------------------------------------------------------------------------------------//
 
-detType WeightedExcitgen::generateSingleExcit(detType const &source) {
+detType WeightedExcitgen::generateSingleExcit(detType const &source,double &hel) {
     // generate a single excitation
 
     // set up the random number generator
@@ -136,7 +148,7 @@ detType WeightedExcitgen::generateSingleExcit(detType const &source) {
     // auxiliary selector
     WeightedSelector selector(*H,source);
     // select the target hole by connection strength
-    int tgt = selector.selectSingleHole(src,pgen);
+    int tgt = selector.selectSingleHole(src,pgen,hel);
     // if we did not find a hole, throw an exception
     if (tgt < 0){
     	throw NoExcitationFound();
@@ -159,7 +171,7 @@ detType WeightedExcitgen::generateSingleExcit(detType const &source) {
 
 //---------------------------------------------------------------------------------------------------//
 
-detType WeightedExcitgen::generateDoubleExcit(detType const &source){
+detType WeightedExcitgen::generateDoubleExcit(detType const &source, double &hel){
     // generate a double excitation
 
     std::vector<double> cpt_pair,int_cpt,sum_pair,cum_sum;
@@ -177,13 +189,14 @@ detType WeightedExcitgen::generateDoubleExcit(detType const &source){
     // select a pair of electrons
     std::vector<int> src = pickBiasedElecs(elecs, source);
 
-
     // select the two target holes by approximate connection
     // strength
     if ((not H->partExact()) and (not H->linExact()) and ((src[0]%2)==(src[1]%2))){
         // in this case the CDFs are the same
         std::vector<int> tgt =
         		doublesSelector.selectDoubleHoles(src,cum_sum,int_cpt);
+        // int_cpt[1] is the matrix element of the excitation
+        hel = int_cpt[1];
     }
     else{
         //std::vector<int> tgt;
@@ -198,9 +211,9 @@ detType WeightedExcitgen::generateDoubleExcit(detType const &source){
             tgt[1] =doublesSelector.selectDoubleHole(
             				src,tgt[0],cum_sum[1],int_cpt[1]);
         }
+        // int_cpt[1] is the matrix element of the excitation
+        hel = int_cpt[1];
     }
-    std::cout << "Input for gen: "<<tgt[0] << " " << tgt[1] << std::endl;
-    std::cout << "Output: " << cum_sum[0] << " " << cum_sum[1] << std::endl;
     // check that the two electrons have not been excited into the
     // same orbitals
     if (std::any_of(tgt.begin(),tgt.end(), [](const int i) {return i<0;})){
@@ -476,9 +489,6 @@ double WeightedExcitgen::pGenSelectDoubleHole(detType const &source, std::vector
                         if (i==tgt){
                             cpt = tmp;
                         }
-			std::cout << "pGen contrib: "<<tmp<<std::endl;
-			std::cout << "from orbs: " << src[0] << " " 
-				  << src[1] << " " << i << " " << orb_pair << std::endl;
 
                     }
                 }
@@ -665,8 +675,6 @@ double WeightedExcitgen::calcPgen(detType const &source, std::vector<int> const 
 
         int_cpt[0] = pGenSelectDoubleHole(source,src,-1,cum_sum[0],tmptgt[0]);
         int_cpt[1] = pGenSelectDoubleHole(source,src,tmptgt[0],cum_sum[1],tmptgt[1]);
-        std::cout << "Input for calc: "<<tmptgt[0] << " " << tmptgt[1] << std::endl;
-        std::cout << "Output: " << cum_sum[0] << " "<<cum_sum[1] << std::endl;
         // deal with the cases when there are no available excitation
         if (std::any_of(cum_sum.begin(),cum_sum.end(), [](const double i) \
                     {return std::fabs(i)<1e-12;})){
