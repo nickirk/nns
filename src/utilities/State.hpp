@@ -36,7 +36,7 @@ public:
          std::vector<coeffType> const &coeffs_,
          std::vector<double> const &weights_):
     storedDets(dets_),storedCoeffs(coeffs_), storedWeights(weights_),
-    fSortedCoeff(0), fSortedDet(0){
+    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0) {
 		// A state has to have one coefficient per determinant
 		// one might argue that supplying less coefficient should be fine and that
 		// the rest should be filled with zeroes, we might change that
