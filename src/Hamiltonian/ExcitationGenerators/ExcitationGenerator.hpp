@@ -29,6 +29,8 @@ public:
 	virtual double getExcitationProb(detType const &source, detType const &target) = 0;
 	// maintains the pDoubles/pParallel for our non-trivial excitgens
 	class ProbUpdater;
+	// additional feature: update internal biases of excitation generation, this can make a huge difference
+	// since this is not done on the same scope as generating excitations, we need to call this externally
 	virtual void updateBiases(){};
 };
 
@@ -36,14 +38,14 @@ public:
 // CRTP class for cloning
 
 template<typename T>
-class clonableExcitgen: public ExcitationGenerator{
+class ClonableExcitgen: public ExcitationGenerator{
 public:
 	// inherit the constructor
 	using ExcitationGenerator::ExcitationGenerator;
-	virtual ~clonableExcitgen(){};
+	virtual ~ClonableExcitgen(){};
 
 	// clone functionality for ExcitationGenerators
-	// only accessible in direct child classes
+	// only usable in direct child classes
 	virtual ExcitationGenerator* clone() const{
 			return new T{static_cast<T const&>(*this)};
 	}

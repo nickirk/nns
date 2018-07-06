@@ -13,7 +13,7 @@
 namespace networkVMC {
 
 UniformExcitgen::UniformExcitgen(detType const &HF):
-	clonableExcitgen<UniformExcitgen>(),pBiasGen(ProbUpdater(HF)){
+	ClonableExcitgen<UniformExcitgen>(),pBiasGen(ProbUpdater(HF)){
 	pParallel = pBiasGen.pParallel();
 	pDoubles = pBiasGen.pDoubles();
 }

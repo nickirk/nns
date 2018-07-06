@@ -9,7 +9,7 @@
 
 namespace networkVMC {
 
-RSHubbardExcitgen::RSHubbardExcitgen():clonableExcitgen<RSHubbardExcitgen>() {
+RSHubbardExcitgen::RSHubbardExcitgen():ClonableExcitgen<RSHubbardExcitgen>() {
 }
 
 RSHubbardExcitgen::~RSHubbardExcitgen() {

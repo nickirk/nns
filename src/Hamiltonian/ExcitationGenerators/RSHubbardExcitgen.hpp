@@ -13,7 +13,7 @@
 
 namespace networkVMC {
 
-class RSHubbardExcitgen: public clonableExcitgen<RSHubbardExcitgen> {
+class RSHubbardExcitgen: public ClonableExcitgen<RSHubbardExcitgen> {
 public:
 	RSHubbardExcitgen();
 	virtual ~RSHubbardExcitgen();

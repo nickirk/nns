@@ -8,6 +8,8 @@
 #ifndef SRC_UTILITIES_DEEPCPYUNIQUEPTR_HPP_
 #define SRC_UTILITIES_DEEPCPYUNIQUEPTR_HPP_
 
+#include <memory>
+
 namespace networkVMC {
 
 // a smart pointer of clonable objects
