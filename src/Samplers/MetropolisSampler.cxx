@@ -42,15 +42,12 @@ void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, double &weight,
   // std::norm returns |a+ib|^2
   //double prob = std::norm(tmpCoeff)/std::norm(lastCoeff);
 	detType tmp{getRandomConnection(cDet,pEx)};
-	printDet(cDet);
-	std::cout<<"generated"<<std::endl;
-	printDet(tmp);
 	// And its coefficient
 	coeffType tmpCoeff{para->getCoeff(tmp)};
 	// unbiasing with generation probability in principle necessary (unless prob. is symmetric)
-  double prob = std::norm(tmpCoeff/lastCoeff);
-	if(uni(rng) < prob){
-		// With probability cJ/cI, accept the move
+	pBack = getConnectionProb(tmp,cDet);
+	if(uni(rng) < (pBack*std::norm(tmpCoeff))/(pEx*std::norm(lastCoeff))){
+		// With probability |cJ|^2/|cI|^2, accept the move
 		cDet = tmp;
 		lastCoeff = tmpCoeff;
 		// and set the output

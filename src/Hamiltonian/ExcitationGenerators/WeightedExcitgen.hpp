@@ -18,7 +18,7 @@
 
 namespace networkVMC {
 
-class WeightedExcitgen: public clonableExcitgen<WeightedExcitgen> {
+class WeightedExcitgen: public ClonableExcitgen<WeightedExcitgen> {
 public:
 	// constructed from a Hamiltonian to get the weights and a
 	// determinant to use as a starting guess for the bias pDoubles

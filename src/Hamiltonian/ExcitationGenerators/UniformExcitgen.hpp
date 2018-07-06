@@ -13,7 +13,7 @@
 
 namespace networkVMC {
 
-class UniformExcitgen: public clonableExcitgen<UniformExcitgen> {
+class UniformExcitgen: public ClonableExcitgen<UniformExcitgen> {
 public:
 	explicit UniformExcitgen(detType const &HF);
 	virtual ~UniformExcitgen();

@@ -34,10 +34,6 @@ public:
 		  detType const &HF, int numDets_ = 100);
   virtual ~Sampler(){};
   virtual Sampler* clone() const = 0;
-  // and functionalities: get a random coupled determinant
-  detType getRandomConnection(detType const &startingPoint, double &p) const;
-  // get the probability of generating a when starting from b
-  double getConnectionProb(detType const &source, detType const &target) const;
   // This function is what samplers ought to do: Get a random determinant with some
   // coefficient
   // the only way to parallelize this is to pass the iteration count, too
@@ -60,6 +56,12 @@ public:
 
   // for attributing CostFunctions
   virtual SamplerType type() const {return PreFetched;}
+
+protected:
+  // and functionalities for implementation of sampling: get a random coupled determinant
+  detType getRandomConnection(detType const &startingPoint, double &p) const;
+  // get the probability of generating a when starting from b
+  double getConnectionProb(detType const &source, detType const &target) const;
 
 private:
   // excitation generator that does the sampling of determinants

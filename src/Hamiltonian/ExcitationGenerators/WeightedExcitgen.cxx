@@ -17,7 +17,7 @@
 namespace networkVMC {
 
 WeightedExcitgen::WeightedExcitgen(Hamiltonian const &H_, detType const &HF):
-	clonableExcitgen<WeightedExcitgen>(),pBiasGen(ProbUpdater(HF)),H(&H_){
+	ClonableExcitgen<WeightedExcitgen>(),pBiasGen(ProbUpdater(HF)),H(&H_){
 	pParallel = pBiasGen.pParallel();
 	pDoubles = pBiasGen.pDoubles();
 }
