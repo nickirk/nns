@@ -148,7 +148,17 @@ public:
       cCoeffs = applyPermutation(cCoeffs,perm);
       storedWeights = applyPermutation(storedWeights, perm);
     }
- int spaceSize;
+ //totalSize is numDets+num of all coupled Dets
+ int totalSize(){
+   int size(0);
+   for (size_t i(0); i<storedDets.size();++i){
+     size+=1;
+     for (size_t j(0); j < cDets[i].size(); ++j){
+       size+=1;
+     }
+   }
+   return size;
+ };
 //---------------------------------------------------------------------------------------------------//
 private:
   // whenever a new det is added, update its coeff and weight
