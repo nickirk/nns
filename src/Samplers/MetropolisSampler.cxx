@@ -36,13 +36,11 @@ void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, int i) const{
 	double pEx, pBack;
 	// First, get a random coupled determinant (from cDet)
 	detType tmp{getRandomConnection(cDet,pEx)};
-	printDet(cDet);
-	std::cout<<"generated"<<std::endl;
-	printDet(tmp);
 	// And its coefficient
 	coeffType tmpCoeff{para->getCoeff(tmp)};
 	// unbiasing with generation probability in principle necessary (unless prob. is symmetric)
-	if(uni(rng) < std::pow(std::norm(tmpCoeff),2)/std::pow(std::norm(lastCoeff),2)){
+	pBack = getConnectionProb(tmp,cDet);
+	if(uni(rng) < (pBack*std::norm(tmpCoeff))/(pEx*std::norm(lastCoeff))){
 		// With probability cJ/cI, accept the move
 		cDet = tmp;
 		lastCoeff = tmpCoeff;
