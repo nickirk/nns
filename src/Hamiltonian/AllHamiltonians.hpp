@@ -11,5 +11,6 @@
 #include "AbInitioHamiltonian.hpp"
 #include "BosonicHamiltonian.hpp"
 #include "FermionicHamiltonian.hpp"
+#include "FermiHubbardHamiltonian.hpp"
 
 #endif /* SRC_HAMILTONIAN_ALLHAMILTONIANS_HPP_ */

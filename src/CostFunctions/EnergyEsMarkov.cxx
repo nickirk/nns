@@ -49,7 +49,7 @@ nablaType EnergyEsMarkov::nabla(State const &input) const{
   nablaType dEdC(spaceSize, coeffType(0.,0.)) ;
   //not thread safe
   //assume we know the whole space size, reserve space
-  #pragma omp parallel for
+  //#pragma omp parallel for
   for (int i=0; i < numDets; ++i){
     coeffType dEdCtmp;
     coeffType c_i = input.coeff(i);

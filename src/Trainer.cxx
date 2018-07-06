@@ -9,15 +9,25 @@
 #include "Hamiltonian/Hamiltonian.hpp"
 #include "Samplers/Sampler.hpp"
 #include "Solvers/Solver.hpp"
-#include "CostFunctions/CostFunction.hpp"
 #include "Network/Parametrization.hpp"
 #include <iostream>
 #include <memory>
+#include "CostFunctions/CostFunction.hpp"
+#include "utilities/InputStateGenerator.hpp"
 
 namespace networkVMC{
+
+// TODO: Add more constructors, with default arguments
 template <typename T>
-Trainer<T>::Trainer(Parametrization<T> &NNW_, Sampler const &msampler_, Solver<T> &sl_, CostFunction const &cf_):
-		modelHam(msampler_.getH()),NNW(NNW_), msampler(msampler_),sl(sl_),cf(cf_) {
+Trainer<T>::Trainer(Parametrization<T> &NNW_, Sampler const &msampler_,
+		Solver<T> &sl_, CostFunction &cf_, Hamiltonian const& H_):
+		modelHam(H_),NNW(NNW_), msampler(msampler_),sl(sl_),
+		// here, we make sure that the cost function and the
+		// sampler are compatible
+		cf(cf_) {
+	// make sure the cost function and the sampler are compatible
+	cf.setUpCF(msampler.type());
+	// prepare the input state
 	inputState.resize(msampler.getNumDets());
 }
 
@@ -52,6 +62,8 @@ void Trainer<T>::train(){
 
 	// And now, for the chosen number of samples, get the respective determinants and
 	// coefficients
+/*
+<<<<<<< HEAD
 #pragma omp parallel
 	{
 	// sampling is not threadsafe, so each thread creates it's own sampler
@@ -85,6 +97,18 @@ void Trainer<T>::train(){
   // count the repeatations, inside State? 
   // count the repeated determinants, update the weights or use hash table
   // in the sampler to count the number. TODO
+=======
+*/
+	std::cout<<"numdets "<<numDets<<'\n';
+
+	// create the input State
+	InputStateGenerator<T> isg(msampler,modelHam, NNW);
+	// the number of connections required is passed via the cost function
+	inputState = isg.generate(cf.connectionsRequired());
+
+	// use the data obtained in generation of the input state to
+	// set new biases for the sampling
+	msampler.updateBiases();
 
 	updateParameters(inputState);
 }
@@ -115,7 +139,7 @@ double Trainer<T>::getE() const{
 //---------------------------------------------------------------------------------------------------//
 
 template <typename T>
-State  Trainer<T>::getState() const{
+State const &Trainer<T>::getState() const{
 	// This is for testing and debugging purpose, only
 	return inputState;
 }

@@ -12,27 +12,36 @@
 #include <Eigen/Dense>
 #include "../utilities/TypeDefine.hpp"
 #include "CostFunction.hpp"
+#include "EnergyEs.hpp"
+#include "EnergyCFBaseClass.hpp"
 
 namespace networkVMC{
 
 class Hamiltonian;
 
-class EnergyEsMarkov: public CostFunction{
+class EnergyEsMarkov: public EnergyCFBaseClass{
 public:
-	explicit EnergyEsMarkov(Hamiltonian const &H_):
-    CostFunction(),H(H_),energy(0.0),normalizerCoeff(0.0){};
+	// Do it like this: We cannot generate EnergyEsMarkov
+	// directly, this has to be done via EnergyEs
+	friend EnergyEs;
+
+	virtual double calc(State const &input) const {return energy;};
 	nablaType nabla(State const &input) const;
-	double calc(State const &input) const {return energy;};
-    double getNormalizer(){return normalizerCoeff;};
+
+	// Allow for polymorphic copy
+	virtual EnergyEsMarkov* clone() const {return new EnergyEsMarkov(*this);}
+
+	// For sake of completeness, we specify that this requires connections
+	virtual int connectionsRequired() const {return numCons;}
 private:
-	Hamiltonian const& H;
-	mutable double energy;
-	mutable double normalizerCoeff;
+    // Make sure this is not manually constructed, but only via
+    // EnergyEs. This way, we cannot attribute the wrong CF to a sampler
+	explicit EnergyEsMarkov(Hamiltonian const &H_,int numCons_):
+		EnergyCFBaseClass(H_),numCons(numCons_){};
+
 	double evaluate(State const &input) const;
 
-	// Has a reference member, so assignment is not a thing
-	EnergyEsMarkov& operator=(EnergyEsMarkov const &source);
-	EnergyEsMarkov& operator=(EnergyEsMarkov &&source);
+	int numCons;
 };
 
 }

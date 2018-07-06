@@ -13,9 +13,9 @@
 #include <stdio.h>
 
 #include "../src/CostFunctions/EnergyCF.hpp"
-#include "../src/CostFunctions/EnergyEstimator.hpp"
+#include "../src/CostFunctions/EnergyEsPreFetched.hpp"
 #include "../src/Hamiltonian/AbInitioHamiltonian.hpp"
-#include "../src/Hamiltonian/FermionicHamiltonian.hpp"
+#include "../src/Hamiltonian/ExcitationGenerators/AllExcitationGenerators.hpp"
 #include "../src/Network/Nnw.hpp"
 #include "../src/HilbertSpace/Basis.hpp"
 #include "../src/HilbertSpace/Determinant.hpp"
@@ -33,14 +33,7 @@ int main(){
   
   SpinConfig spinConfig{spinUp, spinDown, numStates};
   int numHidden(10*numSites);
-  //int numHidden1(2*numSites);
   vector<int> size_NNW = {numStates, numHidden, 2};
-  //cout << "input number of hidden neurons=";
-  //cin >> numHidden;
-  bool readFromFile{false};
-  double trainRate(1.5);
-  //cout << "input training rate=";
-  //cin >> trainRate;
   // which random excitation generator should be tested
   int test_gen_rand = 2;
   //generate basis, the basis class constructor takes in the spin configurations.
@@ -48,7 +41,7 @@ int main(){
   //generate hamiltonian
   AbInitioHamiltonian modelHam(numStates);
   //double U{2.}, t{-1};
-  string file_name = "../run/FCIDUMP"; 
+  string file_name = "run/FCIDUMP_abinitio";
   modelHam = readAbInitioHamiltonian(numStates, file_name);
   //// test Hubbard Hamiltonian
   //FermionicHamiltonian modelHam(numStates);
@@ -57,10 +50,10 @@ int main(){
   
   cout << "Basis size= " << basis.getSize() << endl;
   cout << "Determinants: " << endl;
-  for (int i=0; i<basis.getSize(); ++i){
+  for (size_t i=0; i<basis.getSize(); ++i){
       std::vector<int> positions = getOccupiedPositions(basis.getDetByIndex(i));
       cout << " ";
-      for (int j=0; j<positions.size(); ++j){
+      for (size_t j=0; j<positions.size(); ++j){
           cout << (positions[j]+1) << " , ";
       }
       cout << endl;
@@ -70,8 +63,8 @@ int main(){
   // Eigen matrices are columnmajor by default
   Eigen::MatrixXd H(Eigen::MatrixXd::Zero(basis.getSize(),
           basis.getSize()));
-  for (int i=0; i<basis.getSize(); ++i){
-      for (int j=0; j<basis.getSize(); ++j){
+  for (size_t i=0; i<basis.getSize(); ++i){
+      for (size_t j=0; j<basis.getSize(); ++j){
           double value = 0.0;
           value = modelHam(basis.getDetByIndex(j),basis.getDetByIndex(i));
           H(j,i) = value;
@@ -88,7 +81,7 @@ int main(){
               cout.width(10); 
               cout << i;
               cout.width(25);
-              std::fixed; 
+              std::cout << std::fixed;
               cout << H(j,i) << endl;
           }
       }
@@ -107,7 +100,7 @@ int main(){
               outfile << i+1;
               outfile.width(25);
               outfile.precision(12);
-              std::fixed; 
+              std::cout << std::fixed;
               outfile << H(j,i) << endl;
           }
       }
@@ -124,9 +117,9 @@ int main(){
   Eigen::MatrixXd eigenvecs(Eigen::MatrixXd::Zero(basis.getSize(),basis.getSize()));
   eigenvecs = eigensolver.eigenvectors();
   cout << "\n The eigenvectors of H:" << endl;
-  for (int j=0; j<basis.getSize(); ++j){
+  for (size_t j=0; j<basis.getSize(); ++j){
       cout << "\n Eigenvector: " << (j+1) << "\n" << endl;
-      for (int i=0; i< basis.getSize(); ++i){
+      for (size_t i=0; i< basis.getSize(); ++i){
           cout << i << "   " << eigenvecs(i,j) << endl;
       }
   }
@@ -135,12 +128,12 @@ int main(){
   eigenvals = eigensolver.eigenvalues();
   outfile.open("eigenvalues.txt",ios::out);
   outfile << "# i, l_i" << endl;
-  for (int j=0; j<eigenvals.size(); ++j){
+  for (size_t j=0; j<eigenvals.size(); ++j){
       outfile.width(20);
       outfile << j+1; 
       outfile.width(23);
       outfile.precision(12);
-      std::fixed; 
+      std::cout << std::fixed;
       outfile << eigenvals[j] << endl;
   }
   outfile.close();
@@ -152,11 +145,11 @@ int main(){
   cout << "************************************************" << endl;
   cout << "\n Deterministic excitation generator\n" << endl;
   cout << "************************************************" << endl;
-  for (int i=0; i<basis.getSize(); ++i){
+  for (size_t i=0; i<basis.getSize(); ++i){
       cout << "\n \n Considering the source determinant:" << endl;
       std::vector<int> positions = getOccupiedPositions(basis.getDetByIndex(i));
       cout << "   ";
-      for (int j=0; j<positions.size(); ++j){
+      for (size_t j=0; j<positions.size(); ++j){
           cout << (positions[j]+1) << " , ";
       }
       cout << endl;
@@ -170,11 +163,11 @@ int main(){
       cout << " Total number of excitations: " << nexcit << endl;
       std::vector<detType> CoupledDeterminants = modelHam.getCoupledStates(basis.getDetByIndex(i));
       cout << "\n List of excited determinants: " << endl;
-      for (int j=0; j<CoupledDeterminants.size(); ++j){
+      for (size_t j=0; j<CoupledDeterminants.size(); ++j){
           std::vector<int> positions = getOccupiedPositions(CoupledDeterminants[j]);
           cout << "   ";
-          for (int k=0; k<positions.size(); ++k){
-              cout << (positions[k]+1) << " , ";
+          for (auto k : positions){
+              cout << (k+1) << " , ";
           }
           cout << endl;
       }
@@ -187,7 +180,7 @@ int main(){
           cout << " Counted number: " << CoupledDeterminants.size() << endl;
       }
       int noffdiag = 0;
-      for (int j=0; j<basis.getSize(); ++j){
+      for (size_t j=0; j<basis.getSize(); ++j){
           if (j==i) {continue;}
           if (std::fabs(H(j,i))>1e-10){
               noffdiag += 1;
@@ -214,11 +207,12 @@ int main(){
 
   if (test_gen_rand == 1){
       // test uniform random excitation generator
+	  UniformExcitgen excitgen(basis.getDetByIndex(0));
 
       cout << "************************************************" << endl;
       cout << "\n Random excitation generator\n" << endl;
       cout << "************************************************" << endl;
-      for (int i=0; i<basis.getSize(); ++i){
+      for (size_t i=0; i<basis.getSize(); ++i){
           cout << "\n \n Considering the source determinant:" << endl;
           cout << "   ";
           std::vector<int> positions = getOccupiedPositions(basis.getDetByIndex(i));
@@ -236,9 +230,6 @@ int main(){
           cout << " Total number of excitations: " << nexcit << endl;
           std::vector<detType> CoupledDeterminants = modelHam.getCoupledStates(basis.getDetByIndex(i));
           std::sort(CoupledDeterminants.begin(),CoupledDeterminants.end(),compare_det);
-
-          // set the probabilities for the random excitation generation
-          modelHam.set_probabilities(basis.getDetByIndex(i));
 
           // histograms
           //std::vector<int> singlescount;
@@ -261,7 +252,8 @@ int main(){
           while (counter <= iterations){
 
               pgen = 0.0;
-              detType target = modelHam.getRandomCoupledState(basis.getDetByIndex(i),pgen);
+              detType target = excitgen.generateExcitation(
+            		  basis.getDetByIndex(i),pgen);
 
               // find the determinant in the list and get its position
               int pos = std::find(CoupledDeterminants.begin(),CoupledDeterminants.end(),target) - 
@@ -285,7 +277,8 @@ int main(){
               }
 
               // second way of evaluation generation probability
-              double pgen_2 = modelHam.calcGenProp(basis.getDetByIndex(i),target);
+              double pgen_2 = excitgen.getExcitationProb(
+            		  basis.getDetByIndex(i),target);
 
               if (std::fabs(pgen-pgen_2) > 1e-10){
                   cout << "\n \n !!!!!! Error! !!!!! \n" << endl;
@@ -307,13 +300,13 @@ int main(){
           double dev = 0.0;
           double devsign = 0.0;
           int nsampled = 0;
-          for (int j=0; j<CoupledDeterminants.size(); ++j){
+          for (size_t j=0; j<CoupledDeterminants.size(); ++j){
               double val = static_cast<double>(excitshist[j])/static_cast<double>(iterations);
               outfile.width(20);
               outfile << j+1; 
               outfile.width(23);
               outfile.precision(12);
-              std::fixed; 
+              std::cout << std::fixed;
               outfile << val << endl;
               dev += std::fabs(val - 1.0);
               devsign += (val - 1.0);
@@ -338,12 +331,13 @@ int main(){
   }
   else if (test_gen_rand == 2){
       // random excitation generator
+	  WeightedExcitgen excitgen(modelHam,basis.getDetByIndex(0));
       // weighted according to approximations to Hamiltonian matrix elements
      
       cout << "************************************************" << endl;
       cout << "\n Random weighted excitation generator\n" << endl;
       cout << "************************************************" << endl;
-      for (int i=0; i<basis.getSize(); ++i){
+      for (int i=0; i<1; ++i){
           cout << "\n \n Considering the source determinant:" << endl;
           cout << "   ";
           std::vector<int> positions = getOccupiedPositions(basis.getDetByIndex(i));
@@ -361,9 +355,6 @@ int main(){
           cout << " Total number of excitations: " << nexcit << endl;
           std::vector<detType> CoupledDeterminants = modelHam.getCoupledStates(basis.getDetByIndex(i));
           std::sort(CoupledDeterminants.begin(),CoupledDeterminants.end(),compare_det);
-
-          // set the probabilities for the random excitation generation
-          modelHam.set_probabilities(basis.getDetByIndex(i));
           
           // histograms
           //std::vector<int> singlescount;
@@ -382,11 +373,12 @@ int main(){
 
           int counter = 1;
           double pgen=0.0;
-          int iterations = 10000;
+          int iterations = 10;
           while (counter <= iterations){
 
               pgen = 0.0;
-              detType target = modelHam.getRandomCoupledState_cs(basis.getDetByIndex(i),pgen);
+              detType target = excitgen.generateExcitation(
+            		  basis.getDetByIndex(i),pgen);
 
               // find the determinant in the list and get its position
               int pos = std::find(CoupledDeterminants.begin(),CoupledDeterminants.end(),target) - 
@@ -410,8 +402,8 @@ int main(){
               }
 
               // second way of evaluation generation probability
-              double pgen_2 = modelHam.calcGenProp_cs(basis.getDetByIndex(i),target);
-
+              double pgen_2 = excitgen.getExcitationProb(basis.getDetByIndex(i),target);
+              std::cout << "probs: " << pgen << " " << pgen_2 <<std::endl;
               if (std::fabs(pgen-pgen_2) > 1e-10){
                   cout << "\n \n !!!!!! Error! !!!!! \n" << endl;
                   cout << " Evaluated generation probabilities don't agree ! \n \n" << endl;
@@ -432,13 +424,13 @@ int main(){
           double dev = 0.0;
           double devsign = 0.0;
           int nsampled = 0;
-          for (int j=0; j<CoupledDeterminants.size(); ++j){
+          for (size_t j=0; j<CoupledDeterminants.size(); ++j){
               double val = static_cast<double>(excitshist[j])/static_cast<double>(iterations);
               outfile.width(20);
               outfile << j+1; 
               outfile.width(23);
               outfile.precision(12);
-              std::fixed; 
+              std::cout << std::fixed;
               outfile << val << endl;
               dev += std::fabs(val - 1.0);
               devsign += (val - 1.0);
@@ -459,11 +451,11 @@ int main(){
               std::cout << "Total number of excitations: " << nexcit << std::endl;
               std::cout << "Number of sampled excitations: " << nsampled << std::endl;
               std::cout << "List of determinants which have not been sampled:" << std::endl;
-              for (int j=0; j<CoupledDeterminants.size(); ++j){
+              for (size_t j=0; j<CoupledDeterminants.size(); ++j){
                   if (excitshist[j] == 0){
                       std::cout << "determinant " << (j+1) << std::endl;
                       std::vector<int> positions2 = getOccupiedPositions(CoupledDeterminants[j]);
-                      for (int k=0; k<positions2.size(); ++k){
+                      for (size_t k=0; k<positions2.size(); ++k){
                           cout << (positions2[k]+1) << " , ";
                       }
                       std::cout << " " << std::endl;

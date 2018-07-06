@@ -15,6 +15,7 @@
 namespace networkVMC{
 
 void annihilate(detType &det, int pos){
+  // remove an electron from orbital pos from det
   if (pos > static_cast<int>(det.size()) || pos < 0){
     std::cerr << "Error! Annihilate outside of range! "; 
     throw OutOfRangeError(pos);
@@ -31,6 +32,7 @@ void annihilate(detType &det, int pos){
 //---------------------------------------------------------------------------------------------------//
 
 void create(detType &det, int pos){
+  // add an electron to orbital pos from det
   if (pos > static_cast<int>(det.size()) || pos < 0){
     std::cerr << "Error! Create outside of range! "; 
     throw OutOfRangeError(pos);
@@ -47,6 +49,7 @@ void create(detType &det, int pos){
 //---------------------------------------------------------------------------------------------------//
 
 std::vector<int> getOccupiedPositions(detType const &det) {
+  // return the occupied orbital's indices
   std::vector<int> positions;
   for (size_t i=0; i < det.size(); i++){
     if (det[i]) positions.push_back(i);
@@ -57,6 +60,7 @@ std::vector<int> getOccupiedPositions(detType const &det) {
 //---------------------------------------------------------------------------------------------------//
 
 int verbatimCast(detType const & det){
+	// 1:1 conversion of a determinant to integer (not surjective)
 	int tmp = 0;
 	for(size_t i = 0;i<det.size();++i){
 		if(det[i]){
@@ -68,6 +72,24 @@ int verbatimCast(detType const & det){
 
 //---------------------------------------------------------------------------------------------------//
 
+int getExcitLvl(detType const &a, detType const &b){
+	// excit lvls are only defined between same-sized dets
+	if(a.size() != b.size()) throw SizeMismatchError(a.size(),b.size());
+	// with the same number of electrons
+	if(getOccupiedPositions(a).size() != getOccupiedPositions(b).size())
+		throw InvalidDeterminantError();
+	int elvl{0};
+	for(std::size_t i=0; i < a.size(); ++i){
+		// if the dets differ, this counts towards the excitation lvl
+		if(a[i]^b[i]) elvl += 1;
+	}
+	return elvl/2;
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+// binary operators for determinants
+
 bool operator==(detType const& a, detType const& b) { return verbatimCast(a) == verbatimCast(b);}
 
 bool operator < (detType const& lhs, detType const& rhs)
@@ -78,6 +100,17 @@ bool operator < (detType const& lhs, detType const& rhs)
 bool compare_det(detType const& lhs, detType const& rhs){
 
     return (lhs<rhs);
+}
+
+// for debugging: output a determinant
+
+void printDet(detType const &out){
+	auto orbs = getOccupiedPositions(out);
+	std::cout<<"(";
+	for(int i : orbs){
+		std::cout << i << ", ";
+	}
+	std::cout<<")"<<std::endl;
 }
 
 }

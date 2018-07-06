@@ -11,15 +11,28 @@
 
 namespace networkVMC {
 template <typename T>
+FullSampler<T>::FullSampler(ExcitationGenerator const &eG_, Basis const &fullBasis_,
+		detType const &HF, Parametrization<T> const & para_):
+	Sampler(eG_,fullBasis_,HF,fullBasis_.getSize()),pos(0),para(&para_){
+}
+
+//---------------------------------------------------------------------------//
+
+template <typename T>
 FullSampler<T>::FullSampler(Hamiltonian const &H_, Basis const &fullBasis_,
 		detType const &HF, Parametrization<T> const & para_):
-	Sampler(H_,fullBasis_,HF,fullBasis_.getSize()),para(&para_),pos(0){
+	Sampler(H_,fullBasis_,HF,fullBasis_.getSize()),pos(0),para(&para_){
 }
+
+//---------------------------------------------------------------------------//
+
 
 template <typename T>
 FullSampler<T>::~FullSampler() {
 	// TODO Auto-generated destructor stub
 }
+
+//---------------------------------------------------------------------------//
 
 template <typename T>
 void FullSampler<T>::iterate(coeffType &cI, detType &dI, double& weight, int i) const{

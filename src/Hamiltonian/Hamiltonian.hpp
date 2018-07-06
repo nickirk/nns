@@ -9,9 +9,12 @@ namespace networkVMC{
 class Hamiltonian{
  public:
   // constructors
-  Hamiltonian():d(0),donebodyint(0),dtwobodyint(0),spinOrbs(false){}
+  Hamiltonian():d(0),donebodyint(0),dtwobodyint(0),spinOrbs(false),
+  linExactFlag(true),partExactFlag(true){}
   //dimension is the dimension of the single-particle Hilbert space
-  explicit Hamiltonian(int dimension):d(dimension),donebodyint(((d*(d+1))/2)),dtwobodyint(((donebodyint*(donebodyint+1))/2)),spinOrbs(false),oneBodyEntries(std::vector<double>(donebodyint,0.0)),twoBodyEntries(std::vector<double>(dtwobodyint,0.0)){}
+  explicit Hamiltonian(int dimension):d(dimension),donebodyint(((d*(d+1))/2)),dtwobodyint(((donebodyint*(donebodyint+1))/2)),spinOrbs(false),
+		  oneBodyEntries(std::vector<double>(donebodyint,0.0)),twoBodyEntries(std::vector<double>(dtwobodyint,0.0)),
+		  linExactFlag(true),partExactFlag(true){}
   //explicit Hamiltonian(int dimension):d(dimension),oneBodyEntries(std::vector<double>(d*d,0.0)),twoBodyEntries(std::vector<double>(d*d*d*d,0.0)){}
   // set the one- and two-body integrals of the Hamiltonian operator
   void setMatrixElement(int p, int q, double newEntry);
@@ -32,11 +35,18 @@ class Hamiltonian{
   void printMatrix(int N);
   // the commutation relation of the underlying creation/annihilation operators goes in here
   virtual int getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex) const =0;
-  // this is the excitation generation, we should move it to an extra class
-  virtual detType getRandomCoupledState(detType const &source, double &p) const = 0;
   // this generates all states coupled to source
+  // note that - in contrast to excitation generation - this is really
+  // a property of the Hamiltonian
   virtual std::vector<detType> getCoupledStates(detType const &source) const = 0;
   virtual ~Hamiltonian(){};
+
+  bool linExact() const {return linExactFlag;}
+  bool partExact() const {return partExactFlag;}
+
+  // this is for setting defaults: choose a default excitgen depending
+  // on the type of H
+  virtual HType type() const {return Constant;}
  private:
   // dimenstion of single-particle Hilbert space
   int d;
@@ -58,6 +68,9 @@ class Hamiltonian{
   int oneBodyIndex(int s, int r) const{
 		return s + d * r;
   }
+
+  bool linExactFlag;
+  bool partExactFlag;
 };
 
 detType getRandomCoupledState(detType const &source, double &p);

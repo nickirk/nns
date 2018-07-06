@@ -23,7 +23,7 @@ int main(){
   double U{4.}, t{-1};
   modelHam = generateFermiHubbard(numStates, U, t);
   vector<detType> list;
-  EnergyEstimator eCF(modelHam);
+  EnergyEsPreFetched eCF(modelHam);
   NeuralNetwork<VecType> NNW;
 
   NNW.constrInputLayer(numStates);

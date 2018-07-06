@@ -18,7 +18,7 @@ int main(){
   int numHidden(10);
   double trainRate(0.001);
   Basis basis(spinConfig);
-  FermionicHamiltonian modelHam(numStates);
+  FermiHubbardHamiltonian modelHam(numStates);
   double U{4.}, t{-1};
   modelHam = generateFermiHubbard(numStates, U, t);
   vector<detType> list;
@@ -37,15 +37,15 @@ int main(){
   double energy{0.0};
   //AcceleratedGradientDescent<VecCType> sl(trainRate);
   ADAM<VecCType> sl(trainRate);
-  Trainer<VecCType> ev(rbm, sampler, sl, eCF);
+  Trainer<VecCType> ev(rbm, sampler, sl, eCF,modelHam);
   ofstream myfile1;
   myfile1.open ("en1");
-  for(int l(0); l<3000; ++l){
+  for(int l(0); l<1000; ++l){
     //trainRate *= exp(-0.0002);
     ev.train(trainRate);
     // get the new energy
     energy = ev.getE();
-    auto states=ev.getState();
+    //auto states=ev.getState();
     //for(size_t s=0; s<states.size(); ++s){
     //  cout << "C_" << s << "= " << states.coeff(s) << endl;
     //}

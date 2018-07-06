@@ -43,9 +43,19 @@ class ActFuncDoNotExist{
     std::string actFunc;
 };
 
+class InvalidParameterPassed{
+public:
+	InvalidParameterPassed(){};
+};
+
 class EmptyNetworkError{
 public:
 	EmptyNetworkError(){};
+};
+
+class NoExcitationFound{
+public:
+	NoExcitationFound(){};
 };
 
 class UnconvergedEigenproblem{

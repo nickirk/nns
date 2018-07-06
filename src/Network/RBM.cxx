@@ -93,7 +93,7 @@ namespace networkVMC
         Eigen::MatrixXcd result(numPars, outputState.size());
         
         #pragma omp parallel for
-        for(int i=0;i<outputState.size();i++)
+        for(size_t i=0;i<outputState.size();i++)
         {
             Eigen::Map<Eigen::VectorXcd> da(result.data()+i*numPars+a_offset, sizeInput);
             Eigen::Map<Eigen::VectorXcd> db(result.data()+i*numPars+b_offset, sizeHidden);
@@ -114,7 +114,7 @@ namespace networkVMC
         {
             Eigen::VectorXcd private_result= Eigen::VectorXcd::Zero(numPars);
             #pragma omp for
-            for(int i=0;i<input.size();i++)
+            for(size_t i=0;i<input.size();i++)
             {
                 private_result += (outerDerivative[i]*dCdW.col(i)).conjugate();
             }
@@ -142,7 +142,7 @@ namespace networkVMC
           // fill up the matrix of dCdW, like in EnergyEsMarkov.cxx
           // reserve space and in the end use matrix*vector instead of
           // a summation
-          for (int epoch(0); epoch < numDets; ++epoch){
+          for (int epoch=0; epoch < numDets; ++epoch){
             //need private dCtdW
             Eigen::VectorXcd dCtdW= Eigen::VectorXcd::Zero(numPars);
             // do the mapping inside for loop, private

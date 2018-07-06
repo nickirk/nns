@@ -10,6 +10,7 @@
 
 #include <Eigen/Dense>
 #include "CostFunction.hpp"
+#include "../utilities/State.hpp"
 
 namespace networkVMC{
 
@@ -20,12 +21,16 @@ class Hamiltonian;
 // eigenvector to the input state as cost function
 class SubspaceCF: public CostFunction {
 public:
+	// SubspaceCF creation/destruction
 	SubspaceCF(Hamiltonian const &H_):CostFunction(),H(H_),distance(0),subspaceEnergy(coeffType()){};
 	virtual ~SubspaceCF();
 // Derivative with respect to the input's coefficients
 	nablaType nabla(State const &input) const;
 // Value of the cost function
 	double calc(State const &input) const {return distance;}
+
+	// Allow for polymorphic copy
+	virtual CostFunction* clone() const {return new SubspaceCF(*this);}
 private:
   // The underlying Hamiltonian
 	Hamiltonian const &H;
@@ -38,7 +43,6 @@ private:
 
   // Has a reference member, so assignment is not a thing
   SubspaceCF& operator=(SubspaceCF const &source);
-  SubspaceCF& operator=(SubspaceCF &&source);
 };
 
 }

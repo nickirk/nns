@@ -28,6 +28,7 @@ public:
     storedWeights(std::vector<double>(0)), 
     fSortedCoeff(0), fSortedDet(0), fSortedWeight(0),
     spaceSize(0){};
+	State(int size_):State(){resize(size_);}
 	State(detType const &det_, coeffType const &coeff_):
 	storedDets(std::vector<detType>(1,det_)),
     storedCoeffs(std::vector<coeffType>(1,coeff_)),
@@ -98,7 +99,12 @@ public:
     storedDets.resize(i); storedCoeffs.resize(i); storedWeights.resize(i);
     cDets.resize(i); cCoeffs.resize(i); cWeights.resize(i);
   }
+
+	// vector utilities
 	size_t size()const{return storedDets.size();}
+
+//---------------------------------------------------------------------------------------------------//
+
 
 //---------------------------------------------------------------------------------------------------//
 	// sort the storedDets + storedCoeffs according to determinant order

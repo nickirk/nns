@@ -14,15 +14,38 @@
 
 #include "../HilbertSpace/Basis.hpp"
 #include "../Hamiltonian/Hamiltonian.hpp"
+#include "../Hamiltonian/ExcitationGenerators/ExcitationGenerator.hpp"
+#include "../Hamiltonian/ExcitationGenerators/WeightedExcitgen.hpp"
 
 namespace networkVMC{
 
-// Just take any connected determinant and let the Hamiltonian decide what is connected
-detType Sampler::getRandomConnection(detType const &startingPoint) const{
-	double p{0};
-	return H->getRandomCoupledState(startingPoint, p);
+// explicit constructor
+Sampler::Sampler(ExcitationGenerator const &eG_, Basis const &fullBasis_,
+		  detType const &HF, int numDets_):
+	  excitGen(eG_.clone()),numDets(numDets_),fullBasis(&fullBasis_),cDet(HF){}
+
+//---------------------------------------------------------------------------//
+
+// construct the ExcitationGenerator implicitly from the Hamiltonian
+Sampler::Sampler(Hamiltonian const &H_, Basis const &fullBasis_,
+		  detType const &HF, int numDets_):
+			  excitGen(getDefaultExcitgen(H_,HF).release()),numDets(numDets_),
+			  fullBasis(&fullBasis_),cDet(HF){};
+
+//---------------------------------------------------------------------------//
+
+// Just take any connected determinant and let the Excitation generator decide what is connected
+detType Sampler::getRandomConnection(detType const &startingPoint, double &p) const{
+	return excitGen->generateExcitation(startingPoint, p);
 }
 
+//---------------------------------------------------------------------------//
+
+double Sampler::getConnectionProb(detType const &source, detType const &target) const{
+	return excitGen->getExcitationProb(source,target);
+}
+
+//---------------------------------------------------------------------------//
 
 // Go through a list of dets and remove duplicates (generic function)
 void removeDuplicate(std::vector<detType> &list){
@@ -32,7 +55,7 @@ void removeDuplicate(std::vector<detType> &list){
  list.erase( it, list.end() );
 }
 
-
+//---------------------------------------------------------------------------//
 
 // This creates some random determinant from a given Basis
 detType getRandomDeterminant(Basis const &fullBasis){

@@ -25,10 +25,16 @@ std::vector<int> getOccupiedPositions(detType const &det);
 // Read the vector of bools as an integer (i.e. reinterpret cast-style)
 int verbatimCast(detType const & det);
 
+// for testing purposes: get the number of orbitals in which a,b differ
+int getExcitLvl(detType const &a, detType const &b);
+
 // binary operators for determinants
 bool operator == (detType const &a, detType const &b);
 bool operator < (detType const &lhs, detType const &rhs);
 bool compare_det(detType const &lhs, detType const &rhs);
+
+// output function for debugging
+void printDet(detType const &out);
 
 }
 #endif
