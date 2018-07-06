@@ -36,9 +36,9 @@ public:
     fSortedCoeff(0), fSortedDet(0), fSortedWeight(0),
     spaceSize(0){};
 	State( std::vector<detType> const &dets_, 
-         std::vector<coeffType> const &coeffs_,
-         std::vector<double> const &weights_):
-    storedDets(dets_),storedCoeffs(coeffs_), storedWeights(weights_),
+         std::vector<coeffType> const &coeffs_
+         ):
+    storedDets(dets_),storedCoeffs(coeffs_), storedWeights(coeffs_.size(),1),
     fSortedCoeff(0), fSortedDet(0), fSortedWeight(0) ,
     spaceSize(0){
 		// A state has to have one coefficient per determinant

@@ -30,7 +30,7 @@ public:
 	SamplerType type() const {return Markov;}
 private:
   // sampling depends on the coefficients, as they have to be given alongside the determinants
-    Parametrization<T> const *para;
+  Parametrization<T> const *para;
 	mutable coeffType lastCoeff;
 };
 

@@ -4,7 +4,7 @@ LDFLAGS=-std=c++11 -ggdb -Wall -fopenmp -O3
 EIGEN_PATH=lib/eigen/
 EIGEN_FLAGS=-I$(EIGEN_PATH)
 SOURCEFILES=utilities/InputStateGenerator.cxx Hamiltonian/ExcitationGenerators/ConnectionGenerators/ConnectionGenerator.cxx Hamiltonian/AbInitioHamiltonian.cxx Hamiltonian/ExcitationGenerators/defaultExcitgensMap.cxx Hamiltonian/FermiHubbardHamiltonian.cxx Hamiltonian/ExcitationGenerators/WeightedExcitgen.cxx Hamiltonian/ExcitationGenerators/ExcitationGenerator.cxx Hamiltonian/ExcitationGenerators/RSHubbardExcitgen.cxx Hamiltonian/ExcitationGenerators/UniformExcitgen.cxx Hamiltonian/ExcitationGenerators/ProbUpdater.cxx Hamiltonian/ExcitationGenerators/WeightedSelector.cxx Hamiltonian/ExcitationGenerators/WeightedSelector.cxx Samplers/Sampler.cxx Network/Nnw.cxx Network/RBM.cxx Network/DirectParametrization.cxx HilbertSpace/Basis.cxx Hamiltonian/Hamiltonian.cxx HilbertSpace/Determinant.cxx CostFunctions/EnergyCF.cxx CostFunctions/NormCF.cxx CostFunctions/EnergyEs.cxx CostFunctions/EnergyEsPreFetched.cxx CostFunctions/EnergyCF.cxx Hamiltonian/FermionicHamiltonian.cxx Hamiltonian/BosonicHamiltonian.cxx Trainer.cxx Samplers/MetropolisSampler.cxx Samplers/ListGen.cxx CostFunctions/EnergyEsMarkov.cxx Network/Layers/Layer.cxx Network/Layers/DenseLayer.cxx Network/Layers/ConvLayer.cxx Network/Layers/InputLayer.cxx Network/LayerStructure.cxx math/MathFunctions.cxx Hamiltonian/SparseHMatrix.cxx Solvers/ADAM.cxx Solvers/AcceleratedGradientDescent.cxx Samplers/FullSampler.cxx
-TESTFILES=defaultSystem.cxx testExcitgen.cxx testSubspaceCF.cxx testStateSort.cxx testNnw.cxx testRBM.cxx testDirect.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx testAlgAb.cxx testRandom.cxx testMetropolis.cxx
+TESTFILES=defaultSystem.cxx testExcitgen.cxx testSubspaceCF.cxx testStateSort.cxx testNnw.cxx testRBM.cxx testDirect.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx testAlgAb.cxx testRandom.cxx testMetropolis.cxx testRBMMet.cxx
 SRC=src
 TST=test
 BUILD=build
@@ -20,6 +20,7 @@ DEPENDENCIES=$(patsubst %.cxx,$(DDIR)/%.d,$(SOURCEFILES)) $(patsubst %.cxx,$(TST
 BTEST=basisTest
 NNWTEST=nnwTest
 RBMTEST=rbmTest
+RBMMETTEST=rbmMetTest
 ALGTEST=algTest
 MARKOVTEST=metropolisTest
 STEST=samplerTest
@@ -35,6 +36,7 @@ SCFTST=subspaceCFTest
 BTESTOBJECT=$(TSTBUILD)/testBasis.o
 NNWTESTOBJECT=$(TSTBUILD)/testNnw.o
 RBMTESTOBJECT=$(TSTBUILD)/testRBM.o
+RBMMETTESTOBJECT=$(TSTBUILD)/testRBMMet.o
 MARKOVTESTOBJECT=$(TSTBUILD)/testMetropolis.o
 ALGTESTOBJECT=$(TSTBUILD)/testAlg.o
 STESTOBJECT=$(TSTBUILD)/testSampler.o
@@ -87,6 +89,9 @@ testNnw: $(OBJECTS) $(NNWTESTOBJECT)
 	$(CXX) $^ $(LINKFLAGS) -o $(TSTBUILD)/$@ 
 
 testRBM: $(OBJECTS) $(RBMTESTOBJECT)
+	$(CXX) $^ $(LINKFLAGS) -o $(TSTBUILD)/$@ 
+
+testRBMMet: $(OBJECTS) $(RBMMETTESTOBJECT)
 	$(CXX) $^ $(LINKFLAGS) -o $(TSTBUILD)/$@ 
 
 testDirect: $(OBJECTS) $(DIRECTTSTOBJECT) $(DEFAULTSOBJECT)

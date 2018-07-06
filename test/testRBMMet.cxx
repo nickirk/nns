@@ -26,18 +26,20 @@ int main(){
 
   detType HF=basis.getDetByIndex(0);
   //EnergyEsMarkov eCF(modelHam);
-  EnergyEs eCF(modelHam);
   // EnergyEsMarkov cost funciton
   // works only with Markov Chain sampler.
   // Don't not use it for other samplers.
+  // and one for the Uniform
+  UniformExcitgen uniEG(HF);
+  MetropolisSampler<VecCType> ugSampler(uniEG, basis, HF, rbm);
+	EnergyCF eCF(modelHam);
   //MetropolisSampler<VecCType> sampler(modelHam, basis, HF, rbm);
-  ListGen<VecCType> sampler(modelHam, basis, HF,rbm, 100);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
   double energy{0.0};
   //AcceleratedGradientDescent<VecCType> sl(trainRate);
   ADAM<VecCType> sl(trainRate);
-  Trainer<VecCType> ev(rbm, sampler, sl, eCF,modelHam);
+  Trainer<VecCType> ev(rbm, ugSampler, sl, eCF,modelHam);
   ofstream myfile1;
   myfile1.open ("en1");
   for(int l(0); l<1000; ++l){
