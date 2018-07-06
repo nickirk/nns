@@ -26,21 +26,18 @@ public:
     storedDets(std::vector<detType>(0)), 
     storedCoeffs(std::vector<coeffType>(0)),
     storedWeights(std::vector<double>(0)), 
-    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0),
-    spaceSize(0){};
+    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0){};
 	State(int size_):State(){resize(size_);}
 	State(detType const &det_, coeffType const &coeff_):
 	storedDets(std::vector<detType>(1,det_)),
     storedCoeffs(std::vector<coeffType>(1,coeff_)),
     storedWeights(std::vector<double>(1,1)),
-    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0),
-    spaceSize(0){};
+    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0){};
 	State( std::vector<detType> const &dets_, 
          std::vector<coeffType> const &coeffs_
          ):
     storedDets(dets_),storedCoeffs(coeffs_), storedWeights(coeffs_.size(),1),
-    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0) ,
-    spaceSize(0){
+    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0){
 		// A state has to have one coefficient per determinant
 		// one might argue that supplying less coefficient should be fine and that
 		// the rest should be filled with zeroes, we might change that
@@ -149,7 +146,7 @@ public:
       storedWeights = applyPermutation(storedWeights, perm);
     }
  //totalSize is numDets+num of all coupled Dets
- int totalSize(){
+ int totalSize() const{
    int size(0);
    for (size_t i(0); i<storedDets.size();++i){
      size+=1;

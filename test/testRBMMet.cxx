@@ -10,13 +10,13 @@ using namespace networkVMC;
 using namespace std;
 
 int main(){
-  int numSites(6);
+  int numSites(4);
   int numStates(2*numSites);
-  int spinUp(3);
-  int spinDown(3);
+  int spinUp(2);
+  int spinDown(2);
   SpinConfig spinConfig(spinUp, spinDown, numStates);
   int numHidden(10);
-  double trainRate(0.001);
+  double trainRate(0.0005);
   Basis basis(spinConfig);
   FermiHubbardHamiltonian modelHam(numStates);
   double U{4.}, t{-1};
@@ -25,24 +25,21 @@ int main(){
   RBM rbm(numStates, numHidden);
 
   detType HF=basis.getDetByIndex(0);
-  //EnergyEsMarkov eCF(modelHam);
-  // EnergyEsMarkov cost funciton
-  // works only with Markov Chain sampler.
-  // Don't not use it for other samplers.
-  // and one for the Uniform
-  UniformExcitgen uniEG(HF);
-  MetropolisSampler<VecCType> ugSampler(uniEG, basis, HF, rbm);
-	EnergyCF eCF(modelHam);
+  RSHubbardExcitgen RSHG;
+  MetropolisSampler<VecCType> ugSampler(RSHG, basis, HF, rbm);
+  ugSampler.setNumDets(1000);
+	EnergyEs eCF(modelHam, 10);
   //MetropolisSampler<VecCType> sampler(modelHam, basis, HF, rbm);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
   double energy{0.0};
   //AcceleratedGradientDescent<VecCType> sl(trainRate);
   ADAM<VecCType> sl(trainRate);
+  //StochasticGradientDescent<VecCType> sl(trainRate);
   Trainer<VecCType> ev(rbm, ugSampler, sl, eCF,modelHam);
   ofstream myfile1;
   myfile1.open ("en1");
-  for(int l(0); l<1000; ++l){
+  for(int l(0); l<5000; ++l){
     //trainRate *= exp(-0.0002);
     ev.train(trainRate);
     // get the new energy

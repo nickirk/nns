@@ -23,7 +23,8 @@ class Hamiltonian;
 class EnergyCF: public EnergyCFBaseClass{
 public:
 	// Here, we need to supply a Hamiltonian
-	explicit EnergyCF(Hamiltonian const &H_):EnergyCFBaseClass(H_){};
+	explicit EnergyCF(Hamiltonian const &H_, int numCons_=20):EnergyCFBaseClass(H_),
+   numCons(numCons_){};
 	virtual ~EnergyCF(){};
 // implementation of the function itself and its derivative
 	virtual nablaType nabla(State const &input) const;
@@ -32,6 +33,7 @@ public:
 	virtual EnergyCF* clone() const {return new EnergyCF(*this);}
 private:
 	double evaluate(State const &input) const;
+  int numCons;
 };
 
 }

@@ -11,7 +11,7 @@
 #include "../Hamiltonian/Hamiltonian.hpp"
 #include "../Network/Parametrization.hpp"
 #include "../Hamiltonian/ExcitationGenerators/ConnectionGenerators/ConnectionGenerator.hpp"
-
+#include <iostream>
 namespace networkVMC {
 
 template<typename T>

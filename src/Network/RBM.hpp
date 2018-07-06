@@ -2,7 +2,7 @@
  * RBM.hpp
  *
  *  Created on: Apr 29, 2018
- *      Author: ghanem
+ *      Author: ghanem and Liao
  */
 #ifndef RBM_DEFINED
 #define RBM_DEFINED

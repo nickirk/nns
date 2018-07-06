@@ -2,7 +2,7 @@
  * RBM.cxx
  *
  *  Created on: Apr 29, 2018
- *      Author: ghanem
+ *      Author: ghanem and Liao
  */
 
 #include "RBM.hpp"
@@ -132,7 +132,7 @@ namespace networkVMC
      ){
         int numDets = inputState.size();
         // spaceSize = size of sampled dets and their coupled ones
-        int spaceSize = inputState.spaceSize;
+        int spaceSize = inputState.totalSize();
         Eigen::VectorXcd dEdW= Eigen::VectorXcd::Zero(numPars);
         // Eigen::VectorXcd dEdWTmp= Eigen::VectorXcd::Zero(numPars);
         Eigen::MatrixXcd dCdW = Eigen::MatrixXcd::Zero(numPars, spaceSize);

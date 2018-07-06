@@ -13,7 +13,7 @@
 namespace networkVMC {
 
 EnergyEs::EnergyEs(Hamiltonian const &H_, int numCons_):H(H_),
-		worker(new EnergyCF(H)), numCons(numCons_){
+		worker(new EnergyCF(H, numCons_)), numCons(numCons_){
 }
 
 EnergyEs::~EnergyEs() {

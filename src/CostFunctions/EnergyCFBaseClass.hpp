@@ -20,7 +20,8 @@ class State;
 // evaluate them during calls of nabla(), such that calc() comes at no extra cost
 class EnergyCFBaseClass: public CostFunction {
 public:
-	EnergyCFBaseClass(Hamiltonian const &H_):H(H_), energy(0.0), normalizerCoeff(0.0){};
+	EnergyCFBaseClass(Hamiltonian const &H_):H(H_), energy(0.0), 
+  normalizerCoeff(0.0){};
 	virtual ~EnergyCFBaseClass(){};
 
 	// these are the same in all EnergyEs cost functions

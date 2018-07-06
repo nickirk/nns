@@ -56,6 +56,7 @@ int main(){
   UniformExcitgen uniEG(HF);
   MetropolisSampler<> ugSampler(uniEG, basis, HF, para);
 
+
   runMetropolisTest(ugSampler);
 }
 
