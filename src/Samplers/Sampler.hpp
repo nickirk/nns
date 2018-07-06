@@ -33,7 +33,7 @@ public:
   // This function is what samplers ought to do: Get a random determinant with some
   // coefficient
   // the only way to parallelize this is to pass the iteration count, too
-  virtual void iterate(coeffType &cI, detType &dI, int i) const=0;
+  virtual void iterate(coeffType &cI, detType &dI, double& weight, int i) const=0;
 
   // return either the current det or possibly some stored det (depending on implementation)
   virtual detType getDet() const{return cDet;};

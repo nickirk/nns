@@ -27,7 +27,7 @@ ListGen<T>::~ListGen() {
 //---------------------------------------------------------------------------------------------------//
 
 template <typename T>
-void ListGen<T>::iterate(coeffType &cI, detType &dI, int i) const{
+void ListGen<T>::iterate(coeffType &cI, detType &dI, double& weight, int i) const{
 	// Fetch the next entry from the pre-arranged list
 	dI = getDet(i);
 	// Get its coefficient

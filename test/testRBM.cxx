@@ -25,12 +25,13 @@ int main(){
   RBM rbm(numStates, numHidden);
 
   detType HF=basis.getDetByIndex(0);
-  EnergyEsMarkov eCF(modelHam); 
+  //EnergyEsMarkov eCF(modelHam);
+  EnergyEstimator eCF(modelHam);
   // EnergyEsMarkov cost funciton
   // works only with Markov Chain sampler.
   // Don't not use it for other samplers.
-  MarkovSampler<VecCType> sampler(modelHam, basis, HF, rbm);
-  //ListGen sampler(modelHam, basis, 100, HF,rbm);
+  //MetropolisSampler<VecCType> sampler(modelHam, basis, HF, rbm);
+  ListGen<VecCType> sampler(modelHam, basis, HF,rbm, 100);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
   double energy{0.0};

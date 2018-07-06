@@ -1,5 +1,5 @@
 /*
- * RBM.cpp
+ * RBM.cxx
  *
  *  Created on: Apr 29, 2018
  *      Author: ghanem
@@ -126,14 +126,13 @@ namespace networkVMC
         return result;
     }
 
-    VecType RBM::calcNablaParsConnected(
+    VecCType RBM::calcNablaParsConnected(
 	   State const &inputState,
 	   nablaType const &dEdC
      ){
         int numDets = inputState.size();
-        int numCoupledDets = input.coupledDets(0).size();
         // spaceSize = size of sampled dets and their coupled ones
-        int spaceSize = numDets * (numCoupledDets + 1);
+        int spaceSize = inputState.spaceSize;
         Eigen::VectorXcd dEdW= Eigen::VectorXcd::Zero(numPars);
         // Eigen::VectorXcd dEdWTmp= Eigen::VectorXcd::Zero(numPars);
         Eigen::MatrixXcd dCdW = Eigen::MatrixXcd::Zero(numPars, spaceSize);
@@ -151,29 +150,26 @@ namespace networkVMC
             Eigen::Map<Eigen::VectorXcd> db(dCtdW.data()+b_offset, sizeHidden);
             Eigen::Map<Eigen::MatrixXcd> dw(dCtdW.data()+w_offset, sizeHidden, sizeInput);;
             //update vector dCidWk
-            getDeriv(inputState.det(i), da, db, dw);
-            //new value for dEdWTmp
+            getDeriv(inputState.det(epoch), da, db, dw);
             // multiplication should be done by matrix vector product
-            //dEdWTmp = dCtdW * dEdC[pos];
             // fill up the dCdW matrix
-            dCdW.col(epoch) << dCtdW;
+            dCdW.col(epoch) << (dCtdW);
             std::vector<detType> coupledDets = inputState.coupledDets(epoch);
             std::vector<coeffType > coupledCoeffs = inputState.coupledCoeffs(epoch);
             for (size_t i(0); i < coupledDets.size(); ++i){
               //update dCjdW
               getDeriv(coupledDets[i], da, db, dw);
               // fill up the dCdW matrix with coupled dets contribution
-              dCdW.col(epoch+i+1) << dCtdW;
+              dCdW.col(epoch+i+1) << (dCtdW);
               //dEdWTmp +=  dCtdW * dEdC[pos];
             }
-            // map std::vector of dEdC to Eigen Vector
-            Eigen::Map<Eigen::VectorXcd> dEdCEigen(dEdC.data(), spaceSize);
-            // make it parallel. TODO
-            dEdW = dCdW * dEdCEigen;
           }
         }
-        // unbias done inside of CostFunction
-        // dEdW /= numDets;
+        // map std::vector of dEdC to Eigen Vector
+        std::vector<std::complex<double>> dedc=dEdC;
+        Eigen::VectorXcd dEdCEigen=Eigen::Map<Eigen::VectorXcd>(dedc.data(),spaceSize);
+        // make it parallel. TODO
+        dEdW = dCdW * dEdCEigen;
         return dEdW;
       }
 

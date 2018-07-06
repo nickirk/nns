@@ -19,7 +19,7 @@ class FullSampler: public Sampler {
 public:
 	FullSampler(Hamiltonian const &H_, Basis const &fullBasis_,
 			detType const &HF, Parametrization<T> const &para_);
-	void iterate(coeffType &cI, detType &dI, int i) const;
+	void iterate(coeffType &cI, detType &dI, double& weight, int i) const;
 	// create a dynamic polymorphic copy
 	virtual FullSampler* clone() const {return new FullSampler(*this);}
 	virtual ~FullSampler();

@@ -11,6 +11,7 @@
 #include "Parametrization.hpp"
 #include "../utilities/State.hpp"
 #include "../CostFunctions/CostFunction.hpp"
+#include "../utilities/TypeDefine.hpp"
 
 namespace networkVMC
 {
@@ -25,6 +26,7 @@ namespace networkVMC
             virtual VecCType const& pars() const;
             virtual VecCType calcNablaPars(State const &input, nablaType const &outerDerivative);
             virtual Eigen::MatrixXcd calcdCdwSR(State const &outputState);
+            virtual VecCType calcNablaParsConnected(State const &inputState, nablaType const& dEdC);
             ~RBM();
 
         private:

@@ -26,17 +26,20 @@ public:
     storedDets(std::vector<detType>(0)), 
     storedCoeffs(std::vector<coeffType>(0)),
     storedWeights(std::vector<double>(0)), 
-    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0){};
+    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0),
+    spaceSize(0){};
 	State(detType const &det_, coeffType const &coeff_):
-		storedDets(std::vector<detType>(1,det_)), 
+	storedDets(std::vector<detType>(1,det_)),
     storedCoeffs(std::vector<coeffType>(1,coeff_)),
     storedWeights(std::vector<double>(1,1)),
-    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0){};
+    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0),
+    spaceSize(0){};
 	State( std::vector<detType> const &dets_, 
          std::vector<coeffType> const &coeffs_,
          std::vector<double> const &weights_):
     storedDets(dets_),storedCoeffs(coeffs_), storedWeights(weights_),
-    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0) {
+    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0) ,
+    spaceSize(0){
 		// A state has to have one coefficient per determinant
 		// one might argue that supplying less coefficient should be fine and that
 		// the rest should be filled with zeroes, we might change that
@@ -139,25 +142,25 @@ public:
       cCoeffs = applyPermutation(cCoeffs,perm);
       storedWeights = applyPermutation(storedWeights, perm);
     }
-
+ int spaceSize;
 //---------------------------------------------------------------------------------------------------//
 private:
   // whenever a new det is added, update its coeff and weight
 	std::vector<detType> storedDets;
 	std::vector<coeffType> storedCoeffs;
-  std::vector<double> storedWeights;
+    std::vector<double> storedWeights;
    
   // util of flags
-  bool fSortedDet;
-  bool fSortedCoeff;
-  bool fSortedWeight;
+    bool fSortedDet;
+    bool fSortedCoeff;
+    bool fSortedWeight;
 
 
 	// preliminary implementation of coupled stuff
   // whenever a new det is added, update its coeff and weight
 	std::vector<std::vector<detType> > cDets;
 	std::vector<std::vector<coeffType >> cCoeffs;
-  std::vector<std::vector<double>> cWeights;
+    std::vector<std::vector<double>> cWeights;
 };
 
 }

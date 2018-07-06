@@ -31,7 +31,8 @@ void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, double &weight,
 	// And its coefficient
 	coeffType tmpCoeff{para->getCoeff(tmp)};
   // std::norm returns |a+ib|^2
-  double prob = std::norm(tmpCoeff)/std::norm(lastCoeff);
+  //double prob = std::norm(tmpCoeff)/std::norm(lastCoeff);
+  double prob = std::norm(tmpCoeff/lastCoeff);
 	if(uni(rng) < prob){
 		// With probability cJ/cI, accept the move
 		cDet = tmp;

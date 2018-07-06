@@ -25,7 +25,8 @@ public:
 	virtual DefaultSampler* clone() const {return new DefaultSampler(*this);}
 	// We use the default functionality for iterate()
 	// this class just makes it accessible for testing purposes
-	virtual void iterate(coeffType &cI, detType &dI, int i) const{
+	virtual void iterate(coeffType &cI, detType &dI, double& weight, int i) const{
+        //TODO needs to fill up the weight
 		cDet = getRandomConnection(cDet);
 		dI = getDet();
 		cI = para->getCoeff(cDet);
