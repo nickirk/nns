@@ -46,7 +46,6 @@ void WeightedExcitgen::constructClassCount(detType const &source) {
     excitmat(0,1) = -1;
     excitmat(1,0) = -1;
     excitmat(1,1) = -1;
-    pgen = 0.0;
 
     nel = sourceOrbs.size();
     norbs = source.size();
@@ -102,22 +101,39 @@ detType WeightedExcitgen::generateExcitation(
 	try{
 	if (uniform_dist(rng) < 1 - pDoubles){
 		// single excitation
-		target = generateSingleExcit(source,hel);
-		pgen *= (1- pDoubles);
+		target = generateSingleExcit(source,hel,pGen);
+		pGen *= (1- pDoubles);
 	}
 	else{
 		// double excitation
-		target = generateDoubleExcit(source,hel);
-		pgen *= pDoubles;
+		target = generateDoubleExcit(source,hel,pGen);
+		pGen *= pDoubles;
 	}
 	}
-	catch(NoExcitationFound const&){
+	catch(NoExcitationFound const& err){
 		// is this legit? do not make a move if there is none
 		target = source;
+		// Specifying the probability here is tricky
+		// in principle, it is pSingles if no single
+		// was found and pDoubles if no double was found
+		pGen = (err.lvl==1)?(1-pDoubles):pDoubles;
+		// however, if neither exist, it is 1.0
+		try{
+			// we check the other excitation, if the creation
+			// is successful
+			double helDummy{0.0}, pDummy{0.0};
+			if(err.lvl == 1){
+				generateDoubleExcit(source, helDummy, pDummy);
+			}
+			else{
+				generateSingleExcit(source, helDummy, pDummy);
+			}
+		}
+		catch(NoExcitationFound const &){
+			// if it was not, we know that pGen = 1.0
+			pGen = 1.0;
+		}
 	}
-
-	// assing the probability
-	pGen = pgen;
 
 	// update the probupdater
 	pBiasGen.checkProbabilities(excitmat,hel,1,pGen);
@@ -127,7 +143,8 @@ detType WeightedExcitgen::generateExcitation(
 
 //---------------------------------------------------------------------------------------------------//
 
-detType WeightedExcitgen::generateSingleExcit(detType const &source,double &hel) {
+detType WeightedExcitgen::generateSingleExcit(detType const &source,double &hel,
+		double &pgen) {
     // generate a single excitation
 
     // set up the random number generator
@@ -151,7 +168,7 @@ detType WeightedExcitgen::generateSingleExcit(detType const &source,double &hel)
     int tgt = selector.selectSingleHole(src,pgen,hel);
     // if we did not find a hole, throw an exception
     if (tgt < 0){
-    	throw NoExcitationFound();
+    	throw NoExcitationFound(1);
     }
 
     // generate the new determinant
@@ -171,7 +188,8 @@ detType WeightedExcitgen::generateSingleExcit(detType const &source,double &hel)
 
 //---------------------------------------------------------------------------------------------------//
 
-detType WeightedExcitgen::generateDoubleExcit(detType const &source, double &hel){
+detType WeightedExcitgen::generateDoubleExcit(detType const &source, double &hel,
+		double &pgen){
     // generate a double excitation
 
     std::vector<double> cpt_pair,int_cpt,sum_pair,cum_sum;
@@ -187,7 +205,7 @@ detType WeightedExcitgen::generateDoubleExcit(detType const &source, double &hel
     auto target = source;
 
     // select a pair of electrons
-    std::vector<int> src = pickBiasedElecs(elecs, source);
+    std::vector<int> src = pickBiasedElecs(elecs, source, pgen);
 
     // select the two target holes by approximate connection
     // strength
@@ -217,7 +235,7 @@ detType WeightedExcitgen::generateDoubleExcit(detType const &source, double &hel
     // check that the two electrons have not been excited into the
     // same orbitals
     if (std::any_of(tgt.begin(),tgt.end(), [](const int i) {return i<0;})){
-    	throw NoExcitationFound();
+    	throw NoExcitationFound(2);
     }
 
     // adjust the probabilities: if the two holes are selected from
@@ -275,7 +293,8 @@ detType WeightedExcitgen::generateDoubleExcit(detType const &source, double &hel
 
 //---------------------------------------------------------------------------------------------------//
 
-std::vector<int> WeightedExcitgen::pickBiasedElecs(std::vector<int> &elecs, detType const &source){
+std::vector<int> WeightedExcitgen::pickBiasedElecs(std::vector<int> &elecs, detType const &source,
+		double &pgen){
     // pick a pair of electrons
 
     // set up the random number generator
@@ -621,14 +640,19 @@ double WeightedExcitgen::getExcitationProb(
             tgt.push_back(i);
         }
     }
-    if (src.size() < 2){
-        src.push_back(-1);
-    }
-    if (tgt.size() < 2){
-        tgt.push_back(-1);
-    }
     if (src.size() != tgt.size()){
         throw SizeMismatchError(src.size(),tgt.size());
+    }
+    // if both are empty, i.e. target == source, return the
+    // exceptional probability of self-excitation
+    if(src.size()==0) return selfExcitationProb(source);
+
+    // ensure that src and tgt are of size 2
+    while (src.size() < 2){
+        src.push_back(-1);
+    }
+    while (tgt.size() < 2){
+        tgt.push_back(-1);
     }
 // TODO WARNING the ordering of tgt is not necessarily the same as in
 // the generation. In some cases, the probability depends on the order
@@ -730,10 +754,38 @@ double WeightedExcitgen::calcPgen(detType const &source, std::vector<int> const 
 
     }
     else{
-        // neither single nor double excitation
-    	calcedP = 0.0;
+    	// invalid excitation
+    	throw NoExcitationFound(3);
     }
     return calcedP;
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+double WeightedExcitgen::selfExcitationProb(detType const &source){
+	// the probability that we do not find an excitation and thus take
+	// target = source in excitgen
+	double pgen{0.0}, helDummy{0.0}, pDummy{0.0};
+	// a bit iffy, but as self-excitation occurs if and only if
+	// the excitation generation throws, we can just check if it does so
+	try{
+		// occurs if generateSingleExcit throws
+		generateSingleExcit(source,helDummy, pDummy);
+	}
+	catch(NoExcitationFound const&){
+		// the throwing call occurs with this probability
+		pgen += 1 - pDoubles;
+	}
+	try{
+		// also occurs if generateDoubleExcit throws
+		generateDoubleExcit(source,helDummy, pDummy);
+	}
+	catch(NoExcitationFound const&){
+		// and this one occurs with probability pDoubles
+		pgen += pDoubles;
+	}
+
+	return pgen;
 }
 
 } /* namespace networkVMC */

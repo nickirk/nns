@@ -44,6 +44,7 @@ State InputStateGenerator<T>::generate(int numCons) const{
 	  if(numCons > 0){
 		  //outputState.coupledDets(i) = H.getCoupledStates(outputState.det(i));
 		  outputState.coupledDets(i) = sampleConnections(H,outputState.det(i),numCons,outputState.pGenCons(i));
+		  // TODO: Unbias for smapling of connections -> via State
 		  outputState.coupledCoeffs(i).resize(outputState.coupledDets(i).size());
 
 		  // just get the coefficients from the NNW

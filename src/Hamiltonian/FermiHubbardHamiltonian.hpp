@@ -15,7 +15,11 @@ namespace networkVMC {
 class FermiHubbardHamiltonian: public FermionicHamiltonian {
 public:
 	FermiHubbardHamiltonian(int dimension):
-		FermionicHamiltonian(dimension){};
+		FermionicHamiltonian(dimension){
+		// for fermi-hubbard, we never round matrix elements
+		// this is controlled by the partExact flag, so disable it
+		partExactFlag = false;
+	};
 	virtual ~FermiHubbardHamiltonian();
 	// get all couplings to source
 	virtual std::vector<detType> getCoupledStates(detType const &source) const;
