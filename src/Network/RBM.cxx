@@ -133,16 +133,16 @@ namespace networkVMC
         int numDets = inputState.size();
         // spaceSize = size of sampled dets and their coupled ones
         int spaceSize = inputState.totalSize();
+        int coupledSize = inputState.coupledDets(0).size();
         Eigen::VectorXcd dEdW= Eigen::VectorXcd::Zero(numPars);
         // Eigen::VectorXcd dEdWTmp= Eigen::VectorXcd::Zero(numPars);
         Eigen::MatrixXcd dCdW = Eigen::MatrixXcd::Zero(numPars, spaceSize);
-        #pragma omp parallel
-        {
+        std::vector<std::complex<double>> dedc=dEdC;
           #pragma omp for
           // fill up the matrix of dCdW, like in EnergyEsMarkov.cxx
           // reserve space and in the end use matrix*vector instead of
           // a summation
-          for (int epoch=0; epoch < numDets; ++epoch){
+          for (int i=0; i < numDets; ++i){
             //need private dCtdW
             Eigen::VectorXcd dCtdW= Eigen::VectorXcd::Zero(numPars);
             // do the mapping inside for loop, private
@@ -150,26 +150,25 @@ namespace networkVMC
             Eigen::Map<Eigen::VectorXcd> db(dCtdW.data()+b_offset, sizeHidden);
             Eigen::Map<Eigen::MatrixXcd> dw(dCtdW.data()+w_offset, sizeHidden, sizeInput);;
             //update vector dCidWk
-            getDeriv(inputState.det(epoch), da, db, dw);
+            getDeriv(inputState.det(i), da, db, dw);
             // multiplication should be done by matrix vector product
             // fill up the dCdW matrix
-            dCdW.col(epoch) << (dCtdW);
-            std::vector<detType> coupledDets = inputState.coupledDets(epoch);
-            std::vector<coeffType > coupledCoeffs = inputState.coupledCoeffs(epoch);
-            for (size_t i(0); i < coupledDets.size(); ++i){
+            dCdW.col(i) << (2*dCtdW*dedc[i]).real();
+            dedc[i] = 1;
+            std::vector<detType> coupledDets = inputState.coupledDets(i);
+            std::vector<coeffType > coupledCoeffs = inputState.coupledCoeffs(i);
+            for (size_t j(0); j < coupledSize; ++j){
               //update dCjdW
-              getDeriv(coupledDets[i], da, db, dw);
+              getDeriv(coupledDets[j], da, db, dw);
               // fill up the dCdW matrix with coupled dets contribution
-              dCdW.col(epoch+i+1) << (dCtdW);
+              dCdW.col(numDets+i*coupledSize+j) << (dCtdW);
               //dEdWTmp +=  dCtdW * dEdC[pos];
             }
           }
-        }
         // map std::vector of dEdC to Eigen Vector
-        std::vector<std::complex<double>> dedc=dEdC;
         Eigen::VectorXcd dEdCEigen=Eigen::Map<Eigen::VectorXcd>(dedc.data(),spaceSize);
         // make it parallel. TODO
-        dEdW = dCdW * dEdCEigen;
+        dEdW = (dCdW * dEdCEigen).conjugate();
         return dEdW;
       }
 

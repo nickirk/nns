@@ -30,7 +30,7 @@ State InputStateGenerator<T>::generate(int numCons) const{
 	State outputState(numDets);
 
 #pragma omp parallel
-	{
+  {
 	// sampling is not threadsafe, so each thread creates it's own sampler
     thread_local std::unique_ptr<Sampler> samplerThread(msampler.clone());
 #pragma omp for
@@ -41,19 +41,26 @@ State InputStateGenerator<T>::generate(int numCons) const{
 	  // get some coupled determinants and their coefficients to use in the
 	  // energy estimator
 	  // Only required if the CF needs it
-	  if(numCons > 0){
-		  //outputState.coupledDets(i) = H.getCoupledStates(outputState.det(i));
+	  if(numCons > 0)
 		  outputState.coupledDets(i) = sampleConnections(H,outputState.det(i),numCons,outputState.coupledWeights(i));
-		  outputState.coupledCoeffs(i).resize(outputState.coupledDets(i).size());
-
-		  // just get the coefficients from the NNW
+	  else if(numCons < 0){
+		  // get all the coupled states and assign weight to 1/Nc.
+		  outputState.coupledDets(i) = H.getCoupledStates(outputState.det(i));
+		  outputState.coupledWeights(i).resize(outputState.coupledDets(i).size());
 		  for(size_t j=0; j < outputState.coupledDets(i).size(); ++j){
-			outputState.coupledCoeffs(i)[j]=para.getCoeff(outputState.coupledDets(i)[j]);
+			// TODO: ensure that the denominator is not 0
+			outputState.coupledWeights(i)[j]=1./outputState.coupledDets(i).size();
 		  }
 	  }
-	}
-	}
-	return outputState;
+
+		  // just get the coefficients from the NNW
+	  outputState.coupledCoeffs(i).resize(outputState.coupledDets(i).size());
+	  for(size_t j=0; j < outputState.coupledDets(i).size(); ++j){
+		outputState.coupledCoeffs(i)[j]=para.getCoeff(outputState.coupledDets(i)[j]);
+	  }
+	 }
+  }
+  return outputState;
 }
 
 template class InputStateGenerator<VecType>;

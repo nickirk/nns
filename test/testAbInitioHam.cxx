@@ -41,7 +41,7 @@ int main(){
   //generate hamiltonian
   AbInitioHamiltonian modelHam(numStates);
   //double U{2.}, t{-1};
-  string file_name = "run/FCIDUMP_abinitio";
+  string file_name = "FCIDUMP_abinitio";
   modelHam = readAbInitioHamiltonian(numStates, file_name);
   //// test Hubbard Hamiltonian
   //FermionicHamiltonian modelHam(numStates);

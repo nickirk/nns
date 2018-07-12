@@ -10,23 +10,28 @@ using namespace networkVMC;
 using namespace std;
 
 int main(){
-  int numSites(4);
+  int numSites(6);
   int numStates(2*numSites);
-  int spinUp(2);
-  int spinDown(2);
+  int spinUp(3);
+  int spinDown(3);
   SpinConfig spinConfig(spinUp, spinDown, numStates);
   int numHidden(10);
-  double trainRate(0.0005);
+  double trainRate(0.001);
   Basis basis(spinConfig);
   FermiHubbardHamiltonian modelHam(numStates);
   double U{4.}, t{-1};
   modelHam = generateFermiHubbard(numStates, U, t);
+  //AbInitioHamiltonian modelHam(numStates);
+  //double U{2.}, t{-1};
+  //string file_name = "FCIDUMP_abinitio";
+  //modelHam = readAbInitioHamiltonian(numStates, file_name);
   vector<detType> list;
   RBM rbm(numStates, numHidden);
 
   detType HF=basis.getDetByIndex(0);
-  RSHubbardExcitgen RSHG;
-  MetropolisSampler<VecCType> ugSampler(RSHG, basis, HF, rbm);
+  //RSHubbardExcitgen RSHG;
+	WeightedExcitgen weg(modelHam,HF);
+  MetropolisSampler<VecCType> ugSampler(weg, basis, HF, rbm);
   ugSampler.setNumDets(1000);
 	EnergyEs eCF(modelHam, 10);
   //MetropolisSampler<VecCType> sampler(modelHam, basis, HF, rbm);

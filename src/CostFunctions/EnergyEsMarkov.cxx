@@ -28,12 +28,12 @@ double EnergyEsMarkov::evaluate(State const &input) const{
     std::vector<detType> coupledDets = input.coupledDets(i);
     std::vector<double> coupledWeights = input.coupledWeights(i);
     Hij = H(input.det(i), input.det(i));
-    energyVal += std::real(std::conj(c_i) * Hij/std::conj(c_i));
+    energyVal += std::real(c_i * Hij/c_i);
     //std::cout << "ci=" << c_i << std::endl;
     for (size_t j=0; j < coupledC_j.size(); ++j){
         // don't forget to unbias using the Pgen. TODO
       Hij = H(input.det(i), coupledDets[j]);
-      energyVal += std::real(std::conj(coupledC_j[j])* Hij / std::conj(c_i)/
+      energyVal += std::real(coupledC_j[j]* Hij / c_i/
           coupledC_j.size()/coupledWeights[j]);
     }
   }
@@ -46,7 +46,8 @@ nablaType EnergyEsMarkov::nabla(State const &input) const{
   int numDets = input.size();
   // spaceSize = size of sampled dets and their coupled ones
   int spaceSize = input.totalSize();
-
+  // For each n, it has the same number of connected Dets as others.!!!
+  int coupledSize = input.coupledDets(0).size();
   nablaType dEdC(spaceSize, coeffType(0.,0.)) ;
   //not thread safe
   //assume we know the whole space size, reserve space
@@ -55,25 +56,28 @@ nablaType EnergyEsMarkov::nabla(State const &input) const{
     coeffType dEdCtmp;
     coeffType c_i = input.coeff(i);
 //  put all the weighting step here instead of inside of RBM
-    dEdCtmp = (H(input.det(i), input.det(i)) - energy)/std::conj(c_i);
+    dEdCtmp = (H(input.det(i), input.det(i)) - energy)/c_i;
     // add weights
     dEdC[i] = dEdCtmp / numDets;
     std::vector<coeffType> coupledC_j = input.coupledCoeffs(i);
     std::vector<detType> coupledDets = input.coupledDets(i);
     std::vector<double> coupledWeights = input.coupledWeights(i);
     std::cout << "EnergyEsMarkov.cxx: c_i=" << c_i << std::endl;
-    for (size_t j=0; j < coupledDets.size(); ++j){
+    for (size_t j=0; j < coupledSize; ++j){
       // don't forget to unbias using the Pgen. TODO
       // in the excitgen, the weight should be updated with pgen
-      dEdCtmp = H(input.det(i),coupledDets[j])/std::conj(c_i)/ coupledC_j.size()/coupledWeights[j];
+      dEdCtmp = H(input.det(i),coupledDets[j])/c_i/ coupledC_j.size()/coupledWeights[j];
       //std::cout << "EnergyEsMarkov.cxx: coupledC_j=" << coupledC_j[j] << std::endl;
       //std::cout << "EnergyEsMarkov.cxx: coupledC_j size=" << coupledC_j.size() << std::endl;
       //std::cout << "EnergyEsMarkov.cxx: coupledWeights j=" << coupledWeights[j] << std::endl;
       // unbias with numCoupledDets and Pgen
       //dEdC[i+j+1]=dEdCtmp / coupledDets.size() / numDets;
-      dEdC[i+j+1]=dEdCtmp / numDets;
+      dEdC[numDets+i*coupledSize+j]=dEdCtmp / numDets;
     }
   }
+  // dEdC is stored as folllowing:
+  // |c_0|c_1|...|c_{numDets-1}|c_0^{0}|c_0^{1}|...|c_0^{coupledSize-1}|c_1^{0}
+  // |c..|c_{numDets-1}^{0}|...|c_{numDets-1}^{coupledSize-1}|
   return dEdC;
 }
 

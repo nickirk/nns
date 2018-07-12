@@ -112,10 +112,10 @@ void ExcitationGenerator::ProbUpdater::setProbabilities(
     		static_cast<double>(nsingleexcit+ndoubleexcit);
     pDoublesInternal = 1.0 - pSingles;
 
-    std::cout << "\n Setting the probabilities to their initial values: \n" << std::endl;
-    std::cout << "p_singles: " << pSingles << std::endl;
-    std::cout << "p_doubles: " << pDoublesInternal << std::endl;
-    std::cout << "p_parallel: " << pParallelInternal << std::endl;
+    //std::cout << "\n Setting the probabilities to their initial values: \n" << std::endl;
+    //std::cout << "p_singles: " << pSingles << std::endl;
+    //std::cout << "p_doubles: " << pDoublesInternal << std::endl;
+    //std::cout << "p_parallel: " << pParallelInternal << std::endl;
 
 }
 
