@@ -69,6 +69,7 @@ class Hamiltonian{
 		return s + d * r;
   }
 
+protected:
   bool linExactFlag;
   bool partExactFlag;
 };

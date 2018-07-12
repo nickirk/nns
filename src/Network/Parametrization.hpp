@@ -43,7 +43,7 @@ public:
   // stochastic reconfiguration derivative
   virtual Eigen::MatrixXcd calcdCdwSR(
     State const &outputState
-  ){};
+  ){return Eigen::MatrixXd();};
 
 };
 

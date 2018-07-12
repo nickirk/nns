@@ -156,8 +156,8 @@ namespace networkVMC
             dedc[i] = 1;
             std::vector<detType> coupledDets = inputState.coupledDets(i);
             std::vector<coeffType > coupledCoeffs = inputState.coupledCoeffs(i);
-            int coupledSize = inputState.coupledDets(i).size();
-            int pos = inputState.locate(i);
+            size_t coupledSize = inputState.coupledDets(i).size();
+            size_t pos = inputState.locate(i);
             for (size_t j(0); j < coupledSize; ++j){
               //update dCjdW
               getDeriv(coupledDets[j], da, db, dw);

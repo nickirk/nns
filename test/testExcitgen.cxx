@@ -16,13 +16,14 @@ void testProbUpdater(detType const &HF){
 
 void testExcitgen(ExcitationGenerator &eg, detType const &HF){
 	double prob{0.0};
-	for(int i=0; i<100; ++i){
+	for(int i=0; i<10; ++i){
 		auto excit = eg.generateExcitation(HF,prob);
 		int exLvl = getExcitLvl(excit,HF);
 		assert((exLvl == 1 or exLvl == 0 or exLvl == 2));
 		double probCheck = eg.getExcitationProb(HF,excit);
 		assert(std::fabs(probCheck - prob) < eps);
 	}
+	eg.updateBiases();
 }
 
 void testUniformExcitgen(detType const &HF){

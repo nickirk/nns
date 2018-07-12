@@ -42,7 +42,8 @@ State InputStateGenerator<T>::generate(int numCons) const{
 	     // get some coupled determinants and their coefficients to use in the
 	     // energy estimator
 	     // Only required if the CF needs it
-		  outputState.coupledDets(i) = sampleConnections(H,outputState.det(i),numCons,outputState.coupledWeights(i));
+		 //outputState.coupledDets(i) = H.getCoupledStates(outputState.det(i));
+		 outputState.coupledDets(i) = sampleConnections(H,outputState.det(i),numCons,outputState.coupledWeights(i));
 	  else if(numCons < 0){
 		  // get all the coupled states and assign weight to 1/Nc.
 		  outputState.coupledDets(i) = H.getCoupledStates(outputState.det(i));

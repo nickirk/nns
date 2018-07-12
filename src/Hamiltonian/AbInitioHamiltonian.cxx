@@ -804,7 +804,6 @@ int AbInitioHamiltonian::countNumberCoupledStates(detType const &source, int exf
     ncoupledstates = nsingleexcit + ndoubleexcit;
 
     return ncoupledstates;
-
 }
 
 }
