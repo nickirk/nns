@@ -36,9 +36,9 @@ void StochasticReconfiguration<T>::update(T &w, T const &force,
 	ok = dcdw*ci.conjugate()/normalizer;
 	okokp = (dcdw*dcdw.adjoint()/normalizer).real();
 	s = okokp - (ok*ok.adjoint()).real();
-        double lambda = std::max(100*std::pow(0.999,iteration), 1e-2);
-        s+=s.diagonal().asDiagonal()*lambda;
-	w-=learningRate*s.inverse()*force;
+    double lambda = std::max(10*std::pow(0.999,iteration), 1.);
+    s+=s.diagonal().asDiagonal()*lambda;
+	w-=Solver<T>::learningRate*s.inverse()*force;
 	// increase the iteration counter
 	iteration += 1;
 }

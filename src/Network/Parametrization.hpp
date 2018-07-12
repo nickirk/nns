@@ -41,9 +41,9 @@ public:
   	  {return calcNablaPars(inputState,dEdC);}
 
   // stochastic reconfiguration derivative
-  //virtual Eigen::MatrixXcd calcdCdwSR(
-  //  State const &outputState
-  //){};
+  virtual Eigen::MatrixXcd calcdCdwSR(
+    State const &outputState
+  ){};
 
 };
 

@@ -46,7 +46,6 @@ int main(){
   }
   detsIntcast.close();
   std::cout<<"Listsize= "<<list.size()<<std::endl;
-  EnergyEs eCF(modelHam,-1);
   //Neural network takes in the size and the cost function.
   NeuralNetwork<> NNW;
   NNW.constrInputLayer(numStates);
@@ -68,6 +67,7 @@ int main(){
   string fileName("en");
   //cout << "energy file name=";
   //cin >> fileName;
+  EnergyEs eCF(modelHam,20);
   FullSampler<VecType> sampler(modelHam, basis, HF,NNW);
   ADAM<VecType> sl(trainRate);
   //sampler.diffuse(list,spinConfig);
