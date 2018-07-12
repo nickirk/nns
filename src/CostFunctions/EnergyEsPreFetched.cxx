@@ -57,6 +57,7 @@ nablaType EnergyEsPreFetched::nabla(State const &input) const{
     std::vector<coeffType> coupledC_j = input.coupledCoeffs(i);
     std::vector<detType> coupledDets = input.coupledDets(i);
     A += c_i * H(input.det(i), input.det(i));
+    std::cout << "c_i=" << c_i << std::endl;
     for (size_t j=0; j < coupledDets.size(); ++j){
       A += coupledC_j[j] * H(input.det(i),
                         coupledDets[j]);

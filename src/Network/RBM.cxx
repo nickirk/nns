@@ -133,7 +133,6 @@ namespace networkVMC
         int numDets = inputState.size();
         // spaceSize = size of sampled dets and their coupled ones
         int spaceSize = inputState.totalSize();
-        int coupledSize = inputState.coupledDets(0).size();
         Eigen::VectorXcd dEdW= Eigen::VectorXcd::Zero(numPars);
         // Eigen::VectorXcd dEdWTmp= Eigen::VectorXcd::Zero(numPars);
         Eigen::MatrixXcd dCdW = Eigen::MatrixXcd::Zero(numPars, spaceSize);
@@ -157,11 +156,13 @@ namespace networkVMC
             dedc[i] = 1;
             std::vector<detType> coupledDets = inputState.coupledDets(i);
             std::vector<coeffType > coupledCoeffs = inputState.coupledCoeffs(i);
+            int coupledSize = inputState.coupledDets(i).size();
+            int pos = inputState.locate(i);
             for (size_t j(0); j < coupledSize; ++j){
               //update dCjdW
               getDeriv(coupledDets[j], da, db, dw);
               // fill up the dCdW matrix with coupled dets contribution
-              dCdW.col(numDets+i*coupledSize+j) << (dCtdW);
+              dCdW.col(numDets+pos+j) << (dCtdW);
               //dEdWTmp +=  dCtdW * dEdC[pos];
             }
           }

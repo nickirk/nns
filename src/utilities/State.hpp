@@ -156,6 +156,17 @@ public:
    }
    return size;
  };
+
+ int locate(int iDet) const{
+  //for test purpose, locate the i'th det in memory
+   int size(0);
+   for (size_t i(0); i< iDet;++i){
+     for (size_t j(0); j < cDets[i].size(); ++j){
+       size+=1;
+     }
+   }
+   return size;
+ };
 //---------------------------------------------------------------------------------------------------//
 private:
   // whenever a new det is added, update its coeff and weight

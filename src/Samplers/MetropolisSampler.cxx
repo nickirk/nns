@@ -46,7 +46,8 @@ void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, double &weight,
 	coeffType tmpCoeff{para->getCoeff(tmp)};
 	// unbiasing with generation probability in principle necessary (unless prob. is symmetric)
 	pBack = getConnectionProb(tmp,cDet);
-	if(uni(rng) < (pBack*std::norm(tmpCoeff))/(pEx*std::norm(lastCoeff))){
+	//if(uni(rng) < (pBack*std::norm(tmpCoeff))/(pEx*std::norm(lastCoeff))){
+	if(uni(rng) < (std::norm(tmpCoeff/lastCoeff))){
 		// With probability |cJ|^2/|cI|^2, accept the move
 		cDet = tmp;
 		lastCoeff = tmpCoeff;

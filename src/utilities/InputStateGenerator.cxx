@@ -38,10 +38,10 @@ State InputStateGenerator<T>::generate(int numCons) const{
       // iterate the sampler: This also requires the iteration as an input, as
 	  // some samplers pre-fetch the ensemble of determinants
 	  samplerThread->iterate(outputState.coeff(i), outputState.det(i),outputState.weight(i), i);
-	  // get some coupled determinants and their coefficients to use in the
-	  // energy estimator
-	  // Only required if the CF needs it
 	  if(numCons > 0)
+	     // get some coupled determinants and their coefficients to use in the
+	     // energy estimator
+	     // Only required if the CF needs it
 		  outputState.coupledDets(i) = sampleConnections(H,outputState.det(i),numCons,outputState.coupledWeights(i));
 	  else if(numCons < 0){
 		  // get all the coupled states and assign weight to 1/Nc.
@@ -53,7 +53,7 @@ State InputStateGenerator<T>::generate(int numCons) const{
 		  }
 	  }
 
-		  // just get the coefficients from the NNW
+	  // just get the coefficients from the NNW
 	  outputState.coupledCoeffs(i).resize(outputState.coupledDets(i).size());
 	  for(size_t j=0; j < outputState.coupledDets(i).size(); ++j){
 		outputState.coupledCoeffs(i)[j]=para.getCoeff(outputState.coupledDets(i)[j]);

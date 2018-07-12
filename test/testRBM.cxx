@@ -15,7 +15,7 @@ int main(){
   int spinUp(3);
   int spinDown(3);
   SpinConfig spinConfig(spinUp, spinDown, numStates);
-  int numHidden(10);
+  int numHidden(20);
   double trainRate(0.001);
   Basis basis(spinConfig);
   FermiHubbardHamiltonian modelHam(numStates);

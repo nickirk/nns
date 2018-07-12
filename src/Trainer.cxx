@@ -104,6 +104,7 @@ void Trainer<T>::train(){
 	// create the input State
 	InputStateGenerator<T> isg(msampler,modelHam, NNW);
 	// the number of connections required is passed via the cost function
+	std::cout << "Trainer.cxx: numCons=" << cf.connectionsRequired() << std::endl;
 	inputState = isg.generate(cf.connectionsRequired());
 
 	// use the data obtained in generation of the input state to
@@ -122,7 +123,18 @@ void Trainer<T>::updateParameters(State const &input){
 	auto dEdC = cf.nabla(input);
 	// add the inner derivative to get the full derivative
 	// of the cost function with respect to the parameters
-	auto dEdPars = NNW.calcNablaParsConnected(input,dEdC);
+	T dEdPars;
+	switch(msampler.type()){
+	case Markov:
+		// for markov-type samplers, use EnergyEsMarkov
+		dEdPars = NNW.calcNablaParsConnected(input,dEdC);
+		break;
+	case PreFetched:
+		dEdPars = NNW.calcNablaPars(input,dEdC);
+		break;
+	default:
+		 dEdPars = NNW.calcNablaParsConnected(input,dEdC);
+	}
 	// feed these to the solver
 	sl.update(NNW.pars(),dEdPars,input);
 }

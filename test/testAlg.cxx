@@ -46,7 +46,7 @@ int main(){
   }
   detsIntcast.close();
   std::cout<<"Listsize= "<<list.size()<<std::endl;
-  EnergyEs eCF(modelHam);
+  EnergyEs eCF(modelHam,-1);
   //Neural network takes in the size and the cost function.
   NeuralNetwork<> NNW;
   NNW.constrInputLayer(numStates);

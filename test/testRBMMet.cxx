@@ -16,7 +16,7 @@ int main(){
   int spinDown(3);
   SpinConfig spinConfig(spinUp, spinDown, numStates);
   int numHidden(10);
-  double trainRate(0.001);
+  double trainRate(0.0001);
   Basis basis(spinConfig);
   FermiHubbardHamiltonian modelHam(numStates);
   double U{4.}, t{-1};
@@ -25,15 +25,15 @@ int main(){
   //double U{2.}, t{-1};
   //string file_name = "FCIDUMP_abinitio";
   //modelHam = readAbInitioHamiltonian(numStates, file_name);
-  vector<detType> list;
+  //vector<detType> list;
   RBM rbm(numStates, numHidden);
 
   detType HF=basis.getDetByIndex(0);
   //RSHubbardExcitgen RSHG;
-	WeightedExcitgen weg(modelHam,HF);
-  MetropolisSampler<VecCType> ugSampler(weg, basis, HF, rbm);
-  ugSampler.setNumDets(1000);
-	EnergyEs eCF(modelHam, 10);
+  WeightedExcitgen weg(modelHam,HF);
+  ListGen<VecCType> ugSampler(weg, basis, HF, rbm);
+  ugSampler.setNumDets(500);
+  EnergyEs eCF(modelHam, -1);
   //MetropolisSampler<VecCType> sampler(modelHam, basis, HF, rbm);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
@@ -46,6 +46,7 @@ int main(){
   myfile1.open ("en1");
   for(int l(0); l<5000; ++l){
     //trainRate *= exp(-0.0002);
+    std::cout << "trainRate=" << trainRate << std::endl;
     ev.train(trainRate);
     // get the new energy
     energy = ev.getE();
@@ -54,7 +55,6 @@ int main(){
     //  cout << "C_" << s << "= " << states.coeff(s) << endl;
     //}
     std::cout << "iteration=" << l << std::endl;
-    std::cout << "trainRate=" << trainRate << std::endl;
     std::cout<<"Energy "<<energy<<std::endl;
     myfile1 << l << "  " << energy << std::endl;
     // update the list of determinants used in the sampler

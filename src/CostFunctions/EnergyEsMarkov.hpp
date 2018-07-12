@@ -38,8 +38,7 @@ private:
     // EnergyEs. This way, we cannot attribute the wrong CF to a sampler
 	explicit EnergyEsMarkov(Hamiltonian const &H_,int numCons_):
 		EnergyCFBaseClass(H_),numCons(numCons_){};
-
-	double evaluate(State const &input) const;
+	coeffType evaluate(State const &input) const;
 
 	int numCons;
 };
