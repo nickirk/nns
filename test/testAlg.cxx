@@ -5,29 +5,24 @@
 #include <Eigen/Dense>
 
 #include "../src/NNWLib.hpp"
+#include "defaultSystem.hpp"
 using namespace Eigen;
 using namespace networkVMC;
 
 using namespace std;
 int main(){
-  int numSites(6);
-  int numStates(2*numSites);
-  int spinUp(3);
-  int spinDown(3);
-  SpinConfig spinConfig(spinUp, spinDown, numStates);
+  int numSites = 4;
+  int numStates = 2*numSites;
   //int numHidden1(2*numSites);
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
-  double trainRate(0.0001);
+  double trainRate = 0.0001;
   //cout << "input training rate=";
   //cin >> trainRate;
   //generate basis, the basis class constructor takes in the spin configurations.
-  Basis basis(spinConfig);
+  Basis basis = generateDefaultBasis(numSites);
   //generate hamiltonian
-  FermiHubbardHamiltonian modelHam(numStates);
-  double U{4.}, t{-1};
-  modelHam = generateFermiHubbard(numStates, U, t);
-  
+  auto modelHam = generateDefaultHubbard(numSites);
   cout << "Basis size= " << basis.getSize() << endl;
   //cout << "Hamiltonian size= " << modelHam.getSize() << endl;
   vector<detType> list;
@@ -119,7 +114,6 @@ int main(){
       cout << "list size= " << list.size()<< endl;
       //cout << "weight 0=" << endl;
       //cout << NNW.getWeights(0) << endl;
-      cout << "U= " << U << endl;
     }
   }
   myfile1.close();

@@ -87,7 +87,11 @@ void NeuralNetwork<T>::constrConvLayer(
 template <typename T>
 coeffType NeuralNetwork<T>::getCoeff(detType const &det) const{
 	//Run the network
-  Eigen::VectorXd output=feedForward(det);
+	Eigen::VectorXd output;
+#pragma omp critical
+	{
+  output=feedForward(det);
+	}
 	// and extract the coefficient from the last layer
   //std::cout << "Nnw.cxx:getCoeff(): output= " << output << std::endl;
 	return coeffType(output(0),output(1));

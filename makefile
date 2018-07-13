@@ -79,7 +79,7 @@ $(TSTBUILD)/%.o: $(TST)/%.cxx
 testBasis: $(OBJECTS) $(BTESTOBJECT) 
 	$(CXX) $^  $(LINKFLAGS) -o $(TSTBUILD)/$@ 
 
-testAlg: $(OBJECTS) $(ALGTESTOBJECT)	
+testAlg: $(OBJECTS) $(ALGTESTOBJECT)  $(DEFAULTSOBJECT)	
 	$(CXX) $^  $(LINKFLAGS) -o $(TSTBUILD)/$@ 
 
 testMetropolis: $(OBJECTS) $(MARKOVTESTOBJECT) $(DEFAULTSOBJECT)
