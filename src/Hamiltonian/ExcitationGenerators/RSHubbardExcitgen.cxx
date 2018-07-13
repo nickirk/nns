@@ -28,12 +28,13 @@ detType RSHubbardExcitgen::generateExcitation(
   getRSHubSpawnLists(source, spawnLeft, spawnRight);
 
   int const numSpawn=spawnLeft.size()+spawnRight.size();
-  int p{static_cast<int>(rng()/normalization*(numSpawn+1))};
+  //int p{static_cast<int>(rng()/normalization*(numSpawn+1))};
+  int p{static_cast<int>(rng()/normalization*(numSpawn))};
   //pick one of those sites at random (including direction)
-  pGet=1.0/static_cast<double>(numSpawn+1);
-  if(p>=numSpawn){
-    return source;
-  }
+  pGet=1.0/static_cast<double>(numSpawn);
+  //if(p>=numSpawn){
+  //  return source;
+  //}
   int const offset=spawnLeft.size();
   int newPos{0};
   if(p>=offset){
@@ -60,7 +61,7 @@ double RSHubbardExcitgen::getExcitationProb(
 
 	// and return the inverse
 	int numSpawns = spawnLeft.size() + spawnRight.size();
-	return 1.0/static_cast<double>(numSpawns+1);
+	return 1.0/static_cast<double>(numSpawns);
 }
 
 //---------------------------------------------------------------------------------------------------//

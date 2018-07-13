@@ -18,7 +18,7 @@ int main(){
   //int numHidden1(2*numSites);
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
-  double trainRate(0.005);
+  double trainRate(0.0001);
   //cout << "input training rate=";
   //cin >> trainRate;
   //generate basis, the basis class constructor takes in the spin configurations.
@@ -64,11 +64,15 @@ int main(){
   //cout << "method 2: RMSprop (not so stable)" << endl;
   //cout << "method 3: ADAM (default)" << endl;
   //cin >> method;
-  string fileName("en");
+  string fileName("en1");
   //cout << "energy file name=";
   //cin >> fileName;
-  EnergyEs eCF(modelHam,20);
-  FullSampler<VecType> sampler(modelHam, basis, HF,NNW);
+  EnergyEs eCF(modelHam,10);
+  RSHubbardExcitgen RSHG;
+  //MetropolisSampler<VecType> sampler(RSHG, basis, HF,NNW);
+  //ListGen<VecType> sampler(RSHG, basis, HF,NNW);
+  //sampler.setNumDets(100);
+  FullSampler<> sampler(modelHam, basis, HF, NNW);
   ADAM<VecType> sl(trainRate);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
@@ -78,7 +82,7 @@ int main(){
   double energy(0.);
   int count(0);
   std::vector<Eigen::VectorXd> coeffs;
-  for(int l(0); l<3000; ++l){
+  for(int l(0); l<200000; ++l){
     cout << "testAlg.cxx: iteration= " << l << endl;
     //sampler.diffuse(list);
     ev.train();
@@ -94,11 +98,11 @@ int main(){
       double normalizer=eCF.getNormalizer();
       ofstream outputC;
       outputC.open("coeff.txt");
-      for(size_t s=0; s<states.size(); ++s){
+      /*for(size_t s=0; s<states.size(); ++s){
         outputC << verbatimCast(states.det(s)) << " "
         << sqrt(norm(states.coeff(s)))/sqrt(normalizer) << endl;
         cout << "C_" << s << "= " << states.coeff(s) << endl;
-      }
+      }*/
       outputC.close();
       cout << "normalizer=" << normalizer << endl;
       myfile1 << count << " " << energy << endl;

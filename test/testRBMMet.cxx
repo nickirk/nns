@@ -10,13 +10,13 @@ using namespace networkVMC;
 using namespace std;
 
 int main(){
-  int numSites(6);
+  int numSites(4);
   int numStates(2*numSites);
-  int spinUp(3);
-  int spinDown(3);
+  int spinUp(2);
+  int spinDown(2);
   SpinConfig spinConfig(spinUp, spinDown, numStates);
   int numHidden(20);
-  double trainRate(0.01);
+  double trainRate(0.001);
   Basis basis(spinConfig);
   FermiHubbardHamiltonian modelHam(numStates);
   double U{4.}, t{-1};
@@ -31,20 +31,21 @@ int main(){
   detType HF=basis.getDetByIndex(0);
   RSHubbardExcitgen RSHG;
   //WeightedExcitgen weg(modelHam,HF);
-  //FullSampler<VecCType> ugSampler(modelHam, basis, HF, rbm);
-  ListGen<VecCType> ugSampler(RSHG, basis, HF, rbm);
+  //ListGen<VecCType> ugSampler(modelHam, basis, HF, rbm);
+  //ListGen<VecCType> ugSampler(RSHG, basis, HF, rbm);
   //ugSampler.setNumDets(100);
-  EnergyEs eCF(modelHam, 5);
-  //MetropolisSampler<VecCType> sampler(modelHam, basis, HF, rbm);
+  EnergyEs eCF(modelHam, 20);
+  MetropolisSampler<VecCType> ugSampler(RSHG, basis, HF, rbm);
+  ugSampler.setNumDets(1000);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
   double energy{0.0};
   //AcceleratedGradientDescent<VecCType> sl(trainRate);
-  //ADAM<VecCType> sl(trainRate);
-  StochasticReconfiguration<VecCType> sl(rbm,trainRate);
+  ADAM<VecCType> sl(trainRate);
+  //StochasticReconfiguration<VecCType> sl(rbm,trainRate);
   Trainer<VecCType> ev(rbm, ugSampler, sl, eCF,modelHam);
   ofstream myfile1;
-  myfile1.open ("en1");
+  myfile1.open ("en");
   for(int l(0); l<50000; ++l){
     //trainRate *= exp(-0.0002);
     std::cout << "trainRate=" << trainRate << std::endl;

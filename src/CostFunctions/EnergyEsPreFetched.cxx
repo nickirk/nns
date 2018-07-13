@@ -36,7 +36,7 @@ double EnergyEsPreFetched::evaluate(State const &input) const{
       energyVal += std::real(std::conj(c_i) * c_i * Hij);
       for (size_t j=0; j < coupledC_j.size(); ++j){
         Hij = H(input.det(i), coupledDets[j]);
-        energyVal += std::real(std::conj(c_i) * coupledC_j[j] * Hij)/coupledC_j.size()/coupledWeights[j];
+        energyVal += std::real(std::conj(c_i) * coupledC_j[j] * Hij)/(coupledC_j.size()*coupledWeights[j]);
       }
     }
   }
@@ -62,7 +62,7 @@ nablaType EnergyEsPreFetched::nabla(State const &input) const{
     std::cout << "c_i=" << c_i << std::endl;
     for (size_t j=0; j < coupledDets.size(); ++j){
       A += coupledC_j[j] * H(input.det(i),
-                        coupledDets[j])/coupledC_j.size()/coupledWeights[j];
+                        coupledDets[j])/(coupledC_j.size()*coupledWeights[j]);
     }
     A -=  energy * c_i;
     A /= normalizerCoeff;
