@@ -19,7 +19,7 @@ namespace networkVMC{
 
 // TODO: Add more constructors, with default arguments
 template <typename T>
-Trainer<T>::Trainer(Parametrization<T> &NNW_, Sampler const &msampler_,
+Trainer<T>::Trainer(Parametrization<T> &NNW_, Sampler &msampler_,
 		Solver<T> &sl_, CostFunction &cf_, Hamiltonian const& H_):
 		modelHam(H_),NNW(NNW_), msampler(msampler_),sl(sl_),
 		// here, we make sure that the cost function and the
@@ -56,9 +56,9 @@ void Trainer<T>::train(double learningRate){
 template <typename T>
 void Trainer<T>::train(){
 	// the sampler dictates how many determinants we use
-	int numDets{msampler.getNumDets()};
+	int numDets = msampler.getNumDets();
 	inputState.resize(numDets);
-  int spaceSize =0;
+    int spaceSize = 0;
 
 	// And now, for the chosen number of samples, get the respective determinants and
 	// coefficients
@@ -104,7 +104,6 @@ void Trainer<T>::train(){
 	// create the input State
 	InputStateGenerator<T> isg(msampler,modelHam, NNW);
 	// the number of connections required is passed via the cost function
-	std::cout << "Trainer.cxx: numCons=" << cf.connectionsRequired() << std::endl;
 	inputState = isg.generate(cf.connectionsRequired());
 
 	// use the data obtained in generation of the input state to

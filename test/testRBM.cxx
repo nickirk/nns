@@ -26,13 +26,13 @@ int main(){
 
   detType HF=basis.getDetByIndex(0);
   //EnergyEsMarkov eCF(modelHam);
-  EnergyEs eCF(modelHam);
+  EnergyEs eCF(modelHam,-1);
   // EnergyEsMarkov cost funciton
   // works only with Markov Chain sampler.
   // Don't not use it for other samplers.
-  //MetropolisSampler<VecCType> sampler(modelHam, basis, HF, rbm);
+  //MetropolisSampler<VecCType> sampler(modelHam, basis, HF, rbm,250);
   ListGen<VecCType> sampler(modelHam, basis, HF,rbm, 100);
-  //sampler.diffuse(list,spinConfig);
+  //FullSampler<VecCType> sampler(modelHam, basis, HF, rbm);
   //Setup the trainer
   double energy{0.0};
   //AcceleratedGradientDescent<VecCType> sl(trainRate);
@@ -40,7 +40,7 @@ int main(){
   Trainer<VecCType> ev(rbm, sampler, sl, eCF,modelHam);
   ofstream myfile1;
   myfile1.open ("en1");
-  for(int l(0); l<1000; ++l){
+  for(int l(0); l<100000; ++l){
     //trainRate *= exp(-0.0002);
     ev.train(trainRate);
     // get the new energy

@@ -21,6 +21,7 @@ void testExcitgen(ExcitationGenerator &eg, detType const &HF){
 		int exLvl = getExcitLvl(excit,HF);
 		assert((exLvl == 1 or exLvl == 0 or exLvl == 2));
 		double probCheck = eg.getExcitationProb(HF,excit);
+		std::cout << "Generated lvl " << exLvl << std::endl;
 		assert(std::fabs(probCheck - prob) < eps);
 	}
 	eg.updateBiases();

@@ -18,7 +18,7 @@ public:
 		FermionicHamiltonian(dimension){
 		// for fermi-hubbard, we never round matrix elements
 		// this is controlled by the partExact flag, so disable it
-		partExactFlag = false;
+		partExactFlag = true;
 	};
 	virtual ~FermiHubbardHamiltonian();
 	// get all couplings to source

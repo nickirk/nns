@@ -19,13 +19,13 @@ namespace networkVMC{
 double EnergyEsPreFetched::evaluate(State const &input) const{
   //std::complex<double> normalizerCoeffComplex(0.,0.);
   int numDets = input.size();
-  double energyVal{0.0};
+  double energyVal = 0.0;
   normalizerCoeff=0.0;
-  double norm(0.);
+  double norm = 0.0;
   {
     #pragma omp parallel for reduction(+:energyVal, norm)
     for (int i=0; i < numDets; ++i){
-      double Hij(0.);
+      double Hij = 0.0;
       coeffType c_i=input.coeff(i);
       std::vector<coeffType> coupledC_j = input.coupledCoeffs(i);
       std::vector<detType> coupledDets = input.coupledDets(i);
@@ -37,7 +37,7 @@ double EnergyEsPreFetched::evaluate(State const &input) const{
       for (size_t j=0; j < coupledC_j.size(); ++j){
         Hij = H(input.det(i), coupledDets[j]);
         energyVal += std::real(std::conj(c_i) * coupledC_j[j] * Hij)/
-        		(coupledC_j.size()*coupledWeights[j]);
+        		(coupledWeights[j]);
       }
     }
   }
@@ -60,10 +60,9 @@ nablaType EnergyEsPreFetched::nabla(State const &input) const{
     std::vector<detType> coupledDets = input.coupledDets(i);
     std::vector<double> coupledWeights = input.coupledWeights(i);
     A += c_i * H(input.det(i), input.det(i));
-    std::cout << "c_i=" << c_i << std::endl;
     for (size_t j=0; j < coupledDets.size(); ++j){
       A += coupledC_j[j] * H(input.det(i),
-                        coupledDets[j])/(coupledWeights[j]*coupledC_j.size());
+                        coupledDets[j])/(coupledWeights[j]);
     }
     A -=  energy * c_i;
     A /= normalizerCoeff;

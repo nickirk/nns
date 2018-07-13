@@ -34,7 +34,7 @@ int main(){
   //FullSampler<VecCType> ugSampler(modelHam, basis, HF, rbm);
   ListGen<VecCType> ugSampler(RSHG, basis, HF, rbm);
   //ugSampler.setNumDets(100);
-  EnergyEs eCF(modelHam, 5);
+  EnergyEs eCF(modelHam, -1);
   //MetropolisSampler<VecCType> sampler(modelHam, basis, HF, rbm);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer

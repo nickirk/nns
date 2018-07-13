@@ -18,9 +18,6 @@ void setNewBiases(ExcitationGenerator::ProbUpdater &pBiasGen, double &pDoubles, 
 	pBiasGen.adjustProbabilities();
 	pParallel = pBiasGen.pParallel();
 	pDoubles = pBiasGen.pDoubles();
-	std::cout << "Updating biases to "<<std::endl;
-	std::cout << "pParallel: " << pParallel << std::endl;
-	std::cout << "pDoubles: " << pDoubles << std::endl;
 }
 
 //---------------------------------------------------------------------------------------------------//

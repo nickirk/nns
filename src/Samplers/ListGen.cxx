@@ -39,7 +39,7 @@ ListGen<T>::~ListGen() {
 //---------------------------------------------------------------------------------------------------//
 
 template <typename T>
-void ListGen<T>::iterate(coeffType &cI, detType &dI, double& weight, int i) const{
+void ListGen<T>::iterate(coeffType &cI, detType &dI, double& weight, int i){
 	// Fetch the next entry from the pre-arranged list
 	dI = getDet(i);
 	// Get its coefficient
@@ -114,6 +114,14 @@ void ListGen<T>::diffuse(std::vector<detType> &list) const{
  }
  removeDuplicate(list);
  diffuseList = list;
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+template<typename T>
+void ListGen<T>::resetSpecs(){
+	// roll back the state to the initial one
+	pos = 0;
 }
 
 //---------------------------------------------------------------------------//

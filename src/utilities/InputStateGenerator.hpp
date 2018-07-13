@@ -25,14 +25,17 @@ class Parametrization;
 template<typename T=VecType>
 class InputStateGenerator {
 public:
-	InputStateGenerator(Sampler const &msampler_, Hamiltonian const &H_, Parametrization<T> const &para);
+	InputStateGenerator(Sampler &msampler_, Hamiltonian const &H_, Parametrization<T> const &para);
 	virtual ~InputStateGenerator();
 
 	// create an input state, with connections indicating if connections are to be sampled
 	State generate(int numCons) const;
 private:
-	Sampler const &msampler;
+	// the sampler used for getting random states
+	Sampler &msampler;
+	// the Hamiltonian governing the connections
 	Hamiltonian const &H;
+	// the parametrization containing the coefficients of the determinants
 	Parametrization<T> const &para;
 
 };

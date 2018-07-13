@@ -37,7 +37,7 @@ public:
   // This function is what samplers ought to do: Get a random determinant with some
   // coefficient
   // the only way to parallelize this is to pass the iteration count, too
-  virtual void iterate(coeffType &cI, detType &dI, double& weight, int i) const=0;
+  virtual void iterate(coeffType &cI, detType &dI, double& weight, int i)=0;
 
   // update the bias used for excitation generation in iterate()
   void updateBiases()const {excitGen->updateBiases();}
@@ -49,6 +49,14 @@ public:
   // Setters for various properties
   // set the starting point
   void setReference(detType const &start){cDet = start;}
+  // reset the state of the sampler to the original one
+  void reset(){
+	  // important: first reset cDet
+	  cDet = originalRef;
+	  // then let the child class do its stuff, so it
+	  // can use the reset cDet
+	  resetSpecs();
+  };
   // set the number of sampled dets
   virtual void setNumDets(int newNum){numDets=newNum;}
   // get the number of dets
@@ -70,13 +78,17 @@ private:
   mutable DeepCpyUniquePtr<ExcitationGenerator> excitGen;
   // is mutable because the excitation generator changes its behaviour
   // over iterations, but this is not visible outisde
+  // the origignal reference
+  detType originalRef;
+  // here, the child classes can do additional resets
+  virtual void resetSpecs(){};
 protected:
   int numDets;
   // and the corresponding basis including the information on the number of electrons
   // with a given spin
   Basis const *fullBasis;
   // this is the current sample in terms of determinants
-  mutable detType cDet;
+  detType cDet;
 };
 
 inline double dblAbs(double x){if(x>0) return x;return -x;}

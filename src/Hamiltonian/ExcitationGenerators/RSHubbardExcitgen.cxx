@@ -28,14 +28,16 @@ detType RSHubbardExcitgen::generateExcitation(
   getRSHubSpawnLists(source, spawnLeft, spawnRight);
 
   int const numSpawn=spawnLeft.size()+spawnRight.size();
-  int p{static_cast<int>(rng()/normalization*(numSpawn+1))};
-  //pick one of those sites at random (including direction)
-  pGet=1.0/static_cast<double>(numSpawn+1);
-  if(p>=numSpawn){
-    return source;
+  // We cannot do any excitations from this determinant
+  if(numSpawn == 0){
+	  pGet = 1.0;
+	  return source;
   }
+  int p = static_cast<int>(rng()/normalization*numSpawn);
+  //pick one of those sites at random (including direction)
+  pGet=1.0/static_cast<double>(numSpawn);
   int const offset=spawnLeft.size();
-  int newPos{0};
+  int newPos = 0;
   if(p>=offset){
     newPos=spawnRight[p-offset];
     annihilate(target,newPos);
@@ -53,14 +55,14 @@ detType RSHubbardExcitgen::generateExcitation(
 
 double RSHubbardExcitgen::getExcitationProb(
 			detType const &source, detType const &target){
-	// the excitation probability is 1/(number of possible hoppings + 1)
+	// the excitation probability is 1/(number of possible hoppings)
 	std::vector<int> spawnLeft, spawnRight;
 	// so first, get a list of all possible hoppings
 	getRSHubSpawnLists(source, spawnLeft, spawnRight);
 
 	// and return the inverse
 	int numSpawns = spawnLeft.size() + spawnRight.size();
-	return 1.0/static_cast<double>(numSpawns+1);
+	return 1.0/static_cast<double>(numSpawns);
 }
 
 //---------------------------------------------------------------------------------------------------//
