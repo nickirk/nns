@@ -59,15 +59,15 @@ int main(){
   //cout << "method 2: RMSprop (not so stable)" << endl;
   //cout << "method 3: ADAM (default)" << endl;
   //cin >> method;
-  string fileName("en1");
+  string fileName("en");
   //cout << "energy file name=";
   //cin >> fileName;
   EnergyEs eCF(modelHam,10);
   RSHubbardExcitgen RSHG;
-  //MetropolisSampler<VecType> sampler(RSHG, basis, HF,NNW);
+  MetropolisSampler<VecType> sampler(RSHG, basis, HF,NNW);
   //ListGen<VecType> sampler(RSHG, basis, HF,NNW);
-  //sampler.setNumDets(100);
-  FullSampler<> sampler(modelHam, basis, HF, NNW);
+  sampler.setNumDets(500);
+  //FullSampler<> sampler(modelHam, basis, HF, NNW);
   ADAM<VecType> sl(trainRate);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer

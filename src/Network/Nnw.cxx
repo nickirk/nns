@@ -171,34 +171,29 @@ VecType NeuralNetwork<T>::calcNablaParsConnected(
   int pos = 0;
 
   Eigen::VectorXd deltaNNPTmpPrev(Eigen::VectorXd::Zero(numNNP));
-  for (int epoch(0); epoch < numDets; ++epoch){
-    Eigen::VectorXd deltaNNPTmp(Eigen::VectorXd::Zero(numNNP));
-    if (epoch == 0 || (inputState.det(epoch) != inputState.det(epoch-1))){
-      feedForward(inputState.det(epoch));
+  Eigen::VectorXd deltaNNPTmp(Eigen::VectorXd::Zero(numNNP));
+  for (int i(0); i < numDets; ++i){
+    feedForward(inputState.det(i));
+    deltaNNPc.real() = backPropagate(realMask) ;
+    deltaNNPc.imag() = -backPropagate(imagMask) ;
+    deltaNNPc *=  dEdC[i].real();
+    //deltaNNPc /= std::conj(inputState.coeff(i));
+    deltaNNPTmp += 2 * deltaNNPc.real();
+    std::vector<detType> coupledDets = inputState.coupledDets(i);
+    std::vector<coeffType > coupledCoeffs = inputState.coupledCoeffs(i);
+    int pos = inputState.locate(i);
+    for (size_t j(0); j < coupledDets.size(); ++j){
+      feedForward(coupledDets[j]);
       deltaNNPc.real() = backPropagate(realMask) ;
-      deltaNNPc.imag() = -backPropagate(imagMask) ;
-      deltaNNPc *=  dEdC[pos].real();
-      deltaNNPc /= std::conj(inputState.coeff(epoch));
+      deltaNNPc.imag() = backPropagate(imagMask) ;
+      deltaNNPc *=  dEdC[numDets+pos+j].real();
+      //deltaNNPc /= inputState.coeff(i);
       deltaNNPTmp += 2 * deltaNNPc.real();
-      pos++;
-      std::vector<detType> coupledDets = inputState.coupledDets(epoch);
-      std::vector<coeffType > coupledCoeffs = inputState.coupledCoeffs(epoch);
-      for (size_t i(0); i < coupledDets.size(); ++i){
-        feedForward(coupledDets[i]);
-        deltaNNPc.real() = backPropagate(realMask) ;
-        deltaNNPc.imag() = backPropagate(imagMask) ;
-        deltaNNPc *=  dEdC[pos].real();
-        deltaNNPc /= inputState.coeff(epoch);
-        deltaNNPTmp += 2 * deltaNNPc.real();
-        pos++;
-      }
-      deltaNNPTmpPrev = deltaNNPTmp;
     }
-    else  {deltaNNPTmp = deltaNNPTmpPrev;}
-    deltaNNP += deltaNNPTmp;
+    deltaNNPTmpPrev = deltaNNPTmp;
   }
-  deltaNNP /= numDets;
-  std::cout << deltaNNP << std::endl;
+  deltaNNP += deltaNNPTmp;
+  //deltaNNP /= numDets;
   return deltaNNP;
 }
 
