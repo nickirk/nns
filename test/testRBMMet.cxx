@@ -36,7 +36,7 @@ int main(){
   //ugSampler.setNumDets(100);
   EnergyEs eCF(modelHam, 20);
   MetropolisSampler<VecCType> ugSampler(RSHG, basis, HF, rbm);
-  ugSampler.setNumDets(1000);
+  ugSampler.setNumDets(500);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
   double energy{0.0};
@@ -45,7 +45,7 @@ int main(){
   //StochasticReconfiguration<VecCType> sl(rbm,trainRate);
   Trainer<VecCType> ev(rbm, ugSampler, sl, eCF,modelHam);
   ofstream myfile1;
-  myfile1.open ("en");
+  myfile1.open ("en2");
   for(int l(0); l<50000; ++l){
     //trainRate *= exp(-0.0002);
     std::cout << "trainRate=" << trainRate << std::endl;

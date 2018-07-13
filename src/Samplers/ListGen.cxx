@@ -108,7 +108,7 @@ void ListGen<T>::diffuse(std::vector<detType> &list) const{
    //buf = getRandomDeterminant(spinConfig);
    c_j=para->getCoeff(buf);
    //getRandomCoupledState(buf,probUnbias);
-   if (prandom - std::pow(std::norm(c_j),2)/std::pow(std::norm(c_i),2)<-1e-8){
+   if (prandom - std::norm(c_j/c_i)<-1e-8){
      list[i]=buf;
    }
  }

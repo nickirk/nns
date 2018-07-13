@@ -10,15 +10,15 @@ using namespace networkVMC;
 
 using namespace std;
 int main(){
-  int numSites(6);
+  int numSites(4);
   int numStates(2*numSites);
-  int spinUp(3);
-  int spinDown(3);
+  int spinUp(2);
+  int spinDown(2);
   SpinConfig spinConfig(spinUp, spinDown, numStates);
   //int numHidden1(2*numSites);
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
-  double trainRate(0.0001);
+  double trainRate(0.001);
   //cout << "input training rate=";
   //cin >> trainRate;
   //generate basis, the basis class constructor takes in the spin configurations.
@@ -64,15 +64,15 @@ int main(){
   //cout << "method 2: RMSprop (not so stable)" << endl;
   //cout << "method 3: ADAM (default)" << endl;
   //cin >> method;
-  string fileName("en1");
+  string fileName("en");
   //cout << "energy file name=";
   //cin >> fileName;
   EnergyEs eCF(modelHam,10);
   RSHubbardExcitgen RSHG;
-  //MetropolisSampler<VecType> sampler(RSHG, basis, HF,NNW);
+  MetropolisSampler<VecType> sampler(RSHG, basis, HF,NNW);
   //ListGen<VecType> sampler(RSHG, basis, HF,NNW);
-  //sampler.setNumDets(100);
-  FullSampler<> sampler(modelHam, basis, HF, NNW);
+  sampler.setNumDets(500);
+  //FullSampler<> sampler(modelHam, basis, HF, NNW);
   ADAM<VecType> sl(trainRate);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
