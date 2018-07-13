@@ -63,7 +63,7 @@ nablaType EnergyEsMarkov::nabla(State const &input) const{
     std::vector<detType> coupledDets = input.coupledDets(i);
     std::vector<double> coupledWeights = input.coupledWeights(i);
     int tid = omp_get_thread_num();
-    //std::cout << "numProc=" << tid << " EnergyEsMarkov.cxx: c_i=" << c_i << std::endl;
+    std::cout << "numProc=" << tid << " EnergyEsMarkov.cxx: c_i=" << c_i << std::endl;
     int coupledSize = input.coupledDets(i).size();
    int pos=input.locate(i);
    for (size_t j=0; j < coupledSize; ++j){

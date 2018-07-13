@@ -166,7 +166,6 @@ VecType NeuralNetwork<T>::calcNablaParsConnected(
   coeffType imagMask(0.,1.);
   int pos = 0;
 
-  Eigen::VectorXd deltaNNPTmpPrev(Eigen::VectorXd::Zero(numNNP));
   Eigen::VectorXd deltaNNPTmp(Eigen::VectorXd::Zero(numNNP));
   for (int i(0); i < numDets; ++i){
     feedForward(inputState.det(i));
@@ -186,7 +185,6 @@ VecType NeuralNetwork<T>::calcNablaParsConnected(
       //deltaNNPc /= inputState.coeff(i);
       deltaNNPTmp += 2 * deltaNNPc.real();
     }
-    deltaNNPTmpPrev = deltaNNPTmp;
   }
   deltaNNP += deltaNNPTmp;
   //deltaNNP /= numDets;
