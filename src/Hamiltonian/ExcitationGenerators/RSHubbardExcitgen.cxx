@@ -33,9 +33,12 @@ detType RSHubbardExcitgen::generateExcitation(
 	  pGet = 1.0;
 	  return source;
   }
-  int p = static_cast<int>(rng()/normalization*numSpawn);
+  int p{static_cast<int>(rng()/normalization*(numSpawn))};
   //pick one of those sites at random (including direction)
   pGet=1.0/static_cast<double>(numSpawn);
+  //if(p>=numSpawn){
+  //  return source;
+  //}
   int const offset=spawnLeft.size();
   int newPos = 0;
   if(p>=offset){

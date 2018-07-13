@@ -34,7 +34,7 @@ coeffType EnergyEsMarkov::evaluate(State const &input) const{
     for (size_t j=0; j < coupledSize; ++j){
         // don't forget to unbias using the Pgen. TODO
       Hij = H(input.det(i), coupledDets[j]);
-      energyVal += coupledC_j[j]* Hij / (c_i *coupledWeights[j]);
+      energyVal += coupledC_j[j]* Hij / (c_i * (coupledWeights[j] * coupledSize));
     }
   }
   energyVal /= numDets;
@@ -63,12 +63,13 @@ nablaType EnergyEsMarkov::nabla(State const &input) const{
     std::vector<detType> coupledDets = input.coupledDets(i);
     std::vector<double> coupledWeights = input.coupledWeights(i);
     int tid = omp_get_thread_num();
-    size_t coupledSize = input.coupledDets(i).size();
+    size_t coupledSize = coupledDets.size();
    int pos=input.locate(i);
    for (size_t j=0; j < coupledSize; ++j){
      // don't forget to unbias using the Pgen. TODO
      // in the excitgen, the weight should be updated with pgen
-     dEdCtmp = H(input.det(i),coupledDets[j])/(c_i * coupledWeights[j] );
+     dEdCtmp = H(input.det(i),coupledDets[j])/(c_i *
+    		 (coupledWeights[j] * coupledSize ));
      // unbias with numCoupledDets and Pgen
      //dEdC[i+j+1]=dEdCtmp / coupledDets.size() / numDets;
       dEdC[numDets+pos+j]=dEdCtmp / static_cast<double>(numDets);

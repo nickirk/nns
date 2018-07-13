@@ -51,7 +51,8 @@ State InputStateGenerator<T>::generate(int numCons) const{
 		  outputState.coupledDets(i) = H.getCoupledStates(outputState.det(i));
 		  outputState.coupledWeights(i).resize(outputState.coupledDets(i).size());
 		  for(size_t j=0; j < outputState.coupledDets(i).size(); ++j){
-			outputState.coupledWeights(i)[j]=1.0;
+			outputState.coupledWeights(i)[j]=1.0/static_cast<double>(
+					outputState.coupledDets(i).size());
 		  }
 	  }
 
