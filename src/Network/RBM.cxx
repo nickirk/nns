@@ -152,8 +152,8 @@ namespace networkVMC
             getDeriv(inputState.det(i), da, db, dw);
             // multiplication should be done by matrix vector product
             // fill up the dCdW matrix
-            dCdW.col(i) << (2*dCtdW*dedc[i]).real();
-            dedc[i] = 1;
+            dCdW.col(i) << (dCtdW.conjugate());
+            //dedc[i] = 1;
             std::vector<detType> coupledDets = inputState.coupledDets(i);
             std::vector<coeffType > coupledCoeffs = inputState.coupledCoeffs(i);
             size_t coupledSize = inputState.coupledDets(i).size();
@@ -169,7 +169,7 @@ namespace networkVMC
         // map std::vector of dEdC to Eigen Vector
         Eigen::VectorXcd dEdCEigen=Eigen::Map<Eigen::VectorXcd>(dedc.data(),spaceSize);
         // make it parallel. TODO
-        dEdW = (dCdW * dEdCEigen).conjugate();
+        dEdW = (dCdW * dEdCEigen);//.conjugate();
         return dEdW;
       }
 
