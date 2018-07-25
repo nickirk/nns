@@ -24,9 +24,6 @@ MetropolisSampler<T>::~MetropolisSampler() {
 template<typename T>
 void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, double &weight, 
     int i){
-	// assign the output from the previous iteration
-	cI = lastCoeff;
-	dI = cDet;
   weight = 1;
 	// and then get the one for the next one - this way we ensure the first iterate() call
 	// returns the starting point
@@ -46,13 +43,20 @@ void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, double &weight,
 	coeffType tmpCoeff{para->getCoeff(tmp)};
 	// unbiasing with generation probability in principle necessary (unless prob. is symmetric)
 	pBack = getConnectionProb(tmp,cDet);
-	if(uni(rng) < (pBack*std::norm(tmpCoeff))/(pEx*std::norm(lastCoeff))){
-//	if(uni(rng) < (std::norm(tmpCoeff/lastCoeff))){
-		// With probability |cJ|^2/|cI|^2, accept the move
+  double p = uni(rng);
+  //std::cout << "MetropolisSampler.cxx: uni(rng)=" << p << std::endl;
+  //std::cout << "MetropolisSampler.cxx: pJump=" << std::norm(tmpCoeff/lastCoeff)*pBack/pEx << std::endl;
+
+	if(uni(rng) < (pBack/pEx*std::norm(tmpCoeff/lastCoeff))){
+	//if(p < (std::norm(tmpCoeff/lastCoeff))){
+		// With probability |cJ/cI|^2, accept the move
 		cDet = tmp;
 		lastCoeff = tmpCoeff;
 		// and set the output
 	}
+	// assign the output from the previous iteration
+	cI = lastCoeff;
+	dI = cDet;
 }
 //instantiate class
 template class MetropolisSampler<VecType>;

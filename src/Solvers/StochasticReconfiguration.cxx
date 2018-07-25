@@ -6,7 +6,7 @@
  */
 
 #include "StochasticReconfiguration.hpp"
-
+#include <iostream>
 namespace networkVMC {
 
 template <typename T>
@@ -21,27 +21,30 @@ void StochasticReconfiguration<T>::update(T &w, T const &force,
 		  State const &input){
 
 	// first, get the input vector's coefficients
-	std::size_t numDets = input.size();
-	Eigen::VectorXcd ci(numDets);
+  std::size_t numDets = input.size();
+  int numPars=w.size();
+  Eigen::MatrixXcd OkOkp = Eigen::MatrixXcd::Zero(numPars, numPars);
+  Eigen::MatrixXcd S = Eigen::MatrixXcd::Zero(numPars, numPars);
+  Eigen::VectorXcd Ok = Eigen::VectorXcd::Zero(numPars);
+  Eigen::VectorXcd dCdWk= Eigen::VectorXcd::Zero(numPars);
+  // do the mapping inside for loop, private
 	for(std::size_t i = 0; i<numDets; ++ i){
-		ci[i] = input.coeff(i);
+    dCdWk=NNW.getSRDeriv(input.det(i));
+    //dCdWk=NNW.getDeriv(input.det(i));
+    OkOkp += (dCdWk*dCdWk.adjoint()).adjoint();
+    Ok += dCdWk;
 	}
-
-	// and the second order derivative
-	auto dcdw = par.calcdCdwSR(input);
-
-	Eigen::MatrixXd s, okokp;
-	Eigen::VectorXcd ok;
-	double normalizer = ci.norm();
-	ok = dcdw*ci.conjugate()/normalizer;
-	okokp = (dcdw*dcdw.adjoint()/normalizer).real();
-	s = okokp - (ok*ok.adjoint()).real();
-    double lambda = std::max(10*std::pow(0.999,iteration), 1.);
-    s+=s.diagonal().asDiagonal()*lambda;
-	w-=Solver<T>::learningRate*s.inverse()*force;
+  OkOkp /= static_cast<double>(numDets);
+  Ok /= static_cast<double>(numDets);
+  S = OkOkp - (Ok*Ok.adjoint()).adjoint();
+  double lambda = std::max(100*std::pow(0.9,iteration), 0.0001);
+  std::cout << "StochasticReconfiguration.cxx: lambda=" << lambda << std::endl;
+  Eigen::VectorXcd I = Eigen::VectorXcd::Ones(numPars);
+  S+=S.diagonal().asDiagonal()*lambda;
+  w-=Solver<T>::learningRate*S.inverse()*force;
 	// increase the iteration counter
 	iteration += 1;
 }
-template class StochasticReconfiguration<VecType>;
+//template class StochasticReconfiguration<VecType>;
 template class StochasticReconfiguration<VecCType>;
 } /* namespace networkVMC */

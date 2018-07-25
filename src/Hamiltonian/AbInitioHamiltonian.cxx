@@ -96,8 +96,8 @@ AbInitioHamiltonian readAbInitioHamiltonian(int dim, std::string file_name){
                     // and stored in spin orbital basis
                     // convert chemical to physical notation
                     i = std::stoi(parts[1]);
-                    j = std::stoi(parts[3]);
-                    k = std::stoi(parts[2]);
+                    j = std::stoi(parts[2]);
+                    k = std::stoi(parts[3]);
                     l = std::stoi(parts[4]);
                     val = std::stod(parts[0]);
 

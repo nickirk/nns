@@ -126,7 +126,7 @@ void Trainer<T>::updateParameters(State const &input){
 	switch(msampler.type()){
 	case Markov:
 		// for markov-type samplers, use EnergyEsMarkov
-		dEdPars = NNW.calcNablaParsConnected(input,dEdC);
+		dEdPars = NNW.calcNablaParsSRConnected(input,dEdC,getE());
 		break;
 	case PreFetched:
 		dEdPars = NNW.calcNablaPars(input,dEdC);

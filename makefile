@@ -1,4 +1,4 @@
-CXX=g++
+CXX=icc
 LINKFLAGS=$(LDFLAGS) 
 LDFLAGS=-std=c++11 -ggdb -Wall -fopenmp -O3
 EIGEN_PATH=lib/eigen/

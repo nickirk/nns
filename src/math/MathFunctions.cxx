@@ -38,3 +38,5 @@ double GaussianAntiSymPrime(double in){
 }
 double Sigmoid(double in){return 1./(1+exp(-in));};
 double SigmoidPrime(double in){return Sigmoid(in)*(1-Sigmoid(in));};
+double LogCosh(double in){return std::log(std::cosh(in));}
+double LogCoshPrime(double in){return std::tanh(in);}

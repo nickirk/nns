@@ -29,9 +29,10 @@ coeffType EnergyEsMarkov::evaluate(State const &input) const{
     std::vector<double> coupledWeights = input.coupledWeights(i);
     size_t coupledSize = coupledC_j.size();
     Hij = H(input.det(i), input.det(i));
-    energyVal += c_i * Hij/c_i;
-    //std::cout << "ci=" << c_i << std::endl;
+    energyVal += Hij;
+    //std::cout << "EnergyEsMarkov.cxx: coupledSize=" << coupledSize << std::endl;
     for (size_t j=0; j < coupledSize; ++j){
+      //std::cout << "EnergyEsMarkov.cxx: coupledWeights[j]=" << coupledWeights[j] << std::endl;
         // don't forget to unbias using the Pgen. TODO
       Hij = H(input.det(i), coupledDets[j]);
       energyVal += coupledC_j[j]* Hij / (c_i * (coupledWeights[j] * coupledSize));
@@ -56,7 +57,7 @@ nablaType EnergyEsMarkov::nabla(State const &input) const{
     coeffType dEdCtmp;
     coeffType c_i = input.coeff(i);
 //  put all the weighting step here instead of inside of RBM
-    dEdCtmp = (H(input.det(i), input.det(i)) - energyM)/c_i;
+    dEdCtmp = (H(input.det(i), input.det(i)))/c_i;
     // add weights
     dEdC[i] = dEdCtmp / static_cast<double>(numDets);
     std::vector<coeffType> coupledC_j = input.coupledCoeffs(i);
