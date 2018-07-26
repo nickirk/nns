@@ -96,6 +96,24 @@ void Hamiltonian::setMatrixElement(int p, int q, int r, int s, double newEntry){
 
 //---------------------------------------------------------------------------------------------------//
 
+
+void Hamiltonian::setMatrixElement(double newEntry){
+    // core energy E_core
+
+    coreEnergy=newEntry;
+
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+double Hamiltonian::getMatrixElement() const {
+    // core energy E_core
+
+    return coreEnergy;
+}
+
+//---------------------------------------------------------------------------------------------------//
+
 double Hamiltonian::getMatrixElement(int p, int q) const {
     // <p|h|q> a+_p a_q
     int pq{0};
@@ -274,6 +292,9 @@ double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
                 }
             }
         }
+
+        // add the core energy
+        diagonalTerm += coreEnergy;
         
         return diagonalTerm;
     }
