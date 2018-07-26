@@ -16,6 +16,7 @@
 #include <cmath>
 #include <random>
 #include <numeric>
+#include <boost/regex.hpp>
 #include <functional>
 #include "../HilbertSpace/Determinant.hpp"
 #include "AbInitioHamiltonian.hpp"
@@ -26,11 +27,11 @@ namespace networkVMC{
 AbInitioHamiltonian::~AbInitioHamiltonian() {
 }
 
-AbInitioHamiltonian readAbInitioHamiltonian(int dim, std::string file_name, bool molpro_fcidump){
+AbInitioHamiltonian readAbInitioHamiltonian(std::string file_name, bool molpro_fcidump){
     // this function reads in the 1- and 2-electron integrals of 
     // an ab-initio Hamiltonian from an FCIDUMP file
 
-    AbInitioHamiltonian H(dim);
+    AbInitioHamiltonian H(0);
 
     // open the file in read mode
     std::ifstream inputfile;
@@ -51,27 +52,40 @@ AbInitioHamiltonian readAbInitioHamiltonian(int dim, std::string file_name, bool
     else{
         std::cout << "Reading from a normal FCIDUMP file " << std::endl;
     }
-
+    bool first = true;
     if (inputfile.is_open() & inputfile.good()){
         while(!inputfile.eof()){
             std::getline(inputfile,line);
-            //std::cout << line << std::endl;
+            std::cout << line << std::endl;
             // split the line
             std::istringstream iss(line);
             std::vector<std::string> parts{
                 std::istream_iterator<std::string>(iss), {}
             };
+            /*
             // for testing
-            //std::cout << "Number of strings in line: " <<
-            //    parts.size() << std::endl;
-            //for (std::vector<std::string>::iterator it=parts.begin(); 
-            //        it != parts.end(); ++it){
-            //    std::cout << *it << std::endl;
-            //}
-
+            m += 1;
+            std::cout << "Number of strings in line: " << m << " " <<
+                parts.size() << std::endl;
+            for (std::vector<std::string>::iterator it=parts.begin();
+                    it != parts.end(); ++it){
+                std::cout << *it << std::endl;
+            }
+        	*/
             // needed because .eof() does not work properly
             if (parts.size()==0) break;
 
+            // the first line contains the number of orbitals
+            // IMPORTANT: IN FCIDUMP FILES, THE NUMBER OF ORBITALS IS THE FIRST NUMBER IN THE FIRST LINE
+            if(first){
+				boost::smatch norbsMatch;
+				boost::regex number("[[:digit:]]+");
+				boost::regex_search(line,norbsMatch,number);
+				// number of orbitals
+				int dim = std::stoi(norbsMatch[0]);
+				first = false;
+				H = AbInitioHamiltonian(dim);
+            }
             // FCIDUMP files are in chemical notation, (ik|jl), i.e.
             // (ik|jl) = <ij|kl>
             // but the integral storage is in physical notation <ij|kl>
