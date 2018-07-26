@@ -39,7 +39,7 @@ ListGen<T>::~ListGen() {
 //---------------------------------------------------------------------------------------------------//
 
 template <typename T>
-void ListGen<T>::iterate(coeffType &cI, detType &dI, double& weight, int i) const{
+void ListGen<T>::iterate(coeffType &cI, detType &dI, double& weight, int i){
 	// Fetch the next entry from the pre-arranged list
 	dI = getDet(i);
 	// Get its coefficient
@@ -108,12 +108,20 @@ void ListGen<T>::diffuse(std::vector<detType> &list) const{
    //buf = getRandomDeterminant(spinConfig);
    c_j=para->getCoeff(buf);
    //getRandomCoupledState(buf,probUnbias);
-   if (prandom - std::pow(std::norm(c_j),2)/std::pow(std::norm(c_i),2)<-1e-8){
+   if (prandom - std::norm(c_j/c_i)<-1e-8){
      list[i]=buf;
    }
  }
  removeDuplicate(list);
  diffuseList = list;
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+template<typename T>
+void ListGen<T>::resetSpecs(){
+	// roll back the state to the initial one
+	pos = 0;
 }
 
 //---------------------------------------------------------------------------//

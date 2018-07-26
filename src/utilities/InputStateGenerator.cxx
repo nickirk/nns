@@ -16,7 +16,7 @@
 namespace networkVMC {
 
 template<typename T>
-InputStateGenerator<T>::InputStateGenerator(Sampler const &msampler_, Hamiltonian const &H_, Parametrization<T> const &para_):
+InputStateGenerator<T>::InputStateGenerator(Sampler &msampler_, Hamiltonian const &H_, Parametrization<T> const &para_):
 	msampler(msampler_), H(H_), para(para_){
 }
 
@@ -28,6 +28,8 @@ template<typename T>
 State InputStateGenerator<T>::generate(int numCons) const{
 	// set up a state of the matching size
 	int numDets{msampler.getNumDets()};
+	// reset the sampler
+	msampler.reset();
 	State outputState(numDets);
 
 #pragma omp parallel
@@ -43,14 +45,15 @@ State InputStateGenerator<T>::generate(int numCons) const{
 	     // get some coupled determinants and their coefficients to use in the
 	     // energy estimator
 	     // Only required if the CF needs it
-		  outputState.coupledDets(i) = sampleConnections(H,outputState.det(i),numCons,outputState.coupledWeights(i));
+	     //outputState.coupledDets(i) = H.getCoupledStates(outputState.det(i));
+		 outputState.coupledDets(i) = sampleConnections(H,outputState.det(i),numCons,outputState.coupledWeights(i));
 	  else if(numCons < 0){
-		  // get all the coupled states and assign weight to 1/Nc.
+		  // get all the coupled states and assign weight to 1.
 		  outputState.coupledDets(i) = H.getCoupledStates(outputState.det(i));
 		  outputState.coupledWeights(i).resize(outputState.coupledDets(i).size());
 		  for(size_t j=0; j < outputState.coupledDets(i).size(); ++j){
-			// TODO: ensure that the denominator is not 0
-			outputState.coupledWeights(i)[j]=1./outputState.coupledDets(i).size();
+			outputState.coupledWeights(i)[j]=1.0/static_cast<double>(
+					outputState.coupledDets(i).size());
 		  }
 	  }
 

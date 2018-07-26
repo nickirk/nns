@@ -58,11 +58,13 @@ namespace networkVMC
         return psi;
     }
 
-    void RBM::getDeriv(detType const &det, 
-                       Eigen::Map<Eigen::VectorXcd> & da, 
-                       Eigen::Map<Eigen::VectorXcd> & db, 
-                       Eigen::Map<Eigen::MatrixXcd> & dw) const
+    Eigen::VectorXcd RBM::getDeriv(detType const &det) const
     {
+        Eigen::VectorXcd dCdWk= Eigen::VectorXcd::Zero(numPars);
+        // do the mapping inside for loop, private
+        Eigen::Map<Eigen::VectorXcd> da(dCdWk.data()+a_offset, sizeInput);
+        Eigen::Map<Eigen::VectorXcd> db(dCdWk.data()+b_offset, sizeHidden);
+        Eigen::Map<Eigen::MatrixXcd> dw(dCdWk.data()+w_offset, sizeHidden, sizeInput);
         Eigen::VectorXcd s = Eigen::VectorXcd::Ones(sizeInput);
 
         for (int j=0; j<sizeInput; j++)
@@ -86,6 +88,41 @@ namespace networkVMC
         dw = psi*tanhVec*s.transpose();
         assert(dw.rows()==sizeHidden);
         assert(dw.cols()==sizeInput);
+        return dCdWk;
+    }
+
+    Eigen::VectorXcd RBM::getSRDeriv(detType const &det) const
+    {
+        Eigen::VectorXcd dCdWk= Eigen::VectorXcd::Zero(numPars);
+        // do the mapping inside for loop, private
+        Eigen::Map<Eigen::VectorXcd> da(dCdWk.data()+a_offset, sizeInput);
+        Eigen::Map<Eigen::VectorXcd> db(dCdWk.data()+b_offset, sizeHidden);
+        Eigen::Map<Eigen::MatrixXcd> dw(dCdWk.data()+w_offset, sizeHidden, sizeInput);
+
+        Eigen::VectorXcd s = Eigen::VectorXcd::Ones(sizeInput);
+
+        for (int j=0; j<sizeInput; j++)
+        {
+            s(j) = det[j]?1.0:-1.0;
+        }
+
+        Eigen::VectorXcd coshVec = (b+w*s).array().cosh();
+
+        coeffType psi = std::exp(a.dot(s));
+        for(int i=0; i<sizeHidden;i++)
+        {
+            psi = psi * coshVec(i);
+        }
+
+        da = s;
+        
+        Eigen::VectorXcd tanhVec = (b+w*s).array().tanh();
+        db = tanhVec;
+
+        dw = tanhVec*s.transpose();
+        assert(dw.rows()==sizeHidden);
+        assert(dw.cols()==sizeInput);
+        return dCdWk;
     }
 
     Eigen::MatrixXcd RBM::calcdCdwSR(State const &outputState)
@@ -95,10 +132,11 @@ namespace networkVMC
         #pragma omp parallel for
         for(size_t i=0;i<outputState.size();i++)
         {
-            Eigen::Map<Eigen::VectorXcd> da(result.data()+i*numPars+a_offset, sizeInput);
-            Eigen::Map<Eigen::VectorXcd> db(result.data()+i*numPars+b_offset, sizeHidden);
-            Eigen::Map<Eigen::MatrixXcd> dw(result.data()+i*numPars+w_offset, sizeHidden, sizeInput);;
-            getDeriv(outputState.det(i), da, db, dw);
+            Eigen::VectorXcd dCtdW= Eigen::VectorXcd::Zero(numPars);
+            // do the mapping inside for loop, private
+            //update vector dCidWk
+            dCtdW = getDeriv(outputState.det(i));
+            result.col(i) << (dCtdW);
         }
         return result;
     }
@@ -126,6 +164,52 @@ namespace networkVMC
         return result;
     }
 
+    VecCType RBM::calcNablaParsSRConnected(
+	   State const &inputState,
+	   nablaType const &dEdC,
+     double const &energy
+     ){
+        int numDets = inputState.size();
+        // spaceSize = size of sampled dets and their coupled ones
+        int spaceSize = inputState.totalSize();
+        Eigen::VectorXcd dEdW= Eigen::VectorXcd::Zero(numPars);
+        // Eigen::VectorXcd dEdWTmp= Eigen::VectorXcd::Zero(numPars);
+        Eigen::MatrixXcd dCdW = Eigen::MatrixXcd::Zero(numPars, spaceSize);
+        std::vector<std::complex<double>> dedc=dEdC;
+          #pragma omp for
+          // fill up the matrix of dCdW, like in EnergyEsMarkov.cxx
+          // reserve space and in the end use matrix*vector instead of
+          // a summation
+          for (int i=0; i < numDets; ++i){
+            //need private dCtdW
+            Eigen::VectorXcd dCtdW= Eigen::VectorXcd::Zero(numPars);
+            // do the mapping inside for loop, private
+            //update vector dCidWk
+            dCtdW = getSRDeriv(inputState.det(i));
+            // multiplication should be done by matrix vector product
+            // fill up the dCdW matrix
+            dCdW.col(i) << (dCtdW.conjugate()*inputState.coeff(i));
+            dEdW -= energy * dCtdW.conjugate()/numDets; 
+            //dedc[i] = 1;
+            std::vector<detType> coupledDets = inputState.coupledDets(i);
+            std::vector<coeffType > coupledCoeffs = inputState.coupledCoeffs(i);
+            size_t coupledSize = inputState.coupledDets(i).size();
+            size_t pos = inputState.locate(i);
+            for (size_t j(0); j < coupledSize; ++j){
+              //update dCjdW
+              //dCtdW = getSRDeriv(coupledDets[j]);
+              // fill up the dCdW matrix with coupled dets contribution
+              dCdW.col(numDets+pos+j) << (dCtdW.conjugate()*coupledCoeffs[j]);
+              //dEdWTmp +=  dCtdW * dEdC[pos];
+            }
+          }
+        // map std::vector of dEdC to Eigen Vector
+        Eigen::VectorXcd dEdCEigen=Eigen::Map<Eigen::VectorXcd>(dedc.data(),spaceSize);
+        // make it parallel. TODO
+        dEdW += (dCdW * dEdCEigen);//.conjugate();
+        return dEdW;
+    }
+
     VecCType RBM::calcNablaParsConnected(
 	   State const &inputState,
 	   nablaType const &dEdC
@@ -145,31 +229,29 @@ namespace networkVMC
             //need private dCtdW
             Eigen::VectorXcd dCtdW= Eigen::VectorXcd::Zero(numPars);
             // do the mapping inside for loop, private
-            Eigen::Map<Eigen::VectorXcd> da(dCtdW.data()+a_offset, sizeInput);
-            Eigen::Map<Eigen::VectorXcd> db(dCtdW.data()+b_offset, sizeHidden);
-            Eigen::Map<Eigen::MatrixXcd> dw(dCtdW.data()+w_offset, sizeHidden, sizeInput);;
             //update vector dCidWk
-            getDeriv(inputState.det(i), da, db, dw);
+            dCtdW = getDeriv(inputState.det(i));
+            //update vector dCidWk
             // multiplication should be done by matrix vector product
             // fill up the dCdW matrix
-            dCdW.col(i) << (2*dCtdW*dedc[i]).real();
-            dedc[i] = 1;
+            dCdW.col(i) << (dCtdW.conjugate());
+            //dedc[i] = 1;
             std::vector<detType> coupledDets = inputState.coupledDets(i);
             std::vector<coeffType > coupledCoeffs = inputState.coupledCoeffs(i);
-            int coupledSize = inputState.coupledDets(i).size();
-            int pos = inputState.locate(i);
+            size_t coupledSize = inputState.coupledDets(i).size();
+            size_t pos = inputState.locate(i);
             for (size_t j(0); j < coupledSize; ++j){
               //update dCjdW
-              getDeriv(coupledDets[j], da, db, dw);
+              //dCtdW = getDeriv(coupledDets[j]);
               // fill up the dCdW matrix with coupled dets contribution
-              dCdW.col(numDets+pos+j) << (dCtdW);
+              dCdW.col(numDets+pos+j) << (dCtdW.conjugate());
               //dEdWTmp +=  dCtdW * dEdC[pos];
             }
           }
         // map std::vector of dEdC to Eigen Vector
         Eigen::VectorXcd dEdCEigen=Eigen::Map<Eigen::VectorXcd>(dedc.data(),spaceSize);
         // make it parallel. TODO
-        dEdW = (dCdW * dEdCEigen).conjugate();
+        dEdW = (dCdW * dEdCEigen);//.conjugate();
         return dEdW;
       }
 

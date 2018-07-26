@@ -22,14 +22,16 @@ namespace networkVMC{
 // explicit constructor
 Sampler::Sampler(ExcitationGenerator const &eG_, Basis const &fullBasis_,
 		  detType const &HF, int numDets_):
-	  excitGen(eG_.clone()),numDets(numDets_),fullBasis(&fullBasis_),cDet(HF){}
+	  excitGen(eG_.clone()),originalRef(HF),
+	  numDets(numDets_),fullBasis(&fullBasis_),cDet(HF){}
 
 //---------------------------------------------------------------------------//
 
 // construct the ExcitationGenerator implicitly from the Hamiltonian
 Sampler::Sampler(Hamiltonian const &H_, Basis const &fullBasis_,
 		  detType const &HF, int numDets_):
-			  excitGen(getDefaultExcitgen(H_,HF).release()),numDets(numDets_),
+			  excitGen(getDefaultExcitgen(H_,HF).release()),
+			  originalRef(HF),numDets(numDets_),
 			  fullBasis(&fullBasis_),cDet(HF){};
 
 //---------------------------------------------------------------------------//

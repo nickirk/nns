@@ -32,6 +32,10 @@ inputs(inputs_){
     actFunc=&Rectifier;
     actFuncPrime=&RectifierPrime;
   }
+  else if (actFunc_=="LogCosh"){
+    actFunc=&LogCosh;
+    actFuncPrime=&LogCoshPrime;
+  }
   else throw ActFuncDoNotExist(actFunc_);
 }
 

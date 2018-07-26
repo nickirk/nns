@@ -35,15 +35,24 @@ public:
 		  State const &input,
 		  nablaType const &outerDerivative) = 0;
 
+  virtual Eigen::VectorXcd getSRDeriv(detType const &det) const{
+	  return Eigen::VectorXcd();
+  };
+  virtual Eigen::VectorXcd getDeriv(detType const &det) const{
+	  return Eigen::VectorXcd();
+  };
 // The following features are experimental and not essential to the interface
   // Some other derivative
   virtual T calcNablaParsConnected(State const &inputState, nablaType const& dEdC)
   	  {return calcNablaPars(inputState,dEdC);}
 
+  virtual T calcNablaParsSRConnected(State const &inputState, nablaType const& dEdC, double const& energy)
+  	  {return calcNablaPars(inputState,dEdC);}
+
   // stochastic reconfiguration derivative
   virtual Eigen::MatrixXcd calcdCdwSR(
     State const &outputState
-  ){};
+  ){return Eigen::MatrixXd();};
 
 };
 

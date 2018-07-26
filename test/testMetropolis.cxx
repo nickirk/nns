@@ -11,9 +11,12 @@
 #include <iostream>
 #include <fstream>
 
+//TODO : Write a statistical test that checks if the correct probability
+//       density is generated
+
 using namespace networkVMC;
 
-void runMetropolisTest(Sampler const &tst){
+void runMetropolisTest(Sampler &tst){
 	// test the sampler tst by generating a bunch of
 	// dets and checking their coeffs
 	  coeffType cCoeff = coeffType();

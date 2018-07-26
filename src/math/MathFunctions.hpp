@@ -25,4 +25,6 @@ double GaussianAntiSym(double in);
 double GaussianAntiSymPrime(double in);
 double Sigmoid(double in);
 double SigmoidPrime(double in);
+double LogCosh(double in);
+double LogCoshPrime(double in);
 #endif

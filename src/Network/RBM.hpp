@@ -22,11 +22,13 @@ namespace networkVMC
             RBM(int sizeInput, int sizeHidden);
 
             coeffType getCoeff(detType const &det) const;
-            void getDeriv(detType const &det, Eigen::Map<Eigen::VectorXcd> & da, Eigen::Map<Eigen::VectorXcd> & db, Eigen::Map<Eigen::MatrixXcd> & dw) const;
+            virtual Eigen::VectorXcd getDeriv(detType const &det) const;
+            virtual Eigen::VectorXcd getSRDeriv(detType const &det) const;
             virtual VecCType const& pars() const;
             virtual VecCType calcNablaPars(State const &input, nablaType const &outerDerivative);
             virtual Eigen::MatrixXcd calcdCdwSR(State const &outputState);
             virtual VecCType calcNablaParsConnected(State const &inputState, nablaType const& dEdC);
+            virtual VecCType calcNablaParsSRConnected(State const &inputState, nablaType const& dEdC, double const& energy);
             ~RBM();
 
         private:

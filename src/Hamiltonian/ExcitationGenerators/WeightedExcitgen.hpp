@@ -33,15 +33,18 @@ public:
 	virtual void updateBiases();
 private:
     // generate a single excitation
-    detType generateSingleExcit(detType const &source, double &hel);
+    detType generateSingleExcit(detType const &source, double &hel, double &pgen);
     // can throw a NoExcitFound exception
     // generate a double excitation
-    detType generateDoubleExcit(detType const &source, double &hel);
+    detType generateDoubleExcit(detType const &source, double &hel, double &pgen);
     // can throw a NoExcitFound exception
+
+    // for exception handling: What happens if no excitation exist
+    double selfExcitationProb(detType const &source);
 
     // pick two electrons
     std::vector<int> pickBiasedElecs(
-    		std::vector<int> &elecs, detType const &source);
+    		std::vector<int> &elecs, detType const &source, double &pgen);
 
     // compute the probability to generate an excitation moving the electrons
     // src to the orbitals tgt
@@ -58,7 +61,7 @@ private:
     void constructClassCount(detType const &source);
 
     ProbUpdater pBiasGen;
-    double pParallel, pDoubles, pgen;
+    double pParallel, pDoubles;
     // auxiliary matrix for internal excitation communication
     ExcitmatType excitmat;
     // orbitals occupied in a source

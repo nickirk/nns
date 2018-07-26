@@ -21,12 +21,12 @@ public:
 			detType const &HF, Parametrization<T> const &para_);
 	FullSampler(Hamiltonian const &H_, Basis const &fullBasis_,
 			detType const &HF, Parametrization<T> const &para_);
-	void iterate(coeffType &cI, detType &dI, double& weight, int i) const;
+	void iterate(coeffType &cI, detType &dI, double& weight, int i);
 	// create a dynamic polymorphic copy
 	virtual FullSampler* clone() const {return new FullSampler(*this);}
 	virtual ~FullSampler();
 private:
-	mutable int pos;
+	int pos;
   // sampling depends on the coefficients, as they have to be given alongside the determinants
     Parametrization<T> const *para;
 };

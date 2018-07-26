@@ -55,7 +55,8 @@ public:
 
 class NoExcitationFound{
 public:
-	NoExcitationFound(){};
+	NoExcitationFound(int lvl_):lvl(lvl_){};
+	int lvl;
 };
 
 class UnconvergedEigenproblem{

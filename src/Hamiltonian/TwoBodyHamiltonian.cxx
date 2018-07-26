@@ -95,6 +95,23 @@ void TwoBodyHamiltonian::setMatrixElement(int p, int q, int r, int s, double new
 
 //---------------------------------------------------------------------------------------------------//
 
+void TwoBodyHamiltonian::setMatrixElement(double newEntry){
+    // core energy E_core
+
+    coreEnergy=newEntry;
+
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+double TwoBodyHamiltonian::getMatrixElement() const {
+    // core energy E_core
+
+    return coreEnergy;
+}
+
+//---------------------------------------------------------------------------------------------------//
+
 double TwoBodyHamiltonian::getMatrixElement(int p, int q) const {
     // <p|h|q> a+_p a_q
     int pq{0};
@@ -257,6 +274,9 @@ double TwoBodyHamiltonian::operator()(detType const &alpha, detType const &beta)
                 }
             }
         }
+
+        // add the core energy
+        diagonalTerm += coreEnergy;
         
         return diagonalTerm;
     }

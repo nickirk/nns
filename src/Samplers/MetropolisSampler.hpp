@@ -17,21 +17,25 @@ namespace networkVMC{
 template <typename T=VecType>
 class MetropolisSampler: public Sampler {
 public:
-	MetropolisSampler(ExcitationGenerator const &eG_, Basis const &fullBasis_, detType const &HF, Parametrization<T> const &para_):
-			Sampler(eG_,fullBasis_,HF),para(&para_),lastCoeff(para_.getCoeff(cDet)){};
-	MetropolisSampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF, Parametrization<T> const &para_):
-			Sampler(H_,fullBasis_,HF),para(&para_),lastCoeff(para_.getCoeff(cDet)){};
+	MetropolisSampler(ExcitationGenerator const &eG_, Basis const &fullBasis_, detType const &HF,
+			          Parametrization<T> const &para_, int numDets_ = 100):
+			Sampler(eG_,fullBasis_,HF,numDets_),para(&para_),lastCoeff(para_.getCoeff(cDet)){};
+	MetropolisSampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
+			          Parametrization<T> const &para_, int numDets_ = 100):
+			Sampler(H_,fullBasis_,HF,numDets_),para(&para_),lastCoeff(para_.getCoeff(cDet)){};
 	virtual ~MetropolisSampler();
 	// create a dynamic polymorphic copy
 	virtual MetropolisSampler* clone() const {return new MetropolisSampler(*this);}
 	//Do a markov step
-	virtual void iterate(coeffType &cI, detType &dI, double &weight, int i) const;
+	virtual void iterate(coeffType &cI, detType &dI, double &weight, int i);
 	// this is a markov-type sampler
 	SamplerType type() const {return Markov;}
+
+	void resetSpecs(){lastCoeff = para->getCoeff(cDet);}
 private:
   // sampling depends on the coefficients, as they have to be given alongside the determinants
   Parametrization<T> const *para;
-	mutable coeffType lastCoeff;
+	coeffType lastCoeff;
 };
 
 }

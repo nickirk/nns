@@ -22,12 +22,14 @@ public:
 	// create a dynamic polymorphic copy
 	virtual ListGen* clone() const {return new ListGen(*this);}
 	// get the i-th entry
-	virtual void iterate(coeffType &cI, detType &dI, double& weight, int i) const;
+	virtual void iterate(coeffType &cI, detType &dI, double& weight, int i);
 	void diffuse(std::vector<detType> &list) const;
 	void setDiffuseList(std::vector<detType > const &list){diffuseList=list;};
 	virtual detType getDet(int i) const;
 	virtual detType getDet() const;
     virtual int getNumDets() const;
+
+    void resetSpecs();
 private:
 	mutable std::vector<detType > diffuseList;
   // sampling depends on the coefficients, as they have to be given alongside the determinants

@@ -31,7 +31,7 @@ template <typename T=VecType>
 class Trainer {
 public:
 // supply a Parametrization, a sampler, a solver and the cost function
-	Trainer(Parametrization<T> &NNW_, Sampler const &msampler,
+	Trainer(Parametrization<T> &NNW_, Sampler &msampler,
 			Solver<T> &sl, CostFunction &cf, Hamiltonian const &H_);
 // train() tries to optimize the parameters of the NNW with respect to its cost function
 	void train();
@@ -51,7 +51,9 @@ private:
 	Hamiltonian const &modelHam;
 	// the parameterization of the wave function
 	Parametrization<T> &NNW;
-	Sampler const &msampler;
+	// the sampler generating the random states (changes its state
+	// when sampling)
+	Sampler &msampler;
 	// the solver that optimizes the parameters (changes its parameters)
 	Solver<T> &sl;
 	// The cost function with respect to which we optimize (is set up to fit the sampler)

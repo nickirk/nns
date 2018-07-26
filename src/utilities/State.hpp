@@ -157,9 +157,11 @@ public:
    return size;
  };
 
- int locate(int iDet) const{
-  //for test purpose, locate the i'th det in memory
-   int size(0);
+ size_t locate(size_t iDet) const{
+  //locate the i'th det in memory
+  // TODO: Directly use cDets[i].size() - the current loop makes
+  // no sense: We call cDets[i].size() to compute cDets[i].size()???
+   size_t size(0);
    for (size_t i(0); i< iDet;++i){
      for (size_t j(0); j < cDets[i].size(); ++j){
        size+=1;
@@ -175,8 +177,8 @@ private:
     std::vector<double> storedWeights;
    
   // util of flags
-    bool fSortedDet;
     bool fSortedCoeff;
+    bool fSortedDet;
     bool fSortedWeight;
 
 

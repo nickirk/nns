@@ -16,7 +16,7 @@ int main(){
   int spinDown(2);
   SpinConfig spinConfig(spinUp, spinDown, numStates);
   int numHidden(20);
-  double trainRate(0.001);
+  double trainRate(0.0001);
   Basis basis(spinConfig);
   FermiHubbardHamiltonian modelHam(numStates);
   double U{4.}, t{-1};
@@ -34,9 +34,9 @@ int main(){
   //ListGen<VecCType> ugSampler(modelHam, basis, HF, rbm);
   //ListGen<VecCType> ugSampler(RSHG, basis, HF, rbm);
   //ugSampler.setNumDets(100);
-  EnergyEs eCF(modelHam, 20);
+  EnergyEs eCF(modelHam, -1);
   MetropolisSampler<VecCType> ugSampler(RSHG, basis, HF, rbm);
-  ugSampler.setNumDets(1000);
+  ugSampler.setNumDets(500);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
   double energy{0.0};
@@ -45,7 +45,7 @@ int main(){
   //StochasticReconfiguration<VecCType> sl(rbm,trainRate);
   Trainer<VecCType> ev(rbm, ugSampler, sl, eCF,modelHam);
   ofstream myfile1;
-  myfile1.open ("en");
+  myfile1.open ("en2");
   for(int l(0); l<50000; ++l){
     //trainRate *= exp(-0.0002);
     std::cout << "trainRate=" << trainRate << std::endl;
