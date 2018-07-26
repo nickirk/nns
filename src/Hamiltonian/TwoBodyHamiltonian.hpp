@@ -69,13 +69,8 @@ class TwoBodyHamiltonian: public Hamiltonian{
   std::vector<double> twoBodyEntries;
   // core energy
   double coreEnergy;
-  int twoBodyIndex(int s, int r, int q, int p) const{
-		return s + r * d + q * d * d + p * d * d * d;
-  }
-
-  int oneBodyIndex(int s, int r) const{
-		return s + d * r;
-  }
+  int twoBodyIndex(int s, int r, int q, int p) const;
+  int oneBodyIndex(int s, int r) const;
 
 protected:
   bool linExactFlag;

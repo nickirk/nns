@@ -46,9 +46,17 @@ void TwoBodyHamiltonian::initMatrixStorage(bool bspin_orbs){
 
 //---------------------------------------------------------------------------------------------------//
 
+int TwoBodyHamiltonian::twoBodyIndex(int p, int q, int r, int s) const{
+	// the index of the four-index integral with indices p,q,r,s
+    int pr = oneBodyIndex(p,r);
+    int qs = oneBodyIndex(q,s);
+    return oneBodyIndex(pr,qs);
+}
 
-void TwoBodyHamiltonian::setMatrixElement(int p, int q, double newEntry){
-    // <p|h|q> a+_p a_q
+//---------------------------------------------------------------------------------------------------//
+
+int TwoBodyHamiltonian::oneBodyIndex(int p, int q) const{
+	// the index of the two-index integral with indices p,q
     int pq{0};
 
     if (p > q){
@@ -57,6 +65,15 @@ void TwoBodyHamiltonian::setMatrixElement(int p, int q, double newEntry){
     else{
         pq = (q*(q-1))/2 + p;
     }
+    return pq;
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+
+void TwoBodyHamiltonian::setMatrixElement(int p, int q, double newEntry){
+    // <p|h|q> a+_p a_q
+    int pq = oneBodyIndex(p,q);
 
     oneBodyEntries[pq-1]=newEntry;
 }
@@ -66,30 +83,7 @@ void TwoBodyHamiltonian::setMatrixElement(int p, int q, double newEntry){
 void TwoBodyHamiltonian::setMatrixElement(int p, int q, int r, int s, double newEntry){
     // <pq|rs> a+_p a+_q a_s a_r
 
-    int pr{0},qs{0};
-    int pqrs{0};
-
-    if (p > r){
-        pr = (p*(p-1))/2 + r;
-    }
-    else{
-        pr = (r*(r-1))/2 + p;
-    }
-
-    if (q > s){
-        qs = (q*(q-1))/2 + s;
-    }
-    else{
-        qs = (s*(s-1))/2 + q;
-    }
-
-    if (pr > qs){
-        pqrs = (pr*(pr-1))/2 + qs;
-    }
-    else{
-        pqrs = (qs*(qs-1))/2 + pr;
-    }
-
+	int pqrs = twoBodyIndex(p,q,r,s);
     twoBodyEntries[pqrs-1]=newEntry;
 }
 
@@ -114,14 +108,7 @@ double TwoBodyHamiltonian::getMatrixElement() const {
 
 double TwoBodyHamiltonian::getMatrixElement(int p, int q) const {
     // <p|h|q> a+_p a_q
-    int pq{0};
-
-    if (p > q){
-        pq = (p*(p-1))/2 + q;
-    }
-    else{
-        pq = (q*(q-1))/2 + p;
-    }
+    int pq = oneBodyIndex(p,q);
 
     double h_pq = 0.0;
     h_pq = oneBodyEntries[pq-1];
@@ -135,30 +122,7 @@ double TwoBodyHamiltonian::getMatrixElement(int p, int q, int r, int s) const {
 
     // <pq|rs> a+_p a+_q a_s a_r
 
-    int pr{0},qs{0};
-    int pqrs{0};
-
-    if (p > r){
-        pr = (p*(p-1))/2 + r;
-    }
-    else{
-        pr = (r*(r-1))/2 + p;
-    }
-
-    if (q > s){
-        qs = (q*(q-1))/2 + s;
-    }
-    else{
-        qs = (s*(s-1))/2 + q;
-    }
-
-    if (pr > qs){
-        pqrs = (pr*(pr-1))/2 + qs;
-    }
-    else{
-        pqrs = (qs*(qs-1))/2 + pr;
-    }
-
+	int pqrs = twoBodyIndex(p,q,r,s);
     double u_pqrs = 0.0; 
     u_pqrs = twoBodyEntries[pqrs-1];
 
