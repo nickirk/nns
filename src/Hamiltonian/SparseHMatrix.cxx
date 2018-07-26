@@ -9,7 +9,7 @@
 #include "../math/constants.hpp"
 #include "SparseHMatrix.hpp"
 #include "../utilities/State.hpp"
-#include "Hamiltonian.hpp"
+#include "TwoBodyHamiltonian.hpp"
 
 namespace networkVMC{
 SparseHMatrix::~SparseHMatrix() {}

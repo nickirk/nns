@@ -8,14 +8,14 @@
 #ifndef SRC_HAMILTONIAN_FERMIONICHAMILTONIAN_HPP_
 #define SRC_HAMILTONIAN_FERMIONICHAMILTONIAN_HPP_
 
-#include "Hamiltonian.hpp"
+#include "TwoBodyHamiltonian.hpp"
 
 namespace networkVMC{
 
 // Implementation for hamiltonians with fermionic commutation relations
-class FermionicHamiltonian: public Hamiltonian {
+class FermionicHamiltonian: public TwoBodyHamiltonian {
 public:
-	FermionicHamiltonian(int dimension):Hamiltonian(dimension){};
+	FermionicHamiltonian(int dimension):TwoBodyHamiltonian(dimension){};
 	virtual ~FermionicHamiltonian();
 // The fermi sign is the main difference to the plain Hamiltonian
 	int getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex) const;

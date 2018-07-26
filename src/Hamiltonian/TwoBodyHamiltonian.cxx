@@ -1,14 +1,14 @@
-#include "Hamiltonian.hpp"
 #include "../HilbertSpace/Determinant.hpp"
 #include <random>
 #include <cmath>
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include "TwoBodyHamiltonian.hpp"
 
 namespace networkVMC{
 
-int Hamiltonian::getId(int i) const {
+int TwoBodyHamiltonian::getId(int i) const {
     // convert a spin orbital index to a spatial one if necessary
     int ind{0};
 
@@ -30,7 +30,7 @@ int Hamiltonian::getId(int i) const {
 //---------------------------------------------------------------------------------------------------//
 
 
-void Hamiltonian::initMatrixStorage(bool bspin_orbs){
+void TwoBodyHamiltonian::initMatrixStorage(bool bspin_orbs){
     // are integrals stored in spin or spatial orbitals
     
     spinOrbs = false;
@@ -47,7 +47,7 @@ void Hamiltonian::initMatrixStorage(bool bspin_orbs){
 //---------------------------------------------------------------------------------------------------//
 
 
-void Hamiltonian::setMatrixElement(int p, int q, double newEntry){
+void TwoBodyHamiltonian::setMatrixElement(int p, int q, double newEntry){
     // <p|h|q> a+_p a_q
     int pq{0};
 
@@ -63,7 +63,7 @@ void Hamiltonian::setMatrixElement(int p, int q, double newEntry){
 
 //---------------------------------------------------------------------------------------------------//
 
-void Hamiltonian::setMatrixElement(int p, int q, int r, int s, double newEntry){
+void TwoBodyHamiltonian::setMatrixElement(int p, int q, int r, int s, double newEntry){
     // <pq|rs> a+_p a+_q a_s a_r
 
     int pr{0},qs{0};
@@ -95,7 +95,7 @@ void Hamiltonian::setMatrixElement(int p, int q, int r, int s, double newEntry){
 
 //---------------------------------------------------------------------------------------------------//
 
-double Hamiltonian::getMatrixElement(int p, int q) const {
+double TwoBodyHamiltonian::getMatrixElement(int p, int q) const {
     // <p|h|q> a+_p a_q
     int pq{0};
 
@@ -114,7 +114,7 @@ double Hamiltonian::getMatrixElement(int p, int q) const {
 
 //---------------------------------------------------------------------------------------------------//
 
-double Hamiltonian::getMatrixElement(int p, int q, int r, int s) const {
+double TwoBodyHamiltonian::getMatrixElement(int p, int q, int r, int s) const {
 
     // <pq|rs> a+_p a+_q a_s a_r
 
@@ -151,9 +151,10 @@ double Hamiltonian::getMatrixElement(int p, int q, int r, int s) const {
 //---------------------------------------------------------------------------------------------------//
 
 
-double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
-    // get the Hamiltonian matrix element H_{alpha,beta} between two 
+double TwoBodyHamiltonian::operator()(detType const &alpha, detType const &beta) const{
+    // get the TwoBodyHamiltonian matrix element H_{alpha,beta} between two
     // configuration alpha and beta
+	// THIS IS FOR SPINFUL TwoBodyHamiltonianS
 //  std::cout << "size d=" << d << " alpha size=" << alpha.size() << " beta size" << beta.size() << std::endl;
     if(static_cast<int>(alpha.size())!=d || d!=static_cast<int>(beta.size())){
       if(alpha.size()==beta.size()){
@@ -183,23 +184,7 @@ double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
     // orbitals between the positions of the spin orbitals involved 
     // in the excitation
     // spin orbitals are stored in range 1,...,M
-    for (int i=0;i<d;++i){
-        diff=static_cast<int>(alpha[i])-static_cast<int>(beta[i]);
-        if (diff>0){
-            // holes created in alpha
-            holes.push_back(i+1);
-        }
-        if (diff<0){
-            // particles created in beta
-            excitations.push_back(i+1);
-        }
-        else{
-            // these spin orbitals are present in both
-            if (diff==0 && alpha[i]){
-                same.push_back(i+1);
-            }
-        }
-    }
+    getExcitation(alpha,beta,excitations,holes,same);
     // holes and excitations are already ordered, i.e. 
     // holes[1] > holes[0] and excitations[1] > excitations[0]
     if (holes.size()!=excitations.size() || holes.size()>2){
@@ -243,7 +228,7 @@ double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
     if (holes.size()==0){
     	// do a consistency check if there are actually any electrons in the determinants
     	if(same.size()==0) throw InvalidDeterminantError();
-        // diagonal Hamiltonian matrix element, i.e. alpha = beta
+        // diagonal TwoBodyHamiltonian matrix element, i.e. alpha = beta
         double diagonalTerm{0.0};
         int indi{0},indj{0};
         // since the configurations are the same the parity is +1
@@ -364,10 +349,10 @@ double Hamiltonian::operator()(detType const &alpha, detType const &beta) const{
 
 //---------------------------------------------------------------------------------------------------//
 
-//for testing purposes - prints hamiltonian in N particle sector
+//for testing purposes - prints TwoBodyHamiltonian in N particle sector
 
-void Hamiltonian::printMatrix(int N){
-  std::cout<<"Printing Hamiltonian\n";
+void TwoBodyHamiltonian::printMatrix(int N){
+  std::cout<<"Printing TwoBodyHamiltonian\n";
   std::vector<int> alpha, beta;
 }
 

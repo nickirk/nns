@@ -6,12 +6,12 @@
  */
 
 #include "WeightedSelector.hpp"
-#include "../Hamiltonian.hpp"
 #include "../../HilbertSpace/Determinant.hpp"
 #include <vector>
 #include <cmath>
 #include <iterator>
 #include <iostream>
+#include "../TwoBodyHamiltonian.hpp"
 
 namespace networkVMC{
 

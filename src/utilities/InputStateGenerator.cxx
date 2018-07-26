@@ -8,10 +8,11 @@
 #include "InputStateGenerator.hpp"
 
 #include "../Samplers/Sampler.hpp"
-#include "../Hamiltonian/Hamiltonian.hpp"
 #include "../Network/Parametrization.hpp"
 #include "../Hamiltonian/ExcitationGenerators/ConnectionGenerators/ConnectionGenerator.hpp"
 #include <iostream>
+
+#include "../Hamiltonian/TwoBodyHamiltonian.hpp"
 namespace networkVMC {
 
 template<typename T>

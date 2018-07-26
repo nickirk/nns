@@ -27,6 +27,9 @@ int verbatimCast(detType const & det);
 
 // for testing purposes: get the number of orbitals in which a,b differ
 int getExcitLvl(detType const &a, detType const &b);
+// useful for matrix element generation: get the orbs in which a and b differ
+void getExcitation(detType const &a, detType const &b, std::vector<int> &excitations,
+		std::vector<int> &holes, std::vector<int> &same);
 
 // binary operators for determinants
 bool operator == (detType const &a, detType const &b);

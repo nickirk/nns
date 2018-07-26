@@ -11,7 +11,7 @@
 #include <vector>
 #include <complex>
 
-#include "../Hamiltonian/Hamiltonian.hpp"
+#include "../Hamiltonian/TwoBodyHamiltonian.hpp"
 #include "../utilities/State.hpp"
 
 namespace networkVMC{
@@ -59,7 +59,7 @@ nablaType EnergyEsPreFetched::nabla(State const &input) const{
     std::vector<detType> coupledDets = input.coupledDets(i);
     std::vector<double> coupledWeights = input.coupledWeights(i);
     A += c_i * H(input.det(i), input.det(i));
-    std::cout << "c_i=" << c_i << std::endl;
+    //std::cout << "c_i=" << c_i << std::endl;
     for (size_t j=0; j < coupledDets.size(); ++j){
       A += coupledC_j[j] * H(input.det(i),
                         coupledDets[j])/(coupledC_j.size()*coupledWeights[j]);

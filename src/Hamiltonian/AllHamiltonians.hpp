@@ -12,5 +12,7 @@
 #include "BosonicHamiltonian.hpp"
 #include "FermionicHamiltonian.hpp"
 #include "FermiHubbardHamiltonian.hpp"
+#include "HeisenbergHamiltonian.hpp"
+#include "Hamiltonian.hpp"
 
 #endif /* SRC_HAMILTONIAN_ALLHAMILTONIANS_HPP_ */

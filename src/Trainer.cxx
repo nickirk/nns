@@ -6,13 +6,13 @@
  */
 
 #include "Trainer.hpp"
-#include "Hamiltonian/Hamiltonian.hpp"
 #include "Samplers/Sampler.hpp"
 #include "Solvers/Solver.hpp"
 #include "Network/Parametrization.hpp"
 #include <iostream>
 #include <memory>
 #include "CostFunctions/CostFunction.hpp"
+#include "Hamiltonian/TwoBodyHamiltonian.hpp"
 #include "utilities/InputStateGenerator.hpp"
 
 namespace networkVMC{

@@ -11,10 +11,10 @@
 //this excitation generator uses the matrix elements of a Hamiltonian to get
 //generation probabilities
 
+#include "../TwoBodyHamiltonian.hpp"
 #include "ExcitationGenerator.hpp"
 #include "ProbUpdater.hpp"
 #include "ExcitmatType.hpp"
-#include "../Hamiltonian.hpp"
 
 namespace networkVMC {
 
@@ -84,7 +84,8 @@ private:
     // number of pairs of alpha-beta spin electrons
     int ab_elec_pairs;
 
-	Hamiltonian const *H;
+    // Hamiltonian used for excitation generation
+	TwoBodyHamiltonian const *H;
 };
 
 } /* namespace networkVMC */

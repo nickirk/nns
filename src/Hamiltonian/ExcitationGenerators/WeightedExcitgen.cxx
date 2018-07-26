@@ -10,14 +10,16 @@
 #include "../../HilbertSpace/Determinant.hpp"
 #include "../../utilities/TypeDefine.hpp"
 #include "../../utilities/Errors.hpp"
-#include "../Hamiltonian.hpp"
+#include "../TwoBodyHamiltonian.hpp"
 #include "ProbUpdater.hpp"
 #include <iostream>
 
 namespace networkVMC {
 
+// WeightedExcitgen only works for two-body Hamiltonians
+// as it used the integrals to weight excitations
 WeightedExcitgen::WeightedExcitgen(Hamiltonian const &H_, detType const &HF):
-	ClonableExcitgen<WeightedExcitgen>(),pBiasGen(ProbUpdater(HF)),H(&H_){
+	ClonableExcitgen<WeightedExcitgen>(),pBiasGen(ProbUpdater(HF)),H(&dynamic_cast<TwoBodyHamiltonian const>(H_)){
 	pParallel = pBiasGen.pParallel();
 	pDoubles = pBiasGen.pDoubles();
 }

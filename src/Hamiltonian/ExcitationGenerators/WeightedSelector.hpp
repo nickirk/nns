@@ -16,13 +16,13 @@
 
 namespace networkVMC{
 
-class Hamiltonian;
+class TwoBodyHamiltonian;
 
 class WeightedSelector {
 public:
 	// this is created on the fly to select some parts/holes from a determinant
 	// called source, weighted with a Hamiltonian H
-	WeightedSelector(Hamiltonian const &H_, detType const &source_):
+	WeightedSelector(TwoBodyHamiltonian const &H_, detType const &source_):
 		H(H_),source(source_),norbs(source_.size()){};
 	virtual ~WeightedSelector();
     // select a hole for a single excitation (hel is the matrix element of that excitation)
@@ -40,7 +40,7 @@ public:
 private:
 
     // The weighted selector knows the Hamiltonian
-    Hamiltonian const &H;
+    TwoBodyHamiltonian const &H;
     // and the starting point
     detType const &source;
     std::size_t norbs;

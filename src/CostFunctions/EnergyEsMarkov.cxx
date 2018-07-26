@@ -11,8 +11,8 @@
 #include <complex>
 #include <iostream>
 
-#include "../utilities/State.hpp"
 #include "../Hamiltonian/Hamiltonian.hpp"
+#include "../utilities/State.hpp"
 
 namespace networkVMC{
 
@@ -62,7 +62,7 @@ nablaType EnergyEsMarkov::nabla(State const &input) const{
     std::vector<coeffType> coupledC_j = input.coupledCoeffs(i);
     std::vector<detType> coupledDets = input.coupledDets(i);
     std::vector<double> coupledWeights = input.coupledWeights(i);
-    int tid = omp_get_thread_num();
+    //int tid = omp_get_thread_num();
     //std::cout << "numProc=" << tid << " EnergyEsMarkov.cxx: c_i=" << c_i << std::endl;
     int coupledSize = input.coupledDets(i).size();
    int pos=input.locate(i);

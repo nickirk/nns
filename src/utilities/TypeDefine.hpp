@@ -34,7 +34,7 @@ using nablaType = std::vector<coeffType>;
 // Supertypes for samplers and Hamiltonians to set defaults
 // and avoid invalid combinations
 enum SamplerType {Markov, PreFetched};
-enum HType {Hubbard, AbInitio, Constant};
+enum HType {Hubbard, AbInitio, Constant, Heisenberg};
 
 }
 #endif /* SRC_UTILITIES_TYPEDEFINE_HPP_ */

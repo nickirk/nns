@@ -13,9 +13,9 @@
 #include <iostream>
 
 #include "../HilbertSpace/Basis.hpp"
-#include "../Hamiltonian/Hamiltonian.hpp"
 #include "../Hamiltonian/ExcitationGenerators/ExcitationGenerator.hpp"
 #include "../Hamiltonian/ExcitationGenerators/WeightedExcitgen.hpp"
+#include "../Hamiltonian/TwoBodyHamiltonian.hpp"
 
 namespace networkVMC{
 

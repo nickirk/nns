@@ -5,8 +5,9 @@
  *      Author: guther
  */
 
-#include "../Hamiltonian.hpp"
 #include "defaultExcitgensMap.hpp"
+
+#include "../TwoBodyHamiltonian.hpp"
 #include "AllExcitationGenerators.hpp"
 
 namespace networkVMC{
@@ -24,6 +25,7 @@ excitgenPtr getDefaultExcitgen(Hamiltonian const &H,
 		defaultExcitgen = excitgenPtr{new WeightedExcitgen{H,HF}};
 		break;
 	case Constant:
+	case Heisenberg:
 	default:
 		defaultExcitgen = excitgenPtr{new UniformExcitgen{HF}};
 	}

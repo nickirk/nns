@@ -17,7 +17,6 @@ namespace networkVMC{
 // Abstract base class for cost functions
 
 class State;
-class CFPars;
 
 class CostFunction{
 public:

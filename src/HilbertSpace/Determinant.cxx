@@ -6,7 +6,7 @@
  */
 
 #include "Determinant.hpp"
-
+#include "../utilities/Errors.hpp"
 #include <vector>
 #include <stdio.h>
 #include <iostream>
@@ -84,6 +84,32 @@ int getExcitLvl(detType const &a, detType const &b){
 		if(a[i]^b[i]) elvl += 1;
 	}
 	return elvl/2;
+}
+
+void getExcitation(detType const &a, detType const &b, std::vector<int> &excitations,
+		std::vector<int> &holes, std::vector<int> &same){
+	int diff = 0;
+	int const d = a.size();
+	// we can only get excitations between same-sized determinants
+	if(d != b.size()) throw SizeMismatchError(d,b.size());
+    // get the differences in occupied obitals
+    for (int i=0;i<d;++i){
+        diff=static_cast<int>(a[i])-static_cast<int>(b[i]);
+        if (diff>0){
+            // holes created in alpha
+            holes.push_back(i+1);
+        }
+        if (diff<0){
+            // particles created in beta
+            excitations.push_back(i+1);
+        }
+        else{
+            // these spin orbitals are present in both
+            if (diff==0 && a[i]){
+                same.push_back(i+1);
+            }
+        }
+    }
 }
 
 //---------------------------------------------------------------------------------------------------//
