@@ -18,9 +18,9 @@ template <typename T=VecType>
 class FullSampler: public Sampler {
 public:
 	FullSampler(ExcitationGenerator const &eG_, Basis const &fullBasis_,
-			detType const &HF, Parametrization<T> const &para_);
+			Parametrization<T> const &para_);
 	FullSampler(Hamiltonian const &H_, Basis const &fullBasis_,
-			detType const &HF, Parametrization<T> const &para_);
+			Parametrization<T> const &para_);
 	void iterate(coeffType &cI, detType &dI, double& weight, int i);
 	// create a dynamic polymorphic copy
 	virtual FullSampler* clone() const {return new FullSampler(*this);}
