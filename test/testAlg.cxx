@@ -69,7 +69,7 @@ int main(){
   //MetropolisSampler<VecType> sampler(RSHG, basis, HF,NNW);
   //sampler.setNumDets(1000);
   //ListGen<VecType> sampler(RSHG, basis, HF,NNW,1000);
-  FullSampler<> sampler(modelHam, basis, HF, NNW);
+  FullSampler<> sampler(modelHam, basis,NNW);
   ADAM<VecType> sl(trainRate);
   //AcceleratedGradientDescent<> sl(trainRate);
   //sampler.diffuse(list,spinConfig);

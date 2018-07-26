@@ -25,29 +25,26 @@ using namespace networkVMC;
 
 using namespace std;
 int main(){
-  int numSites(6);
-  int numStates(2*numSites);
-  int spinUp(3);
-  int spinDown(3);
+  int numSites;
   int nexcit,nsingleexcit,ndoubleexcit;
-  
-  SpinConfig spinConfig{spinUp, spinDown, numStates};
   int numHidden(10*numSites);
-  vector<int> size_NNW = {numStates, numHidden, 2};
   // which random excitation generator should be tested
   int test_gen_rand = 2;
-  //generate basis, the basis class constructor takes in the spin configurations.
-  Basis basis(spinConfig);
   //generate hamiltonian
-  AbInitioHamiltonian modelHam(numStates);
+  AbInitioHamiltonian modelHam(0);
   //double U{2.}, t{-1};
   string file_name = "FCIDUMP";
-  modelHam = readAbInitioHamiltonian(numStates, file_name);
-  //// test Hubbard Hamiltonian
-  //FermionicHamiltonian modelHam(numStates);
-  //double U{8.0}, t{1.0};
-  //modelHam = generateFermiHubbard(numStates, U, t);
+  modelHam = readAbInitioHamiltonian(file_name);
+  numSites = modelHam.getNumOrbs();
+  // generate the spin config
+  int numStates(2*numSites);
+  int spinUp(numStates/2);
+  int spinDown(numStates/2+numStates%2);
+  SpinConfig spinConfig{spinUp,spinDown, numStates};
+  //generate basis, the basis class constructor takes in the spin configurations.
+  Basis basis(spinConfig);
   
+  vector<int> size_NNW = {numStates, numHidden, 2};
   cout << "Basis size= " << basis.getSize() << endl;
   cout << "Determinants: " << endl;
   for (size_t i=0; i<basis.getSize(); ++i){
