@@ -42,7 +42,7 @@ public:
     virtual HType type() const {return AbInitio;}
 };
 
-AbInitioHamiltonian readAbInitioHamiltonian(int dim, std::string file_name);
+AbInitioHamiltonian readAbInitioHamiltonian(int dim, std::string file_name, bool molpro_fcidump=false);
 
 }
 

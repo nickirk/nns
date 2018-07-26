@@ -10,10 +10,10 @@ using namespace networkVMC;
 using namespace std;
 
 int main(){
-  int numSites(8);
+  int numSites(6);
   int numStates(2*numSites);
-  int spinUp(4);
-  int spinDown(4);
+  int spinUp(3);
+  int spinDown(3);
   SpinConfig spinConfig(spinUp, spinDown, numStates);
   int numHidden(20);
   double trainRate(0.005);
@@ -51,9 +51,9 @@ int main(){
   //StochasticReconfiguration<VecCType> sl(rbm,trainRate);
   Trainer<VecCType> ev(rbm, sampler, sl, eCF,modelHam);
   ofstream myfile1;
-  myfile1.open ("en");
+  myfile1.open ("en1");
   for(int l(0); l<100000; ++l){
-    trainRate = std::max(0.001*std::pow(0.99,l), 0.001);
+    trainRate = std::max(0.002*std::pow(0.99,l), 0.001);
     ev.train(trainRate);
     // get the new energy
     energy = ev.getE();

@@ -26,7 +26,30 @@ namespace networkVMC{
 AbInitioHamiltonian::~AbInitioHamiltonian() {
 }
 
-AbInitioHamiltonian readAbInitioHamiltonian(int dim, std::string file_name){
+int AbInitioHamiltonian::getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex) const{
+  //construct sign for conversion canonical shape (basisState 1(up),1(down),...,L(up),L(down)) to relative shape (a_exc^\dagger a_holes source)
+  int fermiSign{0};
+  int start{0}, end{0}, offset{0};
+  fermiSign = 0;
+  if(annihilatorIndex>creatorIndex){
+    start=creatorIndex;
+    end=annihilatorIndex;
+    offset=1;
+  }
+  else{
+    start=annihilatorIndex;
+    end=creatorIndex;
+    offset=1;
+  }
+  for(int k=start+offset;k<end;++k){
+    if(alpha[k]){
+      fermiSign += 1;
+    }
+  }
+  return fermiSign;
+}
+
+AbInitioHamiltonian readAbInitioHamiltonian(int dim, std::string file_name, bool molpro_fcidump){
     // this function reads in the 1- and 2-electron integrals of 
     // an ab-initio Hamiltonian from an FCIDUMP file
 
@@ -40,9 +63,17 @@ AbInitioHamiltonian readAbInitioHamiltonian(int dim, std::string file_name){
     double val = 0.0;
     bool buhf = false;
     bool end_header = false;
+    int spin_types = 0;
+    bool delimiter = false;
  
     std::cout << "Reading in 1- and 2-electron integrals from file "
         << file_name << std::endl;
+    if (molpro_fcidump){
+        std::cout << "Reading from a Molpro FCIDUMP file " << std::endl;
+    }
+    else{
+        std::cout << "Reading from a normal FCIDUMP file " << std::endl;
+    }
 
     if (inputfile.is_open() & inputfile.good()){
         while(!inputfile.eof()){
@@ -53,7 +84,7 @@ AbInitioHamiltonian readAbInitioHamiltonian(int dim, std::string file_name){
             std::vector<std::string> parts{
                 std::istream_iterator<std::string>(iss), {}
             };
-            //// for testing
+            // for testing
             //std::cout << "Number of strings in line: " <<
             //    parts.size() << std::endl;
             //for (std::vector<std::string>::iterator it=parts.begin(); 
@@ -68,18 +99,34 @@ AbInitioHamiltonian readAbInitioHamiltonian(int dim, std::string file_name){
             // (ik|jl) = <ij|kl>
             // but the integral storage is in physical notation <ij|kl>
             // need a case insensitive comparison of the string
-            if ((parts.size() > 1)&&(!end_header)){
+            if ((parts.size() > 0)&&(!end_header)){
                 // find uhf=.false. or .true.
                 for (size_t a=0; a<parts.size(); ++a){
                     std::string lower_parts = parts[a]; 
                     std::transform(lower_parts.begin(), lower_parts.end(), 
                             lower_parts.begin(), ::tolower);
-                    if (lower_parts.substr(0,3) == "uhf"){
+                    if ((lower_parts.substr(0,3) == "uhf") || molpro_fcidump){
                         if (lower_parts == "uhf=.false."){
                             // integrals are in spatial orbitals in FCIDUMP files
                             // but stored in spin orbital basis
                             buhf = false;
                             H.initMatrixStorage(buhf);
+                        }
+                        else if (molpro_fcidump){
+                            if ((!buhf) && (lower_parts.substr(0,6) == "iuhf=1")){
+                                // integrals are in spin orbitals in FCIDUMP file
+                                // and stored in spin orbital basis
+                                buhf = true;
+                                H.initMatrixStorage(buhf);
+                            }
+                            else if ((!buhf) && (lower_parts == "/")){
+                                // complete header has been read in but no indication 
+                                // for spin orbitals in FCIDUMP file has been found
+                                // integrals are in spatial orbitals in FCIDUMP file
+                                // and stored in spin orbital basis
+                                buhf = false;
+                                H.initMatrixStorage(buhf);
+                            }
                         }
                         else {
                             // integrals are in spin orbitals in FCIDUMP file
@@ -101,24 +148,120 @@ AbInitioHamiltonian readAbInitioHamiltonian(int dim, std::string file_name){
                     l = std::stoi(parts[4]);
                     val = std::stod(parts[0]);
 
-                    if ((i!=0)&&(j!=0)&&(k!=0)&&(l!=0)){
-                        // 2-electron integral
-                        // <ij|kl> a+_i a+_j a_l a_k
-                        // set all integrals which ought to be equal 
-                        // by symmetry (real basis set: 8-fold)
-                        // <ij|kl>
-                        H.setMatrixElement(i,j,k,l,val);
-                        //// <ij|kl> = <ji|lk> = <kl|ij> = <lk|ji> =
-                        //// <kj|il> = <li|jk> = <il|kj> = <jk|li>
+                    if (molpro_fcidump){
+                        // Molpro FCIDUMP
+                        // Molpro uses the following ordering for spin orbital FCIDUMPS
+                        // where a denotes an alpha spin and b a beta spin orbital
+                        // 1: (aa|aa) <-> <aa|aa>
+                        // 2: (bb|bb) <-> <bb|bb>
+                        // 3: (aa|bb) <-> <ab|ab>
+                        // 4: <a|h|a>
+                        // 5: <b|h|b>
+                        // with delimiters of 0.00000000 0 0 0 0
+
+                        // check for delimiter
+                        delimiter = false;
+                        if ((i==0)&&(k==0)&&(j==0)&&(l==0)&&(std::fabs(val)<1e-10)){
+                            // this is a delimiter
+                            // move to next type of spin combination
+                            spin_types += 1;
+                            delimiter = true;
+                        }
+
+                        if (!delimiter){
+
+                            if (spin_types == 0){
+                                // <aa|aa>
+                                i = (i*2) - 1;
+                                j = (j*2) - 1;
+                                k = (k*2) - 1;
+                                l = (l*2) - 1;
+                            }
+                            else if (spin_types == 1){
+                                // <bb|bb>
+                                i *= 2;
+                                j *= 2;
+                                k *= 2;
+                                l *= 2;
+                            }
+                            else if (spin_types == 2){
+                                // <ab|ab>
+                                i = (i*2) - 1;
+                                j *= 2;
+                                k = (k*2) - 1;
+                                l *= 2;
+                            }
+                            else if (spin_types == 3){
+                                // <a|h|a>
+                                i = (i*2) - 1;
+                                k = (k*2) - 1;
+                            }
+                            else if (spin_types == 4){
+                                // <b|h|b>
+                                i *= 2;
+                                k *= 2;
+                            }
+                            else if (spin_types == 5){
+                                // core energy
+                            }
+                            else{
+                                std::cerr << "WARNING !" << std::endl;
+                                std::cerr << "Something went wrong while reading in Molpro FCIDUMP file " << file_name << std::endl;
+                                exit(1);
+                            }
+
+                            if ((i!=0)&&(j!=0)&&(k!=0)&&(l!=0)){
+                                // 2-electron integral
+                                // <ij|kl> a+_i a+_j a_l a_k
+                                // set all integrals which ought to be equal 
+                                // by symmetry (real basis set: 8-fold)
+                                // <ij|kl>
+                                H.setMatrixElement(i,j,k,l,val);
+                                //// <ij|kl> = <ji|lk> = <kl|ij> = <lk|ji> =
+                                //// <kj|il> = <li|jk> = <il|kj> = <jk|li>
+                            }
+                            else if ((i!=0)&&(k!=0)&&(j==0)&&(l==0)){
+                                // 1-electron integral
+                                // <i|h|k> a+_i a_k
+                                // set all integrals which ought to be equal
+                                // by symmetry (real basis set: 2-fold)
+                                // <i|h|k> 
+                                H.setMatrixElement(i,k,val);
+                                // <i|h|k> = <k|h|i>
+                            }
+                            else if ((i==0)&&(k==0)&&(j==0)&&(l==0)){
+                                // core energy
+                                // E_core
+                                H.setMatrixElement(val);
+                            }
+                        }
                     }
-                    else if ((i!=0)&&(k!=0)&&(j==0)&&(l==0)){
-                        // 1-electron integral
-                        // <i|h|k> a+_i a_k
-                        // set all integrals which ought to be equal
-                        // by symmetry (real basis set: 2-fold)
-                        // <i|h|k> 
-                        H.setMatrixElement(i,k,val);
-                        // <i|h|k> = <k|h|i>
+                    else{
+                        // normal FCIDUMP
+                        if ((i!=0)&&(j!=0)&&(k!=0)&&(l!=0)){
+                            // 2-electron integral
+                            // <ij|kl> a+_i a+_j a_l a_k
+                            // set all integrals which ought to be equal 
+                            // by symmetry (real basis set: 8-fold)
+                            // <ij|kl>
+                            H.setMatrixElement(i,j,k,l,val);
+                            //// <ij|kl> = <ji|lk> = <kl|ij> = <lk|ji> =
+                            //// <kj|il> = <li|jk> = <il|kj> = <jk|li>
+                        }
+                        else if ((i!=0)&&(k!=0)&&(j==0)&&(l==0)){
+                            // 1-electron integral
+                            // <i|h|k> a+_i a_k
+                            // set all integrals which ought to be equal
+                            // by symmetry (real basis set: 2-fold)
+                            // <i|h|k> 
+                            H.setMatrixElement(i,k,val);
+                            // <i|h|k> = <k|h|i>
+                        }
+                        else if ((i==0)&&(k==0)&&(j==0)&&(l==0)){
+                            // core energy
+                            // E_core
+                            H.setMatrixElement(val);
+                        }
                     }
                 }
                 else{
@@ -151,12 +294,17 @@ AbInitioHamiltonian readAbInitioHamiltonian(int dim, std::string file_name){
                         // by symmetry (real basis set: 2-fold)
                         // <i|h|k> = <k|h|i>
                     }
+                    else if ((i==0)&&(k==0)&&(j==0)&&(l==0)){
+                        // core energy
+                        // E_core
+                        H.setMatrixElement(val);
+                    }
                 }
             }
             // in order to start reading in the integrals
             std::string end_string = parts[0];
             std::transform(end_string.begin(),end_string.end(),end_string.begin(), ::tolower);
-            if (end_string.substr(1,3) == "end"){
+            if ((end_string.substr(1,3) == "end") || (molpro_fcidump && (end_string == "/"))){
                 end_header = true;
             }
         }

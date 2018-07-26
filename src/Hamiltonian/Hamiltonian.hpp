@@ -12,16 +12,18 @@ class Hamiltonian{
   Hamiltonian():d(0),donebodyint(0),dtwobodyint(0),spinOrbs(false),
   linExactFlag(true),partExactFlag(true){}
   //dimension is the dimension of the single-particle Hilbert space
-  explicit Hamiltonian(int dimension):d(dimension),donebodyint(((d*(d+1))/2)),dtwobodyint(((donebodyint*(donebodyint+1))/2)),spinOrbs(false),
-		  oneBodyEntries(std::vector<double>(donebodyint,0.0)),twoBodyEntries(std::vector<double>(dtwobodyint,0.0)),
-		  linExactFlag(true),partExactFlag(true){}
+  explicit Hamiltonian(int dimension):d(dimension),donebodyint(((d*(d+1))/2)),dtwobodyint(((donebodyint*(donebodyint+1))/2)),spinOrbs(false),oneBodyEntries(std::vector<double>(donebodyint,0.0)),twoBodyEntries(std::vector<double>(dtwobodyint,0.0)),coreEnergy(0.0){}
   //explicit Hamiltonian(int dimension):d(dimension),oneBodyEntries(std::vector<double>(d*d,0.0)),twoBodyEntries(std::vector<double>(d*d*d*d,0.0)){}
   // set the one- and two-body integrals of the Hamiltonian operator
   void setMatrixElement(int p, int q, double newEntry);
   void setMatrixElement(int p, int q, int r, int s, double newEntry);
+  // set the core energy of the Hamiltonian operator
+  void setMatrixElement(double newEntry);
   // get the one- and two-body integrals of the Hamiltonian operator
   double getMatrixElement(int p, int q) const;
   double getMatrixElement(int p, int q, int r, int s) const;
+  // get the core energy of the Hamiltonian operator
+  double getMatrixElement() const;
   // convert a spin orbital to a spatial orbitals index
   int getId(int i) const;
   // get the number of orbitals
@@ -61,6 +63,8 @@ class Hamiltonian{
   std::vector<double> oneBodyEntries;
   // 2-e integrals <ij|kl>
   std::vector<double> twoBodyEntries;
+  // core energy
+  double coreEnergy;
   int twoBodyIndex(int s, int r, int q, int p) const{
 		return s + r * d + q * d * d + p * d * d * d;
   }
