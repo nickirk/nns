@@ -18,7 +18,7 @@ int main(){
 	std::cout << test.size() << std::endl;
 	for(int i = 0; i < test.size(); ++i){
 		std::cout << "Adjacent to " << i << ": ";
-		for(auto j:test.adj(i)){
+		for(auto j:test.adjacents(i)){
 			std::cout << j << " ";
 		}
 		std::cout<<std::endl;

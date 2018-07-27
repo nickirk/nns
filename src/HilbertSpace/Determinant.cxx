@@ -48,6 +48,32 @@ void create(detType &det, int pos){
 
 //---------------------------------------------------------------------------------------------------//
 
+int JWStringSign(detType const &a, int annihilatorIndex, int creatorIndex){
+	  //construct sign for conversion canonical shape
+	  //(basisState 1(up),1(down),...,L(up),L(down)) to relative shape (a_exc^\dagger a_holes source)
+	  int fermiSign{0};
+	  int start{0}, end{0}, offset{0};
+	  fermiSign = 0;
+	  if(annihilatorIndex>creatorIndex){
+	    start=creatorIndex;
+	    end=annihilatorIndex;
+	    offset=1;
+	  }
+	  else{
+	    start=annihilatorIndex;
+	    end=creatorIndex;
+	    offset=1;
+	  }
+	  for(int k=start+offset;k<end;++k){
+	    if(a[k]){
+	      fermiSign += 1;
+	    }
+	  }
+	  return fermiSign;
+}
+
+//---------------------------------------------------------------------------------------------------//
+
 std::vector<int> getOccupiedPositions(detType const &det) {
   // return the occupied orbital's indices
   std::vector<int> positions;

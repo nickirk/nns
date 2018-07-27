@@ -20,6 +20,8 @@ namespace networkVMC{
 void create(detType &det, int pos);
 // Remove an electron at orbital pos
 void annihilate(detType &det, int pos);
+// get the sign of the jordan-wigner string from annihilatorIndex to creatorIndex applied to a
+int JWStringSign(detType const &a, int annihilatorIndex, int creatorIndex);
 // Get the occupied orbitals
 std::vector<int> getOccupiedPositions(detType const &det);
 // Read the vector of bools as an integer (i.e. reinterpret cast-style)
