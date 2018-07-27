@@ -90,6 +90,9 @@ void getExcitation(detType const &a, detType const &b, std::vector<int> &excitat
 		std::vector<int> &holes, std::vector<int> &same){
 	int diff = 0;
 	int const d = a.size();
+	holes.clear();
+	excitations.clear();
+	same.clear();
 	// we can only get excitations between same-sized determinants
 	if(d != b.size()) throw SizeMismatchError(d,b.size());
     // get the differences in occupied obitals

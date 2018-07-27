@@ -10,7 +10,6 @@
 
 #include <vector>
 #include "Determinant.hpp"
-#include "../utilities/SpinConfig.hpp"
 
 namespace networkVMC{
 
@@ -18,30 +17,16 @@ namespace networkVMC{
 // It is essentially a map from determinants to indices and vice versa
 class Basis{
   public:
-    Basis(SpinConfig const &spinConfig_);
+    Basis():size(0){};
 // total size of the many-body basis
     std::size_t getSize() const {return size;}
 // Return the determinant with index 'index'
-    detType getDetByIndex(int index) const; // can throw an OutOfRangeError
+    virtual detType getDetByIndex(int index) const = 0; // can throw an OutOfRangeError
 // Return the index of the determinant 'det_'
-    int getIndexByDet(detType const & det_) const; // can throw an InvalidDeterminantError
-// Return the alpha/beta spin distribution
-    SpinConfig const& getSpinConfig() const {return spinConfig;};
-  private:
-    int numEle;
-    SpinConfig spinConfig;
-    int numOrb;
+    virtual int getIndexByDet(detType const & det_) const = 0; // can throw an InvalidDeterminantError
+    virtual ~Basis(){};
+  protected:
     std::size_t size;
-    int indexOfDet;
-    std::vector<int> listOfOrbNum;
-    std::vector<int> combination;
-// internal methods for handling the map
-    int calcSize(int numOrb_, int numEle_);
-    void createBasisDet(int offset, int numEle_);
-    // determinants need to be accessed often, no need to add some
-    // overhead by using an extra class here, better use an alias
-    std::vector<detType > basis;
-    std::vector<int> indexBasis;
 };
 
 }
