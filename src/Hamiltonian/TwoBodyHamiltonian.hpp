@@ -10,13 +10,13 @@ namespace networkVMC{
 class TwoBodyHamiltonian: public Hamiltonian{
  public:
   // constructors
-  TwoBodyHamiltonian():d(0),donebodyint(0),dtwobodyint(0),spinOrbs(false),
+  TwoBodyHamiltonian():d(0),donebodyint(0),dtwobodyint(0),spinOrbs(false),coreEnergy(0.0),
   linExactFlag(true),partExactFlag(true){};
   //dimension is the dimension of the single-particle Hilbert space
   explicit TwoBodyHamiltonian(int dimension):
 		  Hamiltonian(),d(dimension),donebodyint(((d*(d+1))/2)),dtwobodyint(((donebodyint*(donebodyint+1))/2)),
 		  spinOrbs(false),oneBodyEntries(std::vector<double>(donebodyint,0.0)),
-		  twoBodyEntries(std::vector<double>(dtwobodyint,0.0)),coreEnergy(0.0){}
+		  twoBodyEntries(std::vector<double>(dtwobodyint,0.0)),coreEnergy(0.0),partExactFlag(true),linExactFlag(true){}
   //explicit Hamiltonian(int dimension):d(dimension),oneBodyEntries(std::vector<double>(d*d,0.0)),twoBodyEntries(std::vector<double>(d*d*d*d,0.0)){}
   // set the one- and two-body integrals of the Hamiltonian operator
   void setMatrixElement(int p, int q, double newEntry);
@@ -39,8 +39,6 @@ class TwoBodyHamiltonian: public Hamiltonian{
   virtual double operator()(detType const &alpha, detType const &beta) const;
 
   void printMatrix(int N);
-  // the commutation relation of the underlying creation/annihilation operators goes in here
-  virtual int getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex) const =0;
   // this generates all states coupled to source
   // note that - in contrast to excitation generation - this is really
   // a property of the TwoBodyHamiltonian
@@ -75,6 +73,8 @@ class TwoBodyHamiltonian: public Hamiltonian{
 protected:
   bool linExactFlag;
   bool partExactFlag;
+  // the commutation relation of the underlying creation/annihilation operators goes in here
+  virtual int getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex) const =0;
 };
 
 detType getRandomCoupledState(detType const &source, double &p);
