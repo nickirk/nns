@@ -28,7 +28,13 @@ public:
 	virtual HType type() const {return Hubbard;}
 private:
 	double U, t;
+	// add all states coupling to source via sites siteA, siteB to list
+	void addCoupledStates(std::vector<detType> &list, detType const &source, int siteA, int siteB) const;
 };
+
+inline int spatialIndex(int i){
+	return i/2;
+}
 
 } /* namespace networkVMC */
 

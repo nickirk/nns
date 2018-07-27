@@ -19,12 +19,12 @@ public:
 	// It works like the abstract base class, just that it can iterate
     DefaultSampler(ExcitationGenerator const &eG_, Basis const &fullBasis_, detType const &HF,
     		Parametrization<T> const &para_, int numDets_= 100):
-    	Sampler(eG_,fullBasis_,HF,numDets_),para(&para_){};
+    	Sampler(eG_,HF,numDets_),para(&para_),fullBasis(&fullBasis_){};
 
 	// It works like the abstract base class, just that it can iterate
     DefaultSampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
     		Parametrization<T> const &para_, int numDets_= 100):
-    	Sampler(H_,fullBasis_,HF,numDets_),para(&para_){};
+    	Sampler(H_,HF,numDets_),para(&para_),fullBasis(&fullBasis){};
 
 	virtual ~DefaultSampler();
 	// create a dynamic polymorphic copy
@@ -40,8 +40,10 @@ public:
 	}
 private:
 	  // sampling depends on the coefficients, as they have to be given alongside the determinants
-	    Parametrization<T> const *para;
-
+	  Parametrization<T> const *para;
+	  // and the corresponding basis including the information on the number of electrons
+	  // with a given spin
+	  Basis const *fullBasis;
 };
 
 } /* namespace networkVMC */

@@ -20,19 +20,19 @@
 namespace networkVMC{
 
 // explicit constructor
-Sampler::Sampler(ExcitationGenerator const &eG_, Basis const &fullBasis_,
+Sampler::Sampler(ExcitationGenerator const &eG_,
 		  detType const &HF, int numDets_):
 	  excitGen(eG_.clone()),originalRef(HF),
-	  numDets(numDets_),fullBasis(&fullBasis_),cDet(HF){}
+	  numDets(numDets_),cDet(HF){}
 
 //---------------------------------------------------------------------------//
 
 // construct the ExcitationGenerator implicitly from the Hamiltonian
-Sampler::Sampler(Hamiltonian const &H_, Basis const &fullBasis_,
+Sampler::Sampler(Hamiltonian const &H_,
 		  detType const &HF, int numDets_):
 			  excitGen(getDefaultExcitgen(H_,HF).release()),
 			  originalRef(HF),numDets(numDets_),
-			  fullBasis(&fullBasis_),cDet(HF){};
+			  cDet(HF){};
 
 //---------------------------------------------------------------------------//
 
@@ -64,7 +64,7 @@ detType getRandomDeterminant(Basis const &fullBasis){
   // Essentially, we just get a random number and then return the corresponding det
   std::random_device rd;     // only used once to initialise (seed) engine
   std::mt19937 rng{rd()};    // random-number engine used (Mersenne-Twister in this case)
-  std::uniform_int_distribution<int> uni(0,fullBasis.getSize()-1); // guaranteed unbiased
+  std::uniform_int_distribution<int> uni(0,fullBasis.size()-1); // guaranteed unbiased
   auto randomDet = fullBasis.getDetByIndex(uni(rng));
   return randomDet; 
 }

@@ -10,6 +10,7 @@
 
 namespace networkVMC{
 
+// this implementation works for lattices with one-to-one correspondence between single-particle states and sites
 std::vector<detType> LatticeHamiltonian::getCoupledStates(detType const &source) const{
 	// for each site, check if we can couple to an adjacent site
 	std::vector<detType> AllCoupledStates;
@@ -18,24 +19,23 @@ std::vector<detType> LatticeHamiltonian::getCoupledStates(detType const &source)
 		for(auto j:grid->adjacents(i)){
 			// we can create a coupled det if and only if i,j have different spins
 			// i<j to prevent double counting
-			if( i< j and (source[i] xor source[j])){
-				coupledState = source;
-				// flip the spins at i,j
-				if(source[i]){
-					annihilate(coupledState,i);
-					create(coupledState,j);
-				}
-				else{
-					annihilate(coupledState,j);
-					create(coupledState,i);
-				}
-				// we got a couple state, add it to the list
-				AllCoupledStates.push_back(coupledState);
+			if( i< j){
+				addCoupledStates(AllCoupledStates,source,i,j);
 			}
 		}
 	}
-
 	return AllCoupledStates;
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+void LatticeHamiltonian::addCoupledStates(std::vector<detType> &list, detType const &source, int siteA, int siteB) const{
+	// siteA and siteB are two adjacent sites: add all states reachable from source
+	// by hopping on those sites
+	// if we can hop, add the excitation
+	if(source[siteA] xor source[siteB]){
+		list.push_back(excite(source,siteA,siteB));
+	}
 }
 
 }

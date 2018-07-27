@@ -10,8 +10,8 @@
 
 #include "AbInitioHamiltonian.hpp"
 #include "BosonicHamiltonian.hpp"
-#include "FermionicHamiltonian.hpp"
 #include "FermiHubbardHamiltonian.hpp"
+#include "LatticeHamiltonian.hpp"
 #include "HeisenbergHamiltonian.hpp"
 #include "Hamiltonian.hpp"
 

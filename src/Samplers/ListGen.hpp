@@ -35,6 +35,9 @@ private:
   // sampling depends on the coefficients, as they have to be given alongside the determinants
     Parametrization<T> const *para;
 	mutable size_t pos;
+    // and the corresponding basis including the information on the number of electrons
+	// with a given spin
+	Basis const *fullBasis;
 };
 
 }

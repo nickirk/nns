@@ -11,18 +11,20 @@ using namespace networkVMC;
 
 FermiHubbardHamiltonian generateDefaultHubbard(int numSites){
  // Hamiltonian setup
-  int numStates = 2*numSites;
+// mainly there to hide the construction for historic reasons
   double U{4.}, t{-1};
-  return generateFermiHubbard(numStates, U, t);
+  return FermiHubbardHamiltonian(U, t, numSites);
 }
 
-FermionBasis generateDefaultBasis(int numSites){
+SpinConfig generateDefaultSpinConfig(int numSites){
   int numStates = 2*numSites;
   int spinUp = numSites/2;
   int spinDown = numSites/2;
-  SpinConfig spinConfig(spinUp, spinDown, numStates);
-  FermionBasis basis(spinConfig);
-  return basis;
+  return SpinConfig(spinUp, spinDown, numStates);
+}
+
+Basis generateDefaultBasis(int numSites){
+	return Basis(generateDefaultSpinConfig(numSites));
 }
 
 

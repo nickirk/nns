@@ -8,6 +8,7 @@
 #ifndef ERRORS_HPP_
 #define ERRORS_HPP_
 #include <string>
+#include "TypeDefine.hpp"
 // classes for error handling. This is the way to go for
 // exception handling
 
@@ -36,6 +37,10 @@ public:
 	SizeMismatchError(int a,int b):sizeA(a),sizeB(b){};
 	int sizeA, sizeB;
 };
+
+inline void sizeCheck(int i, int j){
+	if(i!=j) throw SizeMismatchError(i,j);
+}
 
 class ActFuncDoNotExist{
   public:
@@ -66,7 +71,7 @@ public:
 
 class InvalidDeterminantError{
 public:
-	InvalidDeterminantError(){};
+	InvalidDeterminantError(detType const &a);
 };
 
 }

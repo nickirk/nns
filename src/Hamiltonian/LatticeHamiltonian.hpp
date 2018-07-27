@@ -31,7 +31,7 @@ public:
 	// number of sites in grid
 	int size() const {return grid->size();}
 	// adjacent sites (for testing purposes)
-	std::set<int> adjacents(int i){return grid->adjacents(i);}
+	std::set<int>const & adjacents(int i) const{return grid->adjacents(i);}
 
 	// generate coupled states on a lattice
 	virtual std::vector<detType> getCoupledStates(detType const &source) const;
@@ -39,6 +39,9 @@ protected:
 	// the lattice on which the Hamiltonian is defined
 	// use a ptr to make introduction of polymorphic lattice easy
 	std::unique_ptr<Lattice> grid;
+	// we re-use this in derived classes to get the coupled states, as the derived versions
+	// boil down to repeated calls to this one
+	virtual void addCoupledStates(std::vector<detType> &list, detType const &source, int siteA, int siteB) const;
 };
 
 } /* namespace networkVMC */

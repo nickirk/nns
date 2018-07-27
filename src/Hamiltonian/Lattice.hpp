@@ -37,7 +37,7 @@ public:
 	// get the number of sites in the lattice
 	int size() const {return numSites;}
 	// get the sites adjacent to site i
-	std::set<int> adjacents(int i) const {return adjacencyList[i];}
+	std::set<int>const & adjacents(int i) const {return adjacencyList[i];}
 	// if two sites with indices i, j are adjacent
 	bool isAdjacent(int i, int j) const;
 

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <iostream>
 
-#include "../src/HilbertSpace/FermionBasis.hpp"
+#include "../src/HilbertSpace/Basis.hpp"
 #include "../src/HilbertSpace/Determinant.hpp"
 //Basis.cxx and Basis.hpp have been tested and passed
 using namespace std;
@@ -14,9 +14,9 @@ int main(){
   int spinUp(numSites/2);
   int spinDown(numSites/2);
   SpinConfig spinConfig{spinUp, spinDown, numStates};
-  FermionBasis basis(spinConfig);
-  cout << "size= " << basis.getSize() << endl;
-  for (int i=0; i < basis.getSize(); ++i){
+  Basis basis(spinConfig);
+  cout << "size= " << basis.size() << endl;
+  for (int i=0; i < basis.size(); ++i){
     detType det;
     det = basis.getDetByIndex(i);
     int index(basis.getIndexByDet(det));

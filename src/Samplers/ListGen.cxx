@@ -8,13 +8,14 @@
 #include "ListGen.hpp"
 #include "../HilbertSpace/Basis.hpp"
 #include "../Network/Parametrization.hpp"
+#include "../utilities/Errors.hpp"
 
 namespace networkVMC{
 
 template <typename T>
 ListGen<T>::ListGen(ExcitationGenerator const &eG_, Basis const &fullBasis_, detType const &HF,
 		Parametrization<T> const &para_, int numDets_):
-	Sampler(eG_,fullBasis_,HF,numDets_),para(&para_),pos(0){
+	Sampler(eG_,HF,numDets_),para(&para_),pos(0),fullBasis(&fullBasis_){
 	std::vector<detType> tmp(numDets_,HF);
 	diffuse(tmp);
 }
@@ -24,7 +25,7 @@ ListGen<T>::ListGen(ExcitationGenerator const &eG_, Basis const &fullBasis_, det
 template <typename T>
 ListGen<T>::ListGen(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
 		Parametrization<T> const &para_, int numDets_):
-	Sampler(H_,fullBasis_,HF,numDets_),para(&para_),pos(0){
+	Sampler(H_,HF,numDets_),para(&para_),pos(0),fullBasis(&fullBasis_){
 	std::vector<detType> tmp(numDets_,HF);
 	diffuse(tmp);
 }

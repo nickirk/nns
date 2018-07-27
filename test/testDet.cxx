@@ -33,13 +33,14 @@ int main(){
   }
   std::cout << std::endl;
 
-  //create out of range
-  //create(det1, 6);
-  //annihilate out of range
-  //annihilate(det1, 6);
-  //create on occupied state
-  //create(det1, 3);
-  //annihilate on empty state
-  annihilate(det1, 1);
+  // test fermi sign
+  detType a(5,false);
+  create(a,1);
+  create(a,3);
+  create(a,4);
+  std::cout << "Sign 3->5: " << excitationSign(a,3,5) << std::endl;
+  std::cout << "Sign 4->2: " << excitationSign(a,4,2) << std::endl;
+  auto b = excite(a,3,5);
+  std::cout << "Sign 5->3: " << excitationSign(b,5,3) << std::endl;
   return 0;
 }

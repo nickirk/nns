@@ -27,11 +27,9 @@ class Basis;
 class Sampler{
 public:
   // explicit constructor
-  Sampler(ExcitationGenerator const &eG_, Basis const &fullBasis_,
-		  detType const &HF, int numDets_= 100);
+  Sampler(ExcitationGenerator const &eG_, detType const &HF, int numDets_= 100);
   // construct the ExcitationGenerator implicitly from the Hamiltonian
-  Sampler(Hamiltonian const &H_, Basis const &fullBasis_,
-		  detType const &HF, int numDets_ = 100);
+  Sampler(Hamiltonian const &H_, detType const &HF, int numDets_ = 100);
   virtual ~Sampler(){};
   virtual Sampler* clone() const = 0;
   // This function is what samplers ought to do: Get a random determinant with some
@@ -84,9 +82,6 @@ private:
   virtual void resetSpecs(){};
 protected:
   int numDets;
-  // and the corresponding basis including the information on the number of electrons
-  // with a given spin
-  Basis const *fullBasis;
   // this is the current sample in terms of determinants
   detType cDet;
 };

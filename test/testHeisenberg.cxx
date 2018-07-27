@@ -7,6 +7,7 @@
 
 #include "../src/Hamiltonian/HeisenbergHamiltonian.hpp"
 #include <iostream>
+#include "testComponents.hpp"
 
 #include "../src/HilbertSpace/Determinant.hpp"
 
@@ -15,14 +16,7 @@ using namespace networkVMC;
 int main(){
 	double J{2};
 	HeisenbergHamiltonian test(J,4,4);
-	std::cout << test.size() << std::endl;
-	for(int i = 0; i < test.size(); ++i){
-		std::cout << "Adjacent to " << i << ": ";
-		for(auto j:test.adjacents(i)){
-			std::cout << j << " ";
-		}
-		std::cout<<std::endl;
-	}
+	testAdj(test);
 	detType a(test.size(),false);
 	std::cout << "FM energy: " << test(a,a) << std::endl;
 	detType b = a;

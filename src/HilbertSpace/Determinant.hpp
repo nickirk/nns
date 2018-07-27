@@ -12,16 +12,21 @@
 #include <vector>
 
 #include "../utilities/TypeDefine.hpp"
-#include "../utilities/Errors.hpp"
 
 namespace networkVMC{
 
 // these should not be members of some class, better use generic functions
-void create(detType &det, int pos);
+void create(detType &det, int pos); // can throw InvalidCreation
 // Remove an electron at orbital pos
-void annihilate(detType &det, int pos);
-// get the sign of the jordan-wigner string from annihilatorIndex to creatorIndex applied to a
-int JWStringSign(detType const &a, int annihilatorIndex, int creatorIndex);
+void annihilate(detType &det, int pos); // can throw InvalidAnnihilation
+// excite from orbtial i to j
+detType excite(detType const &source, int i, int j); // can throw InvalidCreation/Annihilation and OutOfRangeError
+// get the exponent of the jordan-wigner string sign from annihilatorIndex to creatorIndex applied to a
+int JWStringLength(detType const &a, int annihilatorIndex, int creatorIndex);
+// sign induces by applying a_crt^dagger a_ann on a
+inline int excitationSign(detType const &a, int ann, int crt){
+	return -2*(JWStringLength(a,ann,crt)%2)+1;
+}
 // Get the occupied orbitals
 std::vector<int> getOccupiedPositions(detType const &det);
 // Read the vector of bools as an integer (i.e. reinterpret cast-style)

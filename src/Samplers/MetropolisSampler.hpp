@@ -17,12 +17,12 @@ namespace networkVMC{
 template <typename T=VecType>
 class MetropolisSampler: public Sampler {
 public:
-	MetropolisSampler(ExcitationGenerator const &eG_, Basis const &fullBasis_, detType const &HF,
+	MetropolisSampler(ExcitationGenerator const &eG_, detType const &HF,
 			          Parametrization<T> const &para_, int numDets_ = 100):
-			Sampler(eG_,fullBasis_,HF,numDets_),para(&para_),lastCoeff(para_.getCoeff(cDet)){};
-	MetropolisSampler(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
+			Sampler(eG_,HF,numDets_),para(&para_),lastCoeff(para_.getCoeff(cDet)){};
+	MetropolisSampler(Hamiltonian const &H_, detType const &HF,
 			          Parametrization<T> const &para_, int numDets_ = 100):
-			Sampler(H_,fullBasis_,HF,numDets_),para(&para_),lastCoeff(para_.getCoeff(cDet)){};
+			Sampler(H_,HF,numDets_),para(&para_),lastCoeff(para_.getCoeff(cDet)){};
 	virtual ~MetropolisSampler();
 	// create a dynamic polymorphic copy
 	virtual MetropolisSampler* clone() const {return new MetropolisSampler(*this);}

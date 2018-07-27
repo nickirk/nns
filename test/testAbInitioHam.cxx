@@ -17,7 +17,7 @@
 #include "../src/Hamiltonian/AbInitioHamiltonian.hpp"
 #include "../src/Hamiltonian/ExcitationGenerators/AllExcitationGenerators.hpp"
 #include "../src/Network/Nnw.hpp"
-#include "../src/HilbertSpace/Basis.hpp"
+#include "../src/HilbertSpace/FermionBasis.hpp"
 #include "../src/HilbertSpace/Determinant.hpp"
 #include "../src/Samplers/Sampler.hpp"
 using namespace Eigen;
@@ -45,9 +45,9 @@ int main(){
   Basis basis(spinConfig);
   
   vector<int> size_NNW = {numStates, numHidden, 2};
-  cout << "Basis size= " << basis.getSize() << endl;
+  cout << "Basis size= " << basis.size() << endl;
   cout << "Determinants: " << endl;
-  for (size_t i=0; i<basis.getSize(); ++i){
+  for (size_t i=0; i<basis.size(); ++i){
       std::vector<int> positions = getOccupiedPositions(basis.getDetByIndex(i));
       cout << " ";
       for (size_t j=0; j<positions.size(); ++j){
@@ -58,10 +58,10 @@ int main(){
 
   // form Hamiltonian and diagonalise it
   // Eigen matrices are columnmajor by default
-  Eigen::MatrixXd H(Eigen::MatrixXd::Zero(basis.getSize(),
-          basis.getSize()));
-  for (size_t i=0; i<basis.getSize(); ++i){
-      for (size_t j=0; j<basis.getSize(); ++j){
+  Eigen::MatrixXd H(Eigen::MatrixXd::Zero(basis.size(),
+          basis.size()));
+  for (size_t i=0; i<basis.size(); ++i){
+      for (size_t j=0; j<basis.size(); ++j){
           double value = 0.0;
           value = modelHam(basis.getDetByIndex(j),basis.getDetByIndex(i));
           H(j,i) = value;
@@ -70,8 +70,8 @@ int main(){
   cout << "\n Non-zero Hamiltonian matrix elements: i,j,H_ij \n" << endl;
 
   cout.precision(12);
-  for (int i=0; i<basis.getSize(); ++i){
-      for (int j=0; j<basis.getSize(); ++j){
+  for (int i=0; i<basis.size(); ++i){
+      for (int j=0; j<basis.size(); ++j){
           if (std::fabs(H(j,i))>1e-10){
               cout.width(10);
               cout << j; 
@@ -88,8 +88,8 @@ int main(){
   std::ofstream outfile;
   outfile.open("hamiltonian.txt",ios::out);
   outfile << "# i, j, H_ij" << endl;
-  for (int j=0; j<basis.getSize(); ++j){
-      for (int i=j; i<basis.getSize(); ++i){
+  for (int j=0; j<basis.size(); ++j){
+      for (int i=j; i<basis.size(); ++i){
           if (std::fabs(H(j,i))>1e-10){
               outfile.width(10);
               outfile << j+1; 
@@ -111,17 +111,17 @@ int main(){
   }
   cout << "\n The eigenvalues of H are:\n" << eigensolver.eigenvalues() << endl;
   //cout << "\n Matrix whose columns are eigenvector of H: \n" << eigensolver.eigenvectors() << endl;
-  Eigen::MatrixXd eigenvecs(Eigen::MatrixXd::Zero(basis.getSize(),basis.getSize()));
+  Eigen::MatrixXd eigenvecs(Eigen::MatrixXd::Zero(basis.size(),basis.size()));
   eigenvecs = eigensolver.eigenvectors();
   cout << "\n The eigenvectors of H:" << endl;
-  for (size_t j=0; j<basis.getSize(); ++j){
+  for (size_t j=0; j<basis.size(); ++j){
       cout << "\n Eigenvector: " << (j+1) << "\n" << endl;
-      for (size_t i=0; i< basis.getSize(); ++i){
+      for (size_t i=0; i< basis.size(); ++i){
           cout << i << "   " << eigenvecs(i,j) << endl;
       }
   }
   // write eigenvalues to a file
-  Eigen::VectorXd eigenvals(Eigen::VectorXd::Zero(basis.getSize()));
+  Eigen::VectorXd eigenvals(Eigen::VectorXd::Zero(basis.size()));
   eigenvals = eigensolver.eigenvalues();
   outfile.open("eigenvalues.txt",ios::out);
   outfile << "# i, l_i" << endl;
@@ -142,7 +142,7 @@ int main(){
   cout << "************************************************" << endl;
   cout << "\n Deterministic excitation generator\n" << endl;
   cout << "************************************************" << endl;
-  for (size_t i=0; i<basis.getSize(); ++i){
+  for (size_t i=0; i<basis.size(); ++i){
       cout << "\n \n Considering the source determinant:" << endl;
       std::vector<int> positions = getOccupiedPositions(basis.getDetByIndex(i));
       cout << "   ";
@@ -177,7 +177,7 @@ int main(){
           cout << " Counted number: " << CoupledDeterminants.size() << endl;
       }
       int noffdiag = 0;
-      for (size_t j=0; j<basis.getSize(); ++j){
+      for (size_t j=0; j<basis.size(); ++j){
           if (j==i) {continue;}
           if (std::fabs(H(j,i))>1e-10){
               noffdiag += 1;
@@ -209,7 +209,7 @@ int main(){
       cout << "************************************************" << endl;
       cout << "\n Random excitation generator\n" << endl;
       cout << "************************************************" << endl;
-      for (size_t i=0; i<basis.getSize(); ++i){
+      for (size_t i=0; i<basis.size(); ++i){
           cout << "\n \n Considering the source determinant:" << endl;
           cout << "   ";
           std::vector<int> positions = getOccupiedPositions(basis.getDetByIndex(i));

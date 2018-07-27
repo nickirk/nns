@@ -48,23 +48,21 @@ void create(detType &det, int pos){
 
 //---------------------------------------------------------------------------------------------------//
 
-int JWStringSign(detType const &a, int annihilatorIndex, int creatorIndex){
+int JWStringLength(detType const &a, int annihilatorIndex, int creatorIndex){
 	  //construct sign for conversion canonical shape
 	  //(basisState 1(up),1(down),...,L(up),L(down)) to relative shape (a_exc^\dagger a_holes source)
 	  int fermiSign{0};
-	  int start{0}, end{0}, offset{0};
+	  int start{0}, end{0};
 	  fermiSign = 0;
 	  if(annihilatorIndex>creatorIndex){
 	    start=creatorIndex;
 	    end=annihilatorIndex;
-	    offset=1;
 	  }
 	  else{
 	    start=annihilatorIndex;
 	    end=creatorIndex;
-	    offset=1;
 	  }
-	  for(int k=start+offset;k<end;++k){
+	  for(int k=start+1;k<end;++k){
 	    if(a[k]){
 	      fermiSign += 1;
 	    }
@@ -103,7 +101,7 @@ int getExcitLvl(detType const &a, detType const &b){
 	if(a.size() != b.size()) throw SizeMismatchError(a.size(),b.size());
 	// with the same number of electrons
 	if(getOccupiedPositions(a).size() != getOccupiedPositions(b).size())
-		throw InvalidDeterminantError();
+		throw InvalidDeterminantError(a);
 	int elvl{0};
 	for(std::size_t i=0; i < a.size(); ++i){
 		// if the dets differ, this counts towards the excitation lvl
@@ -111,6 +109,8 @@ int getExcitLvl(detType const &a, detType const &b){
 	}
 	return elvl/2;
 }
+
+//---------------------------------------------------------------------------------------------------//
 
 void getExcitation(detType const &a, detType const &b, std::vector<int> &excitations,
 		std::vector<int> &holes, std::vector<int> &same){
@@ -139,6 +139,22 @@ void getExcitation(detType const &a, detType const &b, std::vector<int> &excitat
             }
         }
     }
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+detType excite(detType const &source, int i, int j){
+	// take source and excite i<->j (depending on which one is empty
+    detType coupledState = source;
+	if(source[i]){
+		annihilate(coupledState,i);
+		create(coupledState,j);
+	}
+	else{
+		annihilate(coupledState,j);
+		create(coupledState,i);
+	}
+	return coupledState;
 }
 
 //---------------------------------------------------------------------------------------------------//

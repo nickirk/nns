@@ -208,7 +208,7 @@ double TwoBodyHamiltonian::operator()(detType const &alpha, detType const &beta)
 
     if (holes.size()==0){
     	// do a consistency check if there are actually any electrons in the determinants
-    	if(same.size()==0) throw InvalidDeterminantError();
+    	if(same.size()==0) throw InvalidDeterminantError(alpha);
         // diagonal TwoBodyHamiltonian matrix element, i.e. alpha = beta
         double diagonalTerm{0.0};
         int indi{0},indj{0};

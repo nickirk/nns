@@ -13,8 +13,8 @@ namespace networkVMC {
 
 double HeisenbergHamiltonian::operator ()(detType const &a, detType const &b) const{
 	// the usual size-check
-	if(a.size() != grid->size() or b.size() != grid->size() or b.size() != a.size())
-		throw SizeMismatchError(a.size(),grid->size());
+	sizeCheck(a.size(),grid->size());
+	sizeCheck(b.size(),a.size());
 	// holes/excits of b with respect to a
 	std::vector<int> same, holes, excitations;
 	// get the spins that differ between a and b

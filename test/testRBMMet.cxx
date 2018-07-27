@@ -17,10 +17,9 @@ int main(){
   SpinConfig spinConfig(spinUp, spinDown, numStates);
   int numHidden(20);
   double trainRate(0.0001);
-  FermionBasis basis(spinConfig);
-  FermiHubbardHamiltonian modelHam(numStates);
+  Basis basis(spinConfig);
   double U{4.}, t{-1};
-  modelHam = generateFermiHubbard(numStates, U, t);
+  FermiHubbardHamiltonian modelHam(U,t,numStates);
   //AbInitioHamiltonian modelHam(numStates);
   //double U{2.}, t{-1};
   //string file_name = "FCIDUMP_abinitio";
@@ -35,7 +34,7 @@ int main(){
   //ListGen<VecCType> ugSampler(RSHG, basis, HF, rbm);
   //ugSampler.setNumDets(100);
   EnergyEs eCF(modelHam, -1);
-  MetropolisSampler<VecCType> ugSampler(RSHG, basis, HF, rbm);
+  MetropolisSampler<VecCType> ugSampler(RSHG, HF, rbm);
   ugSampler.setNumDets(500);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer

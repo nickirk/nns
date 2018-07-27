@@ -10,6 +10,7 @@
 
 #include "Parametrization.hpp"
 #include "../utilities/TypeDefine.hpp"
+#include "../utilities/Errors.hpp"
 #include "../HilbertSpace/Basis.hpp"
 
 namespace networkVMC {
@@ -22,7 +23,7 @@ class DirectParametrization: public Parametrization<T> {
 public:
   DirectParametrization(Basis const &fullBasis_):fullBasis(&fullBasis_){
     // start with a random vector
-    coeffs = Eigen::VectorXd::Random(fullBasis->getSize());
+    coeffs = Eigen::VectorXd::Random(fullBasis->size());
   }
   virtual ~DirectParametrization();
 
@@ -34,7 +35,7 @@ public:
 	  }
 	  catch (OutOfRangeError const&){
 		  // If the fed determinant is not valid, this is a problem
-		  throw InvalidDeterminantError();
+		  throw InvalidDeterminantError(det);
 	  }
   }
 

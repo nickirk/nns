@@ -9,13 +9,16 @@
 #define SRC_HAMILTONIAN_ABINITIOHAMILTONIAN_HPP_
 
 #include <string>
-#include "FermionicHamiltonian.hpp"
+#include "TwoBodyHamiltonian.hpp"
+#include "../HilbertSpace/Determinant.hpp"
 
 namespace networkVMC{
 
-class AbInitioHamiltonian: public FermionicHamiltonian {
+// a fermionic generic two-body hamiltonian (aka Ab-initio Hamiltonian)
+class AbInitioHamiltonian: public TwoBodyHamiltonian {
 public:
-    AbInitioHamiltonian(int dimension):FermionicHamiltonian(dimension){};
+	// dimension being the number of orbitals
+    AbInitioHamiltonian(int dimension):TwoBodyHamiltonian(dimension){};
 	virtual ~AbInitioHamiltonian();
     // count the number of connected states
     int countNumberCoupledStates(detType const &source, int exflag, int &nsingleexcit, int &ndoubleexcit);
@@ -40,6 +43,11 @@ public:
 
     // typecheck for setting defaults
     virtual HType type() const {return AbInitio;}
+
+    // The fermi sign is the main difference to the plain TwoBodyHamiltonian
+    int getFermiSign(detType const &alpha, int annihilatorIndex, int creatorIndex) const{
+    	return JWStringLength(alpha,annihilatorIndex,creatorIndex);
+    }
 };
 
 AbInitioHamiltonian readAbInitioHamiltonian(std::string file_name, bool molpro_fcidump=false);
