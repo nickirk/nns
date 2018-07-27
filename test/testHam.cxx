@@ -2,8 +2,9 @@
 #include <iostream>
 #include <Eigen/Eigenvalues>
 #include "../src/Hamiltonian/FermiHubbardHamiltonian.hpp"
-#include "../src/HilbertSpace/Basis.hpp"
+#include "../src/HilbertSpace/FermionBasis.hpp"
 #include "../src/HilbertSpace/Determinant.hpp"
+#include "defaultSystem.hpp"
 using namespace std;
 using namespace networkVMC;
 int main(){
@@ -12,24 +13,16 @@ int main(){
   int numEle(8);
   int spinUp(4);
   int spinDown(4);
-  vector<int> spinConfig{spinUp, spinDown, numStates};
+  SpinConfig spinConfig{spinUp, spinDown, numStates};
   //cout << "input number of hidden neurons=";
   //cin >> numHidden;
   bool readFromFile{false};
   double trainRate(1.5);
-  cout << "input training rate=";
-  cin >> trainRate;
-  Basis basis(spinConfig);
-  FermiHubbardHamiltonian modelHam(numStates);
+  FermionBasis basis(spinConfig);
+  auto modelHam = generateDefaultHubbard(numSites);
   cout << "Basis size= " << basis.getSize() << endl;
   cout << "Hamiltonian size= " << modelHam.getNumOrbs() << endl;
   cout << "print out Ham element" << endl;
-  for (int i(0); i<modelHam.getNumOrbs(); ++i){
-    for (int j(0); j< modelHam.getNumOrbs(); ++j){
-      cout << modelHam(i,j) << ", " ;
-    }
-    cout << endl;
-  }
   for (int i(0); i<modelHam.getNumOrbs(); ++i){
     for (int j(0); j< modelHam.getNumOrbs(); ++j){
       cout << modelHam(basis.getDetByIndex(i), basis.getDetByIndex(j)) << ",";

@@ -3,8 +3,8 @@ LINKFLAGS=$(LDFLAGS)
 LDFLAGS=-std=c++11 -g -Wall -fopenmp -lboost_regex
 EIGEN_PATH=lib/eigen/
 EIGEN_FLAGS=-I$(EIGEN_PATH)
-SOURCEFILES=utilities/InputStateGenerator.cxx Hamiltonian/TwoBodyHamiltonian.cxx Hamiltonian/ExcitationGenerators/ConnectionGenerators/ConnectionGenerator.cxx Hamiltonian/AbInitioHamiltonian.cxx Hamiltonian/ExcitationGenerators/defaultExcitgensMap.cxx Hamiltonian/FermiHubbardHamiltonian.cxx Hamiltonian/ExcitationGenerators/WeightedExcitgen.cxx Hamiltonian/ExcitationGenerators/ExcitationGenerator.cxx Hamiltonian/ExcitationGenerators/RSHubbardExcitgen.cxx Hamiltonian/ExcitationGenerators/UniformExcitgen.cxx Hamiltonian/ExcitationGenerators/ProbUpdater.cxx Hamiltonian/ExcitationGenerators/WeightedSelector.cxx Hamiltonian/ExcitationGenerators/WeightedSelector.cxx Samplers/Sampler.cxx Network/Nnw.cxx Network/RBM.cxx Network/DirectParametrization.cxx HilbertSpace/Basis.cxx Hamiltonian/Hamiltonian.cxx HilbertSpace/Determinant.cxx CostFunctions/EnergyCF.cxx CostFunctions/NormCF.cxx CostFunctions/EnergyEs.cxx CostFunctions/EnergyEsPreFetched.cxx CostFunctions/EnergyCF.cxx Hamiltonian/FermionicHamiltonian.cxx Hamiltonian/BosonicHamiltonian.cxx Trainer.cxx Samplers/MetropolisSampler.cxx Samplers/ListGen.cxx CostFunctions/EnergyEsMarkov.cxx Network/Layers/Layer.cxx Network/Layers/DenseLayer.cxx Network/Layers/ConvLayer.cxx Network/Layers/InputLayer.cxx Network/LayerStructure.cxx math/MathFunctions.cxx Hamiltonian/SparseHMatrix.cxx Solvers/ADAM.cxx Solvers/AcceleratedGradientDescent.cxx Solvers/StochasticReconfiguration.cxx Samplers/FullSampler.cxx
-TESTFILES=defaultSystem.cxx testExcitgen.cxx testSubspaceCF.cxx testStateSort.cxx testNnw.cxx testRBM.cxx testDirect.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx testAlgAb.cxx testRandom.cxx testMetropolis.cxx testRBMMet.cxx
+SOURCEFILES=utilities/InputStateGenerator.cxx Hamiltonian/HeisenbergHamiltonian.cxx HilbertSpace/FermionBasis.cxx Hamiltonian/TwoBodyHamiltonian.cxx Hamiltonian/ExcitationGenerators/ConnectionGenerators/ConnectionGenerator.cxx Hamiltonian/AbInitioHamiltonian.cxx Hamiltonian/ExcitationGenerators/defaultExcitgensMap.cxx Hamiltonian/FermiHubbardHamiltonian.cxx Hamiltonian/ExcitationGenerators/WeightedExcitgen.cxx Hamiltonian/ExcitationGenerators/ExcitationGenerator.cxx Hamiltonian/ExcitationGenerators/RSHubbardExcitgen.cxx Hamiltonian/ExcitationGenerators/UniformExcitgen.cxx Hamiltonian/ExcitationGenerators/ProbUpdater.cxx Hamiltonian/ExcitationGenerators/WeightedSelector.cxx Hamiltonian/ExcitationGenerators/WeightedSelector.cxx Samplers/Sampler.cxx Network/Nnw.cxx Network/RBM.cxx Network/DirectParametrization.cxx HilbertSpace/Basis.cxx Hamiltonian/Hamiltonian.cxx HilbertSpace/Determinant.cxx CostFunctions/EnergyCF.cxx CostFunctions/NormCF.cxx CostFunctions/EnergyEs.cxx CostFunctions/EnergyEsPreFetched.cxx CostFunctions/EnergyCF.cxx Hamiltonian/FermionicHamiltonian.cxx Hamiltonian/BosonicHamiltonian.cxx Trainer.cxx Samplers/MetropolisSampler.cxx Samplers/ListGen.cxx CostFunctions/EnergyEsMarkov.cxx Network/Layers/Layer.cxx Network/Layers/DenseLayer.cxx Network/Layers/ConvLayer.cxx Network/Layers/InputLayer.cxx Network/LayerStructure.cxx math/MathFunctions.cxx Hamiltonian/SparseHMatrix.cxx Solvers/ADAM.cxx Solvers/AcceleratedGradientDescent.cxx Solvers/StochasticReconfiguration.cxx Samplers/FullSampler.cxx
+TESTFILES=defaultSystem.cxx testHeisenberg.cxx testExcitgen.cxx testSubspaceCF.cxx testStateSort.cxx testNnw.cxx testRBM.cxx testDirect.cxx testSampler.cxx testBasis.cxx testEigen.cxx testAlg.cxx testCF.cxx testPreTrain.cxx testAbInitioHam.cxx testAlgAb.cxx testRandom.cxx testMetropolis.cxx testRBMMet.cxx
 SRC=src
 TST=test
 BUILD=build
@@ -52,6 +52,7 @@ SORTTSTOBJECT=$(TSTBUILD)/testStateSort.o
 SCFTSTOBJECT=$(TSTBUILD)/testSubspaceCF.o
 DEFAULTSOBJECT=$(TSTBUILD)/defaultSystem.o
 EXGENTSTOBJECT=$(TSTBUILD)/testExcitgen.o
+HBTSTOBJECT=$(TSTBUILD)/testHeisenberg.o
 TESTBASISEXEC=build/test/testBasis
 
 $(DIRECTORIES):
@@ -103,13 +104,15 @@ testSampler: $(OBJECTS) $(STESTOBJECT)
 testEigen: $(OBJECTS) $(ETESTOBJECT)
 	$(CXX) $^ $(LINKFLAGS) -o $(TSTBUILD)/$@ 
 
-testHam: $(OBJECTS) $(HTESTOBJECT)
+testHam: $(OBJECTS) $(HTESTOBJECT) $(DEFAULTSOBJECT)
 	$(CXX)  $^ $(LINKFLAGS) -o $(TSTBUILD)/$@ 
 testCF: $(OBJECTS) $(CFTESTOBJECT)
 	$(CXX) $^ $(LINKFLAGS) -o $(TSTBUILD)/$@
 testPT: $(OBJECTS) $(PTTESTOBJECT)
 	$(CXX) $^  $(LINKFLAGS) -o $(TSTBUILD)/$@
-
+	
+testHeisenberg: $(OBJECTS) $(HBTSTOBJECT)
+	$(CXX) $^ $(LINKFLAGS) -o $(TSTBUILD)/$@
 testAbInitioHam: $(OBJECTS) $(ABINHAMTESTOBJECT)	
 	$(CXX) $^ $(LINKFLAGS) -o $(TSTBUILD)/$@ 
 testRandom: $(RNGTESTOBJECT)

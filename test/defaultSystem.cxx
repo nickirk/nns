@@ -16,12 +16,12 @@ FermiHubbardHamiltonian generateDefaultHubbard(int numSites){
   return generateFermiHubbard(numStates, U, t);
 }
 
-Basis generateDefaultBasis(int numSites){
+FermionBasis generateDefaultBasis(int numSites){
   int numStates = 2*numSites;
   int spinUp = numSites/2;
   int spinDown = numSites/2;
   SpinConfig spinConfig(spinUp, spinDown, numStates);
-  Basis basis(spinConfig);
+  FermionBasis basis(spinConfig);
   return basis;
 }
 

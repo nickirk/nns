@@ -28,12 +28,12 @@ int main(){
   int numHidden(10);
   // which random excitation generator should be tested
   //generate basis, the basis class constructor takes in the spin configurations.
-  Basis basis(spinConfig);
+  FermionBasis basis(spinConfig);
   //generate hamiltonian
   AbInitioHamiltonian modelHam(numStates);
   ////double U{2.}, t{-1};
   string file_name = "FCIDUMP";
-  modelHam = readAbInitioHamiltonian(numStates, file_name);
+  modelHam = readAbInitioHamiltonian(file_name, numStates);
   //generate hamiltonian
   //FermiHubbardHamiltonian modelHam(numStates);
   //auto modelHam = generateFermiHubbard(numStates, U, t);

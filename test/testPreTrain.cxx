@@ -12,7 +12,7 @@
 #include "../src/utilities/TypeDefine.hpp"
 #include "../src/Hamiltonian/FermionicHamiltonian.hpp"
 #include "../src/Network/Nnw.hpp"
-#include "../src/HilbertSpace/Basis.hpp"
+#include "../src/HilbertSpace/FermionBasis.hpp"
 #include "../src/Samplers/MetropolisSampler.hpp"
 #include "../src/utilities/SpinConfig.hpp"
 
@@ -30,7 +30,7 @@ int main(){
 
 // Now generate the basis states for the target
 	SpinConfig sC(numSites,numSites,numStates);
-	Basis basisGen(sC);
+	FermionBasis basisGen(sC);
 	detType D(numStates,false);
 	std::vector<detType > targetDets(basisGen.getSize(), D);
 	std::vector<coeffType > targetCoeffs(basisGen.getSize(), coeffZero);

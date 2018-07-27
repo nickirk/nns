@@ -35,7 +35,7 @@ int main(){
   // set up the system
   int numSites{6};
   // then the Hamiltonian
-  Basis basis = generateDefaultBasis(numSites);
+  auto basis = generateDefaultBasis(numSites);
   auto modelHam = generateDefaultHubbard(numSites);
   // The cost function does not matter, we only need the para to get the coeffs
   DirectParametrization<> para(basis);

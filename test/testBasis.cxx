@@ -1,20 +1,20 @@
 #include <stdio.h>
 #include <iostream>
 
-#include "../src/HilbertSpace/Basis.hpp"
+#include "../src/HilbertSpace/FermionBasis.hpp"
 #include "../src/HilbertSpace/Determinant.hpp"
 //Basis.cxx and Basis.hpp have been tested and passed
 using namespace std;
 using namespace networkVMC;
 
 int main(){
-  int numSites(8);
+  int numSites(4);
   int numStates(2*numSites);
-  int numEle(8);
-  int spinUp(4);
-  int spinDown(4);
-  vector<int> spinConfig{spinUp, spinDown, numStates};
-  Basis basis(spinConfig);
+  int numEle(numSites);
+  int spinUp(numSites/2);
+  int spinDown(numSites/2);
+  SpinConfig spinConfig{spinUp, spinDown, numStates};
+  FermionBasis basis(spinConfig);
   cout << "size= " << basis.getSize() << endl;
   for (int i=0; i < basis.getSize(); ++i){
     detType det;

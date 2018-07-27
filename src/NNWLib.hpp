@@ -14,7 +14,7 @@
 #include "Hamiltonian/AllHamiltonians.hpp"
 #include "Hamiltonian/ExcitationGenerators/AllExcitationGenerators.hpp"
 #include "Network/AllParametrizations.hpp"
-#include "HilbertSpace/Basis.hpp"
+#include "HilbertSpace/AllBasis.hpp"
 #include "Samplers/AllSamplers.hpp"
 #include "Solvers/AllSolvers.hpp"
 
