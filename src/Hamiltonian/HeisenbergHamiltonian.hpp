@@ -16,7 +16,10 @@ class HeisenbergHamiltonian: public LatticeHamiltonian {
 public:
 	template<typename ...Args>
 	HeisenbergHamiltonian(double J_, Args ...args):
-		LatticeHamiltonian(args...),J(J_){};
+		LatticeHamiltonian(true, args...),J(J_){};
+	template<typename ...Args>
+	HeisenbergHamiltonian(double J_, bool pbc, Args ...args):
+		LatticeHamiltonian(pbc, args...),J(J_){};
 
 	double operator()(detType const &a, detType const &b) const;
 

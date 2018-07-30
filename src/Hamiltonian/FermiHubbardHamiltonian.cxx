@@ -8,6 +8,7 @@
 #include "FermiHubbardHamiltonian.hpp"
 #include "../HilbertSpace/Determinant.hpp"
 #include "../utilities/Errors.hpp"
+#include "LocalQN.hpp"
 
 namespace networkVMC {
 
@@ -29,8 +30,9 @@ double FermiHubbardHamiltonian::operator()(detType const &a, detType const &b) c
 		// the site indices of the hole and the site the electron moved to
 		// why the @#$!?& are these 1-based
 		// also, convert spin-site indices to spatial site-indices (lattices are always spatial)
-		int hole = spatialIndex(holes[0] - 1);
-		int part = spatialIndex(excitations[0] - 1);
+		LocalQN lQN(0,2);
+		int hole = lQN.spatialIndex(holes[0] - 1);
+		int part = lQN.spatialIndex(excitations[0] - 1);
 		// only adjacent sites are coupled
 		if(grid->isAdjacent(hole,part) ){
 			// get the sign induces by the hopping
@@ -61,8 +63,9 @@ double FermiHubbardHamiltonian::operator()(detType const &a, detType const &b) c
 void FermiHubbardHamiltonian::addCoupledStates(std::vector<detType> &list, detType const &source, int siteA, int siteB) const{
 	// check for both spins if a hopping is possible
 	for(int i = 0; i < 2; ++i){
-		int indA = 2*siteA+i;
-		int indB = 2*siteB+i;
+		LocalQN lQN(i,2);
+		int indA = lQN.orbitalIndex(siteA);
+		int indB = lQN.orbitalIndex(siteB);
 		this->LatticeHamiltonian::addCoupledStates(list,source,indA,indB);
 	}
 }

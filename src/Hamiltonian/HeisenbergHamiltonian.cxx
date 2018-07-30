@@ -28,7 +28,7 @@ double HeisenbergHamiltonian::operator ()(detType const &a, detType const &b) co
 		if(grid->isAdjacent(excitations[0]-1,holes[0]-1)){
 			// for some stupid reason, the excitations/holes
 			// were set up to be 1-based, ugh
-			return -J;
+			return -J/2.0;
 		}
 		// all other have 0
 		return 0.0;
@@ -43,7 +43,8 @@ double HeisenbergHamiltonian::operator ()(detType const &a, detType const &b) co
 		}
 	}
 	// we counted each connection twice now, so use a factor J/2
-	diagElement *= J/2.0;
+	// and another factor 1/4 because S_z = +/- 1/2, but we used 1 above (for effciency: only do 1 division)
+	diagElement *= -J/8.0;
 	return diagElement;
 }
 
