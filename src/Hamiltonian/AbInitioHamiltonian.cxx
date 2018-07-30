@@ -56,7 +56,6 @@ AbInitioHamiltonian readAbInitioHamiltonian(std::string file_name, bool molpro_f
     if (inputfile.is_open() & inputfile.good()){
         while(!inputfile.eof()){
             std::getline(inputfile,line);
-            std::cout << line << std::endl;
             // split the line
             std::istringstream iss(line);
             std::vector<std::string> parts{
