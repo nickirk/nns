@@ -25,7 +25,8 @@ public:
 	// currently only square lattices are supported, but this might change
 	template<typename ...Args>
 	// construct the lattice from args
-	LatticeHamiltonian(Args ...args):grid(std::unique_ptr<Lattice>(new Lattice(std::forward<Args>(args)...) ) ){};
+	LatticeHamiltonian(Args ...args):grid(std::unique_ptr<Lattice>(
+			new Lattice(std::forward<Args>(args)...) ) ){};
 	virtual ~LatticeHamiltonian(){};
 
 	// number of sites in grid

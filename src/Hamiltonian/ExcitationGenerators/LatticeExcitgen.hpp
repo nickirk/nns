@@ -27,7 +27,8 @@ private:
 	LatticeHamiltonian const &HL;
 };
 
-std::vector<int> getOccAdjs(int i, detType const &source, LatticeHamiltonian const &HL);
+class LocalQN;
+std::vector<int> getOccAdjs(int i, detType const &source, LatticeHamiltonian const &HL, LocalQN const &lQN);
 
 } /* namespace networkVMC */
 

@@ -19,13 +19,16 @@ excitgenPtr getDefaultExcitgen(Hamiltonian const &H,
 	excitgenPtr defaultExcitgen{nullptr};
 	switch(H.type()){
 	case Hubbard:
-		defaultExcitgen = excitgenPtr{new RSHubbardExcitgen{}};
+		defaultExcitgen = excitgenPtr{new RSHubbardExcitgen};
+		break;
+	case Heisenberg:
+		// beware, Hubbard and Heisenberg are only for LatticeHamiltonians
+		defaultExcitgen = excitgenPtr{new LatticeExcitgen{dynamic_cast<LatticeHamiltonian const&>(H)}};
 		break;
 	case AbInitio:
 		defaultExcitgen = excitgenPtr{new WeightedExcitgen{H,HF}};
 		break;
 	case Constant:
-	case Heisenberg:
 	default:
 		defaultExcitgen = excitgenPtr{new UniformExcitgen{HF}};
 	}

@@ -46,7 +46,7 @@ std::set<int> Lattice::adjacentSites(int i) const{
 				tmp = tmp - pre*offset*(*it);
 			}
 			// this is now the periodically continued adjacent site
-			sites.insert(tmp);
+			if(pbc or tmp == (i + pre*offset)) sites.insert(tmp);
 		}
 		offset *= *it;
 	}

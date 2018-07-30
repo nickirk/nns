@@ -17,9 +17,9 @@ class RSHubbardExcitgen: public ClonableExcitgen<RSHubbardExcitgen> {
 public:
 	RSHubbardExcitgen();
 	virtual ~RSHubbardExcitgen();
-	virtual detType generateExcitation(
+	detType generateExcitation(
 			detType const &source,  double &pGet);
-	virtual double getExcitationProb(
+	double getExcitationProb(
 			detType const &source, detType const &target);
 };
 

@@ -15,6 +15,7 @@
 namespace networkVMC {
 
 // lattice class for LatticeHamiltonians
+// the lattice has no idea about the site-local hilbert space
 
 class Lattice {
 public:
@@ -22,7 +23,7 @@ public:
 	// initializer_list would do the same, but forces to use {}-initialization
 	// maybe switch if not needed
 	template<typename ...Args>
-	Lattice(Args... args):latticeDim({args...}){
+	Lattice(bool pbc_, Args... args):latticeDim({args...}),pbc(pbc_){
 		// if no template arguments are supplied, we assume a 1-d model (as that is the only one where we
 		// can build the hamiltonian without knowing the dimensions)
 		if(latticeDim.size()==0) latticeDim.push_back(12);
@@ -34,7 +35,7 @@ public:
 	};
 
 	// access utility for usage in LatticeHamiltonian:
-	// get the number of sites in the lattice
+	// get the number of spatial sites in the lattice
 	int size() const {return numSites;}
 	// get the sites adjacent to site i
 	std::set<int>const & adjacents(int i) const {return adjacencyList[i];}
@@ -51,6 +52,8 @@ private:
 	std::set<int> adjacentSites(int i) const;
 	// adjacent sites for each sites, for faster runtime evaluation of matrix elements
 	std::vector< std::set<int> > adjacencyList;
+	// if the lattice has periodic boundary
+	bool pbc;
 };
 
 
