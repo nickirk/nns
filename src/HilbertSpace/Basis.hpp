@@ -29,17 +29,18 @@ class Basis{
     detType getDetByIndex(int index) const; // can throw an OutOfRangeError
 // Return the index of the determinant 'det_'
     int getIndexByDet(detType const & det_) const; // can throw an InvalidDeterminantError
-
-	// Return the alpha/beta spin distribution
-	SpinConfig const& getSpinConfig() const {return spinConfig;};
     virtual ~Basis(){};
     // determinants need to be accessed often, no need to add some
     // overhead by using an extra class here, better use an alias
   private:
-    // the conserved quantum numbers (aka spin configuration)
-    SpinConfig spinConfig;
     // the vector of determinants
     std::vector<detType > basis;
+
+    // we can also create a basis directly from a vector of determinants
+    // but this is only allowed for BasisGenerators
+    explicit Basis(std::vector<detType > const &basis_):basis(basis_){};
+    friend class BasisGenerator;
+
 };
 
 }

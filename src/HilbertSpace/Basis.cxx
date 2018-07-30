@@ -8,21 +8,22 @@
 #include "../utilities/Errors.hpp"
 #include "../Hamiltonian/Hamiltonian.hpp"
 #include "Basis.hpp"
-#include "FermionBasis.hpp"
+
+#include "BasisGenerator.hpp"
 
 namespace networkVMC{
 
-Basis::Basis(SpinConfig const &sC):spinConfig(sC){
-	basis = generateFermionBasis(sC);
+// use the BasisGenerator to set up the list of determinants
+// either without the Hamiltonian (deprecated)
+Basis::Basis(SpinConfig const &sC){
+	BasisGenerator bGen(sC);
+	*this = bGen.generateBasis();
 }
 
-Basis::Basis(SpinConfig const &sC, Hamiltonian const &H):spinConfig(sC){
-	switch(H.type()){
-	case(Heisenberg):
-			break;
-	default:
-		basis = generateFermionBasis(sC);
-	}
+// or while supplying the Hamiltonian
+Basis::Basis(SpinConfig const &sC, Hamiltonian const &H){
+	BasisGenerator bGen(sC);
+	*this = bGen.generateBasis(H);
 }
 
 detType Basis::getDetByIndex(int index) const{
