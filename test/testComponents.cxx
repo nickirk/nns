@@ -1,19 +1,7 @@
 #include "testComponents.hpp"
 #include "defaultSystem.hpp"
-#include <iostream>
 
 using namespace networkVMC;
-
-// use ADAM to solve
-void solveADAM(Parametrization<> &para, Sampler &msampler, Hamiltonian const &H){
-	ADAM<> solver(0.01);
-	EnergyEs eCF(H,-1);
-	Trainer<> etr(para,msampler,solver,eCF,H);
-	for(int i = 1; i < 1000; ++i){
-		etr.train();
-		std::cout << "Current energy: " << etr.getE()<<std::endl;
-	}
-}
 
 // use the full sampler with the direct parametrization
 void testDeterministicFullSampling(SpinConfig const &sC, Hamiltonian const &H){
@@ -24,13 +12,40 @@ void testDeterministicFullSampling(SpinConfig const &sC, Hamiltonian const &H){
 	solveADAM(para,mySampler,H);
 }
 
+// RBM + Metropolis sampler, using Stochastic Reconfiguration
+void testRBMMetropolis(networkVMC::SpinConfig const &sC, networkVMC::Hamiltonian const &H){
+	Basis basis(sC,H);
+	int const numHidden = 20;
+	// RBM parametrization
+	RBM network(sC.numSpinOrbs(),numHidden);
+	// Metropolis Sampler (needs complex coeffs)
+	MetropolisSampler<VecCType> mySampler(H,basis.getDetByIndex(0),network);
+	solveADAM(network, mySampler, H);
+}
+
 void testAdj(LatticeHamiltonian const &test){
-	std::cout << test.size() << std::endl;
+	std::cout << "Number of sites: " << test.size() << std::endl;
 	for(int i = 0; i < test.size(); ++i){
 		std::cout << "Adjacent to " << i << ": ";
 		for(auto j:test.adjacents(i)){
 			std::cout << j << " ";
 		}
 		std::cout<<std::endl;
+	}
+}
+
+void testBasis(Basis const &basis){
+	std::cout << "size= " << basis.size() << std::endl;
+	for (int i=0; i < basis.size(); ++i){
+	  detType det;
+	  det = basis.getDetByIndex(i);
+	  int index(basis.getIndexByDet(det));
+	  std::vector<int> pos(getOccupiedPositions(det));
+	  std::cout << "index= " << index << std::endl;
+	  std::cout << "i = " << i  << std::endl;
+	  for (int j=0; j < pos.size(); ++j){
+		std::cout << pos[j] << "," ;
+	  }
+	  std::cout << std::endl;
 	}
 }

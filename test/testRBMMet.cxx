@@ -17,10 +17,10 @@ int main(){
   SpinConfig spinConfig(spinUp, spinDown, numStates);
   int numHidden(20);
   double trainRate(0.0001);
-  Basis basis(spinConfig);
   double U{4.}, t{-1};
   FermiHubbardHamiltonian modelHam(U,t,numStates);
   //AbInitioHamiltonian modelHam(numStates);
+  Basis basis(spinConfig,modelHam);
   //double U{2.}, t{-1};
   //string file_name = "FCIDUMP_abinitio";
   //modelHam = readAbInitioHamiltonian(numStates, file_name);

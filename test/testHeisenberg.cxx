@@ -14,9 +14,15 @@
 using namespace networkVMC;
 
 int main(){
-	double J{2};
-	HeisenbergHamiltonian test(J,4,4);
+	double J{-1.0};
+	HeisenbergHamiltonian test(J,false,4,4);
+	// test the Heisenberg Basis
+	SpinConfig sC(2,2,4);
+	Basis basis(sC,test);
+	testBasis(basis);
+	// test the adjacency of the Hamiltonian
 	testAdj(test);
+	// and then chech some matrix elements
 	detType a(test.size(),false);
 	std::cout << "FM energy: " << test(a,a) << std::endl;
 	detType b = a;

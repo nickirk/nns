@@ -144,7 +144,7 @@ void getExcitation(detType const &a, detType const &b, std::vector<int> &excitat
 //---------------------------------------------------------------------------------------------------//
 
 detType excite(detType const &source, int i, int j){
-	// take source and excite i<->j (depending on which one is empty
+	// take source and excite i<->j (depending on which one is empty)
     detType coupledState = source;
 	if(source[i]){
 		annihilate(coupledState,i);

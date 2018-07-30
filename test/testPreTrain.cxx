@@ -12,7 +12,7 @@
 #include "../src/utilities/TypeDefine.hpp"
 #include "../src/Network/Nnw.hpp"
 #include "../src/Hamiltonian/FermiHubbardHamiltonian.hpp"
-#include "../src/HilbertSpace/FermionBasis.hpp"
+#include "../src/HilbertSpace/BasisGenerator.hpp"
 #include "../src/Samplers/MetropolisSampler.hpp"
 #include "../src/utilities/SpinConfig.hpp"
 

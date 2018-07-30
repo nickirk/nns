@@ -24,7 +24,7 @@ SpinConfig generateDefaultSpinConfig(int numSites){
 }
 
 Basis generateDefaultBasis(int numSites){
-	return Basis(generateDefaultSpinConfig(numSites));
+	return Basis(generateDefaultSpinConfig(numSites),generateDefaultHubbard(1));
 }
 
 

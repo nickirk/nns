@@ -17,9 +17,9 @@ int main(){
   SpinConfig spinConfig(spinUp, spinDown, numStates);
   int numHidden(20);
   double trainRate(0.005);
-  Basis basis(spinConfig);
   double U{4}, t{1};
-  FermiHubbardHamiltonian modelHam(U,t,numStates);
+  FermiHubbardHamiltonian modelHam(U,t,numSites);
+  Basis basis(spinConfig,modelHam);
   vector<detType> list;
   //generate hamiltonian
   //AbInitioHamiltonian modelHam(numStates);

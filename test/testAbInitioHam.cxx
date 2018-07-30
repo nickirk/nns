@@ -16,8 +16,8 @@
 #include "../src/CostFunctions/EnergyEsPreFetched.hpp"
 #include "../src/Hamiltonian/AbInitioHamiltonian.hpp"
 #include "../src/Hamiltonian/ExcitationGenerators/AllExcitationGenerators.hpp"
+#include "../src/HilbertSpace/BasisGenerator.hpp"
 #include "../src/Network/Nnw.hpp"
-#include "../src/HilbertSpace/FermionBasis.hpp"
 #include "../src/HilbertSpace/Determinant.hpp"
 #include "../src/Samplers/Sampler.hpp"
 using namespace Eigen;
@@ -42,7 +42,7 @@ int main(){
   int spinDown(numStates/2+numStates%2);
   SpinConfig spinConfig{spinUp,spinDown, numStates};
   //generate basis, the basis class constructor takes in the spin configurations.
-  Basis basis(spinConfig);
+  Basis basis(spinConfig,modelHam);
   
   vector<int> size_NNW = {numStates, numHidden, 2};
   cout << "Basis size= " << basis.size() << endl;
