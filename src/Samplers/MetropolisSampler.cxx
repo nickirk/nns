@@ -7,10 +7,9 @@
 
 #include "MetropolisSampler.hpp"
 
-#include <random>
 #include <cmath>
 #include <iostream>
-
+#include "../utilities/RNGWrapper.hpp"
 #include "../Network/Parametrization.hpp"
 
 namespace networkVMC{
@@ -28,9 +27,7 @@ void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, double &weight,
 	// and then get the one for the next one - this way we ensure the first iterate() call
 	// returns the starting point
 	// set up the rng
-	std::random_device rd;     // only used once to initialise (seed) engine
-	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
-	std::uniform_real_distribution<double> uni;		// Uniform distribution from 0.0 to 1.0
+  	RNGWrapper rng;
 	// forward- and backwards generation probabilities
 	double pEx, pBack;
 	// First, get a random coupled determinant (from cDet)
@@ -43,11 +40,11 @@ void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, double &weight,
 	coeffType tmpCoeff{para->getCoeff(tmp)};
 	// unbiasing with generation probability in principle necessary (unless prob. is symmetric)
 	pBack = getConnectionProb(tmp,cDet);
-  double p = uni(rng);
+  double p = rng();
   //std::cout << "MetropolisSampler.cxx: uni(rng)=" << p << std::endl;
   //std::cout << "MetropolisSampler.cxx: pJump=" << std::norm(tmpCoeff/lastCoeff)*pBack/pEx << std::endl;
 
-	if(uni(rng) < (pBack/pEx*std::norm(tmpCoeff/lastCoeff))){
+	if(rng() < (pBack/pEx*std::norm(tmpCoeff/lastCoeff))){
 	//if(p < (std::norm(tmpCoeff/lastCoeff))){
 		// With probability |cJ/cI|^2, accept the move
 		cDet = tmp;
