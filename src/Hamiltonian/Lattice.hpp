@@ -37,6 +37,8 @@ public:
 	// access utility for usage in LatticeHamiltonian:
 	// get the number of spatial sites in the lattice
 	int size() const {return numSites;}
+	// get the spatial dimension of the lattice
+	int dimension() const {return latticeDim.size();}
 	// get the sites adjacent to site i
 	std::set<int>const & adjacents(int i) const {return adjacencyList[i];}
 	// if two sites with indices i, j are adjacent

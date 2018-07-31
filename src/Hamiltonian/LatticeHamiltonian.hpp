@@ -31,6 +31,8 @@ public:
 
 	// number of sites in grid
 	int size() const {return grid->size();}
+	// spatial dimension of the grid
+	int dimension() const {return grid->dimension();}
 	// adjacent sites (for testing purposes)
 	std::set<int>const & adjacents(int i) const{return grid->adjacents(i);}
 
