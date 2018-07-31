@@ -69,10 +69,15 @@ double LatticeExcitgen::getExcitationProb(detType const& source,
 
 	// check if there is an excitation at all
 	if(holes.size() != 0){
-		LocalQN lQN(holes[0],mapTypeToRange(HL.type()));
+		LocalQN lQN(holes[0]-1,mapTypeToRange(HL.type()));
 		// probability of picking the excit
 		auto selects = getOccAdjs(holes[0]-1, source, HL, lQN);
 		// if there is a hole, there has to be an excitation
+		if(selects.size()==0){
+			std::cout << "ERROR, unable to get excit from " << holes[0]-1 <<std::endl;
+			printDet(source);
+			printDet(target);
+		}
 		pGen *= selects.size();
 	}
 	return 1.0/pGen;

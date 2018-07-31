@@ -136,7 +136,7 @@ double TwoBodyHamiltonian::operator()(detType const &alpha, detType const &beta)
     // get the TwoBodyHamiltonian matrix element H_{alpha,beta} between two
     // configuration alpha and beta
 	// THIS IS FOR SPINFUL TwoBodyHamiltonianS
-//  std::cout << "size d=" << d << " alpha size=" << alpha.size() << " beta size" << beta.size() << std::endl;
+    //std::cout << "size d=" << d << " alpha size=" << alpha.size() << " beta size" << beta.size() << std::endl;
     if(static_cast<int>(alpha.size())!=d || d!=static_cast<int>(beta.size())){
       if(alpha.size()==beta.size()){
       	throw SizeMismatchError(d,alpha.size());
