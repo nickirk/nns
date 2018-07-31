@@ -19,10 +19,11 @@ public:
 	  Solver<T>(gamma_),NNW(NNW_),iteration(0) {};
   virtual ~StochasticReconfiguration();
 
-  // thus, we only have this version
-  virtual void update(T &w, T const &force, State const &input);
+  virtual void update(T &w, T const &force, State const &input, SamplerType 
+      const &samplerType=Markov);
 private:
-  // this is a second order solver, so we need the parametrization
+  // need the parametrisation to get derivatives in order to construct  the 
+  // S matrix
   Parametrization<T> &NNW;
   // and an iteration counter
   int iteration;

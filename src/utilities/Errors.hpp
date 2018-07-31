@@ -48,6 +48,12 @@ class ActFuncDoNotExist{
     std::string actFunc;
 };
 
+class SamplerTypeDoesNotExist{
+  public:
+    SamplerTypeDoesNotExist(SamplerType samplerType_):samplerType(samplerType_){};
+    SamplerType samplerType;
+};
+
 class InvalidParameterPassed{
 public:
 	InvalidParameterPassed(){};

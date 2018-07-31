@@ -91,7 +91,7 @@ namespace networkVMC
         return dCdWk;
     }
 
-    Eigen::VectorXcd RBM::getSRDeriv(detType const &det) const
+    Eigen::VectorXcd RBM::getMarkovDeriv(detType const &det) const
     {
         Eigen::VectorXcd dCdWk= Eigen::VectorXcd::Zero(numPars);
         // do the mapping inside for loop, private
@@ -141,6 +141,7 @@ namespace networkVMC
         return result;
     }
 
+    // deprecated due to the change in the structure of outerDerivative
     VecCType RBM::calcNablaPars(State const &input, nablaType const &outerDerivative)
     {
         Eigen::MatrixXcd dCdW=calcdCdwSR(input);
@@ -164,16 +165,15 @@ namespace networkVMC
         return result;
     }
 
-    VecCType RBM::calcNablaParsSRConnected(
+    // used in conjunction with Markov chain Metropolis sampling
+    VecCType RBM::calcNablaParsMarkovConnected(
 	   State const &inputState,
 	   nablaType const &dEdC,
      double const &energy
      ){
         int numDets = inputState.size();
-        // spaceSize = size of sampled dets and their coupled ones
         int spaceSize = inputState.totalSize();
         Eigen::VectorXcd dEdW= Eigen::VectorXcd::Zero(numPars);
-        // Eigen::VectorXcd dEdWTmp= Eigen::VectorXcd::Zero(numPars);
         Eigen::MatrixXcd dCdW = Eigen::MatrixXcd::Zero(numPars, spaceSize);
         std::vector<std::complex<double>> dedc=dEdC;
           #pragma omp for
@@ -185,7 +185,7 @@ namespace networkVMC
             Eigen::VectorXcd dCtdW= Eigen::VectorXcd::Zero(numPars);
             // do the mapping inside for loop, private
             //update vector dCidWk
-            dCtdW = getSRDeriv(inputState.det(i));
+            dCtdW = getMarkovDeriv(inputState.det(i));
             // multiplication should be done by matrix vector product
             // fill up the dCdW matrix
             dCdW.col(i) << (dCtdW.conjugate()*inputState.coeff(i));
@@ -196,8 +196,6 @@ namespace networkVMC
             size_t coupledSize = inputState.coupledDets(i).size();
             size_t pos = inputState.locate(i);
             for (size_t j(0); j < coupledSize; ++j){
-              //update dCjdW
-              //dCtdW = getSRDeriv(coupledDets[j]);
               // fill up the dCdW matrix with coupled dets contribution
               dCdW.col(numDets+pos+j) << (dCtdW.conjugate()*coupledCoeffs[j]);
               //dEdWTmp +=  dCtdW * dEdC[pos];
@@ -209,7 +207,7 @@ namespace networkVMC
         dEdW += (dCdW * dEdCEigen);//.conjugate();
         return dEdW;
     }
-
+    // The following function is used when use ListGen or fullSampler
     VecCType RBM::calcNablaParsConnected(
 	   State const &inputState,
 	   nablaType const &dEdC
