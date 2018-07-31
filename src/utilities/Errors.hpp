@@ -8,6 +8,7 @@
 #ifndef ERRORS_HPP_
 #define ERRORS_HPP_
 #include <string>
+#include "TypeDefine.hpp"
 // classes for error handling. This is the way to go for
 // exception handling
 
@@ -41,6 +42,12 @@ class ActFuncDoNotExist{
   public:
     ActFuncDoNotExist(std::string actFunc_):actFunc(actFunc_){};
     std::string actFunc;
+};
+
+class SamplerTypeDoesNotExist{
+  public:
+    SamplerTypeDoesNotExist(SamplerType samplerType_):samplerType(samplerType_){};
+    SamplerType samplerType;
 };
 
 class InvalidParameterPassed{

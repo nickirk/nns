@@ -22,7 +22,8 @@ ADAM<T>::~ADAM() {
 }
 
 template <typename T>
-void ADAM<T>::update(T &w, T const &force, State const &input){
+void ADAM<T>::update(T &w, T const &force, State const &input, SamplerType const
+    &samplerType){
 	// in the first iteration, we learn about the number of parameters
 	if(iteration==0){
 		numPars = w.size();

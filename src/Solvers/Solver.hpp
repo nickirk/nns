@@ -24,7 +24,10 @@ public:
   // For first-order solvers, we need the parameters and a force
   // Second order solvers also require the parameterization in the constructor
   // and get the second derivatives on the fly
-  virtual void update(T &w, T const &force, State const &input=State())=0;
+  // Need samplerType especially in StochasticReconfiguration, because while
+  // constructing the S matrix, need to know which getDeriv to call.
+  virtual void update(T &w, T const &force, State const &input=State(), SamplerType
+    const &samplerType=Markov)=0;
 
   // set/get the learning rate (the learning rate is an internal parameter,
   // changing it does not change the solver itself)

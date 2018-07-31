@@ -10,16 +10,16 @@ using namespace networkVMC;
 using namespace std;
 
 int main(){
-  int numSites(6);
+  int numSites(4);
   int numStates(2*numSites);
-  int spinUp(3);
-  int spinDown(3);
+  int spinUp(2);
+  int spinDown(2);
   SpinConfig spinConfig(spinUp, spinDown, numStates);
-  int numHidden(20);
+  int numHidden(4);
   double trainRate(0.005);
   FermionBasis basis(spinConfig);
   FermiHubbardHamiltonian modelHam(numStates);
-  double U{4}, t{1};
+  double U{2}, t{1};
   modelHam = generateFermiHubbard(numStates, U, t);
   vector<detType> list;
   //generate hamiltonian
@@ -47,20 +47,20 @@ int main(){
   //Setup the trainer
   double energy{0.0};
   //AcceleratedGradientDescent<VecCType> sl(trainRate);
-  ADAM<VecCType> sl(trainRate);
-  //StochasticReconfiguration<VecCType> sl(rbm,trainRate);
+  //ADAM<VecCType> sl(trainRate);
+  StochasticReconfiguration<VecCType> sl(rbm,trainRate);
   Trainer<VecCType> ev(rbm, sampler, sl, eCF,modelHam);
   ofstream myfile1;
-  myfile1.open ("en1");
+  myfile1.open ("en");
   for(int l(0); l<100000; ++l){
-    trainRate = std::max(0.002*std::pow(0.99,l), 0.001);
+    trainRate = std::max(0.8*std::pow(0.995,l), 0.01);
     ev.train(trainRate);
     // get the new energy
     energy = ev.getE();
     auto states=ev.getState();
-    for(size_t s=0; s<states.size(); ++s){
-      cout << "C_" << s << "= " << states.coeff(s) << endl;
-    }
+    //for(size_t s=0; s<states.size(); ++s){
+    //  cout << "C_" << s << "= " << states.coeff(s) << endl;
+    //}
     std::cout << "iteration=" << l << std::endl;
     std::cout << "trainRate=" << trainRate << std::endl;
     std::cout<<"Energy "<<energy<<std::endl;

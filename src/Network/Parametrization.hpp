@@ -35,7 +35,7 @@ public:
 		  State const &input,
 		  nablaType const &outerDerivative) = 0;
 
-  virtual Eigen::VectorXcd getSRDeriv(detType const &det) const{
+  virtual Eigen::VectorXcd getMarkovDeriv(detType const &det) const{
 	  return Eigen::VectorXcd();
   };
   virtual Eigen::VectorXcd getDeriv(detType const &det) const{
@@ -46,7 +46,7 @@ public:
   virtual T calcNablaParsConnected(State const &inputState, nablaType const& dEdC)
   	  {return calcNablaPars(inputState,dEdC);}
 
-  virtual T calcNablaParsSRConnected(State const &inputState, nablaType const& dEdC, double const& energy)
+  virtual T calcNablaParsMarkovConnected(State const &inputState, nablaType const& dEdC, double const& energy)
   	  {return calcNablaPars(inputState,dEdC);}
 
   // stochastic reconfiguration derivative

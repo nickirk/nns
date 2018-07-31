@@ -30,7 +30,7 @@ AcceleratedGradientDescent<T>::~AcceleratedGradientDescent() {
 // This is ported from Nnw.cxx
 template <typename T>
 void AcceleratedGradientDescent<T>::update(T &w, T const &force,
-		State const &input){
+		State const &input, SamplerType const & samplerType){
   if(uninitialized){
 	numPars = w.size();
     yS = T::Zero(numPars);

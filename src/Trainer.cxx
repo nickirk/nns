@@ -60,46 +60,7 @@ void Trainer<T>::train(){
 	inputState.resize(numDets);
     int spaceSize = 0;
 
-	// And now, for the chosen number of samples, get the respective determinants and
-	// coefficients
-/*
-<<<<<<< HEAD
-#pragma omp parallel
-	{
-	// sampling is not threadsafe, so each thread creates it's own sampler
-    std::unique_ptr<Sampler> samplerThread(msampler.clone());
-#pragma omp for reduction(+:spaceSize)
-	for(int i=0; i < numDets; ++i){
-    // iterate the sampler: This also requires the iteration as an input, as
-	  // some samplers pre-fetch the ensemble of determinants
-	  samplerThread->iterate(
-        inputState.coeff(i), inputState.det(i), inputState.weight(i),i
-        );
-	  // get some coupled determinants and their coefficients to use in the
-	  // energy estimator
-    inputState.coupledDets(i) = modelHam.getCoupledStates(inputState.det(i));
-	  inputState.coupledCoeffs(i).resize(inputState.coupledDets(i).size());
-	  inputState.coupledWeights(i).resize(inputState.coupledDets(i).size());
-    spaceSize+=1;
-	  // just get the coefficients from the NNW
-    // also set the weight of the coupled dets
-	  for(size_t j=0; j < inputState.coupledDets(i).size(); ++j){
-	  	inputState.coupledCoeffs(i)[j]=NNW.getCoeff(inputState.coupledDets(i)[j]);
-        // at this stage every weight is 1.
-      inputState.coupledWeights(i)[j]=1;
-      spaceSize+=1;
-	  }
-	}
-	}
-  inputState.spaceSize = spaceSize;
-  std::cout << "spaceSize=" << spaceSize << std::endl;
-  //inputState.reduce();
-  // count the repeatations, inside State? 
-  // count the repeated determinants, update the weights or use hash table
-  // in the sampler to count the number. TODO
-=======
-*/
-	std::cout<<"numdets "<<numDets<<'\n';
+	std::cout<< "Trainer.cxx: numdets= " << numDets << std::endl;
 
 	// create the input State
 	InputStateGenerator<T> isg(msampler,modelHam, NNW);
@@ -126,16 +87,16 @@ void Trainer<T>::updateParameters(State const &input){
 	switch(msampler.type()){
 	case Markov:
 		// for markov-type samplers, use EnergyEsMarkov
-		dEdPars = NNW.calcNablaParsSRConnected(input,dEdC,getE());
+		dEdPars = NNW.calcNablaParsMarkovConnected(input,dEdC,getE());
 		break;
 	case PreFetched:
-		dEdPars = NNW.calcNablaPars(input,dEdC);
+		dEdPars = NNW.calcNablaParsConnected(input,dEdC);
 		break;
 	default:
-		 dEdPars = NNW.calcNablaParsConnected(input,dEdC);
+    throw SamplerTypeDoesNotExist(msampler.type());
 	}
 	// feed these to the solver
-	sl.update(NNW.pars(),dEdPars,input);
+	sl.update(NNW.pars(),dEdPars,input,msampler.type());
 }
 
 //---------------------------------------------------------------------------------------------------//

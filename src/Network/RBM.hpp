@@ -23,12 +23,12 @@ namespace networkVMC
 
             coeffType getCoeff(detType const &det) const;
             virtual Eigen::VectorXcd getDeriv(detType const &det) const;
-            virtual Eigen::VectorXcd getSRDeriv(detType const &det) const;
+            virtual Eigen::VectorXcd getMarkovDeriv(detType const &det) const;
             virtual VecCType const& pars() const;
             virtual VecCType calcNablaPars(State const &input, nablaType const &outerDerivative);
             virtual Eigen::MatrixXcd calcdCdwSR(State const &outputState);
             virtual VecCType calcNablaParsConnected(State const &inputState, nablaType const& dEdC);
-            virtual VecCType calcNablaParsSRConnected(State const &inputState, nablaType const& dEdC, double const& energy);
+            virtual VecCType calcNablaParsMarkovConnected(State const &inputState, nablaType const& dEdC, double const& energy);
             ~RBM();
 
         private:
