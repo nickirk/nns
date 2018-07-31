@@ -25,9 +25,7 @@ using namespace networkVMC;
 
 using namespace std;
 int main(){
-  int numSites;
   int nexcit,nsingleexcit,ndoubleexcit;
-  int numHidden(10*numSites);
   // which random excitation generator should be tested
   int test_gen_rand = 2;
   //generate hamiltonian
@@ -35,16 +33,16 @@ int main(){
   //double U{2.}, t{-1};
   string file_name = "FCIDUMP";
   modelHam = readAbInitioHamiltonian(file_name);
-  numSites = modelHam.getNumOrbs();
+  int numStates = modelHam.getNumOrbs();
   // generate the spin config
-  int numStates(2*numSites);
-  int spinUp(numStates/2);
-  int spinDown(numStates/2+numStates%2);
+  std::cout << numStates << std::endl;
+  // this is additional info, use something where we can construct the basis
+  int spinUp(2);
+  int spinDown(2);
   SpinConfig spinConfig{spinUp,spinDown, numStates};
   //generate basis, the basis class constructor takes in the spin configurations.
   Basis basis(spinConfig,modelHam);
-  
-  vector<int> size_NNW = {numStates, numHidden, 2};
+
   cout << "Basis size= " << basis.size() << endl;
   cout << "Determinants: " << endl;
   for (size_t i=0; i<basis.size(); ++i){

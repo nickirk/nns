@@ -27,7 +27,7 @@ void solveEs(networkVMC::Parametrization<T> &para, networkVMC::Sampler &msampler
 		networkVMC::Hamiltonian const &H, networkVMC::Solver<T> &solver){
 	networkVMC::EnergyEs eCF(H,-1);
 	networkVMC::Trainer<T> etr(para,msampler,solver,eCF,H);
-	for(int i = 1; i < 1000; ++i){
+	for(int i = 1; i < 4000; ++i){
 		etr.train();
 		std::cout << "On iteration " << i << std::endl;
 		std::cout << "Current energy: " << etr.getE()<<std::endl;
@@ -43,7 +43,7 @@ void solveADAM(networkVMC::Parametrization<T> &para, networkVMC::Sampler &msampl
 
 template<typename T>
 void solveSRec(networkVMC::Parametrization<T> &para, networkVMC::Sampler &msampler, networkVMC::Hamiltonian const &H){
-	networkVMC::StochasticReconfiguration<T> solver(para,0.05);
+	networkVMC::StochasticReconfiguration<T> solver(para,0.01);
 	solveEs(para,msampler,H,solver);
 }
 

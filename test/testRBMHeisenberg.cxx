@@ -18,8 +18,7 @@ int main(){
 	Basis basis(sC,HH);
 	int const numHidden = 20;
 	// RBM parametrization (needs complex coeffs)
-	//RBM network(sC.numSpinOrbs(),numHidden);
-	DirectParametrization<VecCType> network(basis);
+	RBM network(sC.numSpinOrbs(),numHidden);
 	// start with the AFM determinant
 	detType afmDet(sC.numSpinOrbs(),false);
 	for(int i = 0; i < afmDet.size(); i+=2){
@@ -27,9 +26,9 @@ int main(){
 	}
 	printDet(afmDet);
 	// sampler
-	//FullSampler<VecCType> mySampler(HH,basis,network);
-	MetropolisSampler<VecCType> mySampler(HH,afmDet,network);
-	solveADAM(network, mySampler, HH);
+	FullSampler<VecCType> mySampler(HH,basis,network);
+	//MetropolisSampler<VecCType> mySampler(HH,afmDet,network,50);
+	solveSRec(network, mySampler, HH);
 	//testRBMMetropolis(sC,HH);
 }
 

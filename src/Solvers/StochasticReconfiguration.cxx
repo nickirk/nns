@@ -37,7 +37,7 @@ void StochasticReconfiguration<T>::update(T &w, T const &force,
   OkOkp /= static_cast<double>(numDets);
   Ok /= static_cast<double>(numDets);
   S = OkOkp - (Ok*Ok.adjoint()).adjoint();
-  double lambda = std::max(100*std::pow(0.9,iteration), 0.0001);
+  double lambda = std::max(100*std::pow(0.9,iteration), 5.);
   std::cout << "StochasticReconfiguration.cxx: lambda=" << lambda << std::endl;
   Eigen::VectorXcd I = Eigen::VectorXcd::Ones(numPars);
   S+=S.diagonal().asDiagonal()*lambda;

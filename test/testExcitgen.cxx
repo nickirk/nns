@@ -27,8 +27,8 @@ void testExcitgen(ExcitationGenerator &eg, detType const &HF){
 		int exLvl = getExcitLvl(excit,HF);
 		assert((exLvl == 1 or exLvl == 0 or exLvl == 2));
 		double probCheck = eg.getExcitationProb(HF,excit);
-		//std::cout << "Generated lvl " << exLvl << std::endl;
-		//std::cout << "probCheck = " << probCheck << " vs " << prob << std::endl;
+		std::cout << "Generated lvl " << exLvl << std::endl;
+		std::cout << "probCheck = " << probCheck << " vs " << prob << std::endl;
 		assert(std::fabs(probCheck - prob) < eps);
 	}
 	eg.updateBiases();
@@ -74,15 +74,22 @@ void testExcitmatType(){
 
 int main(){
 	// get default system parameters
-	int numSites{4};
+	int numSites{32};
 	auto defaultH = generateDefaultHubbard(numSites);
-	auto defaultBasis = generateDefaultBasis(numSites);
-
 	// run the tests
 	testExcitmatType();
 
-	auto HF = defaultBasis.getDetByIndex(0);
-	testProbUpdater(HF);
+	detType HF(2*numSites);
+	// AFM initial state
+	for(int i = 0; i < numSites; ++i){
+		if(i%2){
+			HF[2*i] = true;
+		}
+		else{
+			HF[2*i+1] = true;
+		}
+	}
+	if(numSites == 4) testProbUpdater(HF);
 
 	testUniformExcitgen(HF);
 	testHubbardExcitgen(HF);
