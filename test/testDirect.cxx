@@ -30,7 +30,7 @@ int main(){
 
 // Sampler setup
   detType HF=basis.getDetByIndex(0);
-  FullSampler<> sample(modelHam,basis,HF,par);
+  FullSampler<> sample(modelHam,basis,par);
 
 // And optimize the direct parametrization
   Trainer<> ev(par,sample,sl,eCF,modelHam);

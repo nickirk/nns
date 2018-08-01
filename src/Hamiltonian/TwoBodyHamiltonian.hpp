@@ -7,6 +7,9 @@
 
 namespace networkVMC{
 
+// generic two-body hamiltonian (no specification if bosonic or fermionic)
+// in principle, all two-body Hamiltonians could use this, but for lattice models, dedicated
+// implementations are more efficient, so this is mainly for Ab-initio
 class TwoBodyHamiltonian: public Hamiltonian{
  public:
   // constructors

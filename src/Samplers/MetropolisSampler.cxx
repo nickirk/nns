@@ -7,10 +7,9 @@
 
 #include "MetropolisSampler.hpp"
 
-#include <random>
 #include <cmath>
 #include <iostream>
-
+#include "../utilities/RNGWrapper.hpp"
 #include "../Network/Parametrization.hpp"
 
 namespace networkVMC{
@@ -28,9 +27,7 @@ void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, double &weight,
 	// and then get the one for the next one - this way we ensure the first iterate() call
 	// returns the starting point
 	// set up the rng
-	std::random_device rd;     // only used once to initialise (seed) engine
-	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
-	std::uniform_real_distribution<double> uni;		// Uniform distribution from 0.0 to 1.0
+  	RNGWrapper rng;
 	// forward- and backwards generation probabilities
 	double pEx, pBack;
 	// First, get a random coupled determinant (from cDet)

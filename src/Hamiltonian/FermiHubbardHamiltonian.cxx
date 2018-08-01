@@ -7,56 +7,68 @@
 
 #include "FermiHubbardHamiltonian.hpp"
 #include "../HilbertSpace/Determinant.hpp"
-#include "ExcitationGenerators/RSHubbardExcitgen.hpp"
+#include "../utilities/Errors.hpp"
+#include "LocalQN.hpp"
 
 namespace networkVMC {
 
-FermiHubbardHamiltonian::~FermiHubbardHamiltonian() {
-}
+// the hubbard
+double FermiHubbardHamiltonian::operator()(detType const &a, detType const &b) const{
+	// first, see if a, b are valid
+	sizeCheck(a.size(),2*(grid->size()));
+	sizeCheck(a.size(),b.size());
 
-std::vector<detType> FermiHubbardHamiltonian::getCoupledStates(detType const &source) const{
-  int const d=source.size();
-  std::vector<detType> coupledList;
-  std::vector<int> spawnLeft, spawnRight;
-  // this creates a list of all possible hoppings
-  getRSHubSpawnLists(source, spawnLeft, spawnRight);
+	// then, get the excitation
+	// holes/excits of b with respect to a
+	std::vector<int> same, holes, excitations;
+	// get the spins that differ between a and b
+	getExcitation(a,b,excitations,holes,same);
 
-  detType targetTmp=source;
-  for (unsigned int i=0; i<spawnLeft.size(); ++i){
-    targetTmp=source;
-    annihilate(targetTmp,spawnLeft[i]);
-    create(targetTmp,(spawnLeft[i]-2+d)%d);
-    coupledList.push_back(targetTmp);
-  }
-  for (unsigned int i=0; i<spawnRight.size(); ++i){
-    targetTmp=source;
-    annihilate(targetTmp,spawnRight[i]);
-    create(targetTmp,(spawnRight[i]+2)%d);
-    coupledList.push_back(targetTmp);
-  }
-  return coupledList;
+	// RS hubbard is nearest-neighbours
+	if(excitations.size() > 1) return 0.0;
+	if(excitations.size() == 1){
+		// the site indices of the hole and the site the electron moved to
+		// why the @#$!?& are these 1-based
+		// also, convert spin-site indices to spatial site-indices (lattices are always spatial)
+		LocalQN lQN(0,2);
+		int hole = lQN.spatialIndex(holes[0] - 1);
+		int part = lQN.spatialIndex(excitations[0] - 1);
+		// only adjacent sites are coupled
+		if(grid->isAdjacent(hole,part) ){
+			// get the sign induces by the hopping
+			auto sign = excitationSign(a,holes[0]-1,excitations[0]-1);
+			// then return hopping matrix element
+			return t*sign;
+		}
+		// all others have 0 matrix element
+		return 0.0;
+	}
+
+	// if we reach this, a==b (or, equivalently, excitations.size() == 0)
+	// That means, sum up all on-site contributions
+	double diagElement = 0;
+	// loop over all sites
+	for(int i = 0; i<grid->size(); ++i){
+		// check if a site is doubly occupied
+		if(a[2*i] and a[2*i+1]){
+			// if yes, add U to the diagonal
+			diagElement += U;
+		}
+	}
+	return diagElement;
 }
 
 //---------------------------------------------------------------------------------------------------//
 
-FermiHubbardHamiltonian generateFermiHubbard(int dim, double U, double t){
-  FermiHubbardHamiltonian H(dim);
-  H.initMatrixStorage(true);
-
-  for(int i=2;i<dim+1;i+=2){
-      //Hubbard interaction
-      H.setMatrixElement(i,i-1,i,i-1,U);
-      H.setMatrixElement(i-1,i,i-1,i,U);
-      //hopping term, excluding pbc
-      H.setMatrixElement(i,i+2,t);
-      H.setMatrixElement(i-1,i+1,t);
-  }
-  for(int sigma=0;sigma<2;++sigma){
-      //boundary term for pbc
-      H.setMatrixElement(dim-sigma,2-sigma,t);
-  }
-
-  return H;
+void FermiHubbardHamiltonian::addCoupledStates(std::vector<detType> &list, detType const &source, int siteA, int siteB) const{
+	// check for both spins if a hopping is possible
+	for(int i = 0; i < 2; ++i){
+		LocalQN lQN(i,2);
+		int indA = lQN.orbitalIndex(siteA);
+		int indB = lQN.orbitalIndex(siteB);
+		this->LatticeHamiltonian::addCoupledStates(list,source,indA,indB);
+	}
 }
+
 
 } /* namespace networkVMC */

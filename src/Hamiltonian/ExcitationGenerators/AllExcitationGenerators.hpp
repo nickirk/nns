@@ -12,6 +12,7 @@
 #include "ExcitmatType.hpp"
 #include "ProbUpdater.hpp"
 #include "RSHubbardExcitgen.hpp"
+#include "LatticeExcitgen.hpp"
 #include "UniformExcitgen.hpp"
 #include "WeightedExcitgen.hpp"
 #include "WeightedSelector.hpp"

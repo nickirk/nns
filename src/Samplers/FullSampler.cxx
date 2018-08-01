@@ -13,7 +13,7 @@ namespace networkVMC {
 template <typename T>
 FullSampler<T>::FullSampler(ExcitationGenerator const &eG_, Basis const &fullBasis_,
 		Parametrization<T> const & para_):
-	Sampler(eG_,fullBasis_,detType(),fullBasis_.getSize()),pos(0),para(&para_){
+	Sampler(eG_,detType(),fullBasis_.size()),pos(0),para(&para_),fullBasis(&fullBasis_){
 }
 
 //---------------------------------------------------------------------------//
@@ -21,7 +21,7 @@ FullSampler<T>::FullSampler(ExcitationGenerator const &eG_, Basis const &fullBas
 template <typename T>
 FullSampler<T>::FullSampler(Hamiltonian const &H_, Basis const &fullBasis_,
 		Parametrization<T> const & para_):
-	Sampler(H_,fullBasis_,detType(),fullBasis_.getSize()),pos(0),para(&para_){
+	Sampler(H_,detType(),fullBasis_.size()),pos(0),para(&para_),fullBasis(&fullBasis_){
 }
 
 //---------------------------------------------------------------------------//

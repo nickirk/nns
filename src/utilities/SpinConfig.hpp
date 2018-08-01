@@ -10,7 +10,7 @@
 
 namespace networkVMC{
 
-// Storing how many electrons have which ms
+// Storing how many electrons have which ms / how many spins point up
 class SpinConfig {
 public:
 	// for now, only differ between ms>0 and ms<0

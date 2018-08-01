@@ -1,33 +1,34 @@
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
 #include <Eigen/Eigenvalues>
 #include "../src/Hamiltonian/FermiHubbardHamiltonian.hpp"
-#include "../src/HilbertSpace/FermionBasis.hpp"
+#include "../src/HilbertSpace/Basis.hpp"
 #include "../src/HilbertSpace/Determinant.hpp"
-#include "defaultSystem.hpp"
+#include "../src/utilities/SpinConfig.hpp"
+#include "testComponents.hpp"
 using namespace std;
 using namespace networkVMC;
+
 int main(){
-  int numSites(8);
-  int numStates(2*numSites);
-  int numEle(8);
-  int spinUp(4);
-  int spinDown(4);
-  SpinConfig spinConfig{spinUp, spinDown, numStates};
-  //cout << "input number of hidden neurons=";
-  //cin >> numHidden;
-  bool readFromFile{false};
-  double trainRate(1.5);
-  FermionBasis basis(spinConfig);
+  int numSites = 4;
+  auto sC = generateDefaultSpinConfig(numSites);
   auto modelHam = generateDefaultHubbard(numSites);
-  cout << "Basis size= " << basis.getSize() << endl;
-  cout << "Hamiltonian size= " << modelHam.getNumOrbs() << endl;
+  Basis basis(sC,modelHam);
+  testAdj(modelHam);
+  cout << "Basis size= " << basis.size() << endl;
+  cout << "Hamiltonian size= " << modelHam.size() << endl;
   cout << "print out Ham element" << endl;
-  for (int i(0); i<modelHam.getNumOrbs(); ++i){
-    for (int j(0); j< modelHam.getNumOrbs(); ++j){
+  ofstream ofs;
+  ofs.open("ham");
+  for (int i(0); i<basis.size(); ++i){
+    for (int j(0); j< basis.size(); ++j){
       cout << modelHam(basis.getDetByIndex(i), basis.getDetByIndex(j)) << ",";
+      ofs << modelHam(basis.getDetByIndex(i), basis.getDetByIndex(j)) << ",";
     }
     cout << endl;
+    ofs << endl;
   }
+  ofs.close();
 }
 

@@ -8,6 +8,7 @@
 #include "UniformExcitgen.hpp"
 #include <vector>
 #include "../../HilbertSpace/Determinant.hpp"
+#include "../../utilities/Errors.hpp"
 #include "ExcitmatType.hpp"
 
 namespace networkVMC {

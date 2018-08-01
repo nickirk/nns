@@ -136,7 +136,7 @@ double TwoBodyHamiltonian::operator()(detType const &alpha, detType const &beta)
     // get the TwoBodyHamiltonian matrix element H_{alpha,beta} between two
     // configuration alpha and beta
 	// THIS IS FOR SPINFUL TwoBodyHamiltonianS
-//  std::cout << "size d=" << d << " alpha size=" << alpha.size() << " beta size" << beta.size() << std::endl;
+    //std::cout << "size d=" << d << " alpha size=" << alpha.size() << " beta size" << beta.size() << std::endl;
     if(static_cast<int>(alpha.size())!=d || d!=static_cast<int>(beta.size())){
       if(alpha.size()==beta.size()){
       	throw SizeMismatchError(d,alpha.size());
@@ -208,7 +208,7 @@ double TwoBodyHamiltonian::operator()(detType const &alpha, detType const &beta)
 
     if (holes.size()==0){
     	// do a consistency check if there are actually any electrons in the determinants
-    	if(same.size()==0) throw InvalidDeterminantError();
+    	if(same.size()==0) throw InvalidDeterminantError(alpha);
         // diagonal TwoBodyHamiltonian matrix element, i.e. alpha = beta
         double diagonalTerm{0.0};
         int indi{0},indj{0};

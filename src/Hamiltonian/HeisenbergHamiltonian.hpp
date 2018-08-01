@@ -8,55 +8,25 @@
 #ifndef SRC_HAMILTONIAN_HEISENBERGHAMILTONIAN_HPP_
 #define SRC_HAMILTONIAN_HEISENBERGHAMILTONIAN_HPP_
 
-#include "TwoBodyHamiltonian.hpp"
-#include <set>
-#include <numeric>
+#include "LatticeHamiltonian.hpp"
 
 namespace networkVMC {
 
-class HeisenbergHamiltonian: public Hamiltonian {
+class HeisenbergHamiltonian: public LatticeHamiltonian {
 public:
-	// variadic template allows to construct with arbitrary spatial dimensions supplied
-	// initializer_list would do the same, but forces to use {}-initialization
-	// maybe switch if not needed
 	template<typename ...Args>
-	HeisenbergHamiltonian(double J_, Args... args):
-		Hamiltonian(),latticeDim({args...}),J(J_){
-		// if no template arguments are supplied, we assume a 1-d model (as that is the only one where we
-		// can build the hamiltonian without knowing the dimensions)
-		if(latticeDim.size()==0) latticeDim.push_back(12);
-		// number of sites in total
-		numSites = std::accumulate(latticeDim.begin(),latticeDim.end(),1,std::multiplies<int>());
-		for(int i = 0; i < numSites; ++i){
-			adjacencyList.push_back( adjacentSites(i) );
-		}
-	};
+	HeisenbergHamiltonian(double J_, Args ...args):
+		LatticeHamiltonian(true, args...),J(J_){};
+	template<typename ...Args>
+	HeisenbergHamiltonian(double J_, bool pbc, Args ...args):
+		LatticeHamiltonian(pbc, args...),J(J_){};
 
-	// get the matrix element between a and b
 	double operator()(detType const &a, detType const &b) const;
-	// generate all states coupled to source
-	std::vector<detType> getCoupledStates(detType const &source) const;
 
-	virtual ~HeisenbergHamiltonian(){};
 	HType type() const {return Heisenberg;}
-
-	int size() const {return numSites;}
-	std::set<int> adj(int i) const {return adjacencyList[i];}
+	virtual ~HeisenbergHamiltonian(){};
 private:
-	// spatial dimensions of the lattice
-	std::vector<int> latticeDim;
-	int numSites;
-	// coupling parameter
 	double J;
-	// we cannot set matrix elements for the Heisenberg Hamiltonian
-	void setMatrixElement(int a, int b, double newEntry);
-	void setMatrixElement(int a, int b, int c, int d, double newEntry);
-	// if two sites with indices i, j are adjacent
-	bool isAdjacent(int i, int j) const;
-	// all sites adjacent to i
-	std::set<int> adjacentSites(int i) const;
-	// adjacent sites for each sites, for faster runtime evaluation of matrix elements
-	std::vector< std::set<int> > adjacencyList;
 };
 
 //---------------------------------------------------------------------------------------------------//

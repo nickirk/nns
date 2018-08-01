@@ -8,6 +8,7 @@
 #ifndef SRC_HILBERTSPACE_ALLBASIS_HPP_
 #define SRC_HILBERTSPACE_ALLBASIS_HPP_
 
-#include "FermionBasis.hpp"
+#include "BasisGenerator.hpp"
+#include "Basis.hpp"
 
 #endif /* SRC_HILBERTSPACE_ALLBASIS_HPP_ */

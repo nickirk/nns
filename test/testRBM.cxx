@@ -17,10 +17,9 @@ int main(){
   SpinConfig spinConfig(spinUp, spinDown, numStates);
   int numHidden(5);
   double trainRate(0.005);
-  Basis basis(spinConfig);
-  //FermiHubbardHamiltonian modelHam(numStates);
-  //double U{4}, t{1};
-  //modelHam = generateFermiHubbard(numStates, U, t);
+  double U{2}, t{1};
+  FermiHubbardHamiltonian modelHam(U,t,numSites);
+  Basis basis(spinConfig,modelHam);
   vector<detType> list;
   //generate hamiltonian
   AbInitioHamiltonian modelHam(numStates);
@@ -41,8 +40,8 @@ int main(){
   //sampler.setNumDets(1000);
   //RSHubbardExcitgen RSHG;
   //UniformExcitgen RSHG(HF);
-  WeightedExcitgen RSHG(modelHam,HF);
-  //MetropolisSampler<VecCType> sampler(RSHG, basis, HF,rbm);
+  //WeightedExcitgen RSHG(modelHam,HF);
+  MetropolisSampler<VecCType> sampler(RSHG, HF,rbm);
   //ListGen<VecCType> sampler(RSHG, basis, HF,rbm,100);
   //sampler.setNumDets(1000);
   FullSampler<VecCType> sampler(modelHam, basis, rbm);

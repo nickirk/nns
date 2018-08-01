@@ -44,20 +44,20 @@ int main(){
   // and the sampler
   // run 4 tests: one for the weighted Excitgen
   WeightedExcitgen wEG(modelHam,HF);
-  MetropolisSampler<> weightedSampler(wEG, basis, HF, para);
+  MetropolisSampler<> weightedSampler(wEG,HF, para);
 
   // one for the RSHubbard
   RSHubbardExcitgen hubbardEG{};
-  MetropolisSampler<> hubSampler(hubbardEG, basis, HF, para);
+  MetropolisSampler<> hubSampler(hubbardEG,HF, para);
 
   runMetropolisTest(hubSampler);
   // one for RSHubbard via default initialization
-  MetropolisSampler<> sampler(modelHam, basis, HF,para);
+  MetropolisSampler<> sampler(modelHam, HF,para);
   runMetropolisTest(sampler);
 
   // and one for the Uniform
   UniformExcitgen uniEG(HF);
-  MetropolisSampler<> ugSampler(uniEG, basis, HF, para);
+  MetropolisSampler<> ugSampler(uniEG, HF, para);
 
 
   runMetropolisTest(ugSampler);

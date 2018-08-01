@@ -27,17 +27,17 @@ int main(){
   SpinConfig spinConfig{spinUp, spinDown, numStates};
   int numHidden(10);
   // which random excitation generator should be tested
-  //generate basis, the basis class constructor takes in the spin configurations.
-  FermionBasis basis(spinConfig);
   //generate hamiltonian
   AbInitioHamiltonian modelHam(numStates);
   ////double U{2.}, t{-1};
   string file_name = "FCIDUMP";
   modelHam = readAbInitioHamiltonian(file_name, numStates);
+  //generate basis, the basis class constructor takes in the spin configurations.
+  Basis basis(spinConfig,modelHam);
   //generate hamiltonian
   //FermiHubbardHamiltonian modelHam(numStates);
   //auto modelHam = generateFermiHubbard(numStates, U, t);
-  cout << "Basis size= " << basis.getSize() << endl;
+  cout << "Basis size= " << basis.size() << endl;
   //cout << "Hamiltonian size= " << modelHam.getSize() << endl;
   vector<detType> list;
   ofstream detsIntcast; 
@@ -49,7 +49,7 @@ int main(){
   //IntCast just to cast the determinant into a integer number so that 
   //we can see if anything is going wrong with the basis.
   auto HF=basis.getDetByIndex(0);
-  for (int i=0; i< basis.getSize(); ++i){
+  for (int i=0; i< basis.size(); ++i){
     list.push_back(basis.getDetByIndex(i));
     detsIntcast << verbatimCast(basis.getDetByIndex(i)) << endl;
   }
@@ -66,7 +66,7 @@ int main(){
   //WeightedExcitgen RSHG(modelHam, HF);
   //RSHubbardExcitgen RSHG;
   //UniformExcitgen RSHG(HF);
-  //MetropolisSampler<VecType> sampler(RSHG, basis, HF,NNW);
+  //MetropolisSampler<VecType> sampler(RSHG, HF,NNW);
   //sampler.setNumDets(1000);
   //ListGen<VecType> sampler(RSHG, basis, HF,NNW,1000);
   FullSampler<> sampler(modelHam, basis,NNW);

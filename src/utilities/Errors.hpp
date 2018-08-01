@@ -38,6 +38,10 @@ public:
 	int sizeA, sizeB;
 };
 
+inline void sizeCheck(int i, int j){
+	if(i!=j) throw SizeMismatchError(i,j);
+}
+
 class ActFuncDoNotExist{
   public:
     ActFuncDoNotExist(std::string actFunc_):actFunc(actFunc_){};
@@ -73,7 +77,7 @@ public:
 
 class InvalidDeterminantError{
 public:
-	InvalidDeterminantError(){};
+	InvalidDeterminantError(detType const &a);
 };
 
 }

@@ -29,6 +29,7 @@ private:
 	int pos;
   // sampling depends on the coefficients, as they have to be given alongside the determinants
     Parametrization<T> const *para;
+    Basis const *fullBasis;
 };
 
 } /* namespace networkVMC */

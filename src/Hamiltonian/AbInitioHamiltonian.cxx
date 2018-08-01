@@ -56,7 +56,6 @@ AbInitioHamiltonian readAbInitioHamiltonian(std::string file_name, bool molpro_f
     if (inputfile.is_open() & inputfile.good()){
         while(!inputfile.eof()){
             std::getline(inputfile,line);
-            std::cout << line << std::endl;
             // split the line
             std::istringstream iss(line);
             std::vector<std::string> parts{
@@ -84,7 +83,8 @@ AbInitioHamiltonian readAbInitioHamiltonian(std::string file_name, bool molpro_f
 				// number of orbitals
 				int dim = std::stoi(norbsMatch[0]);
 				first = false;
-				H = AbInitioHamiltonian(dim);
+				// number of spin-orbitals is twice the number indicated in the FCIDUMP
+				H = AbInitioHamiltonian(2*dim);
             }
             // FCIDUMP files are in chemical notation, (ik|jl), i.e.
             // (ik|jl) = <ij|kl>
