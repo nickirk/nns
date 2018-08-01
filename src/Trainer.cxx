@@ -90,7 +90,7 @@ void Trainer<T>::updateParameters(State const &input){
 		dEdPars = NNW.calcNablaParsMarkovConnected(input,dEdC,getE());
 		break;
 	case PreFetched:
-		dEdPars = NNW.calcNablaParsConnected(input,dEdC);
+		dEdPars = NNW.calcNablaPars(input,dEdC);
 		break;
 	default:
     throw SamplerTypeDoesNotExist(msampler.type());
@@ -102,7 +102,7 @@ void Trainer<T>::updateParameters(State const &input){
 //---------------------------------------------------------------------------------------------------//
 
 template <typename T>
-double Trainer<T>::getE() const{
+coeffType Trainer<T>::getE() const{
 	// Here, we just output the value of the cost function (usually the energy) of the
 	// network
 	return cf.calc(inputState);

@@ -10,9 +10,9 @@
 
 namespace networkVMC
 {
-    RBM::RBM(int sizeInput, int sizeHidden):
-    sizeHidden(sizeHidden),
-    sizeInput(sizeInput),
+    RBM::RBM(int sizeInput_, int sizeHidden_):
+    sizeHidden(sizeHidden_),
+    sizeInput(sizeInput_),
     numPars(sizeInput+sizeHidden+sizeInput*sizeHidden),
     a_offset(0),
     b_offset(sizeInput),
@@ -169,7 +169,7 @@ namespace networkVMC
     VecCType RBM::calcNablaParsMarkovConnected(
 	   State const &inputState,
 	   nablaType const &dEdC,
-     double const &energy
+     coeffType const &energy
      ){
         int numDets = inputState.size();
         int spaceSize = inputState.totalSize();
@@ -188,7 +188,7 @@ namespace networkVMC
             dCtdW = getMarkovDeriv(inputState.det(i));
             // multiplication should be done by matrix vector product
             // fill up the dCdW matrix
-            dCdW.col(i) << (dCtdW.conjugate()*inputState.coeff(i));
+            dCdW.col(i) << (dCtdW.conjugate());
             dEdW -= energy * dCtdW.conjugate()/numDets; 
             //dedc[i] = 1;
             std::vector<detType> coupledDets = inputState.coupledDets(i);
@@ -197,7 +197,7 @@ namespace networkVMC
             size_t pos = inputState.locate(i);
             for (size_t j(0); j < coupledSize; ++j){
               // fill up the dCdW matrix with coupled dets contribution
-              dCdW.col(numDets+pos+j) << (dCtdW.conjugate()*coupledCoeffs[j]);
+              dCdW.col(numDets+pos+j) << (dCtdW.conjugate());
               //dEdWTmp +=  dCtdW * dEdC[pos];
             }
           }

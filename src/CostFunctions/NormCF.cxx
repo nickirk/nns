@@ -26,8 +26,8 @@ nablaType NormCF::nabla(State const &input) const{
 	return cfBuf;
 }
 
-double NormCF::calc(State const &input) const{
-	double buf{0.0};
+coeffType NormCF::calc(State const &input) const{
+	coeffType buf{0.0,0.0};
 	for(std::size_t i=0;i<input.size();++i){
 		coeffType tmp = input.coeff(i) - psi.coeff(i);
 		buf += std::real(std::conj(tmp) * tmp);

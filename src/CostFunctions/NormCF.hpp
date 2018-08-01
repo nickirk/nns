@@ -28,7 +28,7 @@ public:
 // derivative of ||psi - psi_0||^2 with respect to the coefficients of psi
 	nablaType nabla(State const &input) const;
 // value of ||psi - psi_0||^2
-	double calc(State const &input) const;
+	coeffType calc(State const &input) const;
 
 	// Allow for polymorphic copy
 	virtual CostFunction* clone() const {return new NormCF(*this);}

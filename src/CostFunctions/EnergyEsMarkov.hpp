@@ -25,7 +25,7 @@ public:
 	// directly, this has to be done via EnergyEs
 	friend EnergyEs;
 
-	virtual double calc(State const &input) const {return energy;};
+	virtual coeffType calc(State const &input) const {return energy;};
 	nablaType nabla(State const &input) const;
 
 	// Allow for polymorphic copy

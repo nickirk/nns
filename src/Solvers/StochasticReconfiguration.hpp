@@ -10,6 +10,7 @@
 
 #include "Solver.hpp"
 #include "../Network/Parametrization.hpp"
+#include <Eigen/IterativeLinearSolvers>
 
 namespace networkVMC {
 template <typename T=VecType>

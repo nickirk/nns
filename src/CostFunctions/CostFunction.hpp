@@ -25,7 +25,7 @@ public:
 // Two functions have to be present in a cost function: The function itself (calc) and its derivative
 // (nabla)
 	virtual nablaType nabla(State const &input) const = 0;
-	virtual double calc(State const &input) const = 0;
+	virtual coeffType calc(State const &input) const = 0;
 
 	// Make the CostFunction clonable - as we have multiple inheritance, CRTP is
 	// not such a good idea

@@ -38,17 +38,28 @@ void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, double &weight,
 	// And its coefficient
   // std::norm returns |a+ib|^2
   //double prob = std::norm(tmpCoeff)/std::norm(lastCoeff);
-	detType tmp{getRandomConnection(cDet,pEx)};
+  detType tmp;
+  double prob(0.);
+	coeffType tmpCoeff;
+  if (i<0) {
+    tmp = getRandomDeterminant(*fullBasis);
+    tmpCoeff = para->getCoeff(tmp);
+    prob = std::norm(tmpCoeff/lastCoeff);
+  }
+  else {
+    tmp=getRandomConnection(cDet,pEx);
+    tmpCoeff = para->getCoeff(tmp);
 	// And its coefficient
-	coeffType tmpCoeff{para->getCoeff(tmp)};
 	// unbiasing with generation probability in principle necessary (unless prob. is symmetric)
-	pBack = getConnectionProb(tmp,cDet);
-  double p = uni(rng);
+	  pBack = getConnectionProb(tmp,cDet);
+    prob = pBack/pEx*std::norm(tmpCoeff/lastCoeff);
+  }
   //std::cout << "MetropolisSampler.cxx: uni(rng)=" << p << std::endl;
   //std::cout << "MetropolisSampler.cxx: pJump=" << std::norm(tmpCoeff/lastCoeff)*pBack/pEx << std::endl;
 
-	if(uni(rng) < (pBack/pEx*std::norm(tmpCoeff/lastCoeff))){
+	if(uni(rng) < prob){
 	//if(p < (std::norm(tmpCoeff/lastCoeff))){
+	//if(p < (std::norm(tmpCoeff)/std::norm(lastCoeff))){
 		// With probability |cJ/cI|^2, accept the move
 		cDet = tmp;
 		lastCoeff = tmpCoeff;

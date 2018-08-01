@@ -25,7 +25,7 @@ public:
 	virtual ~EnergyCFBaseClass(){};
 
 	// these are the same in all EnergyEs cost functions
-	virtual double calc(State const &input) const {return energy;};
+	virtual coeffType calc(State const &input) const {return energy;};
 	// auxiliary function to get the norm
 	virtual double getNormalizer() const{return normalizerCoeff;};
 
@@ -38,7 +38,7 @@ protected:
 	// Hamiltonian, to which the energy referes
 	Hamiltonian const& H;
 	// cache variables for intermediate results
-	mutable double energy;
+	mutable coeffType energy;
 	mutable double normalizerCoeff;
 
 	// Has a reference member, so assignment is not a thing

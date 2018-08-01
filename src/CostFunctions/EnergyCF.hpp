@@ -32,7 +32,7 @@ public:
 	// Allow for polymorphic copy
 	virtual EnergyCF* clone() const {return new EnergyCF(*this);}
 private:
-	double evaluate(State const &input) const;
+	coeffType evaluate(State const &input) const;
   int numCons;
 };
 

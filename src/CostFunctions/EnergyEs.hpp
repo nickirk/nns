@@ -25,7 +25,7 @@ public:
 
 // The operations are actually performed by another EnergyCF (worker)
 	nablaType nabla(State const &input) const {return worker->nabla(input);}
-	double calc(State const &input) const {return worker->calc(input);};
+	coeffType calc(State const &input) const {return worker->calc(input);};
 
 	double getNormalizer() const {return worker->getNormalizer();}
 

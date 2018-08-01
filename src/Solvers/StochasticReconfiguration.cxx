@@ -37,6 +37,8 @@ void StochasticReconfiguration<T>::update(T &w, T const &force,
 	  }
     OkOkp /= static_cast<double>(numDets);
     Ok /= static_cast<double>(numDets);
+    //std::cout << "StochasticReconfiguration.cxx: OkOkp=" << std::endl;
+    //std::cout << OkOkp << std::endl;
     break;
     case PreFetched:
 	  for(std::size_t i = 0; i<numDets; ++ i){
@@ -45,6 +47,8 @@ void StochasticReconfiguration<T>::update(T &w, T const &force,
       OkOkp += (dCdWk*dCdWk.adjoint()).adjoint();
       Ok += dCdWk;
 	  }
+    OkOkp /= static_cast<double>(numDets);
+    Ok /= static_cast<double>(numDets);
     break;
     default:
     throw SamplerTypeDoesNotExist(samplerType);
@@ -54,15 +58,35 @@ void StochasticReconfiguration<T>::update(T &w, T const &force,
   // default hyperparameters tested with small Hubbard models,
   // no guarantee that they work for other systems. 
   // More tests should be run to observe the performace of these parameters
-  double lambda = std::max(100*std::pow(0.99,iteration), 5.);
+  double lambda = std::max(100*std::pow(0.995,iteration), 0.1);
   std::cout << "StochasticReconfiguration.cxx: lambda=" << lambda << std::endl;
   Eigen::VectorXcd I = Eigen::VectorXcd::Ones(numPars);
+  //std::cout << "I=" << I  << std::endl; 
   // Add \epsilon * I to S matrix to prevent ill inversion of the S matrix.
-  S+=I.asDiagonal()*lambda;
-  Eigen::MatrixXcd II = I.asDiagonal();
-  std::cout << "StochasticReconfiguration.cxx: S=" << std::endl;
-  std::cout << S << std::endl;
-  w-=Solver<T>::learningRate*S.llt().solve(II)*force;
+  double error=1.;
+  Eigen::VectorXcd x;
+  Eigen::ConjugateGradient<Eigen::MatrixXcd, Eigen::Lower|Eigen::Upper> cg;
+  while (error>1e-16){
+    S+=I.asDiagonal()*lambda;
+    cg.setTolerance(1e-16);
+    cg.setMaxIterations(10000);
+    cg.compute(S);
+    x = cg.solve(force);
+    error = cg.error();
+    lambda += 10.;
+    std::cout << "#iterations:     " << cg.iterations() << std::endl;
+    std::cout << "estimated error: " << cg.error()      << std::endl;
+  }
+
+  //std::cout << "StochasticReconfiguration.cxx: S=" << std::endl;
+  //std::cout << S << std::endl;
+  //S+=S.diagonal().asDiagonal()*lambda;
+  //Eigen::MatrixXcd II = I.asDiagonal();
+  //Eigen::MatrixXcd residual = S*(S.llt().solve(II)).adjoint();
+  //std::cout << "StochasticReconfiguration.cxx: residual=" << std::endl;
+  //std::cout << residual << std::endl;
+  //w-=Solver<T>::learningRate*S.llt().solve(II)*force;
+  w-=Solver<T>::learningRate*x;
 	// increase the iteration counter
 	iteration += 1;
 }

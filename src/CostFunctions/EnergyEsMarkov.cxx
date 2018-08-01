@@ -45,6 +45,8 @@ coeffType EnergyEsMarkov::evaluate(State const &input) const{
 nablaType EnergyEsMarkov::nabla(State const &input) const{
   coeffType energyM = evaluate(input);
   energy = std::real(energyM);
+  std::cout << "complex energyM=" << energyM << std::endl;
+  std::cout << "real energy=" << energy << std::endl;
   int numDets = input.size();
   // spaceSize = size of sampled dets and their coupled ones
   int spaceSize = input.totalSize();
@@ -57,7 +59,7 @@ nablaType EnergyEsMarkov::nabla(State const &input) const{
     coeffType dEdCtmp;
     coeffType c_i = input.coeff(i);
 //  put all the weighting step here instead of inside of RBM
-    dEdCtmp = (H(input.det(i), input.det(i)))/c_i;
+    dEdCtmp = (H(input.det(i), input.det(i)));
     // add weights
     dEdC[i] = dEdCtmp / static_cast<double>(numDets);
     std::vector<coeffType> coupledC_j = input.coupledCoeffs(i);
@@ -70,7 +72,7 @@ nablaType EnergyEsMarkov::nabla(State const &input) const{
    for (size_t j=0; j < coupledSize; ++j){
      // don't forget to unbias using the Pgen. TODO
      // in the excitgen, the weight should be updated with pgen
-     dEdCtmp = H(input.det(i),coupledDets[j])/(c_i *
+     dEdCtmp = H(input.det(i),coupledDets[j])* coupledC_j[j]/(c_i *
     		 (coupledWeights[j] * coupledSize ));
      // unbias with numCoupledDets and Pgen
      //dEdC[i+j+1]=dEdCtmp / coupledDets.size() / numDets;

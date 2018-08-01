@@ -46,7 +46,7 @@ public:
   virtual T calcNablaParsConnected(State const &inputState, nablaType const& dEdC)
   	  {return calcNablaPars(inputState,dEdC);}
 
-  virtual T calcNablaParsMarkovConnected(State const &inputState, nablaType const& dEdC, double const& energy)
+  virtual T calcNablaParsMarkovConnected(State const &inputState, nablaType const& dEdC, coeffType const& energy)
   	  {return calcNablaPars(inputState,dEdC);}
 
   // stochastic reconfiguration derivative

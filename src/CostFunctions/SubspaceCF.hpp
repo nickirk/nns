@@ -27,7 +27,7 @@ public:
 // Derivative with respect to the input's coefficients
 	nablaType nabla(State const &input) const;
 // Value of the cost function
-	double calc(State const &input) const {return distance;}
+	coeffType calc(State const &input) const {return coeffType(distance,0.);}
 
 	// Allow for polymorphic copy
 	virtual CostFunction* clone() const {return new SubspaceCF(*this);}

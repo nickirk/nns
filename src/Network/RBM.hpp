@@ -28,7 +28,7 @@ namespace networkVMC
             virtual VecCType calcNablaPars(State const &input, nablaType const &outerDerivative);
             virtual Eigen::MatrixXcd calcdCdwSR(State const &outputState);
             virtual VecCType calcNablaParsConnected(State const &inputState, nablaType const& dEdC);
-            virtual VecCType calcNablaParsMarkovConnected(State const &inputState, nablaType const& dEdC, double const& energy);
+            virtual VecCType calcNablaParsMarkovConnected(State const &inputState, nablaType const& dEdC, coeffType const& energy);
             ~RBM();
 
         private:

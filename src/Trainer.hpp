@@ -39,7 +39,7 @@ public:
 	void train(double learningRate);
 // read-out methods for energy and coefficients
 	void getNextCoeff(coeffType &cI, detType &dI);
-	double getE() const;
+	coeffType getE() const;
 // read out the current state of the NNW
 	State const& getState() const;
 // For testing purposes: get the cost function

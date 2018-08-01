@@ -14,8 +14,8 @@
 namespace networkVMC{
 
 // This gets the energy expectation value of the state 'input'
-double EnergyCF::evaluate(State const &input) const{
-  double energyVal{0.0};
+coeffType EnergyCF::evaluate(State const &input) const{
+  coeffType energyVal{0.0,0.0};
   normalizerCoeff=0.0;
   std::complex<double> normalizerCoeffComplex(0.,0.);
   double Hij(0.);
