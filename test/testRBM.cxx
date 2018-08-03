@@ -10,26 +10,33 @@ using namespace networkVMC;
 using namespace std;
 
 int main(){
-  int numSites(6);
-  int numStates(2*numSites);
-  int spinUp(3);
-  int spinDown(3);
-  SpinConfig spinConfig(spinUp, spinDown, numStates);
-  int numHidden(5);
+  int numSites(20);
+  int spinUp(10);
+  int spinDown(10);
+  int numHidden(10);
   double trainRate(0.005);
-  double U{2}, t{1};
-  FermiHubbardHamiltonian modelHam(U,t,numSites);
-  Basis basis(spinConfig,modelHam);
-  vector<detType> list;
+  double U{4}, t{1};
+  int numStates = numSites; 
+  //FermiHubbardHamiltonian modelHam(U,t,numSites);
+  HeisenbergHamiltonian modelHam(-1.,false, numSites);
+  //vector<detType> list;
   //generate hamiltonian
-  AbInitioHamiltonian modelHam(numStates);
-  double U{2.}, t{-1};
-  string file_name = "FCIDUMP";
-  modelHam = readAbInitioHamiltonian(file_name);
+  //AbInitioHamiltonian modelHam(0);
+  //double U{2.}, t{-1};
+  //string file_name = "FCIDUMP";
+  //modelHam = readAbInitioHamiltonian(file_name,1);
+  //int numStates = modelHam.getNumOrbs();
+  //std::cout << "numStates=" << numStates << std::endl;
+  SpinConfig spinConfig(spinUp, spinDown,numStates);// numStates);
+  Basis basis(spinConfig,modelHam);
+  std::cout << "basis size=" << basis.size() << std::endl;
   RBM rbm(numStates, numHidden);
+  //DirectParametrization<VecCType> rbm(basis);
 
   std::cout << "Initial vals of par=" << std::endl;
   std::cout << rbm.pars() << std::endl;
+  std::cout << "num of par=" << std::endl;
+  std::cout << rbm.getNumPars() << std::endl;
 
   detType HF=basis.getDetByIndex(0);
   //EnergyEsMarkov eCF(modelHam);
@@ -39,12 +46,13 @@ int main(){
   //MetropolisSampler<VecCType> sampler(modelHam, basis, HF, rbm);
   //sampler.setNumDets(1000);
   //RSHubbardExcitgen RSHG;
+  LatticeExcitgen RSHG(modelHam);
   //UniformExcitgen RSHG(HF);
   //WeightedExcitgen RSHG(modelHam,HF);
-  MetropolisSampler<VecCType> sampler(RSHG, HF,rbm);
+  MetropolisSampler<VecCType> sampler(RSHG, HF,basis, rbm);
   //ListGen<VecCType> sampler(RSHG, basis, HF,rbm,100);
-  //sampler.setNumDets(1000);
-  FullSampler<VecCType> sampler(modelHam, basis, rbm);
+  sampler.setNumDets(1000);
+  //FullSampler<VecCType> sampler(modelHam, basis, rbm);
   EnergyEs eCF(modelHam,-1);
   //Setup the trainer
   coeffType energy{0.0};
@@ -53,9 +61,9 @@ int main(){
   StochasticReconfiguration<VecCType> sl(rbm,trainRate);
   Trainer<VecCType> ev(rbm, sampler, sl, eCF,modelHam);
   ofstream myfile1;
-  myfile1.open ("en");
+  myfile1.open ("en3");
   for(int l(0); l<20000; ++l){
-    trainRate = std::max(0.1*std::pow(0.995,l), 0.1);
+    trainRate = std::max(0.01*std::pow(0.95,l), 0.001);
     ev.train(trainRate);
     // get the new energy
     energy = ev.getE();

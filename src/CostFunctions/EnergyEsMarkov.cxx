@@ -51,7 +51,7 @@ nablaType EnergyEsMarkov::nabla(State const &input) const{
   // spaceSize = size of sampled dets and their coupled ones
   int spaceSize = input.totalSize();
   // For each n, it has the same number of connected Dets as others.!!!
-  nablaType dEdC(spaceSize, coeffType(0.,0.)) ;
+  nablaType dEdC(spaceSize, coeffType(0.,0.));
   //not thread safe
   //assume we know the whole space size, reserve space
   #pragma omp parallel for
@@ -70,7 +70,10 @@ nablaType EnergyEsMarkov::nabla(State const &input) const{
     //std::cout << "numProc=" << tid << " EnergyEsMarkov.cxx: c_i=" << c_i << std::endl;
    int pos=input.locate(i);
    for (size_t j=0; j < coupledSize; ++j){
-     // don't forget to unbias using the Pgen. TODO
+     if (input.det(i)==coupledDets[j]){ 
+       std::cout << "EnergyEsMarkov.cxx: Stop!" << std::endl;
+       abort;
+     }
      // in the excitgen, the weight should be updated with pgen
      dEdCtmp = H(input.det(i),coupledDets[j])* coupledC_j[j]/(c_i *
     		 (coupledWeights[j] * coupledSize ));

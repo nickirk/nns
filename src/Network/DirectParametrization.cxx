@@ -32,6 +32,19 @@ T DirectParametrization<T>::calcNablaPars(State const &inputState,
   return dEdPars;
 }
 
+template <typename T>
+Eigen::VectorXcd DirectParametrization<T>::getDeriv(detType const &det) const {
+  Eigen::VectorXcd dCdW=Eigen::VectorXcd::Zero(coeffs.size()); 
+  dCdW(fullBasis->getIndexByDet(det))=coeffType(1.0,0.);
+  return dCdW;
+}
+
+template <typename T>
+Eigen::VectorXcd DirectParametrization<T>::getMarkovDeriv(detType const &det) const {
+  Eigen::VectorXcd dCdW=Eigen::VectorXcd::Zero(coeffs.size()); 
+  dCdW(fullBasis->getIndexByDet(det))=1./coeffs[fullBasis->getIndexByDet(det)];
+  return dCdW;
+}
 //---------------------------------------------------------------------------//
 //instantiate class
 template class DirectParametrization<VecType>;

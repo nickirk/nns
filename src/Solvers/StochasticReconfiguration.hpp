@@ -9,6 +9,7 @@
 #define SRC_SOLVERS_STOCHASTICRECONFIGURATION_HPP_
 
 #include "Solver.hpp"
+#include "ADAM.hpp"
 #include "../Network/Parametrization.hpp"
 #include <Eigen/IterativeLinearSolvers>
 
@@ -17,7 +18,7 @@ template <typename T=VecType>
 class StochasticReconfiguration: public Solver<T> {
 public:
   StochasticReconfiguration(Parametrization<T> &NNW_, double gamma_):
-	  Solver<T>(gamma_),NNW(NNW_),iteration(0) {};
+	  Solver<T>(gamma_),NNW(NNW_),iteration(0),internalSolver(gamma_) {};
   virtual ~StochasticReconfiguration();
 
   virtual void update(T &w, T const &force, State const &input, SamplerType 
@@ -28,6 +29,7 @@ private:
   Parametrization<T> &NNW;
   // and an iteration counter
   int iteration;
+  ADAM<T> internalSolver;
 };
 
 } /* namespace networkVMC */

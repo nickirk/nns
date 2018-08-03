@@ -116,7 +116,7 @@ State const &Trainer<T>::getState() const{
 	return inputState;
 }
 //instantiate class
-template class Trainer<VecType>;
+//template class Trainer<VecType>;
 
 //instantiate class
 template class Trainer<VecCType>;

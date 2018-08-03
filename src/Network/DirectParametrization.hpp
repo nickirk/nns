@@ -44,6 +44,8 @@ public:
   }
   // inner derivative implementation
   T calcNablaPars(State const &inputState, nablaType const &dEdC);
+  Eigen::VectorXcd getDeriv(detType const &det) const;
+  Eigen::VectorXcd getMarkovDeriv(detType const &det) const;
   // Some other derivative
   // T calcNablaParsConnected(State const &inputState, nablaType const& dEdC){};
   // stochastic reconfiguration derivative

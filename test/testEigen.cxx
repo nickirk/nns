@@ -24,6 +24,14 @@ int main(){
   v(4) +=100;
   cout << M[0] << endl;
   cout << M[1] << endl;
+
+  VectorXcd x(2);
+  x(0)= std::complex<double>(1.,0);
+  x(1)= std::complex<double>(0.,1.);
+  MatrixXcd X;
+  X = (x*x.adjoint()).adjoint();
+  std::cout << "X=" << std::endl;
+  std::cout << X << std::endl;
 }
 
 

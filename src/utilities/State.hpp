@@ -163,9 +163,7 @@ public:
   // no sense: We call cDets[i].size() to compute cDets[i].size()???
    size_t size(0);
    for (size_t i(0); i< iDet;++i){
-     for (size_t j(0); j < cDets[i].size(); ++j){
-       size+=1;
-     }
+     size += cDets[i].size();
    }
    return size;
  };

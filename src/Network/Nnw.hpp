@@ -98,8 +98,8 @@ private:
   std::vector<int> sizes;
  //---------------------
  //variable for the network
-  int numNNP;
   int numLayers;
+  int numNNP;
   Eigen::VectorXd NNP;
   Eigen::VectorXd generlisedForcePrev;
   Eigen::VectorXd nablaNNP;

@@ -32,13 +32,13 @@ int main(){
   AbInitioHamiltonian modelHam(0);
   //double U{2.}, t{-1};
   string file_name = "FCIDUMP";
-  modelHam = readAbInitioHamiltonian(file_name);
+  modelHam = readAbInitioHamiltonian(file_name,1);
   int numStates = modelHam.getNumOrbs();
   // generate the spin config
   std::cout << numStates << std::endl;
   // this is additional info, use something where we can construct the basis
-  int spinUp(2);
-  int spinDown(2);
+  int spinUp(3);
+  int spinDown(3);
   SpinConfig spinConfig{spinUp,spinDown, numStates};
   //generate basis, the basis class constructor takes in the spin configurations.
   Basis basis(spinConfig,modelHam);

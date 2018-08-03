@@ -30,6 +30,10 @@ public:
   Sampler(ExcitationGenerator const &eG_, detType const &HF, int numDets_= 100);
   // construct the ExcitationGenerator implicitly from the Hamiltonian
   Sampler(Hamiltonian const &H_, detType const &HF, int numDets_ = 100);
+  Sampler(Hamiltonian const &H_, detType const &HF, Basis const &fullBasis, 
+      int numDets_ = 100);
+  Sampler(ExcitationGenerator const &eG_, detType const &HF, Basis const &fullBasis, 
+      int numDets_ = 100);
   virtual ~Sampler(){};
   virtual Sampler* clone() const = 0;
   // This function is what samplers ought to do: Get a random determinant with some

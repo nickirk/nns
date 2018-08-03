@@ -18,11 +18,13 @@ template <typename T=VecType>
 class MetropolisSampler: public Sampler {
 public:
 	MetropolisSampler(ExcitationGenerator const &eG_, detType const &HF,
-			          Parametrization<T> const &para_, int numDets_ = 100):
-			Sampler(eG_,HF,numDets_),para(&para_),lastCoeff(para_.getCoeff(cDet)){};
-	MetropolisSampler(Hamiltonian const &H_, detType const &HF,
-			          Parametrization<T> const &para_, int numDets_ = 100):
-			Sampler(H_,HF,numDets_),para(&para_),lastCoeff(para_.getCoeff(cDet)){};
+			          Basis const &fullBasis_, Parametrization<T> const &para_, 
+                int numDets_ = 100):Sampler(eG_,HF,numDets_),para(&para_),
+                lastCoeff(para_.getCoeff(cDet)),fullBasis(&fullBasis_){};
+	MetropolisSampler(Hamiltonian const &H_, detType const &HF, 
+                Basis const &fullBasis_,Parametrization<T> const &para_, 
+                int numDets_ = 100):Sampler(H_,HF,numDets_),para(&para_),
+                fullBasis(&fullBasis_),lastCoeff(para_.getCoeff(cDet)){};
 	virtual ~MetropolisSampler();
 	// create a dynamic polymorphic copy
 	virtual MetropolisSampler* clone() const {return new MetropolisSampler(*this);}
@@ -36,6 +38,7 @@ private:
   // sampling depends on the coefficients, as they have to be given alongside the determinants
   Parametrization<T> const *para;
 	coeffType lastCoeff;
+  Basis const *fullBasis;
 };
 
 }

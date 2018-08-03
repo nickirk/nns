@@ -44,6 +44,10 @@ void StochasticReconfiguration<T>::update(T &w, T const &force,
 	  for(std::size_t i = 0; i<numDets; ++ i){
       // the derivatives differ in different sampling schemes
       dCdWk=NNW.getDeriv(input.det(i));
+      std::cout << "StochasticReconfiguration.cxx: dCdWk size=" << std::endl;
+      std::cout << dCdWk.size() << std::endl;
+      std::cout << w.size() << std::endl;
+
       OkOkp += (dCdWk*dCdWk.adjoint()).adjoint();
       Ok += dCdWk;
 	  }
@@ -58,25 +62,29 @@ void StochasticReconfiguration<T>::update(T &w, T const &force,
   // default hyperparameters tested with small Hubbard models,
   // no guarantee that they work for other systems. 
   // More tests should be run to observe the performace of these parameters
-  double lambda = std::max(100*std::pow(0.995,iteration), 0.1);
-  std::cout << "StochasticReconfiguration.cxx: lambda=" << lambda << std::endl;
+  double lambda = std::max(10*std::pow(0.95,iteration), 0.1);
   Eigen::VectorXcd I = Eigen::VectorXcd::Ones(numPars);
   //std::cout << "I=" << I  << std::endl; 
   // Add \epsilon * I to S matrix to prevent ill inversion of the S matrix.
   double error=1.;
   Eigen::VectorXcd x;
   Eigen::ConjugateGradient<Eigen::MatrixXcd, Eigen::Lower|Eigen::Upper> cg;
+  cg.setTolerance(1e-16);
+  cg.setMaxIterations(10000);
   while (error>1e-16){
+    std::cout << "StochasticReconfiguration.cxx: lambda=" << lambda << std::endl;
     S+=I.asDiagonal()*lambda;
-    cg.setTolerance(1e-16);
-    cg.setMaxIterations(10000);
+    //S+=S.diagonal().asDiagonal()*lambda;
     cg.compute(S);
     x = cg.solve(force);
     error = cg.error();
-    lambda += 10.;
-    std::cout << "#iterations:     " << cg.iterations() << std::endl;
-    std::cout << "estimated error: " << cg.error()      << std::endl;
+    lambda += 0.002;
+    std::cout << "StochasticReconfiguration.cxx: #iterations:     " 
+      << cg.iterations() << std::endl;
+    std::cout << "StochasticReconfiguration.cxx: estimated error: " 
+      << cg.error()      << std::endl;
   }
+  x /= std::sqrt(x.dot(S * x).real()); 
 
   //std::cout << "StochasticReconfiguration.cxx: S=" << std::endl;
   //std::cout << S << std::endl;
@@ -86,6 +94,8 @@ void StochasticReconfiguration<T>::update(T &w, T const &force,
   //std::cout << "StochasticReconfiguration.cxx: residual=" << std::endl;
   //std::cout << residual << std::endl;
   //w-=Solver<T>::learningRate*S.llt().solve(II)*force;
+  //internalSolver.setLearningRate(Solver<T>::learningRate);
+  //internalSolver.update(w, x, input, samplerType);
   w-=Solver<T>::learningRate*x;
 	// increase the iteration counter
 	iteration += 1;
