@@ -50,7 +50,7 @@ public:
 
   // Setters for various properties
   // set the starting point
-  void setReference(detType const &start){cDet = start;}
+  virtual void setReference(detType const &start){cDet = start;}
   // reset the state of the sampler to the original one
   void reset(){
 	  // important: first reset cDet
@@ -66,6 +66,12 @@ public:
 
   // for attributing CostFunctions
   virtual SamplerType type() const {return PreFetched;}
+  friend void swap(Sampler &a, Sampler &b){
+    std::swap(a.excitGen,b.excitGen);
+    std::swap(a.originalRef,b.originalRef);
+    std::swap(a.numDets,b.numDets);
+    std::swap(a.cDet,b.cDet);
+  }
 
 protected:
   // and functionalities for implementation of sampling: get a random coupled determinant

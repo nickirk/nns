@@ -12,6 +12,7 @@
 #include "Parametrization.hpp"
 #include "../utilities/State.hpp"
 #include "../utilities/TypeDefine.hpp"
+#include "../math/MathFunctions.hpp"
 
 namespace networkVMC
 {

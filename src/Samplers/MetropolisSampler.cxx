@@ -38,7 +38,7 @@ void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, double &weight,
   detType tmp;
   double prob(0.);
 	coeffType tmpCoeff;
-  double probRand =std::max(100*std::pow(0.995,i), 0.1);
+  double probRand =std::max(100*std::pow(0.9,i), 0.);
   if (rng() < probRand) {
     tmp = getRandomDeterminant(*fullBasis);
     //tmp=getRandomConnection(cDet,pEx);

@@ -35,7 +35,9 @@ State InputStateGenerator<T>::generate(int numCons) const{
 #pragma omp parallel
   {
 	// sampling is not threadsafe, so each thread creates it's own sampler
-    thread_local std::unique_ptr<Sampler> samplerThread(msampler.clone());
+     std::unique_ptr<Sampler> samplerThread(msampler.clone());
+     //std::cout << "InputStateGenerator.cxx: # thread=" << omp_get_thread_num() << std::endl;
+     //std::cout << "int cast cDet = " << verbatimCast(samplerThread->getDet()) << std::endl;
 #pragma omp for
 	for(int i=0; i < numDets; ++i){
       // iterate the sampler: This also requires the iteration as an input, as

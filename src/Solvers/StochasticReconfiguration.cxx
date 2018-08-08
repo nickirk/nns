@@ -44,9 +44,6 @@ void StochasticReconfiguration<T>::update(T &w, T const &force,
 	  for(std::size_t i = 0; i<numDets; ++ i){
       // the derivatives differ in different sampling schemes
       dCdWk=NNW.getDeriv(input.det(i));
-      std::cout << "StochasticReconfiguration.cxx: dCdWk size=" << std::endl;
-      std::cout << dCdWk.size() << std::endl;
-      std::cout << w.size() << std::endl;
 
       OkOkp += (dCdWk*dCdWk.adjoint()).adjoint();
       Ok += dCdWk;
@@ -62,7 +59,7 @@ void StochasticReconfiguration<T>::update(T &w, T const &force,
   // default hyperparameters tested with small Hubbard models,
   // no guarantee that they work for other systems. 
   // More tests should be run to observe the performace of these parameters
-  double lambda = std::max(10*std::pow(0.95,iteration), 0.1);
+  double lambda = std::max(100*std::pow(0.9,iteration), 5.);
   Eigen::VectorXcd I = Eigen::VectorXcd::Ones(numPars);
   //std::cout << "I=" << I  << std::endl; 
   // Add \epsilon * I to S matrix to prevent ill inversion of the S matrix.
