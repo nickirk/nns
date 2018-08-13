@@ -42,7 +42,6 @@ coeffType EnergyEsMarkov::evaluate(State const &input) const{
       //std::cout << "EnergyEsMarkov.cxx: Hij =" << Hij << std::endl;
     }
 
-    std::cout << "EnergyEsMarkov.cxx: Projected Energy " << i << " =" << energyValTmp << std::endl;
   }
   energyVal /= numDets;
   return energyVal;

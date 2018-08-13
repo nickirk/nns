@@ -39,14 +39,6 @@ int main(){
   std::cout << rbm.getNumPars() << std::endl;
 
   detType HF=basis.getDetByIndex(0);
-  //EnergyEsMarkov eCF(modelHam);
-  // EnergyEsMarkov cost funciton
-  // works only with Markov Chain sampler.
-  // Don't not use it for other samplers.
-  //MetropolisSampler<VecCType> sampler(modelHam, basis, HF, rbm);
-  //sampler.setNumDets(1000);
-  //RSHubbardExcitgen RSHG;
-  //LatticeExcitgen RSHG(modelHam);
   UniformExcitgen RSHG(HF);
   //WeightedExcitgen RSHG(modelHam,HF);
   MetropolisSampler<VecCType> sampler(RSHG, HF,basis, rbm);
@@ -57,13 +49,13 @@ int main(){
   //Setup the trainer
   coeffType energy{0.0};
   //AcceleratedGradientDescent<VecCType> sl(trainRate);
-  ADAM<VecCType> sl(trainRate);
-  //StochasticReconfiguration<VecCType> sl(rbm,trainRate);
+  //ADAM<VecCType> sl(trainRate);
+  StochasticReconfiguration<VecCType> sl(rbm,trainRate);
   Trainer<VecCType> ev(rbm, sampler, sl, eCF,modelHam);
   ofstream myfile1;
   myfile1.open ("en2");
   for(int l(0); l<10000; ++l){
-    trainRate = std::max(0.5*std::pow(0.999,l), 0.01);
+    trainRate = 0.01;
     ev.train(trainRate);
     // get the new energy
     energy = ev.getE();
