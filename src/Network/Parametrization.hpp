@@ -9,6 +9,10 @@
 #define SRC_NETWORK_PARAMETRIZATION_HPP_
 
 #include "../utilities/TypeDefine.hpp"
+#include <fstream>
+#include <iterator>
+#include <string>
+#include "../utilities/Errors.hpp"
 
 namespace networkVMC {
 
@@ -18,7 +22,7 @@ class State;
 // This is the base class for any parametrization of the wave function
 // It is an abstract parametrization that can be updated to be optimized
 // with respect to a given cost function
-template<typename T=VecType>
+template<typename T=VecCType>
 class Parametrization {
 public:
   Parametrization(){};
@@ -30,6 +34,30 @@ public:
   // We also need write access to the parameters (this is the non-const variant)
   virtual T& pars(){return const_cast<T&>
     (static_cast<Parametrization const&>(*this).pars());};
+  virtual void writeParsToFile(std::string file){
+    T tmpPars = pars();
+    std::vector<std::complex<double>> parsStd(tmpPars.data(), tmpPars.data()+tmpPars.size());
+    std::ofstream fout(file);
+    fout.precision(10);
+    std::copy(parsStd.begin(), parsStd.end(),
+    std::ostream_iterator<coeffType>(fout, "\n"));
+    fout.close();
+  };
+  virtual void readParsFromFile(std::string file){
+    std::ifstream input(file);
+    if (!input){
+       throw FileNotFound(file);
+       abort();
+    }
+    
+    T &innerPars = pars();
+    std::vector<std::complex<double>> buffer{
+      std::istream_iterator<std::complex<double>>(input), 
+      std::istream_iterator<std::complex<double>>() };
+    assert (buffer.size() == pars().size());
+    innerPars = Eigen::Map<T> (buffer.data(),buffer.size());
+    //use the pars() with write access
+  };
   virtual int getNumPars(){ return pars().size();};
 // Obtain the inner derivative dX/dPars with given dX/dC (C are coefficients)
   virtual T calcNablaPars(

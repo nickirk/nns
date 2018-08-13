@@ -233,7 +233,7 @@ Eigen::MatrixXcd NeuralNetwork<T>::calcdCdwSR(
 */
 
 //instantiate class
-template class NeuralNetwork<VecType>;
+//template class NeuralNetwork<VecType>;
 }
 //---------------------------------------------------------------------------------------------------//
 

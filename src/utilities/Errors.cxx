@@ -18,5 +18,9 @@ InvalidDeterminantError::InvalidDeterminantError(detType const &a)
 		printDet(a);
 };
 
+FileNotFound::FileNotFound(std::string file_):file(file_){
+    std::cout << "File " << file << " not found" << std::endl;
+}
+
 }
 

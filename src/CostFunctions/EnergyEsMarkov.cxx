@@ -31,12 +31,18 @@ coeffType EnergyEsMarkov::evaluate(State const &input) const{
     Hij = H(input.det(i), input.det(i));
     energyVal += Hij;
     //std::cout << "EnergyEsMarkov.cxx: coupledSize=" << coupledSize << std::endl;
+    coeffType energyValTmp{0.0};
     for (size_t j=0; j < coupledSize; ++j){
       //std::cout << "EnergyEsMarkov.cxx: coupledWeights[j]=" << coupledWeights[j] << std::endl;
         // don't forget to unbias using the Pgen. TODO
       Hij = H(input.det(i), coupledDets[j]);
+      energyValTmp += coupledC_j[j]* Hij / (c_i * (coupledWeights[j] * coupledSize));
       energyVal += coupledC_j[j]* Hij / (c_i * (coupledWeights[j] * coupledSize));
+      //std::cout << "EnergyEsMarkov.cxx: cj/ci =" << coupledC_j[j]/c_i << std::endl;
+      //std::cout << "EnergyEsMarkov.cxx: Hij =" << Hij << std::endl;
     }
+
+    std::cout << "EnergyEsMarkov.cxx: Projected Energy " << i << " =" << energyValTmp << std::endl;
   }
   energyVal /= numDets;
   return energyVal;

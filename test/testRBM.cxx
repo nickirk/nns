@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
+#include <unordered_map> //for unordered_map
 
 #include "../src/NNWLib.hpp"
 
@@ -13,7 +14,7 @@ int main(){
   int numSites(6);
   int spinUp(3);
   int spinDown(3);
-  int numHidden(24);
+  int numHidden(10);
   double trainRate(0.005);
   double U{4}, t{1};
   int numStates = numSites*2; 
@@ -50,40 +51,62 @@ int main(){
   //WeightedExcitgen RSHG(modelHam,HF);
   MetropolisSampler<VecCType> sampler(RSHG, HF,basis, rbm);
   //ListGen<VecCType> sampler(RSHG, basis, HF,rbm,100);
-  sampler.setNumDets(500);
+  sampler.setNumDets(1000);
   //FullSampler<VecCType> sampler(modelHam, basis, rbm);
   EnergyEs eCF(modelHam,-1);
   //Setup the trainer
   coeffType energy{0.0};
   //AcceleratedGradientDescent<VecCType> sl(trainRate);
-  //ADAM<VecCType> sl(trainRate);
-  StochasticReconfiguration<VecCType> sl(rbm,trainRate);
+  ADAM<VecCType> sl(trainRate);
+  //StochasticReconfiguration<VecCType> sl(rbm,trainRate);
   Trainer<VecCType> ev(rbm, sampler, sl, eCF,modelHam);
   ofstream myfile1;
   myfile1.open ("en2");
-  for(int l(0); l<200000; ++l){
-    trainRate = std::max(0.5*std::pow(0.99,l), 0.1);
+  for(int l(0); l<10000; ++l){
+    trainRate = std::max(0.5*std::pow(0.999,l), 0.01);
     ev.train(trainRate);
     // get the new energy
     energy = ev.getE();
     auto states=ev.getState();
+    std::vector<int> intCasts(states.size());
     for(size_t s=0; s<states.size(); ++s){
-      cout << "C_" << s << "= " << states.coeff(s)  << "  intCast="<< verbatimCast(states.det(s)) << endl;
+      intCasts[s]=verbatimCast(states.det(s));
     }
+    std::unordered_map<int, size_t> count;  // holds count of each encountered number 
+    for (size_t i=0; i<intCasts.size(); i++)        
+      count[intCasts[i]]++;      
+
+    ofstream myfile3;
+    myfile3.open ("SampleFunc");
+    for (auto &e:count){
+      myfile3 <<  e.first << " " << e.second/double(intCasts.size()) << std::endl;
+    }
+    myfile3.close();
     std::cout << "iteration=" << l << std::endl;
     std::cout << "trainRate=" << trainRate << std::endl;
     std::cout<<"Energy real="<< std::real(energy)<<std::endl;
     std::cout<<"Energy imag="<< std::imag(energy)<<std::endl;
     myfile1 << l << "  " << std::real(energy) << std::endl;
-    auto vals=rbm.pars();
+    double normalisation(0.);
+    for (size_t v(0); v<basis.size(); v++){
+      normalisation+=std::norm(rbm.getCoeff(basis.getDetByIndex(v)));
+    }
     ofstream myfile2;
-    myfile2.open ("val");
-    for (size_t v(0); v<vals.size(); v++){
-      myfile2 << v << "  " << vals(v).real() << "  " << vals(v).imag() << std::endl;
+    myfile2.open ("WaveFunc");
+    for (size_t v(0); v<basis.size(); v++){
+      detType det = basis.getDetByIndex(v);
+      double amp = std::norm(rbm.getCoeff(det));
+      myfile2 << verbatimCast(det) << "  " << amp/normalisation << std::endl;
     }
     myfile2.close();
     // update the list of determinants used in the sampler
     //sampler.diffuse(list,spinConfig);
+    //Every 10 iterations write Pars to file
+    if (l%10==0)
+    rbm.writeParsToFile("Parameters.dat");
   }
+  std::cout << "Trained Pars=\n" << rbm.pars() << std::endl;
+  //rbm.readParsFromFile("Parameters.dat");
+  //std::cout << "Read Pars=\n" << rbm.pars() << std::endl;
   myfile1.close();
 }

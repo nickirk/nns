@@ -80,6 +80,12 @@ public:
 	InvalidDeterminantError(detType const &a);
 };
 
+class FileNotFound{
+public:
+  FileNotFound(std::string file_);
+  std::string file;
+};
+
 }
 
 #endif /* ERRORS_HPP_ */

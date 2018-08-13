@@ -47,6 +47,6 @@ Eigen::VectorXcd DirectParametrization<T>::getMarkovDeriv(detType const &det) co
 }
 //---------------------------------------------------------------------------//
 //instantiate class
-template class DirectParametrization<VecType>;
+//template class DirectParametrization<VecType>;
 template class DirectParametrization<VecCType>;
 } /* namespace networkVMC */
