@@ -9,7 +9,7 @@
 #define SRC_MATH_CONSTANTS_HPP_
 
 namespace networkVMC{
-double epsilon{1e-12};
+double const epsilon{1e-12};
 }
 
 #endif /* SRC_MATH_CONSTANTS_HPP_ */
