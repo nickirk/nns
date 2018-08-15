@@ -26,7 +26,7 @@ namespace networkVMC
         pars_vec.imag() = Eigen::VectorXd::Ones(numPars)*0.01;
         pars_vec.real() = pars_vec.real().unaryExpr(&NormalDistribution);
         pars_vec.imag() = pars_vec.imag().unaryExpr(&NormalDistribution);
-        a.setZero();
+        //a.setZero();
         //b.normalize();
         //w.normalize();
 
@@ -57,6 +57,8 @@ namespace networkVMC
         {
             psi = psi * coshVec(i);
         }
+        //if (verbatimCast(det)==15) psi*=1;
+        //else psi*=0.2;
 
         return psi;
     }
@@ -83,7 +85,7 @@ namespace networkVMC
             psi = psi * coshVec(i);
         }
 
-        da = 0.*s;//psi*s;
+        da = psi*s;
         
         Eigen::VectorXcd tanhVec = (b+w*s).array().tanh();
         db = psi*tanhVec;

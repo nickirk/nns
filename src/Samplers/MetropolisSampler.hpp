@@ -30,13 +30,15 @@ public:
     Sampler(static_cast<Sampler const&>(source)){
     para = source.para;
     fullBasis = source.fullBasis;
-    setReference(getRandomDeterminant(*fullBasis));
+    //setReference(getRandomDeterminant(*fullBasis));
+    setReference(source.getDet());
   };
 
   MetropolisSampler(MetropolisSampler &&source):
     Sampler(static_cast<Sampler &>(source)){ 
     swap(*this,source);
-    setReference(getRandomDeterminant(*fullBasis));
+    //setReference(getRandomDeterminant(*fullBasis));
+    setReference(source.getDet());
   };
 
   friend void swap(MetropolisSampler &a, MetropolisSampler &b){
@@ -48,7 +50,8 @@ public:
   MetropolisSampler operator=(MetropolisSampler source){
     swap(*this,source);
   // cDet to random
-    setReference(getRandomDeterminant(*fullBasis));
+    //setReference(getRandomDeterminant(*fullBasis));
+    setReference(source.getDet());
     return *this;
   }
 	virtual ~MetropolisSampler();

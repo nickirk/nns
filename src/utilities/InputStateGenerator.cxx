@@ -31,18 +31,25 @@ State InputStateGenerator<T>::generate(int numCons) const{
 	// reset the sampler
 	msampler.reset();
 	State outputState(numDets);
-
+  int accept(0);
 #pragma omp parallel
   {
 	// sampling is not threadsafe, so each thread creates it's own sampler
      std::unique_ptr<Sampler> samplerThread(msampler.clone());
      //std::cout << "InputStateGenerator.cxx: # thread=" << omp_get_thread_num() << std::endl;
      //std::cout << "int cast cDet = " << verbatimCast(samplerThread->getDet()) << std::endl;
+
+//#pragma omp for
+//  for (int d(0); d<int(numDets*0.1); ++d){
+//    samplerThread->iterate(outputState.coeff(d), outputState.det(d), outputState.weight(d),d);
+//  }
 #pragma omp for
 	for(int i=0; i < numDets; ++i){
       // iterate the sampler: This also requires the iteration as an input, as
 	  // some samplers pre-fetch the ensemble of determinants
 	  samplerThread->iterate(outputState.coeff(i), outputState.det(i),outputState.weight(i), i);
+    if (i==0) accept=0;
+    else if (outputState.det(i-1) != outputState.det(i)) accept++;
 	  if(numCons > 0)
 	     // get some coupled determinants and their coefficients to use in the
 	     // energy estimator
@@ -65,6 +72,7 @@ State InputStateGenerator<T>::generate(int numCons) const{
 		outputState.coupledCoeffs(i)[j]=para.getCoeff(outputState.coupledDets(i)[j]);
 	  }
 	 }
+  std::cout << "InputStateGenerator.cxx: Accpt rate=" << double(accept)/numDets << std::endl;
   }
   return outputState;
 }

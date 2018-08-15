@@ -69,17 +69,17 @@ void StochasticReconfiguration<T>::update(T &w, T const &force,
   cg.setTolerance(1e-16);
   cg.setMaxIterations(10000);
   while (error>1e-16){
-    std::cout << "StochasticReconfiguration.cxx: lambda=" << lambda << std::endl;
+    //std::cout << "StochasticReconfiguration.cxx: lambda=" << lambda << std::endl;
     S+=I.asDiagonal()*lambda;
     //S+=S.diagonal().asDiagonal()*lambda;
     cg.compute(S);
     x = cg.solve(force);
     error = cg.error();
     lambda += 0.002;
-    std::cout << "StochasticReconfiguration.cxx: #iterations:     " 
-      << cg.iterations() << std::endl;
-    std::cout << "StochasticReconfiguration.cxx: estimated error: " 
-      << cg.error()      << std::endl;
+    //std::cout << "StochasticReconfiguration.cxx: #iterations:     " 
+    //  << cg.iterations() << std::endl;
+    //std::cout << "StochasticReconfiguration.cxx: estimated error: " 
+    //  << cg.error()      << std::endl;
   }
   x /= std::sqrt(x.dot(S * x).real()); 
 

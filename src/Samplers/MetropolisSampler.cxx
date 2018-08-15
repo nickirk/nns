@@ -52,10 +52,17 @@ void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, double &weight,
 	  pBack = getConnectionProb(tmp,cDet);
   }
   tmpCoeff = para->getCoeff(tmp);
+  //coeffType tmpCoeffDeref;
+  //coeffType lastCoeffDeref;
+  //if (verbatimCast(tmp)==15) tmpCoeffDeref=1.0;
+  //else tmpCoeffDeref=std::pow(0.5,2);
+  //if (verbatimCast(cDet)==15) lastCoeffDeref=1.0;
+  //else lastCoeffDeref=std::(0.5,2);
 	// And its coefficient
 	// unbiasing with generation probability in principle necessary (unless prob. is symmetric)
-  prob = pBack/pEx*std::norm(tmpCoeff/lastCoeff);
 
+  //prob = pBack/pEx*std::norm(tmpCoeffDeref/lastCoeffDeref);
+  prob = pBack/pEx*std::norm(tmpCoeff/lastCoeff);
 	if(rng() < prob){
 		// With probability |cJ/cI|^2, accept the move
 		cDet = tmp;
