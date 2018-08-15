@@ -76,13 +76,24 @@ This is borrowed from CC4S code to make sure that when different contributors co
 
 The test files are under the test directory. In principle, each implemented functionality should have a test file and pass the test.
 
-To test the solver algorithm, use testAlg.cxx .
-If there is no build directory in the project, create it first:
+The library and the tests can be built with cmake, e.g.
 ```
-mkdir build/test
+mkdir build
+cd build
+cmake ../
 ```
-Use
+Will set up the make environment, then, the single tests can be built with (e.g.)
 ```
 make testAlg
 ```
-to compile. Normally, the tests are done in the run directory.
+The executables can be run from the test/ subdirectory of the build
+directory. Note that those tests that need to read in a user-supplied
+Hamiltonian require an FCIDUMP file (example files are supplied with
+this program in the run/ directory).
+
+The default build type is RELEASE and will use extensive compiler
+optimization, to build in a debug mode, specify
+```
+-DCMAKE_BUILD_TYPE=Debug
+```
+when running cmake.
