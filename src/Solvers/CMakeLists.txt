@@ -1,0 +1,1 @@
+add_sources(AcceleratedGradientDescent.cxx ADAM.cxx StochasticReconfiguration.cxx)

@@ -1,0 +1,30 @@
+# set the current path
+set(TEST_COMMON ${CMAKE_CURRENT_SOURCE_DIR}/defaultSystem.cxx ${CMAKE_CURRENT_SOURCE_DIR}/testComponents.cxx)
+
+#define macro for adding tests
+macro (cadd_test testName)
+      add_executable(${testName} ${CMAKE_CURRENT_SOURCE_DIR}/${testName}.cxx ${TEST_COMMON})
+      target_link_libraries(${testName} networkVMC)
+endmacro()
+
+# add the executables
+cadd_test(testAbInitioHam)
+cadd_test(testAlg)
+cadd_test(testBasis)
+cadd_test(testCF)
+cadd_test(testDet)
+cadd_test(testDeterministicHeisenberg)
+cadd_test(testDirect)
+cadd_test(testEigen)
+cadd_test(testExcitgen)
+cadd_test(testFullSamplerDirect)
+cadd_test(testHam)
+cadd_test(testHeisenberg)
+cadd_test(testMetropolis)
+cadd_test(testNnw)
+cadd_test(testPreTrain)
+cadd_test(testRandom)
+cadd_test(testRBM)
+cadd_test(testRBMHeisenberg)
+cadd_test(testRBMMet)
+cadd_test(testStateSort)
