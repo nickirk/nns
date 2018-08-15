@@ -58,7 +58,6 @@ void Trainer<T>::train(){
 	// the sampler dictates how many determinants we use
 	int numDets = msampler.getNumDets();
 	inputState.resize(numDets);
-    int spaceSize = 0;
 
 	std::cout<< "Trainer.cxx: numdets= " << numDets << std::endl;
 

@@ -153,7 +153,6 @@ double TwoBodyHamiltonian::operator()(detType const &alpha, detType const &beta)
     std::vector<int> excitations;
     std::vector<int> holes;
     std::vector<int> same;
-    double diff{0.0};
     bool parity{false};
     double paritysign{1.0};
     int nperm{0};

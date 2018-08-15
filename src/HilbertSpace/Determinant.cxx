@@ -115,14 +115,14 @@ int getExcitLvl(detType const &a, detType const &b){
 void getExcitation(detType const &a, detType const &b, std::vector<int> &excitations,
 		std::vector<int> &holes, std::vector<int> &same){
 	int diff = 0;
-	int const d = a.size();
+	std::size_t const d = a.size();
 	holes.clear();
 	excitations.clear();
 	same.clear();
 	// we can only get excitations between same-sized determinants
 	if(d != b.size()) throw SizeMismatchError(d,b.size());
     // get the differences in occupied obitals
-    for (int i=0;i<d;++i){
+    for (std::size_t i=0;i<d;++i){
         diff=static_cast<int>(a[i])-static_cast<int>(b[i]);
         if (diff>0){
             // holes created in alpha
