@@ -11,6 +11,7 @@
 #include "Hamiltonian.hpp"
 #include "Lattice.hpp"
 #include "../utilities/TypeDefine.hpp"
+#include "../utilities/DeepCpyUniquePtr.hpp"
 #include <vector>
 #include <set>
 #include <memory>
@@ -25,7 +26,7 @@ public:
 	// currently only square lattices are supported, but this might change
 	template<typename ...Args>
 	// construct the lattice from args
-	LatticeHamiltonian(Args ...args):grid(std::unique_ptr<Lattice>(
+	LatticeHamiltonian(Args ...args):grid(DeepCpyUniquePtr<Lattice>(
 			new Lattice(std::forward<Args>(args)...) ) ){};
 	virtual ~LatticeHamiltonian(){};
 
@@ -41,7 +42,7 @@ public:
 protected:
 	// the lattice on which the Hamiltonian is defined
 	// use a ptr to make introduction of polymorphic lattice easy
-	std::unique_ptr<Lattice> grid;
+	DeepCpyUniquePtr<Lattice> grid;
 	// we re-use this in derived classes to get the coupled states, as the derived versions
 	// boil down to repeated calls to this one
 	virtual void addCoupledStates(std::vector<detType> &list, detType const &source, int siteA, int siteB) const;
