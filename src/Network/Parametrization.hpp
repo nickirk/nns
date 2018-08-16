@@ -22,7 +22,7 @@ template<typename T=VecType>
 class Parametrization {
 public:
   Parametrization(){};
-  virtual ~Parametrization(){};
+  virtual ~Parametrization() = default;
  // It needs to be able to return coefficients somehow
   virtual coeffType getCoeff(detType const &det) const=0; // Can throw an invalidDeterminantError
   // base method for returning the parameters (as a single vector)
@@ -54,6 +54,29 @@ public:
     State const &outputState
   ){return Eigen::MatrixXd();};
 
+  // virtual construction
+  virtual Parametrization<T>* clone() const = 0;
+  virtual Parametrization<T>* move_clone() = 0;
+
+};
+
+// implement the polymorphic copy for the derived classes
+template<typename T, typename Base>
+class ClonableParametrization: public Parametrization<T>{
+public:
+	// inherit the constructor
+	using Parametrization<T>::Parametrization;
+	virtual ~ClonableParametrization(){};
+
+	// copy-clone (does not change *this)
+	virtual Parametrization<T>* clone() const{
+		return new Base{static_cast<Base const&>(*this)};
+	}
+
+	// move-clone (moves the data to the return pointer)
+	virtual Parametrization<T>* move_clone(){
+		return new Base(std::move(static_cast<Base &>(*this) ) );
+	}
 };
 
 

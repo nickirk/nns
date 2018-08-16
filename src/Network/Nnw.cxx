@@ -23,10 +23,6 @@ NeuralNetwork<T>::NeuralNetwork(){
 
 }
 
-template <typename T>
-NeuralNetwork<T>::~NeuralNetwork(){
-}
-
 //---------------------------------------------------------------------------//
 
 //initialise the network after construction functions are called.

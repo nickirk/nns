@@ -16,20 +16,19 @@
 namespace networkVMC
 {
     //Resttricted Boltzmann Machine
-    class RBM: public Parametrization<VecCType>
+    class RBM: public ClonableParametrization<VecCType,RBM>
     {
         public:
             RBM(int sizeInput, int sizeHidden);
 
             coeffType getCoeff(detType const &det) const;
-            virtual Eigen::VectorXcd getDeriv(detType const &det) const;
-            virtual Eigen::VectorXcd getMarkovDeriv(detType const &det) const;
-            virtual VecCType const& pars() const;
-            virtual VecCType calcNablaPars(State const &input, nablaType const &outerDerivative);
-            virtual Eigen::MatrixXcd calcdCdwSR(State const &outputState);
-            virtual VecCType calcNablaParsConnected(State const &inputState, nablaType const& dEdC);
-            virtual VecCType calcNablaParsMarkovConnected(State const &inputState, nablaType const& dEdC, double const& energy);
-            ~RBM();
+            Eigen::VectorXcd getDeriv(detType const &det) const;
+            Eigen::VectorXcd getMarkovDeriv(detType const &det) const;
+            VecCType const& pars() const;
+            VecCType calcNablaPars(State const &input, nablaType const &outerDerivative);
+            Eigen::MatrixXcd calcdCdwSR(State const &outputState);
+            VecCType calcNablaParsConnected(State const &inputState, nablaType const& dEdC);
+            VecCType calcNablaParsMarkovConnected(State const &inputState, nablaType const& dEdC, double const& energy);
 
         private:
             int sizeHidden;

@@ -11,10 +11,6 @@
 namespace networkVMC {
 
 template <typename T>
-DirectParametrization<T>::~DirectParametrization() {
-}
-
-template <typename T>
 T DirectParametrization<T>::calcNablaPars(State const &inputState,
 		nablaType const &dEdC){
   // In the direct parametrization, the inner derivative is the unity matrix
