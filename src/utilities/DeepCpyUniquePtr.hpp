@@ -18,6 +18,9 @@ class DeepCpyUniquePtr {
 public:
 	DeepCpyUniquePtr():resource(nullptr){};
 	DeepCpyUniquePtr(T *source):resource(source){};
+	// also allow for construction from unique_ptr, to circumvent usage of raw pointers
+	// this transfers ownership from the unique_ptr to *this
+	DeepCpyUniquePtr(std::unique_ptr<T> &source):resource(source.release()){};
 
 // Copy/Move operations (constructors/assignment operators)
 

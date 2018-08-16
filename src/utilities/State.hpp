@@ -158,7 +158,7 @@ public:
  };
 
  size_t locate(size_t iDet) const{
-  //locate the i'th det in memory
+  //locate the coupled dets of the i'th det in memory
   // TODO: Directly use cDets[i].size() - the current loop makes
   // no sense: We call cDets[i].size() to compute cDets[i].size()???
    size_t size(0);

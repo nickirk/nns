@@ -54,18 +54,15 @@ nablaType EnergyEsMarkov::nabla(State const &input) const{
   //assume we know the whole space size, reserve space
   #pragma omp parallel for
   for (int i=0; i < numDets; ++i){
-    coeffType dEdCtmp;
     coeffType c_i = input.coeff(i);
 //  put all the weighting step here instead of inside of RBM
-    dEdCtmp = (H(input.det(i), input.det(i)))/c_i;
+    coeffType dEdCtmp = (H(input.det(i), input.det(i)))/c_i;
     // add weights
     dEdC[i] = dEdCtmp / static_cast<double>(numDets);
     std::vector<coeffType> coupledC_j = input.coupledCoeffs(i);
     std::vector<detType> coupledDets = input.coupledDets(i);
     std::vector<double> coupledWeights = input.coupledWeights(i);
-//    int tid = omp_get_thread_num();
     size_t coupledSize = coupledDets.size();
-    //std::cout << "numProc=" << tid << " EnergyEsMarkov.cxx: c_i=" << c_i << std::endl;
    int pos=input.locate(i);
    for (size_t j=0; j < coupledSize; ++j){
      // don't forget to unbias using the Pgen. TODO
@@ -73,7 +70,6 @@ nablaType EnergyEsMarkov::nabla(State const &input) const{
      dEdCtmp = H(input.det(i),coupledDets[j])/(c_i *
     		 (coupledWeights[j] * coupledSize ));
      // unbias with numCoupledDets and Pgen
-     //dEdC[i+j+1]=dEdCtmp / coupledDets.size() / numDets;
       dEdC[numDets+pos+j]=dEdCtmp / static_cast<double>(numDets);
     }
   }

@@ -5,7 +5,7 @@ project(networkVMC CXX)
 # set the default build type (RELEASE) if none is specified
 set(default_build_type "RELEASE")
 # check if the build type is empty, if yes, set it to release
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+if(NOT CMAKE_BUILD_TYPE)
        message(STATUS "No build type specified, defaulting to RELEASE")
        set(CMAKE_BUILD_TYPE "${default_build_type}")
 endif()
