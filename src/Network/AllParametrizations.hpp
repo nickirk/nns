@@ -11,5 +11,6 @@
 #include "Nnw.hpp"
 #include "RBM.hpp"
 #include "DirectParametrization.hpp"
+#include "TrialWfPara.hpp"
 
 #endif /* SRC_NETWORK_ALLPARAMETRIZATIONS_HPP_ */

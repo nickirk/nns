@@ -37,7 +37,6 @@ template<typename T=VecType>
 class NeuralNetwork: public ClonableParametrization<T,NeuralNetwork<T> >{
 public:
   NeuralNetwork();
-  ~NeuralNetwork() = default;
   //construction functions for NNW
   void constrDenseLayer(
       std::vector<Eigen::VectorXd> const &inputs_,

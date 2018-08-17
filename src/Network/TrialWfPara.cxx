@@ -36,9 +36,9 @@ T TrialWfPara<T>::calcNablaPars(State const &input, nablaType const &outerDeriva
 	std::vector<coeffType> cDets;
 	for(size_t i = 0; i < numDets; ++i){
 		cDets = input.coupledDets(i);
-		for(size_t j = 0; j < cDets.size(); ++i){
+		for(size_t j = 0; j < cDets.size(); ++j){
 			pos = input.locate(i);
-			scaledOuterDerivative[i+numDets+pos] /= trialWf->getCoeff(cDets[j]);
+			scaledOuterDerivative[j+numDets+pos] /= trialWf->getCoeff(cDets[j]);
 		}
 	}
 
@@ -46,4 +46,7 @@ T TrialWfPara<T>::calcNablaPars(State const &input, nablaType const &outerDeriva
 	return basePara->calcNablaPars(input, scaledOuterDerivative);
 }
 
+// instantiate template classes
+template class TrialWfPara<VecType>;
+template class TrialWfPara<VecCType>;
 } /* namespace networkVMC */

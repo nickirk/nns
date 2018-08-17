@@ -22,7 +22,9 @@ template<typename T=VecType>
 class Parametrization {
 public:
   Parametrization(){};
+  // default the big five - required for virtual destructor
   virtual ~Parametrization() = default;
+
  // It needs to be able to return coefficients somehow
   virtual coeffType getCoeff(detType const &det) const=0; // Can throw an invalidDeterminantError
   // base method for returning the parameters (as a single vector)
@@ -66,7 +68,7 @@ class ClonableParametrization: public Parametrization<T>{
 public:
 	// inherit the constructor
 	using Parametrization<T>::Parametrization;
-	virtual ~ClonableParametrization(){};
+	virtual ~ClonableParametrization() = default;
 
 	// copy-clone (does not change *this)
 	virtual Parametrization<T>* clone() const{
