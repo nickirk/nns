@@ -35,7 +35,8 @@ public:
 // Obtain the inner derivative dX/dPars with given dX/dC (C are coefficients)
   virtual T calcNablaPars(
 		  State const &input,
-		  nablaType const &outerDerivative) = 0;
+		  nablaType const &outerDerivative) = 0; // can throw a SizeMismatchError if input and outerDerivative
+  	  	  	  	  	  	  	  	  	  	  	  	 // have different size
 
   virtual Eigen::VectorXcd getMarkovDeriv(detType const &det) const{
 	  return Eigen::VectorXcd();

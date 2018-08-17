@@ -6,6 +6,7 @@
  */
 
 #include "StochasticReconfiguration.hpp"
+#include "../utilities/State.hpp"
 #include <iostream>
 namespace networkVMC {
 
@@ -31,7 +32,6 @@ void StochasticReconfiguration<T>::update(T &w, T const &force,
 	  for(std::size_t i = 0; i<numDets; ++ i){
       // the derivatives differ in different sampling schemes
       dCdWk=NNW.getMarkovDeriv(input.det(i));
-      //dCdWk=NNW.getDeriv(input.det(i));
       OkOkp += (dCdWk*dCdWk.adjoint()).adjoint();
       Ok += dCdWk;
 	  }

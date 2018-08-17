@@ -7,6 +7,7 @@
 
 #include "TrialWfPara.hpp"
 #include "../utilities/State.hpp"
+#include "../utilities/Errors.hpp"
 
 namespace networkVMC {
 
@@ -26,6 +27,10 @@ T TrialWfPara<T>::calcNablaPars(State const &input, nablaType const &outerDeriva
 	// total number of entries in input, including coupled dets
 	size_t totalDets = input.totalSize();
 
+	// the outer derivative is the derivative with respect to all parameters of the State input
+	// so those two numbers better be the same
+	if(outerDerivative.size() != totalDets) throw SizeMismatchError(outerDerivative.size(),totalDets);
+
 	// first, the derivative w.r. to sampled coeffs
 	for(size_t i = 0; i < numDets; ++i){
 		scaledOuterDerivative[i] /= trialWf->getCoeff(input.det(i));
@@ -33,7 +38,7 @@ T TrialWfPara<T>::calcNablaPars(State const &input, nablaType const &outerDeriva
 
 	// then w.r. to the connected coeffs
 	int pos=0;
-	std::vector<coeffType> cDets;
+	std::vector<detType> cDets;
 	for(size_t i = 0; i < numDets; ++i){
 		cDets = input.coupledDets(i);
 		for(size_t j = 0; j < cDets.size(); ++j){

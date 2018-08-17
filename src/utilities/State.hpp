@@ -27,7 +27,9 @@ public:
     storedCoeffs(std::vector<coeffType>(0)),
     storedWeights(std::vector<double>(0)), 
     fSortedCoeff(0), fSortedDet(0), fSortedWeight(0){};
+
 	State(int size_):State(){resize(size_);}
+
 	State(detType const &det_, coeffType const &coeff_):
 	storedDets(std::vector<detType>(1,det_)),
     storedCoeffs(std::vector<coeffType>(1,coeff_)),

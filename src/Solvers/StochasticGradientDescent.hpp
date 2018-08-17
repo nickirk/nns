@@ -18,7 +18,7 @@ public:
   virtual ~StochasticGradientDescent(){};
   // gradient descent update scheme
   virtual void update(T  &w, T const &force,
-		  State const &input=State(), SamplerType const &samplerType=Markov){
+		  State const &input, SamplerType const &samplerType=Markov){
   // just walk along the gradient with some stepsize gamma
 	  w-=Solver<T>::learningRate*force;
   }

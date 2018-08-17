@@ -19,7 +19,7 @@ public:
   AcceleratedGradientDescent(double learningRate);
   virtual ~AcceleratedGradientDescent();
   // implementation of the update method
-  void update(T &w, T const &force, State const &input=State(), SamplerType
+  void update(T &w, T const &force, State const &input, SamplerType
       const &samplerType=Markov);
 private:
   // number of parameters to optimize (will be automatically determined)
