@@ -26,7 +26,9 @@ template<typename T=VecCType>
 class Parametrization {
 public:
   Parametrization(){};
-  virtual ~Parametrization(){};
+  // default the big five - required for virtual destructor
+  virtual ~Parametrization() = default;
+
  // It needs to be able to return coefficients somehow
   virtual coeffType getCoeff(detType const &det) const=0; // Can throw an invalidDeterminantError
   // base method for returning the parameters (as a single vector)
@@ -62,7 +64,8 @@ public:
 // Obtain the inner derivative dX/dPars with given dX/dC (C are coefficients)
   virtual T calcNablaPars(
 		  State const &input,
-		  nablaType const &outerDerivative) = 0;
+		  nablaType const &outerDerivative) = 0; // can throw a SizeMismatchError if input and outerDerivative
+  	  	  	  	  	  	  	  	  	  	  	  	 // have different size
 
   virtual Eigen::VectorXcd getMarkovDeriv(detType const &det) const{
 	  return getDeriv(det)/getCoeff(det);
@@ -120,6 +123,29 @@ public:
     State const &outputState
   ){return Eigen::MatrixXd();};
 
+  // virtual construction
+  virtual Parametrization<T>* clone() const = 0;
+  virtual Parametrization<T>* move_clone() = 0;
+
+};
+
+// implement the polymorphic copy for the derived classes
+template<typename T, typename Base>
+class ClonableParametrization: public Parametrization<T>{
+public:
+	// inherit the constructor
+	using Parametrization<T>::Parametrization;
+	virtual ~ClonableParametrization() = default;
+
+	// copy-clone (does not change *this)
+	virtual Parametrization<T>* clone() const{
+		return new Base{static_cast<Base const&>(*this)};
+	}
+
+	// move-clone (moves the data to the return pointer)
+	virtual Parametrization<T>* move_clone(){
+		return new Base(std::move(static_cast<Base &>(*this) ) );
+	}
 };
 
 

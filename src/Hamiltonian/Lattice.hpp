@@ -46,6 +46,7 @@ public:
 
 	// we might want to generalize to other lattices than square at some point
 	virtual ~Lattice(){};
+	virtual Lattice* clone() const {return new Lattice(*this);}
 private:
 	// spatial dimensions of the lattice
 	std::vector<int> latticeDim;

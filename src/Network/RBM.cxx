@@ -32,11 +32,6 @@ namespace networkVMC
 
     }
 
-    RBM::~RBM()
-    {
-        
-    }
-
     Eigen::VectorXcd const& RBM::pars() const
     { 
         return pars_vec;

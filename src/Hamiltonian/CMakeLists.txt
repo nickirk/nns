@@ -1,0 +1,4 @@
+add_subdirectory(ExcitationGenerators)
+add_sources(AbInitioHamiltonian.cxx BosonicHamiltonian.cxx
+FermiHubbardHamiltonian.cxx Hamiltonian.cxx HeisenbergHamiltonian.cxx
+Lattice.cxx LatticeHamiltonian.cxx SparseHMatrix.cxx TwoBodyHamiltonian.cxx)

@@ -18,7 +18,7 @@ public:
   ADAM(double learningRate);
   virtual ~ADAM();
   // implementation of the update method
-  void update(T &w, T const &force, State const &input=State(), SamplerType 
+  void update(T &w, T const &force, State const &input, SamplerType
       const &samplerType=Markov);
 private:
   // number of parameters to be optimized

@@ -34,10 +34,9 @@ const std::complex<double> ii(0.,1.);
 
 // Neural network parametrization of a wavefunction
 template<typename T=VecType>
-class NeuralNetwork: public Parametrization<T>{
+class NeuralNetwork: public ClonableParametrization<T,NeuralNetwork<T> >{
 public:
   NeuralNetwork();
-  ~NeuralNetwork();
   //construction functions for NNW
   void constrDenseLayer(
       std::vector<Eigen::VectorXd> const &inputs_,

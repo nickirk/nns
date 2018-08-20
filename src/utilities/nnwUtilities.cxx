@@ -12,7 +12,7 @@
 #include "../CostFunctions/NormCF.hpp"
 #include "../Samplers/Sampler.hpp"
 #include "../Solvers/ADAM.hpp"
-#include "../Hamiltonian/FermionicHamiltonian.hpp"
+#include "../Hamiltonian/FermiHubbardHamiltonian.hpp"
 #include "State.hpp"
 
 namespace networkVMC{
@@ -23,7 +23,7 @@ void preTrain(Parametrization<T> &network, State const &target, Sampler const &m
 // Then, set the cost function to the L2-distance to target
 	NormCF stateDistance(target);
 	// dummy hamiltonian, we need to get rid of this TODO
-	FermionicHamiltonian dummy(0);
+	FermiHubbardHamiltonian dummy(1.0,1.0,1);
 // Set up an initial list of determinants to train
 // Caveat: All determinants not present in the state do not matter
 // i.e. their coefficients are treated as unknown

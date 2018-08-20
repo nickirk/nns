@@ -19,7 +19,7 @@ class TwoBodyHamiltonian: public Hamiltonian{
   explicit TwoBodyHamiltonian(int dimension):
 		  Hamiltonian(),d(dimension),donebodyint(((d*(d+1))/2)),dtwobodyint(((donebodyint*(donebodyint+1))/2)),
 		  spinOrbs(false),oneBodyEntries(std::vector<double>(donebodyint,0.0)),
-		  twoBodyEntries(std::vector<double>(dtwobodyint,0.0)),coreEnergy(0.0),partExactFlag(true),linExactFlag(true){}
+		  twoBodyEntries(std::vector<double>(dtwobodyint,0.0)),coreEnergy(0.0),linExactFlag(true),partExactFlag(true){}
   //explicit Hamiltonian(int dimension):d(dimension),oneBodyEntries(std::vector<double>(d*d,0.0)),twoBodyEntries(std::vector<double>(d*d*d*d,0.0)){}
   // set the one- and two-body integrals of the Hamiltonian operator
   void setMatrixElement(int p, int q, double newEntry);

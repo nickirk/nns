@@ -17,6 +17,8 @@
 #include "HilbertSpace/AllBasis.hpp"
 #include "Samplers/AllSamplers.hpp"
 #include "Solvers/AllSolvers.hpp"
+#include "math/constants.hpp"
+#include "math/MathFunctions.hpp"
 
 
 #endif /* SRC_NNWLIB_HPP_ */

@@ -60,6 +60,12 @@ void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, double &weight,
   //else lastCoeffDeref=std::(0.5,2);
 	// And its coefficient
 	// unbiasing with generation probability in principle necessary (unless prob. is symmetric)
+<<<<<<< HEAD
+=======
+	pBack = getConnectionProb(tmp,cDet);
+  //std::cout << "MetropolisSampler.cxx: uni(rng)=" << p << std::endl;
+  //std::cout << "MetropolisSampler.cxx: pJump=" << std::norm(tmpCoeff/lastCoeff)*pBack/pEx << std::endl;
+>>>>>>> 7e5214b8a261068e7eee1c2169c614655df65973
 
   //prob = pBack/pEx*std::norm(tmpCoeffDeref/lastCoeffDeref);
   prob = pBack/pEx*std::norm(tmpCoeff/lastCoeff);

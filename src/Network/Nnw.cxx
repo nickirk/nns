@@ -23,10 +23,6 @@ NeuralNetwork<T>::NeuralNetwork(){
 
 }
 
-template <typename T>
-NeuralNetwork<T>::~NeuralNetwork(){
-}
-
 //---------------------------------------------------------------------------//
 
 //initialise the network after construction functions are called.
@@ -168,7 +164,6 @@ VecType NeuralNetwork<T>::calcNablaParsConnected(
   Eigen::VectorXcd deltaNNPc(numNNP);
   coeffType realMask(1.,0.);
   coeffType imagMask(0.,1.);
-  int pos = 0;
 
   Eigen::VectorXd deltaNNPTmp(Eigen::VectorXd::Zero(numNNP));
   for (int i(0); i < numDets; ++i){
