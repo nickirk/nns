@@ -15,7 +15,7 @@ namespace networkVMC {
 // generic base class for Hamiltonians
 
 class Hamiltonian {
-public:
+  public:
 	Hamiltonian();
 	// Essentially, Hamiltonians need to be able to produce a matrix element given two determinants
 	virtual double operator()(detType const &a, detType const &b) const =0;

@@ -11,24 +11,25 @@
 #include <vector>
 
 #include "../utilities/TypeDefine.hpp"
+#include "../utilities/State.hpp"
 
 namespace networkVMC{
 
 class Hamiltonian;
-class State;
-
+//class State;
+template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
 class SparseHMatrix {
 // Class for translating a second quantized Hamiltonian into a sparse matrix
 // This is not really storing the Hamiltonian, but applying it to a vector
-public:
+  public:
 	SparseHMatrix();
-	SparseHMatrix(Hamiltonian const &H,State const &subspace){load(H,subspace);};
+	SparseHMatrix(Hamiltonian const &H,State<coeffType> const &subspace){load(H,subspace);};
 	virtual ~SparseHMatrix();
 // Multiplication function for the Arpack interface
 	void MatMul(coeffType *in, coeffType *out);
 
 // create a sparse representation of H in subspace
-	void load(Hamiltonian const &H, State const &subspace);
+	void load(Hamiltonian const &H, State<coeffType> const &subspace);
 
 // output the dimension
 	size_t dimension() const {return dim;}

@@ -16,7 +16,7 @@ namespace networkVMC{
 
 // a fermionic generic two-body hamiltonian (aka Ab-initio Hamiltonian)
 class AbInitioHamiltonian: public TwoBodyHamiltonian {
-public:
+  public:
 	// dimension being the number of orbitals
     AbInitioHamiltonian(int dimension):TwoBodyHamiltonian(dimension){};
 	virtual ~AbInitioHamiltonian();

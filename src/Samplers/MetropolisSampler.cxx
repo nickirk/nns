@@ -14,14 +14,25 @@
 
 namespace networkVMC{
 
-template<typename T>
-MetropolisSampler<T>::~MetropolisSampler() {
+template <typename F, typename coeffType>
+MetropolisSampler<F, coeffType>::MetropolisSampler(ExcitationGenerator const &eG_, detType const &HF,
+			          Basis const &fullBasis_, Parametrization<F, coeffType> const &para_,
+                int numDets_ = 100):Sampler<F, coeffType>(eG_,HF,numDets_),para(&para_),
+                lastCoeff(para_.getCoeff(cDet)),fullBasis(&fullBasis_){};
+template <typename F, typename coeffType>
+MetropolisSampler<F, coeffType>::MetropolisSampler(Hamiltonian const &H_, detType const &HF,
+                Basis const &fullBasis_,Parametrization<F, coeffType> const &para_,
+                int numDets_ = 100):Sampler<F, coeffType>(H_,HF,numDets_),para(&para_),
+                fullBasis(&fullBasis_),lastCoeff(para_.getCoeff(cDet)){};
+
+template <typename F, typename coeffType>
+MetropolisSampler<F, coeffType>::~MetropolisSampler() {
 }
 
 //---------------------------------------------------------------------------//
 
-template<typename T>
-void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, double &weight, 
+template <typename F, typename coeffType>
+void MetropolisSampler<F, coeffType>::iterate(coeffType &cI, detType &dI, double &weight,
     int i){
   weight = 1;
 	// and then get the one for the next one - this way we ensure the first iterate() call
@@ -48,8 +59,8 @@ void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, double &weight,
     pBack = 1.;
   }
   else {
-    tmp=getRandomConnection(cDet,pEx);
-	  pBack = getConnectionProb(tmp,cDet);
+    tmp=Sampler<F, coeffType>::getRandomConnection(cDet,pEx);
+	  pBack = Sampler<F, coeffType>::getConnectionProb(tmp,cDet);
   }
   tmpCoeff = para->getCoeff(tmp);
   //coeffType tmpCoeffDeref;
@@ -60,12 +71,9 @@ void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, double &weight,
   //else lastCoeffDeref=std::(0.5,2);
 	// And its coefficient
 	// unbiasing with generation probability in principle necessary (unless prob. is symmetric)
-<<<<<<< HEAD
-=======
-	pBack = getConnectionProb(tmp,cDet);
+	pBack = Sampler<F, coeffType>::getConnectionProb(tmp,cDet);
   //std::cout << "MetropolisSampler.cxx: uni(rng)=" << p << std::endl;
   //std::cout << "MetropolisSampler.cxx: pJump=" << std::norm(tmpCoeff/lastCoeff)*pBack/pEx << std::endl;
->>>>>>> 7e5214b8a261068e7eee1c2169c614655df65973
 
   //prob = pBack/pEx*std::norm(tmpCoeffDeref/lastCoeffDeref);
   prob = pBack/pEx*std::norm(tmpCoeff/lastCoeff);
@@ -80,6 +88,6 @@ void MetropolisSampler<T>::iterate(coeffType &cI, detType &dI, double &weight,
 	dI = cDet;
 }
 //instantiate class
-template class MetropolisSampler<VecType>;
-template class MetropolisSampler<VecCType>;
+template class MetropolisSampler<double, double>;
+template class MetropolisSampler<std::complex<double>,std::complex<double>>;
 }

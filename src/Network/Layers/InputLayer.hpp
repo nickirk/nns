@@ -14,8 +14,12 @@
 namespace networkVMC{
 
 // First layer of a nerual network
-class InputLayer: public Layer{
+template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
+class InputLayer: public Layer<F, coeffType>{
 public:
+  using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
+  using weightType = std::vector<std::vector<Eigen::Map<Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>>>>;
+  using biasType = std::vector<Eigen::Map<Eigen::Matrix<F, Eigen::Dynamic, 1>>>;
   InputLayer(std::vector<Eigen::VectorXd> const &inputs_, int size_);
   virtual ~InputLayer();
   // implement the clone() functionality
@@ -30,6 +34,7 @@ private:
   void processSignal()const{};
   // number of neurons (better be the number of orbitals
   int numNrn;
+  using Layer<F, coeffType>::activations;
 };
 
 }

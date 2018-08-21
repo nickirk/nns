@@ -58,7 +58,7 @@ std::vector<T> applyPermutation(
 
 // functor for comparing dets
 class detComparer{
-public:
+  public:
   detComparer(){};
   // this is a callable object which does nothing but return if a<b for dets
   bool operator()(detType const &a, detType const &b) const{return a>b;}
@@ -67,8 +67,9 @@ public:
 //---------------------------------------------------------------------------------------------------//
 
 // functor for comparing coeffs
+template <typename coeffType=std::complex<double>>
 class coeffComparer{
-public:
+  public:
   coeffComparer(){};
   // this is another callable object which only returns if a<b (in the sense of absolute value)
   bool operator()(coeffType const &a, coeffType const &b) const{return std::abs(a)>std::abs(b);}
@@ -76,7 +77,7 @@ public:
 
 // functor for comparing weights
 class weightComparer{
-public:
+  public:
   weightComparer(){};
   // this is another callable object which only returns if a<b (in the sense of absolute value)
   bool operator()(double const &a, double const &b) const{return a>b;}

@@ -9,34 +9,35 @@
 #define SRC_UTILITIES_INPUTSTATEGENERATOR_HPP_
 
 #include "State.hpp"
+#include "../Network/Parametrization.hpp"
+#include "../Samplers/Sampler.hpp"
 
 namespace networkVMC {
 
 // forward declarations
-class Sampler;
+//class Sampler;
 class Hamiltonian;
 
-template<typename T>
-class Parametrization;
+//class Parametrization;
 
 // this class takes a sampler and a hamiltonian and creates the sampled states
 // (with or without connections)
 
-template<typename T=VecType>
+template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
 class InputStateGenerator {
-public:
-	InputStateGenerator(Sampler &msampler_, Hamiltonian const &H_, Parametrization<T> const &para);
+  public:
+	InputStateGenerator(Sampler<F, coeffType> &msampler_, Hamiltonian const &H_, Parametrization<F, coeffType> const &para);
 	virtual ~InputStateGenerator();
 
 	// create an input state, with connections indicating if connections are to be sampled
-	State generate(int numCons) const;
+	State<coeffType> generate(int numCons) const;
 private:
 	// the sampler used for getting random states
-	Sampler &msampler;
+	Sampler<F, coeffType> &msampler;
 	// the Hamiltonian governing the connections
 	Hamiltonian const &H;
 	// the parametrization containing the coefficients of the determinants
-	Parametrization<T> const &para;
+	Parametrization<F, coeffType> const &para;
 
 };
 

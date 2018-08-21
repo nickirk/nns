@@ -8,8 +8,8 @@
 #include "ADAM.hpp"
 
 namespace networkVMC {
-template <typename T>
-ADAM<T>::ADAM(double learningRate_):Solver<T>(learningRate_),numPars(0),
+template <typename F, typename coeffType>
+ADAM<F, coeffType>::ADAM(double learningRate_):Solver<F, coeffType>(learningRate_),numPars(0),
 		iteration(0),beta1(0.9),beta2(0.999) {
 	m  = T::Zero(numPars);
 	m1  = T::Zero(numPars);
@@ -17,12 +17,12 @@ ADAM<T>::ADAM(double learningRate_):Solver<T>(learningRate_),numPars(0),
 	v1  = T::Zero(numPars);
 }
 
-template <typename T>
-ADAM<T>::~ADAM() {
+template <typename F, typename coeffType>
+ADAM<F, coeffType>::~ADAM() {
 }
 
-template <typename T>
-void ADAM<T>::update(T &w, T const &force, State const &input, SamplerType const
+template <typename F, typename coeffType>
+void ADAM<F, coeffType>::update(T &w, T const &force, State<coeffType> const &input, SamplerType const
     &samplerType){
 	// in the first iteration, we learn about the number of parameters
 	if(iteration==0){
@@ -39,9 +39,10 @@ void ADAM<T>::update(T &w, T const &force, State const &input, SamplerType const
     v = v1;
     m1 = m1/(1-std::pow(beta1,iteration));
     v1 = v1/(1-std::pow(beta2,iteration));
-    w -= Solver<T>::learningRate * (m1.array()/(v1.array().sqrt()+1e-8)).matrix();
+    w -= Solver<F, coeffType>::learningRate * (m1.array()/(v1.array().sqrt()+1e-8)).matrix();
 }
 //instatiate class
-template class ADAM<VecCType>;
-template class ADAM<VecType>;
+template class ADAM<std::complex<double>, std::complex<double>>;
+;
+template class ADAM<double, double>;
 } /* namespace networkVMC */

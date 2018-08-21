@@ -12,7 +12,7 @@ namespace networkVMC{
 
 // Storing how many electrons have which ms / how many spins point up
 class SpinConfig {
-public:
+  public:
 	// for now, only differ between ms>0 and ms<0
 	SpinConfig(int up_, int down_, int numStates_):up(up_),down(down_),numStates(numStates_){};
 	virtual ~SpinConfig(){};

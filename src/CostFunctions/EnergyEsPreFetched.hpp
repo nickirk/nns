@@ -18,14 +18,15 @@
 namespace networkVMC{
 
 class Hamiltonian;
-
-class EnergyEsPreFetched: public EnergyCFBaseClass{
-public:
+template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
+class EnergyEsPreFetched: public EnergyCFBaseClass<F, coeffType>{
+  public:
+	using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
 	// Do it like this: We cannot generate EnergyEsPreFetched
 	// directly, this has to be done via EnergyEs
-	friend EnergyEs;
+	friend EnergyEs<F, coeffType>;
 
-	nablaType nabla(State const &input) const;
+	T nabla(State<coeffType> const &input) const;
 
 	// Allow for polymorphic copy
 	virtual EnergyEsPreFetched* clone() const {return new EnergyEsPreFetched(*this);}
@@ -36,9 +37,13 @@ private:
     // Make sure this is not manually constructed, but only via
     // EnergyEs. This way, we cannot attribute the wrong CF to a sampler
 	explicit EnergyEsPreFetched(Hamiltonian const &H_, int numCons_):
-		EnergyCFBaseClass(H_), numCons(numCons_){};
+		EnergyCFBaseClass<F, coeffType>(H_), numCons(numCons_){};
 
-	coeffType evaluate(State const &input) const;
+	coeffType evaluate(State<coeffType> const &input) const;
+
+	using EnergyCFBaseClass<F, coeffType>::H;
+	using EnergyCFBaseClass<F, coeffType>::energy;
+	using EnergyCFBaseClass<F, coeffType>::normalizerCoeff;
 
 	int numCons;
 };

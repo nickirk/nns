@@ -18,12 +18,13 @@ namespace networkVMC {
 
 // here we parametrize the wave function by its coefficients
 // it is mainly for testing purposes
-template <typename T=VecType>
-class DirectParametrization: public ClonableParametrization<T,DirectParametrization<T> > {
-public:
+template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
+class DirectParametrization: public ClonableParametrization<F, coeffType, DirectParametrization<F, coeffType> > {
+  public:
+	using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
   DirectParametrization(Basis const &fullBasis_):fullBasis(&fullBasis_){
     // start with a random vector
-    coeffs = Eigen::VectorXd::Random(fullBasis->size());
+    coeffs = T::Random(fullBasis->size());
   }
 
   // The coefficient of a determinant is just its entry
@@ -42,13 +43,9 @@ public:
 	  return coeffs;
   }
   // inner derivative implementation
-  T calcNablaPars(State const &inputState, nablaType const &dEdC);
-  Eigen::VectorXcd getDeriv(detType const &det) const;
-  Eigen::VectorXcd getMarkovDeriv(detType const &det) const;
-  // Some other derivative
-  // T calcNablaParsConnected(State const &inputState, nablaType const& dEdC){};
-  // stochastic reconfiguration derivative
-  // Eigen::MatrixXcd calcdCdwSR(State const &outputState){};
+  T calcNablaPars(State<coeffType> const &inputState, T const &dEdC);
+  T getDeriv(detType const &det) const;
+  T getMarkovDeriv(detType const &det) const;
 
 private:
   // The basis to which we refer

@@ -8,9 +8,9 @@
 #include "RBM.hpp"
 #include <iostream>
 
-namespace networkVMC
-{
-    RBM::RBM(int sizeInput_, int sizeHidden_):
+namespace networkVMC{
+  template <typename F, typename coeffType>
+  RBM<F, coeffType>::RBM(int sizeInput_, int sizeHidden_):
     sizeHidden(sizeHidden_),
     sizeInput(sizeInput_),
     numPars(sizeInput_+sizeHidden_+sizeInput_*sizeHidden_),
@@ -20,206 +20,128 @@ namespace networkVMC
     pars_vec(numPars),
     a(pars_vec.data()+a_offset, sizeInput_),
     b(pars_vec.data()+b_offset, sizeHidden_),
-    w(pars_vec.data()+w_offset, sizeHidden_, sizeInput_)
-    {
-        pars_vec.real() = Eigen::VectorXd::Ones(numPars)*0.01;
-        pars_vec.imag() = Eigen::VectorXd::Ones(numPars)*0.01;
-        pars_vec.real() = pars_vec.real().unaryExpr(&NormalDistribution);
-        pars_vec.imag() = pars_vec.imag().unaryExpr(&NormalDistribution);
-        //a.setZero();
-        //b.normalize();
-        //w.normalize();
+    w(pars_vec.data()+w_offset, sizeHidden_, sizeInput_){
+     //pars_vec.real() = T::Ones(numPars)*0.01;
+     //pars_vec.imag() = T::Ones(numPars)*0.01;
+     pars_vec.setRandom(numPars);
+     // pars_vec.real() = pars_vec.real().unaryExpr(&NormalDistribution);
+     // pars_vec.imag() = pars_vec.imag().unaryExpr(&NormalDistribution);
+     //a.setZero();
+     //b.normalize();
+     //w.normalize();
 
-    }
+  }
 
-    Eigen::VectorXcd const& RBM::pars() const
-    { 
-        return pars_vec;
-    }
+  template <typename F, typename coeffType>
+  RBM<F, coeffType>::T const& RBM<F, coeffType>::pars() const
+  {
+      return pars_vec;
+  }
 
-    coeffType RBM::getCoeff(detType const &det) const
-    {
-        Eigen::VectorXcd s = Eigen::VectorXcd::Ones(sizeInput);
+  template <typename F, typename coeffType>
+  coeffType RBM<F, coeffType>::getCoeff(detType const &det) const
+  {
+      T s = T::Ones(sizeInput);
 
-        for (int j=0; j<sizeInput; j++)
-        {
-            s(j) = det[j]?1.0:-1.0;
-        }
-        
-        Eigen::VectorXcd coshVec = (b+w*s).array().cosh();
-        coeffType psi = std::exp(a.dot(s));
-        for(int i=0; i<sizeHidden;i++)
-        {
-            psi = psi * coshVec(i);
-        }
-        //if (verbatimCast(det)==15) psi*=1;
-        //else psi*=0.2;
+      for (int j=0; j<sizeInput; j++)
+      {
+          s(j) = det[j]?1.0:-1.0;
+      }
 
-        return psi;
-    }
+      T coshVec = (b+w*s).array().cosh();
+      F psi = std::exp(a.dot(s));
+      for(int i=0; i<sizeHidden;i++)
+      {
+          psi = psi * coshVec(i);
+      }
+      //if (verbatimCast(det)==15) psi*=1;
+      //else psi*=0.2;
 
-    Eigen::VectorXcd RBM::getDeriv(detType const &det) const
-    {
-        Eigen::VectorXcd dCdWk= Eigen::VectorXcd::Zero(numPars);
-        // do the mapping inside for loop, private
-        Eigen::Map<Eigen::VectorXcd> da(dCdWk.data()+a_offset, sizeInput);
-        Eigen::Map<Eigen::VectorXcd> db(dCdWk.data()+b_offset, sizeHidden);
-        Eigen::Map<Eigen::MatrixXcd> dw(dCdWk.data()+w_offset, sizeHidden, sizeInput);
-        Eigen::VectorXcd s = Eigen::VectorXcd::Ones(sizeInput);
+      return psi;
+  }
 
-        for (int j=0; j<sizeInput; j++)
-        {
-            s(j) = det[j]?1.0:-1.0;
-        }
+  template <typename F, typename coeffType>
+  RBM<F, coeffType>::T RBM<F, coeffType>::getDeriv(detType const &det) const
+  {
+      T dCdWk= T::Zero(numPars);
+      // do the mapping inside for loop, private
+      Eigen::Map<T> da(dCdWk.data()+a_offset, sizeInput);
+      Eigen::Map<T> db(dCdWk.data()+b_offset, sizeHidden);
+      Eigen::Map<Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>> dw(dCdWk.data()+w_offset, sizeHidden, sizeInput);
+      T s = T::Ones(sizeInput);
 
-        Eigen::VectorXcd coshVec = (b+w*s).array().cosh();
+      for (int j=0; j<sizeInput; j++)
+      {
+          s(j) = det[j]?1.0:-1.0;
+      }
 
-        coeffType psi = std::exp(a.dot(s));
-        for(int i=0; i<sizeHidden;i++)
-        {
-            psi = psi * coshVec(i);
-        }
+      T coshVec = (b+w*s).array().cosh();
 
-        da = psi*s;
-        
-        Eigen::VectorXcd tanhVec = (b+w*s).array().tanh();
-        db = psi*tanhVec;
+      F psi = std::exp(a.dot(s));
+      for(int i=0; i<sizeHidden;i++)
+      {
+          psi = psi * coshVec(i);
+      }
 
-        dw = psi*tanhVec*s.transpose();
-        assert(dw.rows()==sizeHidden);
-        assert(dw.cols()==sizeInput);
-        return dCdWk;
-    }
+      da = psi*s;
 
+      T tanhVec = (b+w*s).array().tanh();
+      db = psi*tanhVec;
 
-    Eigen::MatrixXcd RBM::calcdCdwSR(State const &outputState)
-    {
-        Eigen::MatrixXcd result(numPars, outputState.size());
-        
-        #pragma omp parallel for
-        for(size_t i=0;i<outputState.size();i++)
-        {
-            Eigen::VectorXcd dCtdW= Eigen::VectorXcd::Zero(numPars);
-            // do the mapping inside for loop, private
-            //update vector dCidWk
-            dCtdW = getDeriv(outputState.det(i));
-            result.col(i) << (dCtdW);
-        }
-        return result;
-    }
+      dw = psi*tanhVec*s.transpose();
+      assert(dw.rows()==sizeHidden);
+      assert(dw.cols()==sizeInput);
+      return dCdWk;
+  }
 
-    // deprecated due to the change in the structure of outerDerivative
-    VecCType RBM::calcNablaPars(State const &input, nablaType const &outerDerivative)
-    {
-        Eigen::MatrixXcd dCdW=calcdCdwSR(input);
-        Eigen::VectorXcd result= Eigen::VectorXcd::Zero(numPars);
+  /*
+  template <typename F, typename coeffType>
+  Eigen::Matrix<F, Dynamic, Dynamic> RBM<F, coeffType>::calcdCdwSR(State const &outputState)
+  {
+      Eigen::MatrixXcd result(numPars, outputState.size());
 
-        //There is no reduction for vectors of Eigen, so we use critical section instead.
-        //Note: OpenMP 4.0 supports custom reduction. But it is not supported in my current gcc.
-        #pragma omp parallel
-        {
-            Eigen::VectorXcd private_result= Eigen::VectorXcd::Zero(numPars);
-            #pragma omp for
-            for(size_t i=0;i<input.size();i++)
-            {
-                private_result += (outerDerivative[i]*dCdW.col(i)).conjugate();
-            }
-
-            #pragma omp critical
-            result+=private_result;
-        }
-
-        return result;
-    }
-
-    // used in conjunction with Markov chain Metropolis sampling
-    /*
-    VecCType RBM::calcNablaParsMarkovConnected(
-	   State const &inputState,
-	   nablaType const &dEdC,
-     coeffType const &energy
-     ){
-        int numDets = inputState.size();
-        int spaceSize = inputState.totalSize();
-        Eigen::VectorXcd dEdW= Eigen::VectorXcd::Zero(numPars);
-        Eigen::MatrixXcd dCdW = Eigen::MatrixXcd::Zero(numPars, spaceSize);
-        std::vector<std::complex<double>> dedc=dEdC;
-        #pragma omp for
-        // fill up the matrix of dCdW, like in EnergyEsMarkov.cxx
-        // reserve space and in the end use matrix*vector instead of
-        // a summation
-        for (int i=0; i < numDets; ++i){
-          //need private dCtdW
-          Eigen::VectorXcd dCtdW= Eigen::VectorXcd::Zero(numPars);
+      #pragma omp parallel for
+      for(size_t i=0;i<outputState.size();i++)
+      {
+          T dCtdW= T::Zero(numPars);
           // do the mapping inside for loop, private
           //update vector dCidWk
-          dCtdW = getMarkovDeriv(inputState.det(i));
-          // multiplication should be done by matrix vector product
-          // fill up the dCdW matrix
-          dCdW.col(i) << (dCtdW.conjugate());
-          dEdW -= energy * dCtdW.conjugate()/numDets; 
-          //dedc[i] = 1;
-          std::vector<detType> coupledDets = inputState.coupledDets(i);
-          std::vector<coeffType > coupledCoeffs = inputState.coupledCoeffs(i);
-          size_t coupledSize = inputState.coupledDets(i).size();
-          size_t pos = inputState.locate(i);
-          for (size_t j(0); j < coupledSize; ++j){
-            // fill up the dCdW matrix with coupled dets contribution
-            dCdW.col(numDets+pos+j) << (dCtdW.conjugate());
-            //dEdWTmp +=  dCtdW * dEdC[pos];
-          }
-        }
-        // map std::vector of dEdC to Eigen Vector
-        Eigen::VectorXcd dEdCEigen=Eigen::Map<Eigen::VectorXcd>(dedc.data(),spaceSize);
-        // make it parallel. TODO
-        dEdW += (dCdW * dEdCEigen);//.conjugate();
-        return dEdW;
-    }
-    */
-    // The following function is used when use ListGen or fullSampler
-    VecCType RBM::calcNablaParsConnected(
-	   State const &inputState,
-	   nablaType const &dEdC
-     ){
-        int numDets = inputState.size();
-        // spaceSize = size of sampled dets and their coupled ones
-        int spaceSize = inputState.totalSize();
-        Eigen::VectorXcd dEdW= Eigen::VectorXcd::Zero(numPars);
-        // Eigen::VectorXcd dEdWTmp= Eigen::VectorXcd::Zero(numPars);
-        Eigen::MatrixXcd dCdW = Eigen::MatrixXcd::Zero(numPars, spaceSize);
-        std::vector<std::complex<double>> dedc=dEdC;
-          #pragma omp for
-          // fill up the matrix of dCdW, like in EnergyEsMarkov.cxx
-          // reserve space and in the end use matrix*vector instead of
-          // a summation
-          for (int i=0; i < numDets; ++i){
-            //need private dCtdW
-            Eigen::VectorXcd dCtdW= Eigen::VectorXcd::Zero(numPars);
-            // do the mapping inside for loop, private
-            //update vector dCidWk
-            dCtdW = getDeriv(inputState.det(i));
-            //update vector dCidWk
-            // multiplication should be done by matrix vector product
-            // fill up the dCdW matrix
-            dCdW.col(i) << (dCtdW.conjugate());
-            //dedc[i] = 1;
-            std::vector<detType> coupledDets = inputState.coupledDets(i);
-            std::vector<coeffType > coupledCoeffs = inputState.coupledCoeffs(i);
-            size_t coupledSize = inputState.coupledDets(i).size();
-            size_t pos = inputState.locate(i);
-            for (size_t j(0); j < coupledSize; ++j){
-              //update dCjdW
-              //dCtdW = getDeriv(coupledDets[j]);
-              // fill up the dCdW matrix with coupled dets contribution
-              dCdW.col(numDets+pos+j) << (dCtdW.conjugate());
-              //dEdWTmp +=  dCtdW * dEdC[pos];
-            }
-          }
-        // map std::vector of dEdC to Eigen Vector
-        Eigen::VectorXcd dEdCEigen=Eigen::Map<Eigen::VectorXcd>(dedc.data(),spaceSize);
-        // make it parallel. TODO
-        dEdW = (dCdW * dEdCEigen);//.conjugate();
-        return dEdW;
+          dCtdW = getDeriv(outputState.det(i));
+          result.col(i) << (dCtdW);
       }
+      return result;
+  }
+  */
+  // deprecated due to the change in the structure of outerDerivative
+  /*
+  T RBM<F, coeffType>::calcNablaPars(State const &input, T const &outerDerivative)
+  {
+      Eigen::MatrixXcd dCdW=calcdCdwSR(input);
+      T result= T::Zero(numPars);
+
+      //There is no reduction for vectors of Eigen, so we use critical section instead.
+      //Note: OpenMP 4.0 supports custom reduction. But it is not supported in my current gcc.
+      #pragma omp parallel
+      {
+          T private_result= T::Zero(numPars);
+          #pragma omp for
+          for(size_t i=0;i<input.size();i++)
+          {
+              private_result += (outerDerivative[i]*dCdW.col(i)).conjugate();
+          }
+
+          #pragma omp critical
+          result+=private_result;
+      }
+
+      return result;
+  }
+  */
+
+
+  //instantiate
+  template class RBM<double, double>;
+  ;
+  template class RBM<std::complex<double>, std::complex<double>>;
 
 }

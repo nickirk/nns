@@ -22,9 +22,9 @@ int main(){
 	auto HF = twfBasis.getDetByIndex(0);
 
 	// and a linear parametrization as a trial WF
-	auto trial = DirectParametrization<VecCType>(twfBasis);
+	auto trial = DirectParametrization<std::complex<double>>(twfBasis);
 
-	TrialWfPara<VecCType> twfPara(network,trial);
+	TrialWfPara<std::complex<double>> twfPara(network,trial);
 
 	// first compare the coefficients of the base*trial with that of the TrialWfPara
 	assert(std::abs(twfPara.getCoeff(HF) - trial.getCoeff(HF)*network.getCoeff(HF)) < epsilon);
@@ -53,7 +53,7 @@ int main(){
 	}
 
 	// try something more involved
-	twfPara = TrialWfPara<VecCType>(network,twfPara);
+	twfPara = TrialWfPara<std::complex<double>>(network,twfPara);
 }
 
 

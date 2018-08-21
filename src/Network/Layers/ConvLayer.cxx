@@ -11,8 +11,10 @@
 
 namespace networkVMC{
 
-ConvLayer::ConvLayer(
-          std::vector<Eigen::VectorXd> const &inputs_, 
+
+template <typename F, typename coeffType>
+ConvLayer<F, coeffType>::ConvLayer(
+          std::vector<T> const &inputs_,
           std::string actFunc_, 
           int numFilters_,
           int lengthFilter_,
@@ -25,18 +27,20 @@ ConvLayer::ConvLayer(
             stride(stride_){
   //sizeAct is the size of the activations of each filter.
   sizeAct=(inputs[0].size()-lengthFilter)/stride+1;
-  z.resize(numFilters,Eigen::VectorXd::Zero(sizeAct));  
-  activations.resize(numFilters,Eigen::VectorXd::Zero(sizeAct));
-  deltas.resize(numFilters,Eigen::VectorXd::Zero(sizeAct));
+  z.resize(numFilters,T::Zero(sizeAct));
+  activations.resize(numFilters,T::Zero(sizeAct));
+  deltas.resize(numFilters,T::Zero(sizeAct));
   //checked
   numPara = depthFilter*lengthFilter*numFilters+numFilters;
 }
 
-ConvLayer::~ConvLayer(){
+template <typename F, typename coeffType>
+ConvLayer<F, coeffType>::~ConvLayer(){
 
 }
 
-void ConvLayer::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
+template <typename F, typename coeffType>
+void ConvLayer<F, coeffType>::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
   //remember that filters always extend the full depth of the input volume
   //in our case, a filter consists of several 2 dimensional matrix, i.e. 
   //std::vecotr<Eigen::MatrixXd> (we restrict ourselves for now to one D 
@@ -57,8 +61,8 @@ void ConvLayer::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
     }
     weights.push_back(filterTmp);
     nablaWeights.push_back(nablaFilterTmp);
-    Eigen::Map<Eigen::VectorXd> biaseTmp(adNNP+startPoint,1); 
-    Eigen::Map<Eigen::VectorXd> nablaBiaseTmp(adNablaNNP+startPoint,1);
+    Eigen::Map<T> biaseTmp(adNNP+startPoint,1);
+    Eigen::Map<T> nablaBiaseTmp(adNablaNNP+startPoint,1);
     biaseTmp /= biaseTmp.size();
     biaseTmp = biaseTmp.unaryExpr(&NormalDistribution);
     biases.push_back(biaseTmp); 
@@ -67,7 +71,8 @@ void ConvLayer::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
   }
 }
 
-void ConvLayer::processSignal() const{
+template <typename F, typename coeffType>
+void ConvLayer<F, coeffType>::processSignal() const{
   //need to determine the output size. 
   //calculate the output vector size, 
   //(N_in-lengthFilter)/stride+1;
@@ -84,7 +89,7 @@ void ConvLayer::processSignal() const{
         //applying the address-of operator to the reference is 
         //the same as taking 
         //the address of the original object. So just add & in front of input
-        Eigen::Map<const Eigen::VectorXd> 
+        Eigen::Map<const T>
           inputTmp(&inputs[k](0)+startPt,lengthFilter);
         // dot product with a reversed weight matrix, due to the mathematical 
         // definition of convolution. Since here the weight matrix is nx1, 
@@ -100,8 +105,9 @@ void ConvLayer::processSignal() const{
   } 
 }
 
-void ConvLayer::backProp(
-    std::vector<Eigen::VectorXd> const &prevDelta,
+template <typename F, typename coeffType>
+void ConvLayer<F, coeffType>::backProp(
+    std::vector<T> const &prevDelta,
     weightType const &prevWeights
     ){
   for (int i(0); i < numFilters; i++){
@@ -116,7 +122,7 @@ void ConvLayer::backProp(
     for (int j(0); j < depthFilter; j++){
       for (int row(0); row < nablaWeights[i][j].rows(); row++){
         for (int col(0); col < nablaWeights[i][j].cols(); col++){
-          Eigen::Map<const Eigen::VectorXd, 0, Eigen::InnerStride<Eigen::Dynamic>>
+          Eigen::Map<const T, 0, Eigen::InnerStride<Eigen::Dynamic>>
 		  	  inputTmp(&inputs[j](0)+row,deltas[i].size(), Eigen::InnerStride<Eigen::Dynamic>(stride));
 
           nablaWeights[i][j](row,col) = (inputTmp.transpose()*(deltas[i].colwise().reverse()))(0);

@@ -13,7 +13,7 @@
 namespace networkVMC {
 
 class HeisenbergHamiltonian: public LatticeHamiltonian {
-public:
+  public:
 	template<typename ...Args>
 	HeisenbergHamiltonian(double J_, Args ...args):
 		LatticeHamiltonian(true, args...),J(J_){};

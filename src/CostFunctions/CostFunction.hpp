@@ -10,22 +10,23 @@
 
 #include <Eigen/Dense>
 #include "../utilities/TypeDefine.hpp"
+#include "../utilities/State.hpp"
 #include <memory>
 
 namespace networkVMC{
 
 // Abstract base class for cost functions
 
-class State;
-
+template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
 class CostFunction{
-public:
+  public:
+	using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
 	CostFunction(){};
 	virtual ~CostFunction(){};
 // Two functions have to be present in a cost function: The function itself (calc) and its derivative
 // (nabla)
-	virtual nablaType nabla(State const &input) const = 0;
-	virtual coeffType calc(State const &input) const = 0;
+	virtual T nabla(State<coeffType> const &input) const = 0;
+	virtual coeffType calc(State<coeffType> const &input) const = 0;
 
 	// Make the CostFunction clonable - as we have multiple inheritance, CRTP is
 	// not such a good idea

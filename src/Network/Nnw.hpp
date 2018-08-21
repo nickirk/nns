@@ -33,9 +33,10 @@ namespace networkVMC{
 const std::complex<double> ii(0.,1.);
 
 // Neural network parametrization of a wavefunction
-template<typename T=VecType>
-class NeuralNetwork: public ClonableParametrization<T,NeuralNetwork<T> >{
-public:
+template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
+class NeuralNetwork: public ClonableParametrization<F, coeffType, NeuralNetwork<F, coeffType> >{
+  public:
+    using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
   NeuralNetwork();
   //construction functions for NNW
   void constrDenseLayer(
@@ -62,18 +63,18 @@ public:
   void initialiseNetwork();
 
   // implementation of updateParameters
-  void updateParameters(State const &outputState,
+  void updateParameters(State<coeffType> const &outputState,
                         double learningRate, int iteration, int method = 3);
 
   //implementation of getCoeff()
   coeffType getCoeff(detType const &det) const; // can throw an EmptyNetworkError if no layers exist
 
   //implementation of pars()
-  VecType const& pars() const {return NNP;}
+  T const& pars() const {return NNP;}
 
   //feed forward: iterative calculate the activations
-  VecType feedForward(detType const& det) const; // can throw an EmptyNetworkError if no layers exist
-  Layer* getLayer(int layer){
+  T feedForward(detType const& det) const; // can throw an EmptyNetworkError if no layers exist
+  Layer<F, coeffType>* getLayer(int layer){
 	  if(static_cast<unsigned int>(layer)<Layers.size() && layer >= 0)
 	  return Layers[layer];
 	  throw OutOfRangeError(layer);
@@ -81,35 +82,35 @@ public:
   //Eigen::Map<Eigen::MatrixXd> getWeights(int layer) const {return weights[layer];};
   //Eigen::Map<Eigen::VectorXd> getBiases(int layer) const {return biases[layer];};
 
-  VecType calcNablaPars(
-    State const &inputState,
-	nablaType const& dEdC
+  T calcNablaPars(
+    State<coeffType> const &inputState,
+	T const& dEdC
   );
   // derivative taking into account connected dets
-  VecType calcNablaParsConnected(State const &inputState,nablaType const&dEdC);
+  T calcNablaParsConnected(State<coeffType> const &inputState,T const&dEdC);
   // derivative of higher order(?)
   //Eigen::MatrixXcd calcdCdwSR(State const &outputState);
 
 private:
   //Structure of the NNW
-  LayerStructure Layers;
+  LayerStructure<F, coeffType> Layers;
   //variables for RMSprop
   std::vector<int> sizes;
  //---------------------
  //variable for the network
   int numLayers;
   int numNNP;
-  Eigen::VectorXd NNP;
-  Eigen::VectorXd generlisedForcePrev;
-  Eigen::VectorXd nablaNNP;
+  T NNP;
+  T generlisedForcePrev;
+  T nablaNNP;
   std::vector<Eigen::VectorXd> feedIns;
 
-  VecType backPropagate(
-    coeffType const &lastLayerFeedBack
+  T backPropagate(
+    F const &lastLayerFeedBack
        );
-  void copyNetwork(NeuralNetwork const &source);
-  //coeffType outputLayer() const {
-  //	return coeffType(Layers[numLayers-1]->getActs()[0][0],Layers[numLayers-1]->getActs()[0][1]);
+  void copyNetwork(NeuralNetwork<F, coeffType> const &source);
+  //F outputLayer() const {
+  //	return F(Layers[numLayers-1]->getActs()[0][0],Layers[numLayers-1]->getActs()[0][1]);
   //};
 };
 

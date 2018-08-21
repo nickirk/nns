@@ -14,12 +14,13 @@
 namespace networkVMC {
 
 // this is a parametrization over a trial wavefunction (given as a parametrization, too)
-template<typename T=VecType>
-class TrialWfPara: public ClonableParametrization<T,TrialWfPara<T> > {
-public:
+template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
+class TrialWfPara: public ClonableParametrization<F, coeffType, TrialWfPara<F, coeffType> > {
+  public:
+    using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
 	// we move the parametrizations to the TrialWfParametrization, that is, their stand-alone
 	// versions are empty afterwards
-	TrialWfPara(Parametrization<T> const &basePara_, Parametrization<T> const &trialWf_):
+	TrialWfPara(Parametrization<F, coeffType> const &basePara_, Parametrization<F, coeffType> const &trialWf_):
 		basePara(basePara_.clone()),trialWf(trialWf_.clone()){};
 
 	// return of the parameters is delegated to basePara
@@ -29,10 +30,11 @@ public:
 	coeffType getCoeff(detType const &det) const;
 	// Obtain the inner derivative dX/dPars with given dX/dC (C are coefficients)
 	// delegated to basePara
-	T calcNablaPars(State const &input, nablaType const &outerDerivative);
+	// comment out first to test template implementation, will have a look later. Liao
+	//T calcNablaPars(State<coeffType> const &input, T const &outerDerivative);
 private:
-	DeepCpyUniquePtr<Parametrization<T> > basePara;
-	DeepCpyUniquePtr<Parametrization<T> const> trialWf;
+	DeepCpyUniquePtr<Parametrization<F, coeffType> > basePara;
+	DeepCpyUniquePtr<Parametrization<F, coeffType> const> trialWf;
 };
 
 } /* namespace networkVMC */

@@ -19,7 +19,7 @@ class Hamiltonian;
 // Basis class for converting integers to basis states and indexing orbitals
 // It is essentially a map from determinants to indices and vice versa
 class Basis{
-  public:
+    public:
 	// the hamiltonians type determines how the basis is set up
 	explicit Basis(SpinConfig const &sC);
     Basis(SpinConfig const &sC, Hamiltonian const &H);

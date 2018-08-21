@@ -18,7 +18,7 @@ namespace networkVMC {
 // the lattice has no idea about the site-local hilbert space
 
 class Lattice {
-public:
+  public:
 	// variadic template allows to construct with arbitrary spatial dimensions supplied
 	// initializer_list would do the same, but forces to use {}-initialization
 	// maybe switch if not needed

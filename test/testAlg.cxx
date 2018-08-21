@@ -66,15 +66,15 @@ int main(){
   //WeightedExcitgen RSHG(modelHam, HF);
   //RSHubbardExcitgen RSHG;
   //UniformExcitgen RSHG(HF);
-  //MetropolisSampler<VecType> sampler(RSHG, HF,NNW);
+  //MetropolisSampler<double> sampler(RSHG, HF,NNW);
   //sampler.setNumDets(1000);
-  //ListGen<VecType> sampler(RSHG, basis, HF,NNW,1000);
+  //ListGen<double> sampler(RSHG, basis, HF,NNW,1000);
   FullSampler<> sampler(modelHam, basis,NNW);
-  ADAM<VecType> sl(trainRate);
+  ADAM<double> sl(trainRate);
   //AcceleratedGradientDescent<> sl(trainRate);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
-  Trainer<VecType> ev(NNW,sampler,sl,eCF,modelHam);
+  Trainer<double> ev(NNW,sampler,sl,eCF,modelHam);
   string fileName("en");
   ofstream myfile1;
   myfile1.open (fileName);

@@ -12,11 +12,13 @@
 #include "TwoBodyHamiltonian.hpp"
 
 namespace networkVMC{
-SparseHMatrix::~SparseHMatrix() {}
+template <typename F, typename coeffType>
+SparseHMatrix<F, coeffType>::~SparseHMatrix() {}
 
 // This is what the arpack++ interface takes
 // Here, we just have to rely on in/out being of size dim
-void SparseHMatrix::MatMul(coeffType *in, coeffType *out){
+template <typename F, typename coeffType>
+void SparseHMatrix<F, coeffType>::MatMul(coeffType *in, coeffType *out){
 // Do the Matrix-Vector multiplication
 	// first, set the output vector to 0
 	for(std::size_t i = 0; i<dim; ++i){
@@ -35,7 +37,8 @@ void SparseHMatrix::MatMul(coeffType *in, coeffType *out){
 //---------------------------------------------------------------------------------------------------//
 
 // This sets up the sparse matrix representing H in subspace
-void SparseHMatrix::load(Hamiltonian const &H, State const &subspace){
+template <typename F, typename coeffType>
+void SparseHMatrix<F, coeffType>::load(Hamiltonian const &H, State<coeffType> const &subspace){
 	dim = subspace.size();
 	entries.clear();
 	rowPos.clear();

@@ -11,19 +11,22 @@
 
 namespace networkVMC{
 
-DenseLayer::DenseLayer(std::vector<Eigen::VectorXd> const &inputs_, 
+template <typename F, typename coeffType>
+DenseLayer<F, coeffType>::DenseLayer(std::vector<T> const &inputs_,
     std::string actFunc_, int size_):
   Layer(inputs_, actFunc_), numNrn(size_){
-  z.resize(1,Eigen::VectorXd::Zero(numNrn));
-  activations.resize(1,Eigen::VectorXd::Zero(numNrn));
-  deltas.resize(1,Eigen::VectorXd::Zero(numNrn));
+  z.resize(1,T::Zero(numNrn));
+  activations.resize(1,T::Zero(numNrn));
+  deltas.resize(1,T::Zero(numNrn));
   numPara = numNrn*inputs[0].size()*inputs.size()+numNrn;
 }
 
-DenseLayer::~DenseLayer(){
+template <typename F, typename coeffType>
+DenseLayer<F, coeffType>::~DenseLayer(){
 }
 
-void DenseLayer::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
+template <typename F, typename coeffType>
+void DenseLayer<F, coeffType>::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
   std::vector<Eigen::Map<Eigen::MatrixXd>> weightsTmp;
   std::vector<Eigen::Map<Eigen::MatrixXd>> NablaWeightsTmp;
   for(size_t i(0); i<inputs.size(); i++){
@@ -39,8 +42,8 @@ void DenseLayer::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
   }
   weights.push_back(weightsTmp);
   nablaWeights.push_back(NablaWeightsTmp);
-  Eigen::Map<Eigen::VectorXd> biaseTmp(adNNP+startPoint,numNrn); 
-  Eigen::Map<Eigen::VectorXd> NablaBiaseTmp(adNablaNNP+startPoint,numNrn); 
+  Eigen::Map<T> biaseTmp(adNNP+startPoint,numNrn);
+  Eigen::Map<T> NablaBiaseTmp(adNablaNNP+startPoint,numNrn);
   //biaseTmp /= biaseTmp.size();
   biaseTmp = biaseTmp.unaryExpr(&NormalDistribution);
   biases.push_back(biaseTmp); 
@@ -48,11 +51,12 @@ void DenseLayer::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
   startPoint+=numNrn;
 }
 
-void DenseLayer::processSignal() const{
+template <typename F, typename coeffType>
+void DenseLayer<F, coeffType>::processSignal() const{
   // we can only process signals with the right number of input arguments
   if(inputs.size()!=weights[0].size()) throw SizeMismatchError(inputs.size(),weights[0].size());
-  activations[0]=Eigen::VectorXd::Zero(numNrn);
-  z[0]=Eigen::VectorXd::Zero(numNrn);
+  activations[0]=T::Zero(numNrn);
+  z[0]=T::Zero(numNrn);
   for(size_t i(0); i<inputs.size(); i++){
     z[0] += weights[0][i]*inputs[i];
   }
@@ -62,7 +66,8 @@ void DenseLayer::processSignal() const{
 }
 
 
-void DenseLayer::backProp(std::vector<Eigen::VectorXd> const &prevDelta,
+template <typename F, typename coeffType>
+void DenseLayer<F, coeffType>::backProp(std::vector<T> const &prevDelta,
     weightType const &prevWeights){
     deltas[0] = prevWeights[0][0].transpose() * prevDelta[0];
     deltas[0] = deltas[0].array()* (z[0].unaryExpr(actFuncPrime)).array();
@@ -74,11 +79,12 @@ void DenseLayer::backProp(std::vector<Eigen::VectorXd> const &prevDelta,
       nablaWeights[0][i] = deltas[0] * inputs[i].transpose();
 }
 
-void DenseLayer::backProp(
+template <typename F, typename coeffType>
+void DenseLayer<F, coeffType>::backProp(
     coeffType const &prevDelta_
     ){
 	//conversion from coeffType to VectorXd
-	Eigen::VectorXd prevDelta(2);
+	T prevDelta(2);
 	prevDelta << prevDelta_.real(), prevDelta_.imag();
     deltas[0] = 
     (prevDelta.array() * 

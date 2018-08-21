@@ -14,22 +14,23 @@ namespace networkVMC {
 
 // This sampler does not sample: It loops over all determinants
 // and returns them one-by-one
-template <typename T=VecType>
-class FullSampler: public Sampler {
-public:
+template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
+class FullSampler: public Sampler<F, coeffType> {
+  public:
 	FullSampler(ExcitationGenerator const &eG_, Basis const &fullBasis_,
-			Parametrization<T> const &para_);
+			Parametrization<F, coeffType> const &para_);
 	FullSampler(Hamiltonian const &H_, Basis const &fullBasis_,
-			Parametrization<T> const &para_);
+			Parametrization<F, coeffType> const &para_);
 	void iterate(coeffType &cI, detType &dI, double& weight, int i);
 	// create a dynamic polymorphic copy
-	virtual FullSampler* clone() const {return new FullSampler(*this);}
+	virtual FullSampler* clone() const {return new FullSampler<F, coeffType>(*this);}
 	virtual ~FullSampler();
 private:
 	int pos;
   // sampling depends on the coefficients, as they have to be given alongside the determinants
-    Parametrization<T> const *para;
+    Parametrization<F, coeffType> const *para;
     Basis const *fullBasis;
+    using Sampler<F, coeffType>::numDets;
 };
 
 } /* namespace networkVMC */

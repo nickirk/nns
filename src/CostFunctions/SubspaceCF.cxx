@@ -14,23 +14,26 @@
 
 namespace networkVMC{
 
-SubspaceCF::~SubspaceCF() {
+template <typename F, typename coeffType>
+SubspaceCF<F, coeffType>::~SubspaceCF() {
 }
 
-nablaType SubspaceCF::nabla(State const &input) const{
-  auto dist = NormCF(diagonalizeSubspace(input));
+template <typename F, typename coeffType>
+SubspaceCF<F, coeffType>::T SubspaceCF<F, coeffType>::nabla(State<coeffType> const &input) const{
+  auto dist = NormCF<F, coeffType>(diagonalizeSubspace(input));
   distance = dist.calc(input);
   return dist.nabla(input);
 }
 
 //---------------------------------------------------------------------------------------------------//
 
-State SubspaceCF::diagonalizeSubspace(State const & input) const{
+template <typename F, typename coeffType>
+State<coeffType> SubspaceCF<F, coeffType>::diagonalizeSubspace(State<coeffType> const & input) const{
 	SparseHMatrix HMatrix(H, input);
 	double tol = 1e-10;
 	int maxIter = 40;
 	// the output State looks the same as the input state
-	State output{input};
+	State<coeffType> output{input};
 	// use the input state's copy as initial state
 	coeffType *outputVec{&(output.coeff(0))};
 	// also store the subspace energy: Even though we cannot use it as a cost function

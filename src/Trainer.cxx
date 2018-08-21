@@ -18,9 +18,9 @@
 namespace networkVMC{
 
 // TODO: Add more constructors, with default arguments
-template <typename T>
-Trainer<T>::Trainer(Parametrization<T> &NNW_, Sampler &msampler_,
-		Solver<T> &sl_, CostFunction &cf_, Hamiltonian const& H_):
+template <typename F, typename coeffType>
+Trainer<F, coeffType>::Trainer(Parametrization<F, coeffType> &NNW_, Sampler<F, coeffType> &msampler_,
+		Solver<F, coeffType> &sl_, CostFunction<F, coeffType> &cf_, Hamiltonian const& H_):
 		modelHam(H_),NNW(NNW_), msampler(msampler_),sl(sl_),
 		// here, we make sure that the cost function and the
 		// sampler are compatible
@@ -32,14 +32,14 @@ Trainer<T>::Trainer(Parametrization<T> &NNW_, Sampler &msampler_,
 }
 
 //---------------------------------------------------------------------------------------------------//
-template <typename T>
-Trainer<T>::~Trainer() {
+template <typename F, typename coeffType>
+Trainer<F, coeffType>::~Trainer() {
 }
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename T>
-void Trainer<T>::train(double learningRate){
+template <typename F, typename coeffType>
+void Trainer<F, coeffType>::train(double learningRate){
 	// only change the learningRate for this iteration
 	auto tmp = sl.getLearningRate();
 	sl.setLearningRate(learningRate);
@@ -53,8 +53,8 @@ void Trainer<T>::train(double learningRate){
 
 
 // prepare an input
-template <typename T>
-void Trainer<T>::train(){
+template <typename F, typename coeffType>
+void Trainer<F, coeffType>::train(){
 	// the sampler dictates how many determinants we use
 	int numDets = msampler.getNumDets();
 	inputState.resize(numDets);
@@ -62,7 +62,7 @@ void Trainer<T>::train(){
 	std::cout<< "Trainer.cxx: numdets= " << numDets << std::endl;
 
 	// create the input State
-	InputStateGenerator<T> isg(msampler,modelHam, NNW);
+	InputStateGenerator<F, coeffType> isg(msampler,modelHam, NNW);
 	// the number of connections required is passed via the cost function
 	inputState = isg.generate(cf.connectionsRequired());
 
@@ -75,8 +75,8 @@ void Trainer<T>::train(){
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename T>
-void Trainer<T>::updateParameters(State const &input){
+template <typename F, typename coeffType>
+void Trainer<F, coeffType>::updateParameters(State<coeffType> const &input){
 	// first, get the derivative of the cost function with respect to the
 	// wavefunction coefficients
 	auto dEdC = cf.nabla(input);
@@ -89,7 +89,7 @@ void Trainer<T>::updateParameters(State const &input){
 		dEdPars = NNW.calcNablaParsMarkovConnected(input,dEdC,getE());
 		break;
 	case PreFetched:
-		dEdPars = NNW.calcNablaPars(input,dEdC);
+		//dEdPars = NNW.calcNablaParsConnected(input,dEdC);
 		break;
 	default:
     throw SamplerTypeDoesNotExist(msampler.type());
@@ -100,8 +100,8 @@ void Trainer<T>::updateParameters(State const &input){
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename T>
-coeffType Trainer<T>::getE() const{
+template <typename F, typename coeffType>
+coeffType Trainer<F, coeffType>::getE() const{
 	// Here, we just output the value of the cost function (usually the energy) of the
 	// network
 	return cf.calc(inputState);
@@ -109,14 +109,14 @@ coeffType Trainer<T>::getE() const{
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename T>
-State const &Trainer<T>::getState() const{
+template <typename F, typename coeffType>
+State<coeffType> const &Trainer<F, coeffType>::getState() const{
 	// This is for testing and debugging purpose, only
 	return inputState;
 }
 //instantiate class
-//template class Trainer<VecType>;
+template class Trainer<double, double>;
 
 //instantiate class
-template class Trainer<VecCType>;
+template class Trainer<std::complex<double>, std::complex<double>>;
 }

@@ -15,25 +15,25 @@
 namespace networkVMC{
 
 class OutOfRangeError{
-public:
+  public:
 	OutOfRangeError(int pos_):pos(pos_){};
 	int pos;
 };
 
 class InvalidAnnihilation{
-public:
+  public:
 	InvalidAnnihilation(int pos_):pos(pos_){};
 	int pos;
 };
 
 class InvalidCreation{
-public:
+  public:
 	InvalidCreation(int pos_):pos(pos_){};
 	int pos;
 };
 
 class SizeMismatchError{
-public:
+  public:
 	SizeMismatchError(int a,int b):sizeA(a),sizeB(b){};
 	int sizeA, sizeB;
 };
@@ -43,45 +43,45 @@ inline void sizeCheck(int i, int j){
 }
 
 class ActFuncDoNotExist{
-  public:
+    public:
     ActFuncDoNotExist(std::string actFunc_):actFunc(actFunc_){};
     std::string actFunc;
 };
 
 class SamplerTypeDoesNotExist{
-  public:
+    public:
     SamplerTypeDoesNotExist(SamplerType samplerType_):samplerType(samplerType_){};
     SamplerType samplerType;
 };
 
 class InvalidParameterPassed{
-public:
+  public:
 	InvalidParameterPassed(){};
 };
 
 class EmptyNetworkError{
-public:
+  public:
 	EmptyNetworkError(){};
 };
 
 class NoExcitationFound{
-public:
+  public:
 	NoExcitationFound(int lvl_):lvl(lvl_){};
 	int lvl;
 };
 
 class UnconvergedEigenproblem{
-public:
+  public:
 	UnconvergedEigenproblem(){};
 };
 
 class InvalidDeterminantError{
-public:
+  public:
 	InvalidDeterminantError(detType const &a);
 };
 
 class FileNotFound{
-public:
+  public:
   FileNotFound(std::string file_);
   std::string file;
 };

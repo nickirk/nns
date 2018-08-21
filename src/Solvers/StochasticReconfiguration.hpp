@@ -14,22 +14,23 @@
 #include <Eigen/IterativeLinearSolvers>
 
 namespace networkVMC {
-template <typename T=VecType>
-class StochasticReconfiguration: public Solver<T> {
+template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
+class StochasticReconfiguration: public Solver<F, coeffType> {
 public:
-  StochasticReconfiguration(Parametrization<T> &NNW_, double gamma_):
-	  Solver<T>(gamma_),NNW(NNW_),iteration(0),internalSolver(gamma_) {};
+  using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
+  StochasticReconfiguration(Parametrization<F, coeffType> &NNW_, double gamma_):
+	  Solver<F, coeffType>(gamma_),NNW(NNW_),iteration(0),internalSolver(gamma_) {};
   virtual ~StochasticReconfiguration();
 
-  virtual void update(T &w, T const &force, State const &input, SamplerType 
+  virtual void update(T &w, T const &force, State<coeffType> const &input, SamplerType
       const &samplerType=Markov);
 private:
   // need the parametrisation to get derivatives in order to construct  the 
   // S matrix
-  Parametrization<T> &NNW;
+  Parametrization<F, coeffType> &NNW;
   // and an iteration counter
   int iteration;
-  ADAM<T> internalSolver;
+  ADAM<F, coeffType> internalSolver;
 };
 
 } /* namespace networkVMC */

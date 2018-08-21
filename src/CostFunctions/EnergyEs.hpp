@@ -11,21 +11,22 @@
 #include "CostFunction.hpp"
 #include "EnergyCFBaseClass.hpp"
 #include "../utilities/DeepCpyUniquePtr.hpp"
-
+#include <Eigen/Dense>
 namespace networkVMC {
 
 class Hamiltonian;
-
-class EnergyEs: public CostFunction {
-public:
+template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
+class EnergyEs: public CostFunction<F, coeffType> {
+  public:
+	using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
 	// uses the required number of connections and the Hamiltonian
 	EnergyEs(Hamiltonian const &H_, int numCons_=20);
 	virtual ~EnergyEs();
 	virtual void setUpCF(SamplerType const &sT);
 
 // The operations are actually performed by another EnergyCF (worker)
-	nablaType nabla(State const &input) const {return worker->nabla(input);}
-	coeffType calc(State const &input) const {return worker->calc(input);};
+	T nabla(State<coeffType> const &input) const {return worker->nabla(input);}
+	coeffType calc(State<coeffType> const &input) const {return worker->calc(input);};
 
 	double getNormalizer() const {return worker->getNormalizer();}
 
@@ -38,7 +39,7 @@ private:
 	Hamiltonian const& H;
 	// this is not a stand-alone CF, the work is done by another,
 	// owned CF
-	DeepCpyUniquePtr<EnergyCFBaseClass> worker;
+	DeepCpyUniquePtr<EnergyCFBaseClass<F, coeffType>> worker;
 	// number of connected states to be taken into account
 	int numCons;
 };

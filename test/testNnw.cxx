@@ -24,7 +24,7 @@ int main(){
   modelHam = generateFermiHubbard(numStates, U, t);
   vector<detType> list;
   EnergyEsPreFetched eCF(modelHam);
-  NeuralNetwork<VecType> NNW;
+  NeuralNetwork<double> NNW;
 
   NNW.constrInputLayer(numStates);
   NNW.constrDenseLayer(NNW.getLayer(0)->getActs(), "Tanh", 10*numStates);
@@ -39,8 +39,8 @@ int main(){
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
   double energy{0.0};
-  ADAM<VecType> sl(trainRate);
-  Trainer<VecType> ev(NNW,sampler,sl,eCF);
+  ADAM<double> sl(trainRate);
+  Trainer<double> ev(NNW,sampler,sl,eCF);
   for(int l(0); l<100; ++l){
     ev.train();
     // get the new energy

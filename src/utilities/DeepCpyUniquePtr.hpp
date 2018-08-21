@@ -13,9 +13,9 @@
 namespace networkVMC {
 
 // a smart pointer of clonable objects
-template<typename T>
+template <typename T>
 class DeepCpyUniquePtr {
-public:
+  public:
 	DeepCpyUniquePtr():resource(nullptr){};
 	DeepCpyUniquePtr(T *source):resource(source){};
 	// also allow for construction from unique_ptr, to circumvent usage of raw pointers

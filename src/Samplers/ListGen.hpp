@@ -11,16 +11,16 @@
 #include "Sampler.hpp"
 
 namespace networkVMC{
-template<typename T=VecType>
-class ListGen : public Sampler{
-public:
+template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
+class ListGen : public Sampler<F, coeffType>{
+  public:
 	ListGen(ExcitationGenerator const &eG_, Basis const &fullBasis_, detType const &HF,
-			Parametrization<T> const &para_, int numDets_=100);
+			Parametrization<F, coeffType> const &para_, int numDets_=100);
 	ListGen(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
-			Parametrization<T> const &para_, int numDets_=100);
+			Parametrization<F, coeffType> const &para_, int numDets_=100);
 	virtual ~ListGen();
 	// create a dynamic polymorphic copy
-	virtual ListGen* clone() const {return new ListGen(*this);}
+	virtual ListGen<F, coeffType>* clone() const {return new ListGen<F, coeffType>(*this);}
 	// get the i-th entry
 	virtual void iterate(coeffType &cI, detType &dI, double& weight, int i);
 	void diffuse(std::vector<detType> &list) const;
@@ -33,11 +33,12 @@ public:
 private:
 	mutable std::vector<detType > diffuseList;
   // sampling depends on the coefficients, as they have to be given alongside the determinants
-    Parametrization<T> const *para;
+    Parametrization<F, coeffType> const *para;
 	mutable size_t pos;
     // and the corresponding basis including the information on the number of electrons
 	// with a given spin
 	Basis const *fullBasis;
+    using Sampler<F, coeffType>::numDets;
 };
 
 }

@@ -14,7 +14,7 @@ namespace networkVMC {
 
 // wrapper class for random number generation
 class RNGWrapper {
-public:
+  public:
 	RNGWrapper():rd(),rng(std::mt19937(rd())),uni(0,1){};
 	virtual ~RNGWrapper(){};
 	double operator()() const{return uni(rng);};

@@ -10,9 +10,9 @@
 
 namespace networkVMC {
 
-template <typename T>
-AcceleratedGradientDescent<T>::AcceleratedGradientDescent(double learningRate_):
-  Solver<T>(learningRate_),numPars(0),lambdaS1(0.0),lambdaS(0.0),gammaS(0.0),
+template <typename F, typename coeffType>
+AcceleratedGradientDescent<F, coeffType>::AcceleratedGradientDescent(double learningRate_):
+  Solver<F, coeffType>(learningRate_),numPars(0),lambdaS1(0.0),lambdaS(0.0),gammaS(0.0),
   gammaS1(0.0),uninitialized(true){
     yS = T::Zero(numPars);
     yS1 = T::Zero(numPars);
@@ -21,16 +21,16 @@ AcceleratedGradientDescent<T>::AcceleratedGradientDescent(double learningRate_):
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename T>
-AcceleratedGradientDescent<T>::~AcceleratedGradientDescent() {
+template <typename F, typename coeffType>
+AcceleratedGradientDescent<F, coeffType>::~AcceleratedGradientDescent() {
 }
 
 //---------------------------------------------------------------------------------------------------//
 
 // This is ported from Nnw.cxx
-template <typename T>
-void AcceleratedGradientDescent<T>::update(T &w, T const &force,
-		State const &input, SamplerType const & samplerType){
+template <typename F, typename coeffType>
+void AcceleratedGradientDescent<F, coeffType>::update(T &w, T const &force,
+		State<coeffType> const &input, SamplerType const & samplerType){
   if(uninitialized){
 	numPars = w.size();
     yS = T::Zero(numPars);
@@ -47,7 +47,7 @@ void AcceleratedGradientDescent<T>::update(T &w, T const &force,
   Egz2 = rho*Egz2.matrix()+(1-rho)*force.array().square().matrix();
   Egz2 += T::Ones(numPars)*1e-4;
   T RMS = (Egz2).array().sqrt();
-  T tau = Solver<T>::learningRate * RMS.array().inverse();
+  T tau = Solver<F, coeffType>::learningRate * RMS.array().inverse();
   //yS1 = NNP - learningRate * generlisedForce;
   yS1 = (w.array() -  tau.array() * force.array()).matrix();
 
@@ -62,6 +62,7 @@ void AcceleratedGradientDescent<T>::update(T &w, T const &force,
   yS = yS1;
 }
 //instantiate class
-template class AcceleratedGradientDescent<VecType>;
-template class AcceleratedGradientDescent<VecCType>;
+template class AcceleratedGradientDescent<double, double>;
+
+template class AcceleratedGradientDescent<std::complex<double>, std::complex<double>>;
 } /* namespace networkVMC */

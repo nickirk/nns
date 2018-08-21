@@ -11,7 +11,7 @@ namespace networkVMC{
 // in principle, all two-body Hamiltonians could use this, but for lattice models, dedicated
 // implementations are more efficient, so this is mainly for Ab-initio
 class TwoBodyHamiltonian: public Hamiltonian{
- public:
+   public:
   // constructors
   TwoBodyHamiltonian():d(0),donebodyint(0),dtwobodyint(0),spinOrbs(false),coreEnergy(0.0),
   linExactFlag(true),partExactFlag(true){};

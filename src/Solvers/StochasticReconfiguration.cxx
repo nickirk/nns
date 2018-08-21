@@ -10,23 +10,23 @@
 #include <iostream>
 namespace networkVMC {
 
-template <typename T>
-StochasticReconfiguration<T>::~StochasticReconfiguration() {
+template <typename F, typename coeffType>
+StochasticReconfiguration<F, coeffType>::~StochasticReconfiguration() {
 }
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename T>
-void StochasticReconfiguration<T>::update(T &w, T const &force,
-		  State const &input, SamplerType const &samplerType){
+template <typename F, typename coeffType>
+void StochasticReconfiguration<F, coeffType>::update(T &w, T const &force,
+		  State<coeffType> const &input, SamplerType const &samplerType){
 
 	// first, get the input vector's coefficients
   std::size_t numDets = input.size();
   int numPars=w.size();
-  Eigen::MatrixXcd OkOkp = Eigen::MatrixXcd::Zero(numPars, numPars);
-  Eigen::MatrixXcd S = Eigen::MatrixXcd::Zero(numPars, numPars);
-  Eigen::VectorXcd Ok = Eigen::VectorXcd::Zero(numPars);
-  Eigen::VectorXcd dCdWk= Eigen::VectorXcd::Zero(numPars);
+  Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic> OkOkp = Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>::Zero(numPars, numPars);
+  Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic> S = Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>::Zero(numPars, numPars);
+  T Ok = T::Zero(numPars);
+  T dCdWk= T::Zero(numPars);
   switch (samplerType){
     case Markov:
 	  for(std::size_t i = 0; i<numDets; ++ i){
@@ -60,12 +60,13 @@ void StochasticReconfiguration<T>::update(T &w, T const &force,
   // no guarantee that they work for other systems. 
   // More tests should be run to observe the performace of these parameters
   double lambda = std::max(100*std::pow(0.9,iteration), 5.);
-  Eigen::VectorXcd I = Eigen::VectorXcd::Ones(numPars);
+  T I = T::Ones(numPars);
   //std::cout << "I=" << I  << std::endl; 
   // Add \epsilon * I to S matrix to prevent ill inversion of the S matrix.
   double error=1.;
-  Eigen::VectorXcd x;
-  Eigen::ConjugateGradient<Eigen::MatrixXcd, Eigen::Lower|Eigen::Upper> cg;
+  T x;
+  Eigen::ConjugateGradient<Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Lower|Eigen::Upper> cg;
+  //Eigen::ConjugateGradient<Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Lower|Eigen::Upper> cg;
   cg.setTolerance(1e-16);
   cg.setMaxIterations(10000);
   while (error>1e-16){
@@ -81,22 +82,23 @@ void StochasticReconfiguration<T>::update(T &w, T const &force,
     //std::cout << "StochasticReconfiguration.cxx: estimated error: " 
     //  << cg.error()      << std::endl;
   }
-  x /= std::sqrt(x.dot(S * x).real()); 
+  x /= std::sqrt(std::real(x.dot(S * x)));
 
   //std::cout << "StochasticReconfiguration.cxx: S=" << std::endl;
   //std::cout << S << std::endl;
   //S+=S.diagonal().asDiagonal()*lambda;
-  //Eigen::MatrixXcd II = I.asDiagonal();
-  //Eigen::MatrixXcd residual = S*(S.llt().solve(II)).adjoint();
+  //Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic> II = I.asDiagonal();
+  //Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic> residual = S*(S.llt().solve(II)).adjoint();
   //std::cout << "StochasticReconfiguration.cxx: residual=" << std::endl;
   //std::cout << residual << std::endl;
-  //w-=Solver<T>::learningRate*S.llt().solve(II)*force;
-  //internalSolver.setLearningRate(Solver<T>::learningRate);
+  //w-=Solver<F, coeffType>::learningRate*S.llt().solve(II)*force;
+  //internalSolver.setLearningRate(Solver<F, coeffType>::learningRate);
   //internalSolver.update(w, x, input, samplerType);
-  w-=Solver<T>::learningRate*x;
+  w-=Solver<F, coeffType>::learningRate*x;
 	// increase the iteration counter
 	iteration += 1;
 }
-//template class StochasticReconfiguration<VecType>;
-template class StochasticReconfiguration<VecCType>;
+template class StochasticReconfiguration<double, double>;
+
+template class StochasticReconfiguration<std::complex<double>, std::complex<double>>;
 } /* namespace networkVMC */

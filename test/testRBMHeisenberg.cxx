@@ -26,8 +26,8 @@ int main(){
 	}
 	printDet(afmDet);
 	// sampler
-	FullSampler<VecCType> mySampler(HH,basis,network);
-	//MetropolisSampler<VecCType> mySampler(HH,afmDet,network,50);
+	FullSampler<std::complex<double>> mySampler(HH,basis,network);
+	//MetropolisSampler<std::complex<double>> mySampler(HH,afmDet,network,50);
 	solveSRec(network, mySampler, HH);
 	//testRBMMetropolis(sC,HH);
 }

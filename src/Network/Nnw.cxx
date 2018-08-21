@@ -14,8 +14,8 @@
 
 namespace networkVMC{
 
-template<typename T>
-NeuralNetwork<T>::NeuralNetwork(){
+template <typename F, typename coeffType>
+NeuralNetwork<F, coeffType>::NeuralNetwork(){
   //initial value for NNW para
   numLayers = 0;
   //initial para for Nesterov's accelerated gradient descent
@@ -26,18 +26,18 @@ NeuralNetwork<T>::NeuralNetwork(){
 //---------------------------------------------------------------------------//
 
 //initialise the network after construction functions are called.
-template <typename T>
-void NeuralNetwork<T>::initialiseNetwork(){
+template <typename F, typename coeffType>
+void NeuralNetwork<F, coeffType>::initialiseNetwork(){
   //calculate the size of the NNP array:
   numNNP=0;
   for (int layer(0); layer<numLayers; ++layer){
     numNNP+=Layers[layer]->getNumPara();
   }
   NNP = Eigen::VectorXd::Ones(numNNP);
-  double *adNNP = &NNP(0);
+  F *adNNP = &NNP(0);
   nablaNNP = Eigen::VectorXd::Zero(numNNP);
   //get the address of nablaNNP
-  double *adNablaNNP = &nablaNNP(0);
+  F *adNablaNNP = &nablaNNP(0);
   int startPoint(0);
   for (int layer(0); layer<numLayers; ++layer){
     Layers[layer]->mapPara(adNNP, adNablaNNP, startPoint);
@@ -46,8 +46,8 @@ void NeuralNetwork<T>::initialiseNetwork(){
 }
 //---------------------------------------------------------------------------//
 // construction function of the NNW
-template <typename T>
-void NeuralNetwork<T>::constrInputLayer(int numStates){
+template <typename F, typename coeffType>
+void NeuralNetwork<F, coeffType>::constrInputLayer(int numStates){
 
   feedIns.resize(1, Eigen::VectorXd::Zero(numStates));
   Layers.addInputLayer(feedIns,numStates);
@@ -55,8 +55,8 @@ void NeuralNetwork<T>::constrInputLayer(int numStates){
 }
 
 //---------------------------------------------------------------------------------------------------//
-template <typename T>
-void NeuralNetwork<T>::constrDenseLayer(
+template <typename F, typename coeffType>
+void NeuralNetwork<F, coeffType>::constrDenseLayer(
     std::vector<Eigen::VectorXd> const &inputs_, std::string actFunc_,
     int size_
     ){
@@ -66,8 +66,8 @@ void NeuralNetwork<T>::constrDenseLayer(
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename T>
-void NeuralNetwork<T>::constrConvLayer(
+template <typename F, typename coeffType>
+void NeuralNetwork<F, coeffType>::constrConvLayer(
     std::vector<Eigen::VectorXd> const &inputs_,
     std::string actFunc_,
     int numFilters_,
@@ -80,8 +80,8 @@ void NeuralNetwork<T>::constrConvLayer(
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename T>
-coeffType NeuralNetwork<T>::getCoeff(detType const &det) const{
+template <typename F, typename coeffType>
+coeffType NeuralNetwork<F, coeffType>::getCoeff(detType const &det) const{
 	//Run the network
 	Eigen::VectorXd output;
 #pragma omp critical
@@ -90,13 +90,13 @@ coeffType NeuralNetwork<T>::getCoeff(detType const &det) const{
 	}
 	// and extract the coefficient from the last layer
   //std::cout << "Nnw.cxx:getCoeff(): output= " << output << std::endl;
-	return coeffType(output(0),output(1));
+	return F(output(0),output(1));
 }
 
 //---------------------------------------------------------------------------//
 
-template <typename T>
-VecType NeuralNetwork<T>::feedForward(detType const& det) const{
+template <typename F, typename coeffType>
+NeuralNetwork<F, coeffType>::T NeuralNetwork<F, coeffType>::feedForward(detType const& det) const{
 	if(Layers.size()==0) throw EmptyNetworkError();
   // Note that the first layer always needs to have a number
   // of neurons equal to the number of orbitals
@@ -116,9 +116,9 @@ VecType NeuralNetwork<T>::feedForward(detType const& det) const{
 
 //---------------------------------------------------------------------------//
 
-template <typename T>
-VecType NeuralNetwork<T>::backPropagate(
-       coeffType const &lastLayerFeedBack
+template <typename F, typename coeffType>
+NeuralNetwork<F, coeffType>::T NeuralNetwork<F, coeffType>::backPropagate(
+       F const &lastLayerFeedBack
      ){
   //everytime the backPropagate is called, we should reset nabla* to zero.
   nablaNNP *= 0.;
@@ -135,11 +135,11 @@ VecType NeuralNetwork<T>::backPropagate(
 }
 
 //---------------------------------------------------------------------------//
-
-template <typename T>
-Eigen::VectorXd NeuralNetwork<T>::calcNablaPars(
+/*
+template <typename F, typename coeffType>
+Eigen::VectorXd NeuralNetwork<F, coeffType>::calcNablaPars(
 	   State const &inputState,
-	   nablaType const &dEdC
+	   T const &dEdC
      ){
   int numDets = inputState.size();
   Eigen::VectorXd deltaNNP(Eigen::VectorXd::Zero(numNNP));
@@ -151,19 +151,19 @@ Eigen::VectorXd NeuralNetwork<T>::calcNablaPars(
   }
   return deltaNNP;
 }
-
+*/
 //---------------------------------------------------------------------------------------------------//
 
-template <typename T>
-VecType NeuralNetwork<T>::calcNablaParsConnected(
-	   State const &inputState,
-	   nablaType const &dEdC
+template <typename F, typename coeffType>
+NeuralNetwork<F, coeffType>::T NeuralNetwork<F, coeffType>::calcNablaParsConnected(
+	   State<coeffType> const &inputState,
+	   T const &dEdC
      ){
   int numDets = inputState.size();
   Eigen::VectorXd deltaNNP(Eigen::VectorXd::Zero(numNNP));
-  Eigen::VectorXcd deltaNNPc(numNNP);
-  coeffType realMask(1.,0.);
-  coeffType imagMask(0.,1.);
+  T deltaNNPc(numNNP);
+  F realMask(1.,0.);
+  F imagMask(0.,1.);
 
   Eigen::VectorXd deltaNNPTmp(Eigen::VectorXd::Zero(numNNP));
   for (int i(0); i < numDets; ++i){
@@ -174,7 +174,7 @@ VecType NeuralNetwork<T>::calcNablaParsConnected(
     //deltaNNPc /= std::conj(inputState.coeff(i));
     deltaNNPTmp += 2 * deltaNNPc.real();
     std::vector<detType> coupledDets = inputState.coupledDets(i);
-    std::vector<coeffType > coupledCoeffs = inputState.coupledCoeffs(i);
+    std::vector<F > coupledCoeffs = inputState.coupledCoeffs(i);
     int pos = inputState.locate(i);
     for (size_t j(0); j < coupledDets.size(); ++j){
       feedForward(coupledDets[j]);
@@ -192,7 +192,7 @@ VecType NeuralNetwork<T>::calcNablaParsConnected(
 
 //---------------------------------------------------------------------------------------------------//
 /*
-Eigen::MatrixXcd NeuralNetwork<T>::calcdCdwSR(
+Eigen::MatrixXcd NeuralNetwork<F, coeffType>::calcdCdwSR(
   State  const &outputState
   ){
 //This step produce a complex matrix dCdw. It is done via the same backPropagate
@@ -212,7 +212,7 @@ Eigen::MatrixXcd NeuralNetwork<T>::calcdCdwSR(
     Eigen::MatrixXd dCdwTmp(numNNP,numDets);
     dedc << 1, 0;
     dedc += mask * i;
-    std::vector<coeffType> dEdC(numDets,dedc);
+    std::vector<F, coeffType dEdC(numDets,dedc);
     //create w_k|--C_i matrix
     for (int epoch(0); epoch < numDets; ++epoch){
       feedForward(outputState.det(i));
@@ -228,7 +228,8 @@ Eigen::MatrixXcd NeuralNetwork<T>::calcdCdwSR(
 */
 
 //instantiate class
-//template class NeuralNetwork<VecType>;
+template class NeuralNetwork<double, double>;
+template class NeuralNetwork<std::complex<double>, std::complex<double>>;
 }
 //---------------------------------------------------------------------------------------------------//
 

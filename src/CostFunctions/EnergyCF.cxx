@@ -14,7 +14,8 @@
 namespace networkVMC{
 
 // This gets the energy expectation value of the state 'input'
-coeffType EnergyCF::evaluate(State const &input) const{
+template <typename F, typename coeffType>
+coeffType EnergyCF<F, coeffType>::evaluate(State<coeffType> const &input) const{
   coeffType energyVal{0.0,0.0};
   normalizerCoeff=0.0;
   std::complex<double> normalizerCoeffComplex(0.,0.);
@@ -39,16 +40,17 @@ coeffType EnergyCF::evaluate(State const &input) const{
 }
 
 // Here, we get the derivative of the energy with respect to the coefficients of input
-nablaType EnergyCF::nabla(State const &input) const{
+template <typename F, typename coeffType>
+EnergyCF<F, coeffType>::T EnergyCF<F, coeffType>::nabla(State<coeffType> const &input) const{
 // To get the derivative, we also need the energy, so first evaluate
 // This also assigns the normalizer
   energy = evaluate(input);
-  nablaType dEdC;
+  T dEdC;
   int numDets = input.size();
   // works similar to computing the energy
   for (int i=0; i < numDets; ++i){
-    coeffType dEdC_i;
-    std::complex<double> A(0.,0.);
+    F dEdC_i;
+    coeffType A(0.,0.);
     for (int j=0; j < numDets; ++j){
       coeffType c_j=input.coeff(j);
       // We add up the contributions to the derivative
@@ -60,8 +62,10 @@ nablaType EnergyCF::nabla(State const &input) const{
     // re-use the normalizer from evaluate
     A /= normalizerCoeff;
     // And assign to the output
-    dEdC_i.real(2. * std::real( A*std::conj(1.)));
-    dEdC_i.imag(2. * std::real( A*std::conj(std::complex<double>(0.0,1.0))));
+    // the way how it should implement depends on the feedforward nnw architecture, leave out for future when
+    // this cost function is really needed.
+    //dEdC_i.real(2. * std::real( A*std::conj(std::complex<double>(1.,0.))));
+    //dEdC_i.imag(2. * std::real( A*std::conj(std::complex<double>(0.0,1.0))));
     dEdC.push_back(dEdC_i);
   }
   return dEdC;

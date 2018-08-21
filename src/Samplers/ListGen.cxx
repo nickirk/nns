@@ -12,20 +12,20 @@
 
 namespace networkVMC{
 
-template <typename T>
-ListGen<T>::ListGen(ExcitationGenerator const &eG_, Basis const &fullBasis_, detType const &HF,
-		Parametrization<T> const &para_, int numDets_):
-	Sampler(eG_,HF,numDets_),para(&para_),pos(0),fullBasis(&fullBasis_){
+template <typename F, typename coeffType>
+ListGen<F, coeffType>::ListGen(ExcitationGenerator const &eG_, Basis const &fullBasis_, detType const &HF,
+		Parametrization<F, coeffType> const &para_, int numDets_):
+	Sampler<F, coeffType>(eG_,HF,numDets_),para(&para_),pos(0),fullBasis(&fullBasis_){
 	std::vector<detType> tmp(numDets_,HF);
 	diffuse(tmp);
 }
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename T>
-ListGen<T>::ListGen(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
-		Parametrization<T> const &para_, int numDets_):
-	Sampler(H_,HF,numDets_),para(&para_),pos(0),fullBasis(&fullBasis_){
+template <typename F, typename coeffType>
+ListGen<F, coeffType>::ListGen(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
+		Parametrization<F, coeffType> const &para_, int numDets_):
+	Sampler<F, coeffType>(H_,HF,numDets_),para(&para_),pos(0),fullBasis(&fullBasis_){
 	std::vector<detType> tmp(numDets_,HF);
 	diffuse(tmp);
 }
@@ -33,14 +33,14 @@ ListGen<T>::ListGen(Hamiltonian const &H_, Basis const &fullBasis_, detType cons
 //---------------------------------------------------------------------------------------------------//
 
 
-template <typename T>
-ListGen<T>::~ListGen() {
+template <typename F, typename coeffType>
+ListGen<F, coeffType>::~ListGen() {
 }
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename T>
-void ListGen<T>::iterate(coeffType &cI, detType &dI, double& weight, int i){
+template <typename F, typename coeffType>
+void ListGen<F, coeffType>::iterate(coeffType &cI, detType &dI, double& weight, int i){
 	// Fetch the next entry from the pre-arranged list
 	dI = getDet(i);
 	// Get its coefficient
@@ -49,8 +49,8 @@ void ListGen<T>::iterate(coeffType &cI, detType &dI, double& weight, int i){
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename T>
-detType ListGen<T>::getDet(int i) const{
+template <typename F, typename coeffType>
+detType ListGen<F, coeffType>::getDet(int i) const{
   if(i < diffuseList.size() && i >= 0){
     return diffuseList[i];
   }
@@ -67,8 +67,8 @@ detType ListGen<T>::getDet(int i) const{
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename T>
-detType ListGen<T>::getDet() const{
+template <typename F, typename coeffType>
+detType ListGen<F, coeffType>::getDet() const{
 	pos += 1;
 	// cycle through the list, if we reach the end, start from the beginning
 	if(pos > diffuseList.size()){
@@ -81,13 +81,13 @@ detType ListGen<T>::getDet() const{
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename T>
-int ListGen<T>::getNumDets() const{return diffuseList.size();}
+template <typename F, typename coeffType>
+int ListGen<F, coeffType>::getNumDets() const{return diffuseList.size();}
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename T>
-void ListGen<T>::diffuse(std::vector<detType> &list) const{
+template <typename F, typename coeffType>
+void ListGen<F, coeffType>::diffuse(std::vector<detType> &list) const{
  list=diffuseList;
  detType buf;
  while (list.size() < static_cast<unsigned int>(numDets)){
@@ -105,7 +105,7 @@ void ListGen<T>::diffuse(std::vector<detType> &list) const{
  for (size_t i = 0; i<list.size(); ++i){
   prandom = uni(rng);
    c_i=para->getCoeff(list[i]);
-   buf = getRandomConnection(list[i],pEx);
+   buf = Sampler<F,coeffType>::getRandomConnection(list[i],pEx);
    //buf = getRandomDeterminant(spinConfig);
    c_j=para->getCoeff(buf);
    //getRandomCoupledState(buf,probUnbias);
@@ -119,14 +119,15 @@ void ListGen<T>::diffuse(std::vector<detType> &list) const{
 
 //---------------------------------------------------------------------------------------------------//
 
-template<typename T>
-void ListGen<T>::resetSpecs(){
+template <typename F, typename coeffType>
+void ListGen<F, coeffType>::resetSpecs(){
 	// roll back the state to the initial one
 	pos = 0;
 }
 
 //---------------------------------------------------------------------------//
 //instantiate class
-template class ListGen<VecType>;
-template class ListGen<VecCType>;
+template class ListGen<double, double>;
+;
+template class ListGen<std::complex<double>, std::complex<double>>;
 }

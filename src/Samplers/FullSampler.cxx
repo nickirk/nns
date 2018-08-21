@@ -10,32 +10,32 @@
 #include "../Network/Parametrization.hpp"
 
 namespace networkVMC {
-template <typename T>
-FullSampler<T>::FullSampler(ExcitationGenerator const &eG_, Basis const &fullBasis_,
-		Parametrization<T> const & para_):
-	Sampler(eG_,detType(),fullBasis_.size()),pos(0),para(&para_),fullBasis(&fullBasis_){
+template <typename F, typename coeffType>
+FullSampler<F, coeffType>::FullSampler(ExcitationGenerator const &eG_, Basis const &fullBasis_,
+		Parametrization<F, coeffType> const & para_):
+	Sampler<F, coeffType>(eG_,detType(),fullBasis_.size()),pos(0),para(&para_),fullBasis(&fullBasis_){
 }
 
 //---------------------------------------------------------------------------//
 
-template <typename T>
-FullSampler<T>::FullSampler(Hamiltonian const &H_, Basis const &fullBasis_,
-		Parametrization<T> const & para_):
-	Sampler(H_,detType(),fullBasis_.size()),pos(0),para(&para_),fullBasis(&fullBasis_){
+template <typename F, typename coeffType>
+FullSampler<F, coeffType>::FullSampler(Hamiltonian const &H_, Basis const &fullBasis_,
+		Parametrization<F, coeffType> const & para_):
+	Sampler<F, coeffType>(H_,detType(),fullBasis_.size()),pos(0),para(&para_),fullBasis(&fullBasis_){
 }
 
 //---------------------------------------------------------------------------//
 
 
-template <typename T>
-FullSampler<T>::~FullSampler() {
+template <typename F, typename coeffType>
+FullSampler<F, coeffType>::~FullSampler() {
 	// TODO Auto-generated destructor stub
 }
 
 //---------------------------------------------------------------------------//
 
-template <typename T>
-void FullSampler<T>::iterate(coeffType &cI, detType &dI, double& weight, int i){
+template <typename F, typename coeffType>
+void FullSampler<F, coeffType>::iterate(coeffType &cI, detType &dI, double& weight, int i){
   if(i >= numDets) i = 0;
   // No sampling involved: We take the i-th determinant from the list
   dI = fullBasis->getDetByIndex(i);
@@ -43,6 +43,7 @@ void FullSampler<T>::iterate(coeffType &cI, detType &dI, double& weight, int i){
   cI = para->getCoeff(dI);
 }
 //instantiate class
-template class FullSampler<VecType>;
-template class FullSampler<VecCType>;
+template class FullSampler<double, double>;
+;
+template class FullSampler<std::complex<double>, std::complex<double>>;
 } /* namespace networkVMC */

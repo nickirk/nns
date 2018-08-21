@@ -13,7 +13,7 @@
 namespace networkVMC {
 
 class FermiHubbardHamiltonian: public LatticeHamiltonian {
-public:
+  public:
 
 	// generate an n-d lattice
 	template<typename ...Args>

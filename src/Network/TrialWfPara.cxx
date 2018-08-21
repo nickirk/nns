@@ -11,15 +11,15 @@
 
 namespace networkVMC {
 
-template<typename T>
-coeffType TrialWfPara<T>::getCoeff(detType const &det) const{
+template <typename F, typename coeffType>
+coeffType TrialWfPara<F, coeffType>::getCoeff(detType const &det) const{
 	// the coefficient is the product of trial wf and parametrized coeff
 	return basePara->getCoeff(det)*trialWf->getCoeff(det);
 }
-
-template<typename T>
-T TrialWfPara<T>::calcNablaPars(State const &input, nablaType const &outerDerivative){
-	nablaType scaledOuterDerivative = outerDerivative;
+/*
+template <typename F, typename coeffType>
+TrialWfPara<F, coeffType>::T TrialWfPara<F, coeffType>::calcNablaPars(State<coeffType> const &input, T const &outerDerivative){
+	T scaledOuterDerivative = outerDerivative;
 	// scale the outerDerivative with the trial WF
 
 	// number of dets in input
@@ -50,8 +50,9 @@ T TrialWfPara<T>::calcNablaPars(State const &input, nablaType const &outerDeriva
 	// then, add the inner derivative
 	return basePara->calcNablaPars(input, scaledOuterDerivative);
 }
-
+*/
 // instantiate template classes
-template class TrialWfPara<VecType>;
-template class TrialWfPara<VecCType>;
+template class TrialWfPara<double, double>;
+;
+template class TrialWfPara<std::complex<double>, std::complex<double>>;
 } /* namespace networkVMC */

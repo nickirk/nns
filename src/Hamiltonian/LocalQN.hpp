@@ -15,7 +15,7 @@ namespace networkVMC {
 // converts site indices to orbital indices using a local basis
 // (typically this is spin-up/down)
 class LocalQN {
-public:
+  public:
 	// concrete orbital and range of possible numbers (range = #bits per site)
 	LocalQN(int orbital, int range_):val(orbital%range_),range(range_){};
 	virtual ~LocalQN(){};

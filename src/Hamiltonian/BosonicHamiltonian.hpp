@@ -14,7 +14,7 @@ namespace networkVMC{
 
 // Hamiltonian with bosonic commutation relations
 class BosonicHamiltonian: public TwoBodyHamiltonian {
-public:
+  public:
 	BosonicHamiltonian(int dimension):TwoBodyHamiltonian(dimension){};
 	virtual ~BosonicHamiltonian();
 // Bosons dont have a Fermi sign, so we return 1

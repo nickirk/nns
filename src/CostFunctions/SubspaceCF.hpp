@@ -19,18 +19,20 @@ class Hamiltonian;
 // This cost function diagonalizes H in the subspace spanned by the
 // sampled basis states and takes the distance of the resulting lowest
 // eigenvector to the input state as cost function
-class SubspaceCF: public CostFunction {
-public:
+template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
+class SubspaceCF: public CostFunction<F, coeffType> {
+  public:
+	using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
 	// SubspaceCF creation/destruction
-	SubspaceCF(Hamiltonian const &H_):CostFunction(),H(H_),distance(0),subspaceEnergy(coeffType()){};
+	SubspaceCF(Hamiltonian const &H_):CostFunction<F, coeffType>(),H(H_),distance(0),subspaceEnergy(coeffType()){};
 	virtual ~SubspaceCF();
 // Derivative with respect to the input's coefficients
-	nablaType nabla(State const &input) const;
+	T nabla(State<coeffType> const &input) const;
 // Value of the cost function
-	coeffType calc(State const &input) const {return coeffType(distance,0.);}
+	coeffType calc(State<coeffType> const &input) const {return F(distance,0.);}
 
 	// Allow for polymorphic copy
-	virtual CostFunction* clone() const {return new SubspaceCF(*this);}
+	virtual CostFunction<F, coeffType>* clone() const {return new SubspaceCF<F, coeffType>(*this);}
 private:
   // The underlying Hamiltonian
 	Hamiltonian const &H;
@@ -39,7 +41,7 @@ private:
   // cache variable for subspace energy
 	mutable coeffType subspaceEnergy;
   // auxiliary function for getting the ground state in the space spanned by the determinants of input
-	State diagonalizeSubspace(State const & input) const;
+	State<coeffType> diagonalizeSubspace(State<coeffType> const & input) const;
 
   // Has a reference member, so assignment is not a thing
   SubspaceCF& operator=(SubspaceCF const &source);

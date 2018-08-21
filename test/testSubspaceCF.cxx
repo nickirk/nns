@@ -30,7 +30,7 @@ int main(){
   ListGen<> sample(modelHam,basis,HF,par);
 
   // And optimize the direct parametrization
-  Trainer<VecType> ev(par,sample,sl,sCF);
+  Trainer<double> ev(par,sample,sl,sCF);
 
   for(int i=0;i<1000;++i){
 	  ev.train();

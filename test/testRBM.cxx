@@ -3,7 +3,7 @@
 #include <fstream>
 #include <math.h>
 #include <unordered_map> //for unordered_map
-
+#include "../src/CostFunctions/EnergyEs.hpp"
 #include "../src/NNWLib.hpp"
 
 using namespace Eigen;
@@ -23,15 +23,15 @@ int main(){
   //vector<detType> list;
   //generate hamiltonian
   AbInitioHamiltonian modelHam(0);
-  string file_name = "FCIDUMP";
+  std::string file_name = "FCIDUMP";
   modelHam = readAbInitioHamiltonian(file_name,1);
   numStates = modelHam.getNumOrbs();
   //std::cout << "numStates=" << numStates << std::endl;
   SpinConfig spinConfig(spinUp, spinDown,numStates);// numStates);
   Basis basis(spinConfig,modelHam);
   std::cout << "basis size=" << basis.size() << std::endl;
-  RBM rbm(numStates, numHidden);
-  //DirectParametrization<VecCType> rbm(basis);
+  RBM<std::complex<double>> rbm(numStates, numHidden);
+  //DirectParametrization<std::complex<double>> rbm(basis);
 
   std::cout << "Initial vals of par=" << std::endl;
   std::cout << rbm.pars() << std::endl;
@@ -42,17 +42,17 @@ int main(){
   UniformExcitgen RSHG(HF);
   //LatticeExcitgen RSHG(modelHam);
   //WeightedExcitgen RSHG(modelHam,HF);
-  MetropolisSampler<VecCType> sampler(RSHG, HF,basis, rbm);
-  //ListGen<VecCType> sampler(RSHG, basis, HF,rbm,100);
+  MetropolisSampler<std::complex<double>,std::complex<double>> sampler(RSHG, HF,basis, rbm);
+  //ListGen<std::complex<double>> sampler(RSHG, basis, HF,rbm,100);
   sampler.setNumDets(500);
-  //FullSampler<VecCType> sampler(modelHam, basis, rbm);
-  EnergyEs eCF(modelHam,-1);
+  //FullSampler<std::complex<double>> sampler(modelHam, basis, rbm);
+  EnergyEs<std::complex<double>,std::complex<double>> eCF(modelHam,-1);
   //Setup the trainer
-  coeffType energy{0.0};
-  //AcceleratedGradientDescent<VecCType> sl(trainRate);
-  ADAM<VecCType> sl(trainRate);
-  //StochasticReconfiguration<VecCType> sl(rbm,trainRate);
-  Trainer<VecCType> ev(rbm, sampler, sl, eCF,modelHam);
+  std::complex<double> energy{0.0};
+  //AcceleratedGradientDescent<std::complex<double>> sl(trainRate);
+  ADAM<std::complex<double>, std::complex<double>> sl(trainRate);
+  //StochasticReconfiguration<std::complex<double>> sl(rbm,trainRate);
+  Trainer<std::complex<double>, std::complex<double>> ev(rbm, sampler, sl, eCF,modelHam);
   ofstream myfile1;
   myfile1.open ("en");
   //std::cout << "reading rbm pars from file..." << std::endl;

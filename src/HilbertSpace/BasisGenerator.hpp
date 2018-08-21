@@ -19,7 +19,7 @@ class Hamiltonian;
 
 // This one generates basis lists
 class BasisGenerator{
-public:
+  public:
 	BasisGenerator(SpinConfig const &sC_);
 	// create the basis matching H
 	Basis generateBasis(Hamiltonian const &H)  const;

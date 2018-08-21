@@ -16,8 +16,9 @@
 
 namespace networkVMC{
 
-coeffType EnergyEsMarkov::evaluate(State const &input) const{
-  coeffType energyVal{0.0};
+template <typename F, typename coeffType>
+coeffType EnergyEsMarkov<F, coeffType>::evaluate(State<coeffType> const &input) const{
+  coeffType energyVal=0.;
   normalizerCoeff=0.0;
   int numDets = input.size();
   //#pragma omp parallel for reduction(+:energyVal)
@@ -31,7 +32,7 @@ coeffType EnergyEsMarkov::evaluate(State const &input) const{
     Hij = H(input.det(i), input.det(i));
     energyVal += Hij;
     //std::cout << "EnergyEsMarkov.cxx: coupledSize=" << coupledSize << std::endl;
-    coeffType energyValTmp{0.0};
+    coeffType energyValTmp=0.;
     for (size_t j=0; j < coupledSize; ++j){
       //std::cout << "EnergyEsMarkov.cxx: coupledWeights[j]=" << coupledWeights[j] << std::endl;
         // don't forget to unbias using the Pgen. TODO
@@ -47,25 +48,24 @@ coeffType EnergyEsMarkov::evaluate(State const &input) const{
   return energyVal;
 }
 
-nablaType EnergyEsMarkov::nabla(State const &input) const{
+template <typename F, typename coeffType>
+EnergyEsMarkov<F, coeffType>::T EnergyEsMarkov<F, coeffType>::nabla(State<coeffType> const &input) const{
   coeffType energyM = evaluate(input);
-  energy = std::real(energyM);
-  std::cout << "complex energyM=" << energyM << std::endl;
-  std::cout << "real energy=" << energy << std::endl;
+  energy = energyM;
   int numDets = input.size();
   // spaceSize = size of sampled dets and their coupled ones
   int spaceSize = input.totalSize();
   // For each n, it has the same number of connected Dets as others.!!!
-  nablaType dEdC(spaceSize, coeffType(0.,0.));
+  T dEdC=T::Zero(spaceSize);
   //not thread safe
   //assume we know the whole space size, reserve space
   #pragma omp parallel for
   for (int i=0; i < numDets; ++i){
     coeffType c_i = input.coeff(i);
 //  put all the weighting step here instead of inside of RBM
-    dEdCtmp = (H(input.det(i), input.det(i)));
+    F dEdCtmp = (H(input.det(i), input.det(i)));
     // add weights
-    dEdC[i] = dEdCtmp / static_cast<double>(numDets);
+    dEdC(i) = dEdCtmp / static_cast<double>(numDets);
     std::vector<coeffType> coupledC_j = input.coupledCoeffs(i);
     std::vector<detType> coupledDets = input.coupledDets(i);
     std::vector<double> coupledWeights = input.coupledWeights(i);
@@ -80,7 +80,7 @@ nablaType EnergyEsMarkov::nabla(State const &input) const{
      dEdCtmp = H(input.det(i),coupledDets[j])* coupledC_j[j]/(c_i *
     		 (coupledWeights[j] * coupledSize ));
      // unbias with numCoupledDets and Pgen
-      dEdC[numDets+pos+j]=dEdCtmp / static_cast<double>(numDets);
+      dEdC(numDets+pos+j)=dEdCtmp / static_cast<double>(numDets);
     }
   }
   // dEdC is stored as folllowing:
@@ -89,5 +89,7 @@ nablaType EnergyEsMarkov::nabla(State const &input) const{
   return dEdC;
 }
 
+template class EnergyEsMarkov<double, double>;
+template class EnergyEsMarkov<std::complex<double>, std::complex<double>>;
 }
 

@@ -24,8 +24,10 @@ class Basis;
 
 // Base class for sampling, these objects take some input state and a Hamiltonian and generate
 // lists of potentially relevant determinants
+//template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
+template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
 class Sampler{
-public:
+  public:
   // explicit constructor
   Sampler(ExcitationGenerator const &eG_, detType const &HF, int numDets_= 100);
   // construct the ExcitationGenerator implicitly from the Hamiltonian
@@ -35,7 +37,7 @@ public:
   Sampler(ExcitationGenerator const &eG_, detType const &HF, Basis const &fullBasis, 
       int numDets_ = 100);
   virtual ~Sampler(){};
-  virtual Sampler* clone() const = 0;
+  virtual Sampler<F, coeffType>* clone() const = 0;
   // This function is what samplers ought to do: Get a random determinant with some
   // coefficient
   // the only way to parallelize this is to pass the iteration count, too

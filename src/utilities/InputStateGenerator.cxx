@@ -15,27 +15,27 @@
 #include "../Hamiltonian/TwoBodyHamiltonian.hpp"
 namespace networkVMC {
 
-template<typename T>
-InputStateGenerator<T>::InputStateGenerator(Sampler &msampler_, Hamiltonian const &H_, Parametrization<T> const &para_):
+template <typename F, typename coeffType>
+InputStateGenerator<F, coeffType>::InputStateGenerator(Sampler<F, coeffType> &msampler_, Hamiltonian const &H_, Parametrization<F, coeffType> const &para_):
 	msampler(msampler_), H(H_), para(para_){
 }
 
-template<typename T>
-InputStateGenerator<T>::~InputStateGenerator() {
+template <typename F, typename coeffType>
+InputStateGenerator<F, coeffType>::~InputStateGenerator() {
 }
 
-template<typename T>
-State InputStateGenerator<T>::generate(int numCons) const{
+template <typename F, typename coeffType>
+State<coeffType> InputStateGenerator<F, coeffType>::generate(int numCons) const{
 	// set up a state of the matching size
 	int numDets{msampler.getNumDets()};
 	// reset the sampler
 	msampler.reset();
-	State outputState(numDets);
+	State<coeffType> outputState(numDets);
   int accept(0);
 #pragma omp parallel
   {
 	// sampling is not threadsafe, so each thread creates it's own sampler
-     std::unique_ptr<Sampler> samplerThread(msampler.clone());
+     std::unique_ptr<Sampler<F, coeffType>> samplerThread(msampler.clone());
      //std::cout << "InputStateGenerator.cxx: # thread=" << omp_get_thread_num() << std::endl;
      //std::cout << "int cast cDet = " << verbatimCast(samplerThread->getDet()) << std::endl;
 
@@ -77,7 +77,7 @@ State InputStateGenerator<T>::generate(int numCons) const{
   return outputState;
 }
 
-template class InputStateGenerator<VecType>;
-template class InputStateGenerator<VecCType>;
+template class InputStateGenerator<double, double>;
+template class InputStateGenerator<std::complex<double>, std::complex<double>>;
 
 } /* namespace networkVMC */

@@ -30,19 +30,19 @@ int main(){
   detType HF=basis.getDetByIndex(0);
   RSHubbardExcitgen RSHG;
   //WeightedExcitgen weg(modelHam,HF);
-  //ListGen<VecCType> ugSampler(modelHam, basis, HF, rbm);
-  //ListGen<VecCType> ugSampler(RSHG, basis, HF, rbm);
+  //ListGen<std::complex<double>> ugSampler(modelHam, basis, HF, rbm);
+  //ListGen<std::complex<double>> ugSampler(RSHG, basis, HF, rbm);
   //ugSampler.setNumDets(100);
   EnergyEs eCF(modelHam, -1);
-  MetropolisSampler<VecCType> ugSampler(RSHG, HF, rbm);
+  MetropolisSampler<std::complex<double>> ugSampler(RSHG, HF, rbm);
   ugSampler.setNumDets(500);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
   double energy{0.0};
-  //AcceleratedGradientDescent<VecCType> sl(trainRate);
-  ADAM<VecCType> sl(trainRate);
-  //StochasticReconfiguration<VecCType> sl(rbm,trainRate);
-  Trainer<VecCType> ev(rbm, ugSampler, sl, eCF,modelHam);
+  //AcceleratedGradientDescent<std::complex<double>> sl(trainRate);
+  ADAM<std::complex<double>> sl(trainRate);
+  //StochasticReconfiguration<std::complex<double>> sl(rbm,trainRate);
+  Trainer<std::complex<double>> ev(rbm, ugSampler, sl, eCF,modelHam);
   ofstream myfile1;
   myfile1.open ("en2");
   for(int l(0); l<50000; ++l){

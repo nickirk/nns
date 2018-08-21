@@ -21,7 +21,7 @@ namespace networkVMC {
 // generic Hamiltonian on a lattice
 
 class LatticeHamiltonian: public Hamiltonian {
-public:
+  public:
 	// pass the dimensions of the lattice as variadic template arguments
 	// currently only square lattices are supported, but this might change
 	template<typename ...Args>

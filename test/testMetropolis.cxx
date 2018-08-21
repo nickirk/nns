@@ -53,7 +53,7 @@ double testL1Norm(std::vector<int> directSample,
   //std::REQUIRE(Z <= 5.);
   return Z;
 }
-std::vector<int> genDirectSample(Parametrization<VecCType> 
+std::vector<int> genDirectSample(Parametrization<std::complex<double>> 
     const &para, Basis const &basis, size_t nSweeps){
   // Setup the random bits
     std::random_device rd;
@@ -87,7 +87,7 @@ std::vector<int> genMarkovSample(Sampler &sampler,
     return count;
 }
 
-void runMetropolisTest(Parametrization<VecCType> const& para,
+void runMetropolisTest(Parametrization<std::complex<double>> const& para,
     Basis const& basis, Sampler &sampler, size_t nSweeps){
   std::vector<int> directSample = genDirectSample(para, basis, nSweeps);
   std::vector<int> markovSample = genMarkovSample(sampler, basis, nSweeps);
@@ -105,7 +105,7 @@ int main(){
   auto modelHam = generateDefaultHubbard(numSites);
   size_t nSweeps = std::max(1000 * basis.size(), size_t(10000));
   // The cost function does not matter, we only need the para to get the coeffs
-  DirectParametrization<VecCType> para(basis);
+  DirectParametrization<std::complex<double>> para(basis);
   // RBM para(numStates, numHidden);
 
   detType HF=basis.getDetByIndex(0);
@@ -113,22 +113,22 @@ int main(){
   // and the sampler
   // run 4 tests: one for the weighted Excitgen
   //WeightedExcitgen wEG(modelHam,HF);
-  //MetropolisSampler<VecCType> weightedSampler(wEG,HF, basis, para);
+  //MetropolisSampler<std::complex<double>> weightedSampler(wEG,HF, basis, para);
 
   for (int i(0); i<1000; ++i){
     // one for the RSHubbard
     //RSHubbardExcitgen hubbardEG{};
-    //MetropolisSampler<VecCType> hubSampler(hubbardEG,HF, basis, para);
+    //MetropolisSampler<std::complex<double>> hubSampler(hubbardEG,HF, basis, para);
     //std::cout << "Closeness for RSHubbardExcitgen: "<<  std::endl;
     //runMetropolisTest(para, basis, hubSampler, nSweeps);
     // one for RSHubbard via default initialization
-    //MetropolisSampler<VecCType> sampler(modelHam,HF, basis, para);
+    //MetropolisSampler<std::complex<double>> sampler(modelHam,HF, basis, para);
     //std::cout << "Closeness for RSHubbardExcitgen via default initialization: "<< std::endl;
     //runMetropolisTest(para, basis, sampler, nSweeps);
 
     ////// and one for the Uniform
     UniformExcitgen uniEG(HF);
-    MetropolisSampler<VecCType> ugSampler(uniEG, HF, basis, para);
+    MetropolisSampler<std::complex<double>> ugSampler(uniEG, HF, basis, para);
 
 
     std::cout << "Closeness for uniform EG: "<< std::endl;
