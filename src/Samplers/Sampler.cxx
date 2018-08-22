@@ -72,5 +72,8 @@ detType getRandomDeterminant(Basis const &fullBasis){
   auto randomDet = fullBasis.getDetByIndex(uni(rng));
   return randomDet; 
 }
+//instantiate them
+template class Sampler<double, double>;
+template class Sampler<std::complex<double>, std::complex<double>>;
 
 }

@@ -24,7 +24,6 @@ namespace networkVMC{
 
     coeffType getCoeff(detType const &det) const;
     T getDeriv(detType const &det) const;
-    T getMarkovDeriv(detType const &det) const;
     T const& pars() const;
     //T calcNablaPars(State<coeffType> const &input, T const &outerDerivative);
     //Eigen::Matrix<F, Dynamic, Dynamic> calcdCdwSR(State const &outputState);
@@ -41,7 +40,7 @@ namespace networkVMC{
     T pars_vec;
     Eigen::Map<T> a;
     Eigen::Map<T> b;
-    Eigen::Map<T> w;
+    Eigen::Map<Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>> w;
     };
 }
 

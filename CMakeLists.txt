@@ -32,10 +32,10 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 include_directories("${PROJECT_SOURCE_DIR}/lib/eigen")
 
 # get the boost installation
-#find_package(Boost 1.40 COMPONENTS regex REQUIRED)
+find_package(Boost 1.40 COMPONENTS regex REQUIRED)
 
 #include boost
-#include_directories(${Boost_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIR})
 
 # define the library
 add_library(networkVMC SHARED ${SOURCES})

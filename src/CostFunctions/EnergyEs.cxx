@@ -26,13 +26,15 @@ void EnergyEs<F, coeffType>::setUpCF(SamplerType const &sT){
 	switch(sT){
 	case Markov:
 		// for markov-type samplers, use EnergyEsMarkov
-		worker = DeepCpyUniquePtr<EnergyCFBaseClass<F, coeffType>>(new EnergyEsMarkov(H,numCons));
+		worker = DeepCpyUniquePtr<EnergyCFBaseClass<F, coeffType>>(new EnergyEsMarkov<F, coeffType>(H,numCons));
 		break;
 	case PreFetched:
 	default:
 		// by default, use the pre-fetched version (i.e. the 'normal')
-		worker = DeepCpyUniquePtr<EnergyCFBaseClass<F, coeffType>>(new EnergyEsPreFetched(H,numCons));
+		worker = DeepCpyUniquePtr<EnergyCFBaseClass<F, coeffType>>(new EnergyEsPreFetched<F, coeffType>(H,numCons));
 	}
 }
-
+//instantiate the templates
+template class EnergyEs<double, double>;
+template class EnergyEs<std::complex<double>, std::complex<double>>;
 } /* namespace networkVMC */

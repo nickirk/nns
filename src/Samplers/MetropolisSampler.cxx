@@ -17,12 +17,13 @@ namespace networkVMC{
 template <typename F, typename coeffType>
 MetropolisSampler<F, coeffType>::MetropolisSampler(ExcitationGenerator const &eG_, detType const &HF,
 			          Basis const &fullBasis_, Parametrization<F, coeffType> const &para_,
-                int numDets_ = 100):Sampler<F, coeffType>(eG_,HF,numDets_),para(&para_),
+                int numDets_):Sampler<F, coeffType>(eG_,HF,numDets_),para(&para_),
                 lastCoeff(para_.getCoeff(cDet)),fullBasis(&fullBasis_){};
+
 template <typename F, typename coeffType>
 MetropolisSampler<F, coeffType>::MetropolisSampler(Hamiltonian const &H_, detType const &HF,
                 Basis const &fullBasis_,Parametrization<F, coeffType> const &para_,
-                int numDets_ = 100):Sampler<F, coeffType>(H_,HF,numDets_),para(&para_),
+                int numDets_ ):Sampler<F, coeffType>(H_,HF,numDets_),para(&para_),
                 fullBasis(&fullBasis_),lastCoeff(para_.getCoeff(cDet)){};
 
 template <typename F, typename coeffType>

@@ -16,7 +16,7 @@ namespace networkVMC{
 // This gets the energy expectation value of the state 'input'
 template <typename F, typename coeffType>
 coeffType EnergyCF<F, coeffType>::evaluate(State<coeffType> const &input) const{
-  coeffType energyVal{0.0,0.0};
+  coeffType energyVal{0.0};
   normalizerCoeff=0.0;
   std::complex<double> normalizerCoeffComplex(0.,0.);
   double Hij(0.);
@@ -50,7 +50,7 @@ EnergyCF<F, coeffType>::T EnergyCF<F, coeffType>::nabla(State<coeffType> const &
   // works similar to computing the energy
   for (int i=0; i < numDets; ++i){
     F dEdC_i;
-    coeffType A(0.,0.);
+    coeffType A=0.;
     for (int j=0; j < numDets; ++j){
       coeffType c_j=input.coeff(j);
       // We add up the contributions to the derivative
@@ -66,10 +66,11 @@ EnergyCF<F, coeffType>::T EnergyCF<F, coeffType>::nabla(State<coeffType> const &
     // this cost function is really needed.
     //dEdC_i.real(2. * std::real( A*std::conj(std::complex<double>(1.,0.))));
     //dEdC_i.imag(2. * std::real( A*std::conj(std::complex<double>(0.0,1.0))));
-    dEdC.push_back(dEdC_i);
+    dEdC(i)=(dEdC_i);
   }
   return dEdC;
 }
-
+template class EnergyCF<double, double>;
+template class EnergyCF<std::complex<double>, std::complex<double>>;
 }
 

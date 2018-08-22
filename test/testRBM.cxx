@@ -18,19 +18,19 @@ int main(){
   double trainRate(0.005);
   double U{20}, t{-1};
   int numStates = numSites*2; 
-  //FermiHubbardHamiltonian modelHam(U,t,numSites);
+  FermiHubbardHamiltonian modelHam(U,t,numSites);
   //HeisenbergHamiltonian modelHam(-1.,false, numSites);
   //vector<detType> list;
   //generate hamiltonian
-  AbInitioHamiltonian modelHam(0);
-  std::string file_name = "FCIDUMP";
-  modelHam = readAbInitioHamiltonian(file_name,1);
-  numStates = modelHam.getNumOrbs();
+  //AbInitioHamiltonian modelHam(0);
+  //std::string file_name = "FCIDUMP";
+  //modelHam = readAbInitioHamiltonian(file_name,1);
+  //numStates = modelHam.getNumOrbs();
   //std::cout << "numStates=" << numStates << std::endl;
   SpinConfig spinConfig(spinUp, spinDown,numStates);// numStates);
   Basis basis(spinConfig,modelHam);
   std::cout << "basis size=" << basis.size() << std::endl;
-  RBM<std::complex<double>> rbm(numStates, numHidden);
+  RBM<std::complex<double>, std::complex<double>> rbm(numStates, numHidden);
   //DirectParametrization<std::complex<double>> rbm(basis);
 
   std::cout << "Initial vals of par=" << std::endl;

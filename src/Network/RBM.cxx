@@ -141,7 +141,7 @@ namespace networkVMC{
 
   //instantiate
   template class RBM<double, double>;
-  ;
+
   template class RBM<std::complex<double>, std::complex<double>>;
 
 }

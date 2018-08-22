@@ -19,12 +19,12 @@ class MetropolisSampler: public Sampler<F, coeffType> {
   public:
 	MetropolisSampler(ExcitationGenerator const &eG_, detType const &HF,
 			          Basis const &fullBasis_, Parametrization<F, coeffType> const &para_,
-                int numDets_ = 100):Sampler<F, coeffType>(eG_,HF,numDets_),para(&para_),
-                lastCoeff(para_.getCoeff(cDet)),fullBasis(&fullBasis_){};
+                int numDets_ = 100);//:Sampler<F, coeffType>(eG_,HF,numDets_),para(&para_),
+                //lastCoeff(para_.getCoeff(cDet)),fullBasis(&fullBasis_){};
 	MetropolisSampler(Hamiltonian const &H_, detType const &HF, 
                 Basis const &fullBasis_,Parametrization<F, coeffType> const &para_,
-                int numDets_ = 100):Sampler<F, coeffType>(H_,HF,numDets_),para(&para_),
-                fullBasis(&fullBasis_),lastCoeff(para_.getCoeff(cDet)){};
+                int numDets_ = 100);//:Sampler<F, coeffType>(H_,HF,numDets_),para(&para_),
+                //fullBasis(&fullBasis_),lastCoeff(para_.getCoeff(cDet)){};
 
   MetropolisSampler(MetropolisSampler<F, coeffType> const &source):
     Sampler<F, coeffType>(static_cast<Sampler<F, coeffType> const&>(source)){
