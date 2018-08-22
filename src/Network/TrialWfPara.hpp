@@ -29,10 +29,13 @@ public:
 	coeffType getCoeff(detType const &det) const;
 	// Obtain the inner derivative dX/dPars with given dX/dC (C are coefficients)
 	// delegated to basePara
-	T calcNablaPars(State const &input, nablaType const &outerDerivative);
+	T calcNablaParsConnected(State const &input, nablaType const &outerDerivative);
+	T calcNablaParsMarkovConnected(State const &input, nablaType const &outerDerivative);
 private:
 	DeepCpyUniquePtr<Parametrization<T> > basePara;
 	DeepCpyUniquePtr<Parametrization<T> const> trialWf;
+
+	nablaType scaleDerivative(State const &input, nablaType const &outerDerivative) const;
 };
 
 } /* namespace networkVMC */

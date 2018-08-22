@@ -17,9 +17,30 @@ coeffType TrialWfPara<T>::getCoeff(detType const &det) const{
 	return basePara->getCoeff(det)*trialWf->getCoeff(det);
 }
 
+//---------------------------------------------------------------------------//
+
 template<typename T>
-T TrialWfPara<T>::calcNablaPars(State const &input, nablaType const &outerDerivative){
-	nablaType scaledOuterDerivative = outerDerivative;
+T TrialWfPara<T>::calcNablaParsConnected(State const &input, nablaType const &outerDerivative){
+	auto scaledOuterDerivative = scaleDerivative(input,outerDerivative);
+
+	// then, add the inner derivative
+	return basePara->calcNablaParsConnected(input, scaledOuterDerivative);
+}
+
+//---------------------------------------------------------------------------//
+
+template<typename T>
+T TrialWfPara<T>::calcNablaParsMarkovConnected(State const &input, nablaType const &outerDerivative){
+	auto scaledOuterDerivative = scaleDerivative(input,outerDerivative);
+
+	// then, add the inner derivative
+	return basePara->calcNablaParsMarkovConnected(input, scaledOuterDerivative);
+}
+
+//---------------------------------------------------------------------------//
+
+template<typename T>
+nablaType TrialWfPara<T>::scaleDerivative(State const &input, nablaType const &outerDerivative) const{
 	// scale the outerDerivative with the trial WF
 
 	// number of dets in input
@@ -33,7 +54,7 @@ T TrialWfPara<T>::calcNablaPars(State const &input, nablaType const &outerDeriva
 
 	// first, the derivative w.r. to sampled coeffs
 	for(size_t i = 0; i < numDets; ++i){
-		scaledOuterDerivative[i] /= trialWf->getCoeff(input.det(i));
+		outerDerivative[i] *= trialWf->getCoeff(input.det(i));
 	}
 
 	// then w.r. to the connected coeffs
@@ -43,12 +64,11 @@ T TrialWfPara<T>::calcNablaPars(State const &input, nablaType const &outerDeriva
 		cDets = input.coupledDets(i);
 		for(size_t j = 0; j < cDets.size(); ++j){
 			pos = input.locate(i);
-			scaledOuterDerivative[j+numDets+pos] /= trialWf->getCoeff(cDets[j]);
+			outerDerivative[j+numDets+pos] *= trialWf->getCoeff(cDets[j]);
 		}
 	}
 
-	// then, add the inner derivative
-	return basePara->calcNablaPars(input, scaledOuterDerivative);
+	return outerDerivative;
 }
 
 // instantiate template classes
