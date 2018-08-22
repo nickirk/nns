@@ -49,7 +49,7 @@ int main(){
 	auto baseNabla = network.calcNablaPars(singleDet,outerDerivative);
 
 	for(size_t i = 0; i < nabla.size(); ++i){
-		assert( std::abs(baseNabla(i)/trial.getCoeff(singleDet.det(0)) - nabla(i)) < epsilon);
+		assert( std::abs(baseNabla(i)*trial.getCoeff(singleDet.det(0)) - nabla(i)) < epsilon);
 	}
 
 	// try something more involved
