@@ -45,8 +45,6 @@ class TrialWfPara: public ClonableParametrization<F, coeffType, TrialWfPara<F, c
 	coeffType getCoeff(detType const &det) const;
 	// Obtain the inner derivative dX/dPars with given dX/dC (C are coefficients)
 	// delegated to basePara
-	// comment out first to test template implementation, will have a look later. Liao
-	//T calcNablaPars(State<coeffType> const &input, T const &outerDerivative);
 private:
 	DeepCpyUniquePtr<Parametrization<F, coeffType> > basePara;
 	DeepCpyUniquePtr<Parametrization<F, coeffType> const> trialWf;
