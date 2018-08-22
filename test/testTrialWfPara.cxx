@@ -14,25 +14,16 @@ using namespace networkVMC;
 
 int main(){
 	int numSites = 4;
-	int numStates = numSites*2;
 	int nHidden = 8;
-	int spinUp = 2;
-	int spinDown = 2;
-	AbInitioHamiltonian modelHam(0);
-	std::string file_name = "FCIDUMP";
-	modelHam = readAbInitioHamiltonian(file_name,1);
-	numStates = modelHam.getNumOrbs();
-	SpinConfig spinConfig(spinUp, spinDown,numStates);// numStates);
-	Basis basis(spinConfig,modelHam);
+	auto twfBasis = generateDefaultBasis(numSites);
 	// do a simple test of the TrialWfPara with
 	// an RBM as a base para
-	RBM<> network(numStates,nHidden);
-	auto HF = basis.getDetByIndex(0);
+	RBM<> network(numSites*2,nHidden);
+	auto HF = twfBasis.getDetByIndex(0);
 
-	// and another para as a trial WF
-    auto trial = network;
-    // but read the parameters from file
-    trial.readParsFromFile("Parameters.dat");
+	// and a linear parametrization as a trial WF
+	auto trial = DirectParametrization<std::complex<double>>(twfBasis);
+
 	TrialWfPara<std::complex<double>> twfPara(network,trial);
 
 	// first compare the coefficients of the base*trial with that of the TrialWfPara
@@ -47,8 +38,7 @@ int main(){
 	singleDet.coupledDets(0) = std::vector<detType>(0,HF);
 	singleDet.coupledCoeffs(0) = std::vector<cType>(0,1.0);
 
-	Eigen::VectorXcd outerDerivative(1);
-	outerDerivative << cType(1., 0.);
+	auto outerDerivative = Eigen::VectorXcd(cType(1,1.0));
 
 	auto nabla = twfPara.calcNablaParsConnected(singleDet,outerDerivative);
 
@@ -56,7 +46,7 @@ int main(){
 	assert(nabla.size() == network.pars().size());
 
 	// and check if the derivative has the correct values
-	auto baseNabla = network.calcNablaParsConnected(singleDet,outerDerivative);
+	auto baseNabla = network.calcNablaPars(singleDet,outerDerivative);
 
 	for(size_t i = 0; i < nabla.size(); ++i){
 		assert( std::abs(baseNabla(i)/trial.getCoeff(singleDet.det(0)) - nabla(i)) < epsilon);
