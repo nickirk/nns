@@ -35,7 +35,7 @@ class Trainer {
 public:
 // supply a Parametrization, a sampler, a solver and the cost function
 	using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
-	Trainer(Parametrization<F, coeffType> &NNW_, Sampler<F, coeffType> &msampler,
+	Trainer(Parametrization<F, coeffType> &NNW_, Sampler<coeffType> &msampler,
 			Solver<F, coeffType> &sl_, CostFunction<F, coeffType> &cf_, Hamiltonian const &H_);
 // train() tries to optimize the parameters of the NNW with respect to its cost function
 	void train();
@@ -57,7 +57,7 @@ private:
 	Parametrization<F, coeffType> &NNW;
 	// the sampler generating the random states (changes its state
 	// when sampling)
-	Sampler<F, coeffType> &msampler;
+	Sampler<coeffType> &msampler;
 	// the solver that optimizes the parameters (changes its parameters)
 	Solver<F, coeffType> &sl;
 	// The cost function with respect to which we optimize (is set up to fit the sampler)

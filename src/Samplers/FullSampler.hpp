@@ -15,7 +15,7 @@ namespace networkVMC {
 // This sampler does not sample: It loops over all determinants
 // and returns them one-by-one
 template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
-class FullSampler: public Sampler<F, coeffType> {
+class FullSampler: public Sampler<coeffType> {
   public:
 	FullSampler(ExcitationGenerator const &eG_, Basis const &fullBasis_,
 			Parametrization<F, coeffType> const &para_);
@@ -30,7 +30,7 @@ private:
   // sampling depends on the coefficients, as they have to be given alongside the determinants
     Parametrization<F, coeffType> const *para;
     Basis const *fullBasis;
-    using Sampler<F, coeffType>::numDets;
+    using Sampler<coeffType>::numDets;
 };
 
 } /* namespace networkVMC */

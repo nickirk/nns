@@ -82,7 +82,6 @@ class Parametrization {
 //   The following features are experimental and not essential to the interface
     // Some other derivative
   // The following function is used when use ListGen or fullSampler
-  template <typename F, typename coeffType>
   T calcNablaParsConnected(
     State<coeffType> const &inputState,
     T const &dEdC
@@ -93,8 +92,8 @@ class Parametrization {
       int numPars=getNumPars();
       T dEdW= T::Zero(numPars);
       // T dEdWTmp= T::Zero(numPars);
-      Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic> dCdW = Eigen::MatrixXcd::Zero(numPars, spaceSize);
-      std::vector<std::complex<double>> dedc=dEdC;
+      Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic> dCdW = Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>::Zero(numPars, spaceSize);
+      //std::vector<std::complex<double>> dedc=dEdC;
         #pragma omp for
         // fill up the matrix of dCdW, like in EnergyEsMarkov.cxx
         // reserve space and in the end use matrix*vector instead of
@@ -123,9 +122,9 @@ class Parametrization {
           }
         }
       // map std::vector of dEdC to Eigen Vector
-      T dEdCEigen=Eigen::Map<T>(dedc.data(),spaceSize);
+      //T dEdCEigen=Eigen::Map<T>(dedc.data(),spaceSize);
       // make it parallel. TODO
-      dEdW = (dCdW * dEdCEigen);//.conjugate();
+      dEdW = (dCdW * dEdC);//.conjugate();
       return dEdW;
     }
 
@@ -150,7 +149,7 @@ class Parametrization {
         // multiplication should be done by matrix vector product
         // fill up the dCdW matrix
         dCdW.col(i) << (dCtdW.conjugate());
-        dEdW -= energy * dCtdW.conjugate()/numDets;
+        dEdW -= energy * dCtdW.conjugate()/ inputState.getTotalWeights();
         //dedc[i] = 1;
         std::vector<detType> coupledDets = inputState.coupledDets(i);
         std::vector<coeffType> coupledCoeffs = inputState.coupledCoeffs(i);
@@ -162,10 +161,6 @@ class Parametrization {
           //dEdWTmp +=  dCtdW * dEdC[pos];
         }
       }
-      // map std::vector of dEdC to Eigen Vector
-      //T dEdCEigen=Eigen::Map<T>(dedc.data(),spaceSize);
-      // make it parallel. TODO
-      //dEdW += (dCdW * dEdCEigen);//.conjugate();
       dEdW += (dCdW * dEdC);//.conjugate();
       return dEdW;
     }

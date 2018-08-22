@@ -15,7 +15,7 @@ namespace networkVMC{
 template <typename F, typename coeffType>
 ListGen<F, coeffType>::ListGen(ExcitationGenerator const &eG_, Basis const &fullBasis_, detType const &HF,
 		Parametrization<F, coeffType> const &para_, int numDets_):
-	Sampler<F, coeffType>(eG_,HF,numDets_),para(&para_),pos(0),fullBasis(&fullBasis_){
+	Sampler<coeffType>(eG_,HF,numDets_),para(&para_),pos(0),fullBasis(&fullBasis_){
 	std::vector<detType> tmp(numDets_,HF);
 	diffuse(tmp);
 }
@@ -25,7 +25,7 @@ ListGen<F, coeffType>::ListGen(ExcitationGenerator const &eG_, Basis const &full
 template <typename F, typename coeffType>
 ListGen<F, coeffType>::ListGen(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
 		Parametrization<F, coeffType> const &para_, int numDets_):
-	Sampler<F, coeffType>(H_,HF,numDets_),para(&para_),pos(0),fullBasis(&fullBasis_){
+	Sampler<coeffType>(H_,HF,numDets_),para(&para_),pos(0),fullBasis(&fullBasis_){
 	std::vector<detType> tmp(numDets_,HF);
 	diffuse(tmp);
 }
@@ -105,7 +105,7 @@ void ListGen<F, coeffType>::diffuse(std::vector<detType> &list) const{
  for (size_t i = 0; i<list.size(); ++i){
   prandom = uni(rng);
    c_i=para->getCoeff(list[i]);
-   buf = Sampler<F,coeffType>::getRandomConnection(list[i],pEx);
+   buf = Sampler<coeffType>::getRandomConnection(list[i],pEx);
    //buf = getRandomDeterminant(spinConfig);
    c_j=para->getCoeff(buf);
    //getRandomCoupledState(buf,probUnbias);
@@ -117,13 +117,6 @@ void ListGen<F, coeffType>::diffuse(std::vector<detType> &list) const{
  diffuseList = list;
 }
 
-//---------------------------------------------------------------------------------------------------//
-
-template <typename F, typename coeffType>
-void ListGen<F, coeffType>::resetSpecs(){
-	// roll back the state to the initial one
-	pos = 0;
-}
 
 //---------------------------------------------------------------------------//
 //instantiate class

@@ -19,7 +19,7 @@ int main(){
   auto modelHam = generateDefaultHubbard(numSites);
   auto basis = generateDefaultBasis(numSites);
 // Cost function setup
-  EnergyEs eCF(modelHam);
+  EnergyEs<> eCF(modelHam);
 
 // Solver setup
   double trainRate(0.001);

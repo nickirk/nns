@@ -19,7 +19,7 @@ namespace networkVMC{
 template <typename F, typename coeffType>
 coeffType EnergyEsMarkov<F, coeffType>::evaluate(State<coeffType> const &input) const{
   coeffType energyVal=0.;
-  normalizerCoeff=0.0;
+  //normalizerCoeff=input.getTotalWeights();
   int numDets = input.size();
   //#pragma omp parallel for reduction(+:energyVal)
   for (int i=0; i < numDets; ++i){
@@ -29,22 +29,19 @@ coeffType EnergyEsMarkov<F, coeffType>::evaluate(State<coeffType> const &input) 
     std::vector<detType> coupledDets = input.coupledDets(i);
     std::vector<double> coupledWeights = input.coupledWeights(i);
     size_t coupledSize = coupledC_j.size();
-    Hij = H(input.det(i), input.det(i));
+    Hij = H(input.det(i), input.det(i)) * input.weight(i);
     energyVal += Hij;
-    //std::cout << "EnergyEsMarkov.cxx: coupledSize=" << coupledSize << std::endl;
-    coeffType energyValTmp=0.;
     for (size_t j=0; j < coupledSize; ++j){
-      //std::cout << "EnergyEsMarkov.cxx: coupledWeights[j]=" << coupledWeights[j] << std::endl;
-        // don't forget to unbias using the Pgen. TODO
-      Hij = H(input.det(i), coupledDets[j]);
-      energyValTmp += coupledC_j[j]* Hij / (c_i * (coupledWeights[j] * coupledSize));
+      // weight it with |T_i|^2, weight(i)
+      Hij = H(input.det(i), coupledDets[j]) * input.weight(i);
       energyVal += coupledC_j[j]* Hij / (c_i * (coupledWeights[j] * coupledSize));
       //std::cout << "EnergyEsMarkov.cxx: cj/ci =" << coupledC_j[j]/c_i << std::endl;
       //std::cout << "EnergyEsMarkov.cxx: Hij =" << Hij << std::endl;
     }
-
   }
-  energyVal /= numDets;
+  // devide by total weights
+  std::cout << "EnergyEsMarkov.cxx: totalweights=" << input.getTotalWeights() << std::endl;
+  energyVal /= input.getTotalWeights();
   return energyVal;
 }
 
@@ -62,27 +59,27 @@ EnergyEsMarkov<F, coeffType>::T EnergyEsMarkov<F, coeffType>::nabla(State<coeffT
   #pragma omp parallel for
   for (int i=0; i < numDets; ++i){
     coeffType c_i = input.coeff(i);
-//  put all the weighting step here instead of inside of RBM
-    F dEdCtmp = (H(input.det(i), input.det(i)));
-    // add weights
-    dEdC(i) = dEdCtmp / static_cast<double>(numDets);
+    // put all the weighting step here instead of inside of RBM
+    F dEdCtmp = (H(input.det(i), input.det(i))) * input.weight(i);
+    // divide by  totalWeights
+    dEdC(i) = dEdCtmp / input.getTotalWeights();
     std::vector<coeffType> coupledC_j = input.coupledCoeffs(i);
     std::vector<detType> coupledDets = input.coupledDets(i);
     std::vector<double> coupledWeights = input.coupledWeights(i);
     size_t coupledSize = coupledDets.size();
-   int pos=input.locate(i);
-   for (size_t j=0; j < coupledSize; ++j){
-     if (input.det(i)==coupledDets[j]){ 
-       std::cout << "EnergyEsMarkov.cxx: Stop!" << std::endl;
-       abort;
-     }
-     // in the excitgen, the weight should be updated with pgen
-     dEdCtmp = H(input.det(i),coupledDets[j])* coupledC_j[j]/(c_i *
-    		 (coupledWeights[j] * coupledSize ));
-     // unbias with numCoupledDets and Pgen
-      dEdC(numDets+pos+j)=dEdCtmp / static_cast<double>(numDets);
+    int pos=input.locate(i);
+    for (size_t j=0; j < coupledSize; ++j){
+      if (input.det(i)==coupledDets[j]){
+        std::cout << "EnergyEsMarkov.cxx: Stop!" << std::endl;
+        abort;
+      }
+      // weight
+      dEdCtmp = H(input.det(i),coupledDets[j])* coupledC_j[j] * input.weight(i)
+				/(c_i * (coupledWeights[j] * coupledSize ));
+      // divided by totalWeights
+      dEdC(numDets+pos+j)=dEdCtmp / input.getTotalWeights();
     }
-  }
+   }
   // dEdC is stored as folllowing:
   // |c_0|c_1|...|c_{numDets-1}|c_0^{0}|c_0^{1}|...|c_0^{coupledSize-1}|c_1^{0}
   // |c..|c_{numDets-1}^{0}|...|c_{numDets-1}^{coupledSize-1}|

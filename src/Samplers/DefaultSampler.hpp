@@ -14,7 +14,7 @@ namespace networkVMC {
 
 // This is just the Default sampler made accessible
 template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
-class DefaultSampler : public Sampler{
+class DefaultSampler : public Sampler<coeffType>{
   public:
 	// It works like the abstract base class, just that it can iterate
     DefaultSampler(ExcitationGenerator const &eG_, Basis const &fullBasis_, detType const &HF,

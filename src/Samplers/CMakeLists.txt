@@ -1,1 +1,1 @@
-add_sources(FullSampler.cxx ListGen.cxx MetropolisSampler.cxx Sampler.cxx)
+add_sources(FullSampler.cxx ListGen.cxx MetropolisSampler.cxx Sampler.cxx UmbrellaSampler.cxx)

@@ -24,6 +24,7 @@ namespace networkVMC{
      //pars_vec.real() = T::Ones(numPars)*0.01;
      //pars_vec.imag() = T::Ones(numPars)*0.01;
      pars_vec.setRandom(numPars);
+     pars_vec.normalize();
      // pars_vec.real() = pars_vec.real().unaryExpr(&NormalDistribution);
      // pars_vec.imag() = pars_vec.imag().unaryExpr(&NormalDistribution);
      //a.setZero();

@@ -17,13 +17,13 @@ namespace networkVMC{
 template <typename F, typename coeffType>
 MetropolisSampler<F, coeffType>::MetropolisSampler(ExcitationGenerator const &eG_, detType const &HF,
 			          Basis const &fullBasis_, Parametrization<F, coeffType> const &para_,
-                int numDets_):Sampler<F, coeffType>(eG_,HF,numDets_),para(&para_),
+                int numDets_):Sampler<coeffType>(eG_,HF,numDets_),para(&para_),
                 lastCoeff(para_.getCoeff(cDet)),fullBasis(&fullBasis_){};
 
 template <typename F, typename coeffType>
 MetropolisSampler<F, coeffType>::MetropolisSampler(Hamiltonian const &H_, detType const &HF,
                 Basis const &fullBasis_,Parametrization<F, coeffType> const &para_,
-                int numDets_ ):Sampler<F, coeffType>(H_,HF,numDets_),para(&para_),
+                int numDets_ ):Sampler<coeffType>(H_,HF,numDets_),para(&para_),
                 fullBasis(&fullBasis_),lastCoeff(para_.getCoeff(cDet)){};
 
 template <typename F, typename coeffType>
@@ -35,21 +35,18 @@ MetropolisSampler<F, coeffType>::~MetropolisSampler() {
 template <typename F, typename coeffType>
 void MetropolisSampler<F, coeffType>::iterate(coeffType &cI, detType &dI, double &weight,
     int i){
-  weight = 1;
-	// and then get the one for the next one - this way we ensure the first iterate() call
-	// returns the starting point
 	// set up the rng
   RNGWrapper rng;
-	// forward- and backwards generation probabilities
-	double pEx, pBack;
-	// First, get a random coupled determinant (from cDet)
+  // forward- and backwards generation probabilities
+  double pEx, pBack;
+  // First, get a random coupled determinant (from cDet)
   // need to unbias for excitgen
-	// And its coefficient
+  // And its coefficient
   // std::norm returns |a+ib|^2
   // double prob = std::norm(tmpCoeff)/std::norm(lastCoeff);
   detType tmp;
   double prob(0.);
-	coeffType tmpCoeff;
+  coeffType tmpCoeff;
   double probRand =std::max(100*std::pow(0.9,i), 0.);
   if (rng() < probRand) {
     tmp = getRandomDeterminant(*fullBasis);
@@ -60,8 +57,8 @@ void MetropolisSampler<F, coeffType>::iterate(coeffType &cI, detType &dI, double
     pBack = 1.;
   }
   else {
-    tmp=Sampler<F, coeffType>::getRandomConnection(cDet,pEx);
-	  pBack = Sampler<F, coeffType>::getConnectionProb(tmp,cDet);
+    tmp=Sampler<coeffType>::getRandomConnection(cDet,pEx);
+	pBack = Sampler<coeffType>::getConnectionProb(tmp,cDet);
   }
   tmpCoeff = para->getCoeff(tmp);
   //coeffType tmpCoeffDeref;
@@ -72,7 +69,7 @@ void MetropolisSampler<F, coeffType>::iterate(coeffType &cI, detType &dI, double
   //else lastCoeffDeref=std::(0.5,2);
 	// And its coefficient
 	// unbiasing with generation probability in principle necessary (unless prob. is symmetric)
-	pBack = Sampler<F, coeffType>::getConnectionProb(tmp,cDet);
+  pBack = Sampler<coeffType>::getConnectionProb(tmp,cDet);
   //std::cout << "MetropolisSampler.cxx: uni(rng)=" << p << std::endl;
   //std::cout << "MetropolisSampler.cxx: pJump=" << std::norm(tmpCoeff/lastCoeff)*pBack/pEx << std::endl;
 
@@ -87,6 +84,7 @@ void MetropolisSampler<F, coeffType>::iterate(coeffType &cI, detType &dI, double
 	// assign the output from the previous iteration
 	cI = lastCoeff;
 	dI = cDet;
+	weight =1.;
 }
 //instantiate class
 template class MetropolisSampler<double, double>;

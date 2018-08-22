@@ -25,6 +25,21 @@ class TrialWfPara: public ClonableParametrization<F, coeffType, TrialWfPara<F, c
 
 	// return of the parameters is delegated to basePara
 	T const& pars() const {return basePara->pars();}
+	coeffType getBaseCoeff(detType const &det) const;
+	coeffType getTrialCoeff(detType const &det) const;
+
+	Parametrization<F, coeffType> const &base() const{return *basePara;}
+	T calcNablaParsConnected(
+	    State<coeffType> const &inputState,
+	    T const &dEdC){
+		return basePara->calcNablaParsConnected(inputState, dEdC);
+	}
+
+	T calcNablaParsMarkovConnected(
+			State<coeffType> const &inputState,
+	        T const& dEdC, F const& energy){
+		return basePara->calcNablaParsMarkovConnected(inputState, dEdC, energy);
+	}
 
 	// get the coefficient
 	coeffType getCoeff(detType const &det) const;

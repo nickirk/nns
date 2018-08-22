@@ -27,7 +27,7 @@ class State{
     storedDets(std::vector<detType>(0)), 
     storedCoeffs(std::vector<coeffType>(0)),
     storedWeights(std::vector<double>(0)), 
-    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0){};
+    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0), totalWeights(0.){};
 
 	State(int size_):State(){resize(size_);}
 
@@ -35,12 +35,12 @@ class State{
 	storedDets(std::vector<detType>(1,det_)),
     storedCoeffs(std::vector<coeffType>(1,coeff_)),
     storedWeights(std::vector<double>(1,1)),
-    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0){};
+    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0), totalWeights(0.){};
 	State( std::vector<detType> const &dets_, 
          std::vector<coeffType> const &coeffs_
          ):
     storedDets(dets_),storedCoeffs(coeffs_), storedWeights(coeffs_.size(),1),
-    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0){
+    fSortedCoeff(0), fSortedDet(0), fSortedWeight(0), totalWeights(0.){
 		// A state has to have one coefficient per determinant
 		// one might argue that supplying less coefficient should be fine and that
 		// the rest should be filled with zeroes, we might change that
@@ -56,6 +56,12 @@ class State{
 	detType const& det(int i) const{return storedDets[i];}
 	coeffType const& coeff(int i) const{return storedCoeffs[i];}
 	double const& weight(int i) const{return storedWeights[i];}
+	// getter for total Weights
+	double const& getTotalWeights() const{return totalWeights;};
+	// accumulate weights for normalization, remember to reset it to 0 in constructor;
+	void addTotalWeights(double weightI){ totalWeights += weightI;}
+	// function to reset the totalWeights
+	void resetTotalWeights(){totalWeights = 0.;}
 
 	// implement the non-const version via the const version
 	detType& det(int i) {
@@ -176,6 +182,8 @@ private:
 	std::vector<detType> storedDets;
 	std::vector<coeffType> storedCoeffs;
     std::vector<double> storedWeights;
+
+    double totalWeights;
    
   // util of flags
     bool fSortedCoeff;

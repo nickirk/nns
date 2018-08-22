@@ -16,6 +16,18 @@ coeffType TrialWfPara<F, coeffType>::getCoeff(detType const &det) const{
 	// the coefficient is the product of trial wf and parametrized coeff
 	return basePara->getCoeff(det)*trialWf->getCoeff(det);
 }
+
+template <typename F, typename coeffType>
+coeffType TrialWfPara<F, coeffType>::getBaseCoeff(detType const &det) const{
+	// the coefficient is the product of trial wf and parametrized coeff
+	return basePara->getCoeff(det);
+}
+
+template <typename F, typename coeffType>
+coeffType TrialWfPara<F, coeffType>::getTrialCoeff(detType const &det) const{
+	// the coefficient is the product of trial wf and parametrized coeff
+	return trialWf->getCoeff(det);
+}
 /*
 template <typename F, typename coeffType>
 TrialWfPara<F, coeffType>::T TrialWfPara<F, coeffType>::calcNablaPars(State<coeffType> const &input, T const &outerDerivative){
@@ -53,6 +65,5 @@ TrialWfPara<F, coeffType>::T TrialWfPara<F, coeffType>::calcNablaPars(State<coef
 */
 // instantiate template classes
 template class TrialWfPara<double, double>;
-;
 template class TrialWfPara<std::complex<double>, std::complex<double>>;
 } /* namespace networkVMC */

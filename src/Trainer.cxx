@@ -19,7 +19,7 @@ namespace networkVMC{
 
 // TODO: Add more constructors, with default arguments
 template <typename F, typename coeffType>
-Trainer<F, coeffType>::Trainer(Parametrization<F, coeffType> &NNW_, Sampler<F, coeffType> &msampler_,
+Trainer<F, coeffType>::Trainer(Parametrization<F, coeffType> &NNW_, Sampler<coeffType> &msampler_,
 		Solver<F, coeffType> &sl_, CostFunction<F, coeffType> &cf_, Hamiltonian const& H_):
 		modelHam(H_),NNW(NNW_), msampler(msampler_),sl(sl_),
 		// here, we make sure that the cost function and the

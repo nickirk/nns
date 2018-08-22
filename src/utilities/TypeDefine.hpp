@@ -18,7 +18,7 @@ namespace networkVMC{
 // We eventually want to use complex, but the current version uses VectorXd
 // Only keep it as long as nececcary in this stage
 // Typedef for coefficients
-//using coeffType = std::complex<double>;
+using cType = std::complex<double>;
 using detType = std::vector<bool>;
 // the weightType and biasType will be eventually removed to be consistent with
 // the template implementation.

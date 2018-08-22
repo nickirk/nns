@@ -32,11 +32,14 @@ void StochasticReconfiguration<F, coeffType>::update(T &w, T const &force,
 	  for(std::size_t i = 0; i<numDets; ++ i){
       // the derivatives differ in different sampling schemes
       dCdWk=NNW.getMarkovDeriv(input.det(i));
-      OkOkp += (dCdWk*dCdWk.adjoint()).adjoint();
-      Ok += dCdWk;
+      // weight OkOk and Ok
+      OkOkp += (dCdWk*dCdWk.adjoint()).adjoint() * input.weight(i);
+      Ok += dCdWk * input.weight(i);
 	  }
-    OkOkp /= static_cast<double>(numDets);
-    Ok /= static_cast<double>(numDets);
+    //OkOkp /= static_cast<double>(numDets);
+    //Ok /= static_cast<double>(numDets);
+    OkOkp /= input.getTotalWeights();
+    Ok /= input.getTotalWeights();
     //std::cout << "StochasticReconfiguration.cxx: OkOkp=" << std::endl;
     //std::cout << OkOkp << std::endl;
     break;
@@ -59,7 +62,7 @@ void StochasticReconfiguration<F, coeffType>::update(T &w, T const &force,
   // default hyperparameters tested with small Hubbard models,
   // no guarantee that they work for other systems. 
   // More tests should be run to observe the performace of these parameters
-  double lambda = std::max(100*std::pow(0.9,iteration), 5.);
+  double lambda = std::max(100*std::pow(0.9,iteration), 1.);
   T I = T::Ones(numPars);
   //std::cout << "I=" << I  << std::endl; 
   // Add \epsilon * I to S matrix to prevent ill inversion of the S matrix.

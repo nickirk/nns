@@ -43,6 +43,6 @@ void ADAM<F, coeffType>::update(T &w, T const &force, State<coeffType> const &in
 }
 //instatiate class
 template class ADAM<std::complex<double>, std::complex<double>>;
-;
+
 template class ADAM<double, double>;
 } /* namespace networkVMC */

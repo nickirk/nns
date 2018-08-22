@@ -9,7 +9,6 @@ endmacro()
 
 # add the executables
 cadd_test(testAbInitioHam)
-cadd_test(testAlg)
 cadd_test(testBasis)
 cadd_test(testCF)
 cadd_test(testDet)

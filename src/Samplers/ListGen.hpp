@@ -12,7 +12,7 @@
 
 namespace networkVMC{
 template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
-class ListGen : public Sampler<F, coeffType>{
+class ListGen : public Sampler<coeffType>{
   public:
 	ListGen(ExcitationGenerator const &eG_, Basis const &fullBasis_, detType const &HF,
 			Parametrization<F, coeffType> const &para_, int numDets_=100);
@@ -28,8 +28,6 @@ class ListGen : public Sampler<F, coeffType>{
 	virtual detType getDet(int i) const;
 	virtual detType getDet() const;
     virtual int getNumDets() const;
-
-    void resetSpecs();
 private:
 	mutable std::vector<detType > diffuseList;
   // sampling depends on the coefficients, as they have to be given alongside the determinants
@@ -38,7 +36,7 @@ private:
     // and the corresponding basis including the information on the number of electrons
 	// with a given spin
 	Basis const *fullBasis;
-    using Sampler<F, coeffType>::numDets;
+    using Sampler<coeffType>::numDets;
 };
 
 }

@@ -25,7 +25,7 @@ class Basis;
 // Base class for sampling, these objects take some input state and a Hamiltonian and generate
 // lists of potentially relevant determinants
 //template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
-template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
+template <typename coeffType=std::complex<double>>
 class Sampler{
   public:
   // explicit constructor
@@ -37,7 +37,7 @@ class Sampler{
   Sampler(ExcitationGenerator const &eG_, detType const &HF, Basis const &fullBasis, 
       int numDets_ = 100);
   virtual ~Sampler(){};
-  virtual Sampler<F, coeffType>* clone() const = 0;
+  virtual Sampler<coeffType>* clone() const = 0;
   // This function is what samplers ought to do: Get a random determinant with some
   // coefficient
   // the only way to parallelize this is to pass the iteration count, too
@@ -53,14 +53,7 @@ class Sampler{
   // Setters for various properties
   // set the starting point
   virtual void setReference(detType const &start){cDet = start;}
-  // reset the state of the sampler to the original one
-  void reset(){
-	  // important: first reset cDet
-	  cDet = originalRef;
-	  // then let the child class do its stuff, so it
-	  // can use the reset cDet
-	  resetSpecs();
-  };
+
   // set the number of sampled dets
   virtual void setNumDets(int newNum){numDets=newNum;}
   // get the number of dets
@@ -70,7 +63,6 @@ class Sampler{
   virtual SamplerType type() const {return PreFetched;}
   friend void swap(Sampler &a, Sampler &b){
     std::swap(a.excitGen,b.excitGen);
-    std::swap(a.originalRef,b.originalRef);
     std::swap(a.numDets,b.numDets);
     std::swap(a.cDet,b.cDet);
   }
@@ -88,10 +80,6 @@ private:
   mutable DeepCpyUniquePtr<ExcitationGenerator> excitGen;
   // is mutable because the excitation generator changes its behaviour
   // over iterations, but this is not visible outisde
-  // the origignal reference
-  detType originalRef;
-  // here, the child classes can do additional resets
-  virtual void resetSpecs(){};
 protected:
   int numDets;
   // this is the current sample in terms of determinants

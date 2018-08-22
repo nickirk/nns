@@ -14,18 +14,18 @@ int main(){
   int numSites(4);
   int spinUp(2);
   int spinDown(2);
-  int numHidden(4);
+  int numHidden(12);
   double trainRate(0.005);
-  double U{20}, t{-1};
-  int numStates = numSites*2; 
-  FermiHubbardHamiltonian modelHam(U,t,numSites);
+  double U{4}, t{-1};
+  int numStates = numSites*2;
+  //FermiHubbardHamiltonian modelHam(U,t,numSites);
   //HeisenbergHamiltonian modelHam(-1.,false, numSites);
   //vector<detType> list;
   //generate hamiltonian
-  //AbInitioHamiltonian modelHam(0);
-  //std::string file_name = "FCIDUMP";
-  //modelHam = readAbInitioHamiltonian(file_name,1);
-  //numStates = modelHam.getNumOrbs();
+  AbInitioHamiltonian modelHam(0);
+  std::string file_name = "FCIDUMP";
+  modelHam = readAbInitioHamiltonian(file_name,1);
+  numStates = modelHam.getNumOrbs();
   //std::cout << "numStates=" << numStates << std::endl;
   SpinConfig spinConfig(spinUp, spinDown,numStates);// numStates);
   Basis basis(spinConfig,modelHam);
@@ -58,7 +58,7 @@ int main(){
   //std::cout << "reading rbm pars from file..." << std::endl;
   //rbm.readParsFromFile("Parameters.dat");
   for(int l(0); l<10000; ++l){
-    trainRate = std::max(0.002*std::pow(0.999,l), 0.0001);
+    trainRate = std::max(0.001*std::pow(0.999,l), 0.0001);
     ev.train(trainRate);
     // get the new energy
     energy = ev.getE();

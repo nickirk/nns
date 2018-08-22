@@ -20,34 +20,34 @@
 namespace networkVMC{
 
 // explicit constructor
-template <typename F, typename coeffType>
-Sampler<F, coeffType>::Sampler(ExcitationGenerator const &eG_,
+template <typename coeffType>
+Sampler<coeffType>::Sampler(ExcitationGenerator const &eG_,
 		  detType const &HF, int numDets_):
-	  excitGen(eG_.clone()),originalRef(HF),
+	  excitGen(eG_.clone()),
 	  numDets(numDets_),cDet(HF){};
 
 //---------------------------------------------------------------------------//
 
 // construct the ExcitationGenerator implicitly from the Hamiltonian
-template <typename F, typename coeffType>
-Sampler<F, coeffType>::Sampler(Hamiltonian const &H_,
+template <typename coeffType>
+Sampler<coeffType>::Sampler(Hamiltonian const &H_,
 		  detType const &HF, int numDets_):
 			  excitGen(getDefaultExcitgen(H_,HF).release()),
-			  originalRef(HF),numDets(numDets_),
+			  numDets(numDets_),
 			  cDet(HF){};
 
 //---------------------------------------------------------------------------//
 
 // Just take any connected determinant and let the Excitation generator decide what is connected
-template <typename F, typename coeffType>
-detType Sampler<F, coeffType>::getRandomConnection(detType const &startingPoint, double &p) const{
+template <typename coeffType>
+detType Sampler<coeffType>::getRandomConnection(detType const &startingPoint, double &p) const{
 	return excitGen->generateExcitation(startingPoint, p);
 }
 
 //---------------------------------------------------------------------------//
 
-template <typename F, typename coeffType>
-double Sampler<F, coeffType>::getConnectionProb(detType const &source, detType const &target) const{
+template <typename coeffType>
+double Sampler<coeffType>::getConnectionProb(detType const &source, detType const &target) const{
 	return excitGen->getExcitationProb(source,target);
 }
 
@@ -73,7 +73,7 @@ detType getRandomDeterminant(Basis const &fullBasis){
   return randomDet; 
 }
 //instantiate them
-template class Sampler<double, double>;
-template class Sampler<std::complex<double>, std::complex<double>>;
+template class Sampler<double>;
+template class Sampler<std::complex<double>>;
 
 }
