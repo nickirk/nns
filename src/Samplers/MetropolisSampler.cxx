@@ -47,7 +47,8 @@ void MetropolisSampler<F, coeffType>::iterate(coeffType &cI, detType &dI, double
   detType tmp;
   double prob(0.);
   coeffType tmpCoeff;
-  double probRand =std::max(100*std::pow(0.9,i), 0.);
+  double probRand =std::max(100*std::pow(0.95,i), 0.);
+  //double probRand = 1.;
   if (rng() < probRand) {
     tmp = getRandomDeterminant(*fullBasis);
     //tmp=getRandomConnection(cDet,pEx);
@@ -58,7 +59,7 @@ void MetropolisSampler<F, coeffType>::iterate(coeffType &cI, detType &dI, double
   }
   else {
     tmp=Sampler<coeffType>::getRandomConnection(cDet,pEx);
-	pBack = Sampler<coeffType>::getConnectionProb(tmp,cDet);
+	  pBack = Sampler<coeffType>::getConnectionProb(tmp,cDet);
   }
   tmpCoeff = para->getCoeff(tmp);
   //coeffType tmpCoeffDeref;
@@ -69,7 +70,7 @@ void MetropolisSampler<F, coeffType>::iterate(coeffType &cI, detType &dI, double
   //else lastCoeffDeref=std::(0.5,2);
 	// And its coefficient
 	// unbiasing with generation probability in principle necessary (unless prob. is symmetric)
-  pBack = Sampler<coeffType>::getConnectionProb(tmp,cDet);
+  //pBack = Sampler<coeffType>::getConnectionProb(tmp,cDet);
   //std::cout << "MetropolisSampler.cxx: uni(rng)=" << p << std::endl;
   //std::cout << "MetropolisSampler.cxx: pJump=" << std::norm(tmpCoeff/lastCoeff)*pBack/pEx << std::endl;
 

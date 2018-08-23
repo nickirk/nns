@@ -30,15 +30,15 @@ class MetropolisSampler: public Sampler<coeffType> {
     Sampler<coeffType>(static_cast<Sampler<coeffType> const&>(source)){
     para = source.para;
     fullBasis = source.fullBasis;
-    //setReference(getRandomDeterminant(*fullBasis));
-    setReference(source.getDet());
+    setReference(getRandomDeterminant(*fullBasis));
+    //setReference(source.getDet());
   };
 
   MetropolisSampler(MetropolisSampler<F, coeffType> &&source):
     Sampler<coeffType>(static_cast<Sampler<coeffType> &>(source)){
     swap(*this,source);
-    //setReference(getRandomDeterminant(*fullBasis));
-    setReference(source.getDet());
+    setReference(getRandomDeterminant(*fullBasis));
+    //setReference(source.getDet());
   };
 
   friend void swap(MetropolisSampler<F, coeffType> &a, MetropolisSampler<F, coeffType> &b){
@@ -50,8 +50,8 @@ class MetropolisSampler: public Sampler<coeffType> {
   MetropolisSampler operator=(MetropolisSampler<F, coeffType> source){
     swap(*this,source);
   // cDet to random
-    //setReference(getRandomDeterminant(*fullBasis));
-    setReference(source.getDet());
+    setReference(getRandomDeterminant(*fullBasis));
+    //setReference(source.getDet());
     return *this;
   }
 	virtual ~MetropolisSampler();
