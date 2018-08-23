@@ -11,27 +11,27 @@ using namespace networkVMC;
 using namespace std;
 
 int main(){
-  int numSites(4);
-  int spinUp(2);
-  int spinDown(2);
-  int numHidden(15);
+  int numSites(6);
+  int spinUp(3);
+  int spinDown(3);
+  int numHidden(10);
   double trainRate(0.005);
   double U{4}, t{-1};
   int numStates = numSites*2;
-  //FermiHubbardHamiltonian modelHam(U,t,numSites);
+  FermiHubbardHamiltonian modelHam(U,t,numSites);
   //HeisenbergHamiltonian modelHam(-1.,true, numSites);
   //vector<detType> list;
   //generate hamiltonian
-  AbInitioHamiltonian modelHam(0);
-  std::string file_name = "FCIDUMP";
-  modelHam = readAbInitioHamiltonian(file_name,1);
-  numStates = modelHam.getNumOrbs();
+  //AbInitioHamiltonian modelHam(0);
+  //std::string file_name = "FCIDUMP";
+  //modelHam = readAbInitioHamiltonian(file_name,1);
+  //numStates = modelHam.getNumOrbs();
   //std::cout << "numStates=" << numStates << std::endl;
   SpinConfig spinConfig(spinUp, spinDown,numStates);// numStates);
   Basis basis(spinConfig,modelHam);
   std::cout << "basis size=" << basis.size() << std::endl;
-  RBM<std::complex<double>, std::complex<double>> rbm(numStates, numHidden);
-  //DirectParametrization<std::complex<double>> rbm(basis);
+  //RBM<std::complex<double>, std::complex<double>> rbm(numStates, numHidden);
+  DirectParametrization<std::complex<double>> rbm(basis);
 
   std::cout << "Initial vals of par=" << std::endl;
   std::cout << rbm.pars() << std::endl;
@@ -42,23 +42,23 @@ int main(){
   UniformExcitgen RSHG(HF);
   //LatticeExcitgen RSHG(modelHam);
   //WeightedExcitgen RSHG(modelHam,HF);
-  //MetropolisSampler<std::complex<double>,std::complex<double>> sampler(RSHG, HF,basis, rbm);
+  MetropolisSampler<std::complex<double>,std::complex<double>> sampler(RSHG, HF,basis, rbm);
   //ListGen<std::complex<double>> sampler(RSHG, basis, HF,rbm,100);
-  //sampler.setNumDets(500);
-  FullSampler<std::complex<double>> sampler(modelHam, basis, rbm);
+  sampler.setNumDets(500);
+  //FullSampler<std::complex<double>> sampler(modelHam, basis, rbm);
   EnergyEs<std::complex<double>,std::complex<double>> eCF(modelHam,-1);
   //Setup the trainer
   std::complex<double> energy{0.0};
   //AcceleratedGradientDescent<std::complex<double>> sl(trainRate);
-  ADAM<std::complex<double>, std::complex<double>> sl(trainRate);
-  //StochasticReconfiguration<std::complex<double>> sl(rbm,trainRate);
+  //ADAM<std::complex<double>, std::complex<double>> sl(trainRate);
+  StochasticReconfiguration<std::complex<double>> sl(rbm,trainRate);
   Trainer<std::complex<double>, std::complex<double>> ev(rbm, sampler, sl, eCF,modelHam);
   ofstream myfile1;
   myfile1.open ("en");
   //std::cout << "reading rbm pars from file..." << std::endl;
   //rbm.readParsFromFile("Parameters.dat");
   for(int l(0); l<10000; ++l){
-    trainRate = std::max(0.01*std::pow(0.999,l), 0.001);
+    trainRate = std::max(0.01*std::pow(0.999,l), 0.01);
     ev.train(trainRate);
     // get the new energy
     energy = ev.getE();

@@ -19,13 +19,11 @@ coeffType TrialWfPara<F, coeffType>::getCoeff(detType const &det) const{
 
 template <typename F, typename coeffType>
 coeffType TrialWfPara<F, coeffType>::getBaseCoeff(detType const &det) const{
-	// the coefficient is the product of trial wf and parametrized coeff
 	return basePara->getCoeff(det);
 }
 
 template <typename F, typename coeffType>
 coeffType TrialWfPara<F, coeffType>::getTrialCoeff(detType const &det) const{
-	// the coefficient is the product of trial wf and parametrized coeff
 	return trialWf->getCoeff(det);
 }
 // instantiate template classes

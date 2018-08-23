@@ -8,6 +8,7 @@
 #include "MetropolisSampler.hpp"
 
 #include <cmath>
+#include <iostream>
 #include "../utilities/RNGWrapper.hpp"
 #include "../Network/Parametrization.hpp"
 #include "../HilbertSpace/Basis.hpp"
@@ -55,8 +56,8 @@ void MetropolisSampler<F, coeffType>::iterate(coeffType &cI, detType &dI, double
   detType tmp;
   double prob(0.);
   coeffType tmpCoeff;
-  double probRand =std::max(100*std::pow(0.95,i), 0.);
-  //double probRand = 1.;
+  double probRand =std::max(100*std::pow(0.9,i), 0.);
+  //double probRand = 0.;
   if (rng() < probRand) {
     tmp = getRandomDeterminant(*fullBasis);
     //tmp=getRandomConnection(cDet,pEx);
@@ -81,6 +82,7 @@ void MetropolisSampler<F, coeffType>::iterate(coeffType &cI, detType &dI, double
 
   //prob = pBack/pEx*std::norm(tmpCoeffDeref/lastCoeffDeref);
   prob = pBack/pEx*std::norm(tmpCoeff/lastCoeff);
+  //std::cout << "MetropolisSampler.cxx: prob=" << prob << std::endl;
 	if(rng() < prob){
 		// With probability |cJ/cI|^2, accept the move
 		cDet = tmp;

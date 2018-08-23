@@ -140,20 +140,19 @@ int main(){
   // set up another randomly initialised rbm
   RBM<std::complex<double>, std::complex<double>> rbm1(numStates, numHidden);
 
-	// use the previous trained RBM as trial wf
-	auto trial = rbm;
 
   // combine two para to a single one
-	TrialWfPara<std::complex<double>> twfPara(rbm1,trial);
+	TrialWfPara<std::complex<double>> twfPara(rbm1,rbm);
 
   // also a new sampler and a new trainer
   UmbrellaSampler<> USampler(RSHG, HF,basis, twfPara);
-  StochasticReconfiguration<std::complex<double>> slU(twfPara,trainRate);
+  //StochasticReconfiguration<std::complex<double>> slU(twfPara,trainRate);
+  ADAM<std::complex<double>, std::complex<double>> slU(trainRate);
   Trainer<std::complex<double>, std::complex<double>> evU(twfPara, USampler, slU, eCF,modelHam);
   // set up the training process for twfPara, similar to the first rbm
   
-  for(int l(0); l<1000; ++l){
-    trainRate = std::max(0.01*std::pow(0.999,l), 0.01);
+  for(int l(0); l<10000; ++l){
+    trainRate = std::max(0.1*std::pow(0.999,l), 0.01);
     evU.train(trainRate);
     // get the new energy
     energy = evU.getE();
@@ -161,7 +160,7 @@ int main(){
     std::cout << "trainRate=" << trainRate << std::endl;
     std::cout<<"Energy real="<< std::real(energy)<<std::endl;
     std::cout<<"Energy imag="<< std::imag(energy)<<std::endl;
-    myfile1 << l << "  " << std::real(energy) << std::endl;
+    myfile1 << l+300 << "  " << std::real(energy) << std::endl;
 
     // write to file the sampled wavefunction and rbm wavefunction
     // this can slow down the simulation a lot. Use only in small calcs
@@ -176,24 +175,28 @@ int main(){
     for (size_t i=0; i<intCasts.size(); i++)        
       count[intCasts[i]]++;      
 
-    double normalisation(0.);
-    for (size_t v(0); v<basis.size(); v++){
-      normalisation+=std::norm(twfPara.getCoeff(basis.getDetByIndex(v)));
-    }
     ofstream myfile3;
     myfile3.open ("SampleFunc");
     for (auto &e:count){
       myfile3 <<  e.first << " " << e.second/double(intCasts.size()) << std::endl;
     }
     myfile3.close();
+
+    double normalisation(0.);
+    for (size_t v(0); v<basis.size(); v++){
+      normalisation+=std::norm(twfPara.getBaseCoeff(basis.getDetByIndex(v)));
+    }
     ofstream myfile2;
     myfile2.open ("WaveFunc");
     for (size_t v(0); v<basis.size(); v++){
       detType det = basis.getDetByIndex(v);
-      double amp = std::norm(twfPara.getCoeff(det));
+      double amp = std::norm(twfPara.getBaseCoeff(det));
+      std::cout << "norm(coeff(" << v << "))= " << amp << std::endl;
       myfile2 << v << "  " << amp/normalisation << std::endl;
     }
     myfile2.close();
+
+    std::cout << "twfPara Base=\n" << twfPara.pars() << std::endl;
   }
   myfile1.close();
 

@@ -25,9 +25,12 @@ class TrialWfPara: public ClonableParametrization<F, coeffType, TrialWfPara<F, c
 	// versions are empty afterwards
 	TrialWfPara(Parametrization<F, coeffType> const &basePara_, Parametrization<F, coeffType> const &trialWf_):
 		basePara(basePara_.clone()),trialWf(trialWf_.clone()){};
+		//basePara(basePara_.clone()),trialWf(trialWf_.clone()){};
 
 	// return of the parameters is delegated to basePara
 	T const& pars() const {return basePara->pars();}
+  // also need non const
+  T& pars(){ return basePara->pars();}
 	coeffType getBaseCoeff(detType const &det) const;
 
 	// additional functionality of the trialwfpara - return the coeffs of the trial wf
