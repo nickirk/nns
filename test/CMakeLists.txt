@@ -1,10 +1,12 @@
 # set the current path
 set(TEST_COMMON ${CMAKE_CURRENT_SOURCE_DIR}/defaultSystem.cxx ${CMAKE_CURRENT_SOURCE_DIR}/testComponents.cxx)
 
+add_library(testUtil SHARED ${TEST_COMMON})
+
 #define macro for adding tests
 macro (cadd_test testName)
-      add_executable(${testName} ${CMAKE_CURRENT_SOURCE_DIR}/${testName}.cxx ${TEST_COMMON})
-      target_link_libraries(${testName} networkVMC)
+      add_executable(${testName} ${CMAKE_CURRENT_SOURCE_DIR}/${testName}.cxx)
+      target_link_libraries(${testName} networkVMC testUtil)
 endmacro()
 
 # add the executables
