@@ -28,14 +28,14 @@ int main(){
   int numHidden(10);
   // which random excitation generator should be tested
   //generate hamiltonian
-  AbInitioHamiltonian modelHam(numStates);
+  //AbInitioHamiltonian modelHam(numStates);
   ////double U{2.}, t{-1};
-  string file_name = "FCIDUMP";
-  modelHam = readAbInitioHamiltonian(file_name, numStates);
+  //string file_name = "FCIDUMP";
+  //modelHam = readAbInitioHamiltonian(file_name, numStates);
   //generate basis, the basis class constructor takes in the spin configurations.
   Basis basis(spinConfig,modelHam);
   //generate hamiltonian
-  //FermiHubbardHamiltonian modelHam(numStates);
+  FermiHubbardHamiltonian modelHam(numStates);
   //auto modelHam = generateFermiHubbard(numStates, U, t);
   cout << "Basis size= " << basis.size() << endl;
   //cout << "Hamiltonian size= " << modelHam.getSize() << endl;
