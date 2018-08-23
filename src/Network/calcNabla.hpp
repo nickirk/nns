@@ -17,11 +17,14 @@
 namespace networkVMC{
 
 template<typename F, typename coeffType, typename D>
-Parametrization<F, coeffType>::T calcNabla(State<coeffType> const &inputState,
-		Parametrization<F, coeffType>::T const &dEdC, F const &energy, D &&deriv, SamplerType sT, int numPars){
+Eigen::Matrix<F, Eigen::Dynamic ,1> calcNabla(State<coeffType> const &inputState,
+		Eigen::Matrix<F, Eigen::Dynamic ,1> const &dEdC, F const &energy, D &&deriv, SamplerType sT, int numPars){
+	// type alias for matrices - should be using Parametrization<F, coeffType>::T, but that somehow does not work
+	using T = Eigen::Matrix<F, Eigen::Dynamic ,1>;
+
 	int numDets = inputState.size();
 	int spaceSize = inputState.totalSize();
-	Parametrization<F, coeffType>::T dEdW= Parametrization<F, coeffType>::T::Zero(numPars);
+	T dEdW= T::Zero(numPars);
 	Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>
 	dCdW = Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>::Zero(numPars, spaceSize);
 #pragma omp parallel
@@ -29,7 +32,7 @@ Parametrization<F, coeffType>::T calcNabla(State<coeffType> const &inputState,
 	// fill up the matrix of dCdW, like in EnergyEsMarkov.cxx
 	// reserve space and in the end use matrix*vector instead of
 	// a summation
-	Parametrization<F, coeffType>::T dCtdW;
+	T dCtdW;
 #pragma omp for
 	for (int i=0; i < numDets; ++i){
 		//need private dCtdW

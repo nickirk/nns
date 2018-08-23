@@ -15,16 +15,13 @@
 
 namespace networkVMC {
 
-// Forward declaration for more efficient compilation
-//class State<double>;
-//class State<std::complex<double>>;
-
 // This is the base class for any parametrization of the wave function
 // It is an abstract parametrization that can be updated to be optimized
 // with respect to a given cost function
 template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
 class Parametrization {
   public:
+	Parametrization() = default;
 	using T=Eigen::Matrix<F, Eigen::Dynamic ,1>;
     // default the virtual destructor
     virtual ~Parametrization() = default;
@@ -32,8 +29,8 @@ class Parametrization {
     // due to the virtual destructor)
     Parametrization(Parametrization<F, coeffType> &&) = default;
     Parametrization(Parametrization<F, coeffType> const&) = default;
-    Parametrization<F, coeffType> operator=(Parametrization<F, coeffType> &&) = default;
-    Parametrization<F, coeffType> operator=(Parametrization<F, coeffType> const&) = default;
+    Parametrization<F, coeffType>& operator=(Parametrization<F, coeffType> &&) = default;
+    Parametrization<F, coeffType>& operator=(Parametrization<F, coeffType> const&) = default;
 
     // It needs to be able to return coefficients somehow
     virtual coeffType getCoeff(detType const &det) const=0; // Can throw an invalidDeterminantError
@@ -60,13 +57,12 @@ class Parametrization {
     virtual Parametrization<F, coeffType>* clone() const = 0;
     virtual Parametrization<F, coeffType>* move_clone() = 0;
 
-  private:
+    //friend class TrialWfPara<F, coeffType>;
+    virtual T getDeriv(detType const &det) const=0;
     //   Obtain the inner derivative dX/dPars with given dX/dC (C are coefficients)
-        T getMarkovDeriv(detType const &det) const{
+    T getMarkovDeriv(detType const &det) const{
       	  return getDeriv(det)/getCoeff(det);
         };
-        virtual T getDeriv(detType const &det) const=0;
-
 };
 
 // implement the polymorphic copy for the derived classes

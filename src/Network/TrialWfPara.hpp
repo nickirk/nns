@@ -32,7 +32,7 @@ class TrialWfPara: public ClonableParametrization<F, coeffType, TrialWfPara<F, c
 
 	// Obtain the inner derivative dX/dPars with given dX/dC (C are coefficients)
 	// delegated to basePara
-	T getDeriv(detType const &det){return basePara->getDeriv(det);}
+	T getDeriv(detType const &det) const{return basePara->getDeriv(det);}
 
 	// get the coefficient from base and trial para
 	coeffType getCoeff(detType const &det) const;

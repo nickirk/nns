@@ -50,7 +50,7 @@ void Parametrization<F,coeffType>::readParsFromFile(std::string file){
 template<typename F, typename coeffType>
 Parametrization<F, coeffType>::T Parametrization<F,coeffType>::calcNablaParsConnected(
   State<coeffType> const &inputState, Eigen::Matrix<F, Eigen::Dynamic ,1> const &dEdC){
-	return calcNabla(inputState, dEdC, F(), [](detType const &det){return this->getDeriv(det);},
+	return calcNabla(inputState, dEdC, F(), [this](detType const &det){return this->getDeriv(det);},
 			PreFetched, getNumPars());
 }
 
@@ -59,7 +59,7 @@ Parametrization<F, coeffType>::T Parametrization<F,coeffType>::calcNablaParsConn
 template<typename F, typename coeffType>
 Parametrization<F, coeffType>::T Parametrization<F,coeffType>::calcNablaParsMarkovConnected(
 		State<coeffType> const &inputState, Eigen::Matrix<F, Eigen::Dynamic ,1> const& dEdC, F const& energy){
-	return calcNabla(inputState, dEdC, energy, [](detType const &det){return this->getMarkovDeriv(det);},
+	return calcNabla(inputState, dEdC, energy, [this](detType const &det){return this->getMarkovDeriv(det);},
 			Markov, getNumPars());
 }
 
