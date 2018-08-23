@@ -8,6 +8,8 @@
 #include "../utilities/Errors.hpp"
 #include "../Hamiltonian/Hamiltonian.hpp"
 #include "Basis.hpp"
+#include <algorithm>
+#include "../utilities/RNGWrapper.hpp"
 
 #include "BasisGenerator.hpp"
 
@@ -40,6 +42,16 @@ int Basis::getIndexByDet(detType const & det_) const{
   // If we did not find the determinant, something went wrong
   if(static_cast<size_t>(dist)==basis.size()) throw InvalidDeterminantError(det_);
   return dist;
+}
+
+//---------------------------------------------------------------------------//
+
+// This creates some random determinant from a given Basis
+detType getRandomDeterminant(Basis const &fullBasis){
+  // Essentially, we just get a random number and then return the corresponding det
+  RNGWrapper rng; // Wrapper class for Mersenne-Twister RNG
+  auto randomDet = fullBasis.getDetByIndex(rng());
+  return randomDet;
 }
 
 }

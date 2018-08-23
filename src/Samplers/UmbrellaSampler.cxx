@@ -5,22 +5,23 @@
  *      Author: liao
  */
 #include "UmbrellaSampler.hpp"
+#include "../Network/TrialWfPara.hpp"
 
 namespace networkVMC{
 
 template <typename F, typename coeffType>
-UmbrellaSampler<F, coeffType>::UmbrellaSampler(ExcitationGenerator const &eG_, 
-    detType const &HF,
-		Basis const &fullBasis_, TrialWfPara<F, coeffType> const &para_,
-    int numDets_):internalSampler(eG_,HF, fullBasis_, para_.base(), numDets_),
-    para(para_){};
+UmbrellaSampler<F, coeffType>::UmbrellaSampler(ExcitationGenerator const &eG_, detType const &HF,
+			    Basis const &fullBasis_, TrialWfPara<F, coeffType> const &para_,
+                int numDets_):Sampler(eG_,numDets_),cDet(HF),
+				internalSampler(eG_, fullBasis_, para_.base(), numDets_),para(para_),
+				lastCoeff(para_.getBaseCoeff(cDet)){};
 
 template <typename F, typename coeffType>
-UmbrellaSampler<F, coeffType>::UmbrellaSampler(Hamiltonian const &H_, 
-    detType const &HF,
-    Basis const &fullBasis_,TrialWfPara<F, coeffType> const &para_,
-    int numDets_ ):internalSampler(H_,HF, fullBasis_, para_.base(), numDets_),
-    para(para_){};
+UmbrellaSampler<F, coeffType>::UmbrellaSampler(Hamiltonian const &H_, detType const &HF,
+                Basis const &fullBasis_,TrialWfPara<F, coeffType> const &para_,
+                int numDets_ ):Sampler(eG_,numDets_),cDet(HF),
+				internalSampler(H_,HF, fullBasis_, para_.base(), numDets_),
+				para(para_),lastCoeff(para_.getBaseCoeff(cDet)){};
 
 //---------------------------------------------------------------------------//
 

@@ -6,6 +6,7 @@
  */
 
 #include "RSHubbardExcitgen.hpp"
+#include "../../utilities/RNGWrapper.hpp"
 
 namespace networkVMC {
 
@@ -17,8 +18,7 @@ RSHubbardExcitgen::~RSHubbardExcitgen() {
 
 detType RSHubbardExcitgen::generateExcitation(
 		detType const &source,  double &pGet){
-  std::random_device rng;
-  double const normalization=static_cast<double>(rng.max());
+  RNGWrapper rng; // wrapper for random number generator: creates random numbers between 0 and 1
   int const d=source.size();
   detType target=source;
   //for hubbard
@@ -33,7 +33,7 @@ detType RSHubbardExcitgen::generateExcitation(
 	  pGet = 1.0;
 	  return source;
   }
-  int p{static_cast<int>(rng()/normalization*(numSpawn))};
+  int p{static_cast<int>(rng()*(numSpawn))};
   //pick one of those sites at random (including direction)
   pGet=1.0/static_cast<double>(numSpawn);
   //if(p>=numSpawn){

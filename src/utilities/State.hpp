@@ -15,12 +15,15 @@
 #include "sorting.hpp"
 #include "Errors.hpp"
 
+// set the default argument
+#include "StateForward.hpp"
+
 namespace networkVMC{
 
 // A state is a list of determinants and the corresponding list of
 // their coefficients and weights, also the lists of the respective coupled Dets and
 // coupled coeffs. We want the State to behave like a std::vector.
-template <typename coeffType=std::complex<double>>
+template <typename coeffType>
 class State{
   public:
 	State():

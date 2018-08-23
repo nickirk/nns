@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <assert.h>
+#include <complex>
 #include "../src/NNWLib.hpp"
 #include "defaultSystem.hpp"
 
@@ -46,10 +47,10 @@ int main(){
 	assert(nabla.size() == network.pars().size());
 
 	// and check if the derivative has the correct values
-	auto baseNabla = network.calcNablaPars(singleDet,outerDerivative);
+	auto baseNabla = network.calcNablaParsConnected(singleDet,outerDerivative);
 
 	for(size_t i = 0; i < nabla.size(); ++i){
-		assert( std::abs(baseNabla(i)*trial.getCoeff(singleDet.det(0)) - nabla(i)) < epsilon);
+		assert( std::abs(baseNabla(i) - nabla(i)) < epsilon);
 	}
 
 	// try something more involved

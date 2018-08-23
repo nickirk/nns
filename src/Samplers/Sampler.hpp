@@ -10,12 +10,8 @@
 #include <vector>
 
 #include "../Hamiltonian/ExcitationGenerators/ExcitationGenerator.hpp"
-#include "../Hamiltonian/ExcitationGenerators/defaultExcitgensMap.hpp"
-#include "../HilbertSpace/Determinant.hpp"
-#include "../utilities/SpinConfig.hpp"
 #include "../utilities/TypeDefine.hpp"
 #include "../utilities/DeepCpyUniquePtr.hpp"
-#include "../Network/Parametrization.hpp"
 namespace networkVMC{
 
 // Forward declaration to make compilation faster
@@ -29,11 +25,9 @@ template <typename coeffType=std::complex<double>>
 class Sampler{
   public:
   // explicit constructor
-  Sampler(ExcitationGenerator const &eG_, detType const &HF, int numDets_= 100);
+  Sampler(ExcitationGenerator const &eG_, int numDets_= 100);
   // construct the ExcitationGenerator implicitly from the Hamiltonian
-  Sampler(Hamiltonian const &H_, detType const &HF, int numDets_ = 100);
-  Sampler(Hamiltonian const &H_, detType const &HF, Basis const &fullBasis, 
-      int numDets_ = 100);
+  Sampler(Hamiltonian const &H_, detType const &HF_, int numDets_ = 100);
   Sampler(ExcitationGenerator const &eG_, detType const &HF, Basis const &fullBasis, 
       int numDets_ = 100);
   virtual ~Sampler(){};
@@ -46,14 +40,6 @@ class Sampler{
   // update the bias used for excitation generation in iterate()
   void updateBiases()const {excitGen->updateBiases();}
 
-  // return either the current det or possibly some stored det (depending on implementation)
-  virtual detType getDet() const{return cDet;};
-  virtual detType getDet(int i) const{return cDet;};
-
-  // Setters for various properties
-  // set the starting point
-  virtual void setReference(detType const &start){cDet = start;}
-
   // set the number of sampled dets
   virtual void setNumDets(int newNum){numDets=newNum;}
   // get the number of dets
@@ -64,7 +50,6 @@ class Sampler{
   friend void swap(Sampler &a, Sampler &b){
     std::swap(a.excitGen,b.excitGen);
     std::swap(a.numDets,b.numDets);
-    std::swap(a.cDet,b.cDet);
   }
 
 protected:
@@ -87,8 +72,6 @@ protected:
 };
 
 inline double dblAbs(double x){if(x>0) return x;return -x;}
-void removeDuplicate(std::vector<detType> &list);
-detType getRandomDeterminant(Basis const &fullBasis);
 
 }
 #endif

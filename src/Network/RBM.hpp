@@ -8,11 +8,9 @@
 #define RBM_DEFINED
 
 #include <Eigen/Dense>
-#include "../CostFunctions/CostFunction.hpp"
 #include "Parametrization.hpp"
-#include "../utilities/State.hpp"
+#include "../utilities/StateForward.hpp"
 #include "../utilities/TypeDefine.hpp"
-#include "../math/MathFunctions.hpp"
 
 namespace networkVMC{
   //Resttricted Boltzmann Machine
@@ -25,10 +23,6 @@ namespace networkVMC{
     coeffType getCoeff(detType const &det) const;
     T getDeriv(detType const &det) const;
     T const& pars() const;
-    //T calcNablaPars(State<coeffType> const &input, T const &outerDerivative);
-    //Eigen::Matrix<F, Dynamic, Dynamic> calcdCdwSR(State const &outputState);
-    //T calcNablaParsConnected(State<coeffType> const &inputState, T const& dEdC);
-    //T calcNablaParsMarkovConnected(State const &inputState, T const& dEdC, F const& energy);
 
   private:
     int sizeHidden;

@@ -9,22 +9,12 @@
 #define NeuralNetwork_DEFINED
 
 #include <vector>
-#include <stdio.h>
 #include <complex>
-#include <string>
 #include <Eigen/Dense>
-#include "../CostFunctions/CostFunction.hpp"
-#include "../Hamiltonian/TwoBodyHamiltonian.hpp"
 #include "../HilbertSpace/Basis.hpp"
-#include "../HilbertSpace/Determinant.hpp"
-#include "../utilities/State.hpp"
+#include "../utilities/StateForward.hpp"
 #include "../utilities/TypeDefine.hpp"
-#include "../math/MathFunctions.hpp"
-#include "Layers/ConvLayer.hpp"
-#include "Layers/DenseLayer.hpp"
-#include "Layers/InputLayer.hpp"
 #include "Layers/Layer.hpp"
-#include "../Solvers/Solver.hpp"
 #include "LayerStructure.hpp"
 #include "Parametrization.hpp"
 

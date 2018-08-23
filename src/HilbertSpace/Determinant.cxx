@@ -9,6 +9,7 @@
 #include "../utilities/Errors.hpp"
 #include <vector>
 #include <stdio.h>
+#include <algorithm>
 #include <iostream>
 #include <math.h>
 
@@ -182,6 +183,16 @@ void printDet(detType const &out){
 		std::cout << i << ", ";
 	}
 	std::cout<<")"<<std::endl;
+}
+
+//---------------------------------------------------------------------------//
+
+// Go through a list of dets and remove duplicates (generic function)
+void removeDuplicate(std::vector<detType> &list){
+ std::sort( list.begin(), list.end() );
+// make use of std::unique for a sorted list
+ auto it = std::unique( list.begin(), list.end() );
+ list.erase( it, list.end() );
 }
 
 }

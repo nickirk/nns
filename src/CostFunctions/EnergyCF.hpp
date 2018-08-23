@@ -9,10 +9,8 @@
 #define SRC_COSTFUNCTIONS_ENERGYCF_HPP_
 
 #include <vector>
-
 #include "../utilities/TypeDefine.hpp"
-#include "CostFunction.hpp"
-#include "Eigen/Dense"
+#include <Eigen/Dense>
 #include "EnergyCFBaseClass.hpp"
 // This cost function tries to minimize the energy expectation value
 

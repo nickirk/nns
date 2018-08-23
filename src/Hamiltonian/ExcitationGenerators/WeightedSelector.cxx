@@ -9,8 +9,9 @@
 #include "../../HilbertSpace/Determinant.hpp"
 #include <vector>
 #include <cmath>
+#include <algorithm>
 #include <iterator>
-#include <iostream>
+#include "../../utilities/RNGWrapper.hpp"
 #include "../TwoBodyHamiltonian.hpp"
 
 namespace networkVMC{
@@ -22,12 +23,7 @@ int WeightedSelector::selectSingleHole(int src, double &pgen, double &helOut) {
     // select a hole for a single excitation
 
     // set up the random number generator
-    // initialise the seed engine
-    std::random_device rd;
-    // use Mersenne-Twister random number generator
-    std::mt19937 rng(rd());
-    // uniform distribution from 0.0 to 1.0
-    std::uniform_real_distribution<double> uniform_dist(0.0,1.0);
+	RNGWrapper rng;
     std::vector<double> cdf_single_a;
     std::vector<int> holes_a;
     double cum_sum=0.0;
@@ -121,7 +117,7 @@ int WeightedSelector::selectSingleHole(int src, double &pgen, double &helOut) {
         throw OutOfRangeError(nexcit);
     }
     else{
-        double hel_picked = uniform_dist(rng)*cum_sum;
+        double hel_picked = rng()*cum_sum;
         std::vector<double>::iterator up;
         up = std::upper_bound(cdf_single_a.begin(),cdf_single_a.end(),hel_picked);
         int orbind = up - cdf_single_a.begin();
@@ -149,12 +145,7 @@ int WeightedSelector::selectDoubleHole(std::vector<int> const &src,
 
 
     // set up the random number generator
-    // initialise the seed engine
-    std::random_device rd;
-    // use Mersenne-Twister random number generator
-    std::mt19937 rng(rd());
-    // uniform distribution from 0.0 to 1.0
-    std::uniform_real_distribution<double> uniform_dist(0.0,1.0);
+	RNGWrapper rng;
     std::vector<int> alpha_num;
     int nexcit;
     std::vector<double> cdf;
@@ -266,7 +257,7 @@ int WeightedSelector::selectDoubleHole(std::vector<int> const &src,
     }
 
     // choose a value
-    double hel_picked = uniform_dist(rng)*cum_sum;
+    double hel_picked = rng()*cum_sum;
     auto up = std::upper_bound(cdf.begin(),cdf.end(),hel_picked);
     int orbind = std::distance(cdf.begin(),up);
     tgt = holes[orbind];
@@ -361,12 +352,7 @@ std::vector<int> WeightedSelector::selectDoubleHoles(std::vector<int> const &src
 
 
     // set up the random number generator
-    // initialise the seed engine
-    std::random_device rd;
-    // use Mersenne-Twister random number generator
-    std::mt19937 rng(rd());
-    // uniform distribution from 0.0 to 1.0
-    std::uniform_real_distribution<double> uniform_dist(0.0,1.0);
+	RNGWrapper rng;
     std::vector<int> alpha_num;
     int nexcita,nexcitb;
     std::vector<double> cdf_a,cdf_b;
@@ -422,7 +408,7 @@ std::vector<int> WeightedSelector::selectDoubleHoles(std::vector<int> const &src
         }
 
         // choose a value to pick orbital a
-        double hel_picked_a = uniform_dist(rng)*cum_sum[0];
+        double hel_picked_a = rng()*cum_sum[0];
         std::vector<double>::iterator up;
         up = std::upper_bound(cdf_a.begin(),cdf_a.end(),hel_picked_a);
         int orbind_a = up - cdf_a.begin();
@@ -461,7 +447,7 @@ std::vector<int> WeightedSelector::selectDoubleHoles(std::vector<int> const &src
         cum_sum[1] = cum_sum[0] - cpt[0];
 
         // choose a value to pick orbital b
-        double hel_picked_b = uniform_dist(rng)*cum_sum[1];
+        double hel_picked_b = rng()*cum_sum[1];
         std::vector<double>::iterator up2;
         up2 = std::upper_bound(cdf_b.begin(),cdf_b.end(),hel_picked_b);
         int orbind_b = up2 - cdf_b.begin();

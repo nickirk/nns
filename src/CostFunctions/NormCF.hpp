@@ -12,8 +12,6 @@
 #include "../utilities/TypeDefine.hpp"
 #include "../utilities/State.hpp"
 #include "CostFunction.hpp"
-#include "CostFunction.hpp"
-
 namespace networkVMC{
 
 ////class State;
