@@ -54,7 +54,8 @@ template <typename F, typename coeffType>
 EnergyEsPreFetched<F, coeffType>::T EnergyEsPreFetched<F, coeffType>::nabla(State<coeffType> const &input) const{
   energy = evaluate(input);
   int numDets = input.size();
-  T dEdC(numDets);
+  int spaceSize = input.totalSize();
+  T dEdC(spaceSize);
 
   #pragma omp parallel for
   for (int i=0; i < numDets; ++i){
@@ -64,20 +65,14 @@ EnergyEsPreFetched<F, coeffType>::T EnergyEsPreFetched<F, coeffType>::nabla(Stat
     std::vector<coeffType> coupledC_j = input.coupledCoeffs(i);
     std::vector<detType> coupledDets = input.coupledDets(i);
     std::vector<double> coupledWeights = input.coupledWeights(i);
-    A += c_i * H(input.det(i), input.det(i));
+    dEdC[i] = c_i * (H(input.det(i), input.det(i)) - std::real(energy))
+      /normalizerCoeff;
+    int pos=input.locate(i);
     for (size_t j=0; j < coupledDets.size(); ++j){
-      A += coupledC_j[j] * H(input.det(i),
-                        coupledDets[j])/(coupledC_j.size()*coupledWeights[j]);
+      dEdC(numDets+pos+j) = coupledC_j[j] * H(input.det(i), coupledDets[j])
+        /(coupledC_j.size()*coupledWeights[j])/normalizerCoeff;
+      
     }
-    A -=  std::real(energy) * c_i;
-    A /= normalizerCoeff;
-    //dEdC_i.real(2. * std::real( A*std::conj(coeffType(1.,0.))));
-    //dEdC_i.imag(2. * std::real( A*std::conj(coeffType(0.,1.))));
-    //dEdC[i]=dEdC_i;
-    // use the conjugate to make real and complex parametrization the same form
-    // for real para, inside the para, use conj again to obtain the correct 
-    // gradient. See Nnw.cxx backpropagate().
-    dEdC[i]=(2.0 * std::conj(A));
   }
   return dEdC;
 }

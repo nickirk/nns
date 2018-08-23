@@ -50,6 +50,7 @@ Eigen::Matrix<F, Eigen::Dynamic ,1> calcNabla(State<coeffType> const &inputState
 		size_t pos = inputState.locate(i);
 		for (size_t j(0); j < coupledSize; ++j){
 			// fill up the dCdW matrix with coupled dets contribution
+		  //dCtdW = deriv(coupledDets(j]);
 			dCdW.col(numDets+pos+j) << (dCtdW.conjugate());
 			//dEdWTmp +=  dCtdW * dEdC[pos];
 		}
