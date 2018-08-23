@@ -11,7 +11,7 @@
 using namespace networkVMC;
 
 int main(){
-	int numSites = 20;
+	int numSites = 10;
 	double J = 2.;
 	SpinConfig sC(numSites/2,numSites/2,numSites);
 	HeisenbergHamiltonian HH(J,true,numSites);

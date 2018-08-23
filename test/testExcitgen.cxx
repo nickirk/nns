@@ -95,7 +95,7 @@ int main(){
 	testHubbardExcitgen(HF);
 	testLatticeExcitgen(defaultH,HF);
 	// now test the weighted excitgen, this requires a 2-body Hamiltonian
-	std::string file_name = "run/FCIDUMP";
+	std::string file_name = "FCIDUMP";
 	auto modelHam = readAbInitioHamiltonian(file_name);
 	SpinConfig sC(2,2,2*19);
 	Basis abBasis(sC,modelHam);
