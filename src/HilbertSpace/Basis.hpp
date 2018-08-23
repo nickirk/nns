@@ -43,6 +43,8 @@ class Basis{
 
 };
 
+detType getRandomDeterminant(Basis const &fullBasis);
+
 }
 
 #endif

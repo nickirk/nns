@@ -10,10 +10,11 @@
 #include "../Network/Parametrization.hpp"
 
 namespace networkVMC {
+
 template <typename F, typename coeffType>
 FullSampler<F, coeffType>::FullSampler(ExcitationGenerator const &eG_, Basis const &fullBasis_,
 		Parametrization<F, coeffType> const & para_):
-	Sampler<coeffType>(eG_,detType(),fullBasis_.size()),pos(0),para(&para_),fullBasis(&fullBasis_){
+	Sampler<coeffType>(eG_,fullBasis_.size()),pos(0),para(&para_),fullBasis(&fullBasis_){
 }
 
 //---------------------------------------------------------------------------//

@@ -8,11 +8,9 @@
 #define RBM_DEFINED
 
 #include <Eigen/Dense>
-#include "../CostFunctions/CostFunction.hpp"
 #include "Parametrization.hpp"
-#include "../utilities/State.hpp"
+#include "../utilities/StateForward.hpp"
 #include "../utilities/TypeDefine.hpp"
-#include "../math/MathFunctions.hpp"
 
 namespace networkVMC{
   //Resttricted Boltzmann Machine

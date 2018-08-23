@@ -46,5 +46,8 @@ bool compare_det(detType const &lhs, detType const &rhs);
 // output function for debugging
 void printDet(detType const &out);
 
+// remove duplicates from a list of determinants
+void removeDuplicate(std::vector<detType> &list);
+
 }
 #endif

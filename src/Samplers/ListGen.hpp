@@ -10,6 +10,8 @@
 
 #include "Sampler.hpp"
 
+#include "../Network/ParametrizationForward.hpp"
+
 namespace networkVMC{
 template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
 class ListGen : public Sampler<coeffType>{
@@ -25,8 +27,6 @@ class ListGen : public Sampler<coeffType>{
 	virtual void iterate(coeffType &cI, detType &dI, double& weight, int i);
 	void diffuse(std::vector<detType> &list) const;
 	void setDiffuseList(std::vector<detType > const &list){diffuseList=list;};
-	virtual detType getDet(int i) const;
-	virtual detType getDet() const;
     virtual int getNumDets() const;
 private:
 	mutable std::vector<detType > diffuseList;
@@ -36,6 +36,10 @@ private:
     // and the corresponding basis including the information on the number of electrons
 	// with a given spin
 	Basis const *fullBasis;
+
+	// get a determinant from the pre-sampled list
+	detType getDet(int i) const;
+
     using Sampler<coeffType>::numDets;
 };
 

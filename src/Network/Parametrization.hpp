@@ -10,15 +10,18 @@
 
 #include "../utilities/TypeDefine.hpp"
 #include <Eigen/Dense>
-#include "../utilities/State.hpp"
+#include "../utilities/StateForward.hpp"
 #include "../utilities/Errors.hpp"
+
+// set the default template arguments
+#include "ParametrizationForward.hpp"
 
 namespace networkVMC {
 
 // This is the base class for any parametrization of the wave function
 // It is an abstract parametrization that can be updated to be optimized
 // with respect to a given cost function
-template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
+template <typename F, typename coeffType>
 class Parametrization {
   public:
 	Parametrization() = default;
@@ -60,7 +63,7 @@ class Parametrization {
     //friend class TrialWfPara<F, coeffType>;
     virtual T getDeriv(detType const &det) const=0;
     //   Obtain the inner derivative dX/dPars with given dX/dC (C are coefficients)
-    T getMarkovDeriv(detType const &det) const{
+    virtual T getMarkovDeriv(detType const &det) const{
       	  return getDeriv(det)/getCoeff(det);
         };
 };

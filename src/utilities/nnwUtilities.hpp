@@ -13,8 +13,8 @@
 #include "../CostFunctions/NormCF.hpp"
 #include "../Solvers/ADAM.hpp"
 #include "../Trainer.hpp"
-#include "../Hamiltonian/FermiHubbardHamiltonian.cxx"
-#include "State.hpp"
+#include "../Hamiltonian/FermiHubbardHamiltonian.hpp"
+#include "StateForward.hpp"
 #include <iostream>
 
 namespace networkVMC{

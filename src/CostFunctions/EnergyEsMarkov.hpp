@@ -12,8 +12,9 @@
 #include <Eigen/Dense>
 #include "../utilities/TypeDefine.hpp"
 #include "CostFunction.hpp"
-#include "EnergyEs.hpp"
 #include "EnergyCFBaseClass.hpp"
+
+#include "EnergyEsForward.hpp"
 
 namespace networkVMC{
 

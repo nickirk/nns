@@ -9,12 +9,10 @@
 #define SRC_SOLVERS_SOLVER_HPP_
 
 #include "../utilities/TypeDefine.hpp"
-#include "../utilities/State.hpp"
+#include "../utilities/StateForward.hpp"
 #include <Eigen/Dense>
 
 namespace networkVMC{
-
-//class State;
 
 // Class doing the minimization in a force-field given by force by different schemes
 template <typename F=std::complex<double>, typename coeffType=std::complex<double>>

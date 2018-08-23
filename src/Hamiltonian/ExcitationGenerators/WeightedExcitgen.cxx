@@ -10,9 +10,11 @@
 #include "../../HilbertSpace/Determinant.hpp"
 #include "../../utilities/TypeDefine.hpp"
 #include "../../utilities/Errors.hpp"
+#include "../../utilities/RNGWrapper.hpp"
 #include "../TwoBodyHamiltonian.hpp"
 #include "ProbUpdater.hpp"
-#include <iostream>
+
+#include <algorithm>
 
 namespace networkVMC {
 
@@ -84,12 +86,7 @@ detType WeightedExcitgen::generateExcitation(
 	// generate a random excitation
 
 	// set up the random number generator
-	// initialise the seed engine
-	std::random_device rd;
-	// use Mersenne-Twister random number generator
-	std::mt19937 rng(rd());
-	// uniform distribution from 0.0 to 1.0
-	std::uniform_real_distribution<double> uniform_dist(0.0,1.0);
+	RNGWrapper rng;
 
 
 	// get information on the number of alpha and beta soin
@@ -101,7 +98,7 @@ detType WeightedExcitgen::generateExcitation(
 	// decide whether a single or double excitation is done
 	double hel{0.0};
 	try{
-	if (uniform_dist(rng) < 1 - pDoubles){
+	if (rng() < 1 - pDoubles){
 		// single excitation
 		target = generateSingleExcit(source,hel,pGen);
 		pGen *= (1- pDoubles);
@@ -150,17 +147,12 @@ detType WeightedExcitgen::generateSingleExcit(detType const &source,double &hel,
     // generate a single excitation
 
     // set up the random number generator
-    // initialise the seed engine
-    std::random_device rd;
-    // use Mersenne-Twister random number generator
-    std::mt19937 rng(rd());
-    // uniform distribution from 0.0 to 1.0
-    std::uniform_real_distribution<double> uniform_dist(0.0,1.0);
+	RNGWrapper rng;
 
     // pick an electron at random with uniform probability
     // floor: greatest integer <= x
     //int elec = 1 + std::floor((uniform_dist(rng)*nel));
-    int elec = std::floor((uniform_dist(rng)*nel));
+    int elec = std::floor(rng()*nel);
     int src = sourceOrbs[elec];
     // return variable: initialize it with the input
     auto target = source;
@@ -300,12 +292,7 @@ std::vector<int> WeightedExcitgen::pickBiasedElecs(std::vector<int> &elecs, detT
     // pick a pair of electrons
 
     // set up the random number generator
-    // initialise the seed engine
-    std::random_device rd;
-    // use Mersenne-Twister random number generator
-    std::mt19937 rng(rd());
-    // uniform distribution from 0.0 to 1.0
-    std::uniform_real_distribution<double> uniform_dist(0.0,1.0);
+	RNGWrapper rng;
     std::vector<int> alpha_num;
     std::vector<int> beta_num;
     int alpha_req=0;
@@ -318,7 +305,7 @@ std::vector<int> WeightedExcitgen::pickBiasedElecs(std::vector<int> &elecs, detT
     // pick the n-th alpha or beta electrons from the determinant
     // according to the availability of pairs and the weighting of
     // opposite-spin pairs relative to same-spin ones
-    double rand = uniform_dist(rng);
+    double rand = rng();
     if (rand < pParallel){
         // same spin pair
         pgen = pParallel / static_cast<double>(aa_elec_pairs+bb_elec_pairs);

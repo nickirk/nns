@@ -6,9 +6,9 @@
  */
 
 #include <vector>
-#include <random>
 #include <cmath>
 #include "../../utilities/Errors.hpp"
+#include "../../utilities/RNGWrapper.hpp"
 #include "../../utilities/TypeDefine.hpp"
 
 // auxiliary functions for excitation generation
@@ -74,8 +74,7 @@ std::vector<int> pickElecPair(std::vector<int> const &source_orbs, std::vector<i
     std::vector<int> elecs;
     std::vector<int> orbs;
     int el1{0},el2{0};
-    std::random_device rng;
-    double const normalisation=static_cast<double>(rng.max()); // minimal potentially returned values is 0
+    RNGWrapper rng;
 
     // number of electrons
     nel = source_orbs.size();
@@ -83,7 +82,7 @@ std::vector<int> pickElecPair(std::vector<int> const &source_orbs, std::vector<i
     elecpairs = (nel*(nel-1))/2;
 
     // pick a pair
-    rand = static_cast<double>(rng())/normalisation;
+    rand = rng();
     int ind = 1 + static_cast<int>(static_cast<double>(elecpairs)*rand);
 
     // generate the two indices and corresponding orbitals
@@ -126,8 +125,7 @@ int pickOrbA(detType const &source, std::vector<int> const &spins, std::vector<i
     int aelec{0};
     int aorb{0},counter{0};
     double rand{0.0};
-    std::random_device rng;
-    double const normalisation=static_cast<double>(rng.max()); // minimal potentially returned values is 0
+    RNGWrapper rng;
 
     aorb = -1;
 
@@ -174,7 +172,7 @@ int pickOrbA(detType const &source, std::vector<int> const &spins, std::vector<i
                 // run through all orbitals to find the desired one
 
                 // unoccupied orbital a
-                rand = static_cast<double>(rng())/normalisation;
+                rand = rng();
                 aelec = static_cast<int>((static_cast<double>(nexcita-nforbiddenorbs)*rand)) + 1;
 
                 counter = 1;
@@ -207,7 +205,7 @@ int pickOrbA(detType const &source, std::vector<int> const &spins, std::vector<i
                 attemptsa = 0;
                 while (true){
                     // draw random orbital
-                    rand = static_cast<double>(rng())/normalisation;
+                    rand = rng();
                     aorb = static_cast<int>(static_cast<double>(norbs)*rand);
                     // test if the orbital is occupied
                     if (!source[aorb]){
@@ -236,7 +234,7 @@ int pickOrbA(detType const &source, std::vector<int> const &spins, std::vector<i
             if ((nexcita-nforbiddenorbs) < 3){
                 // run through all orbitals until the desired one
                 // from the (nexcit-forbidden orbs) is found
-                rand = static_cast<double>(rng())/normalisation;
+                rand = rng();
                 aelec = static_cast<int>(static_cast<double>(nexcita-nforbiddenorbs)*rand) + 1;
                 aspin = spins[0];
 
@@ -270,7 +268,7 @@ int pickOrbA(detType const &source, std::vector<int> const &spins, std::vector<i
 
                 while (true){
                     // draw orbitals randomly from set of orbital
-                    rand = static_cast<double>(rng())/normalisation;
+                    rand = rng();
                     aorb = 2*(1 + static_cast<int>(static_cast<double>(norbs/2)*rand)) + (spins[0]-2);
                     aspin = spins[0];
 
@@ -335,8 +333,7 @@ int pickOrbB(detType const &source, std::vector<int> const &spins, std::vector<i
     int attemptsb{0},counter{0};
     double rand{0.0};
     int belec{0};
-    std::random_device rng;
-    double const normalisation=static_cast<double>(rng.max()); // minimal potentially returned values is 0
+    RNGWrapper rng;
 
     borb = -1;
 
@@ -377,7 +374,7 @@ int pickOrbB(detType const &source, std::vector<int> const &spins, std::vector<i
         // run though all orbials of the same spin to find an
         // allowed one
 
-        rand = static_cast<double>(rng())/normalisation;
+        rand = rng();
         belec = static_cast<int>(static_cast<double>(nexcitb)*rand) + 1;
 
         counter = 0;
@@ -406,7 +403,7 @@ int pickOrbB(detType const &source, std::vector<int> const &spins, std::vector<i
         while (true){
 
             // random orbitals
-            rand = static_cast<double>(rng())/normalisation;
+            rand = rng();
             borb = 2*(1 + static_cast<int>(static_cast<double>(norbs/2)*rand)) + (bspin-2);
 
             if ((!source[borb])&&(borb!=aorb)){

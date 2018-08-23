@@ -9,6 +9,7 @@
 #define SRC_SAMPLERS_FULLSAMPLER_HPP_
 
 #include "Sampler.hpp"
+#include "../Network/ParametrizationForward.hpp"
 
 namespace networkVMC {
 

@@ -15,7 +15,7 @@ namespace networkVMC{
 template <typename F, typename coeffType>
 ListGen<F, coeffType>::ListGen(ExcitationGenerator const &eG_, Basis const &fullBasis_, detType const &HF,
 		Parametrization<F, coeffType> const &para_, int numDets_):
-	Sampler<coeffType>(eG_,HF,numDets_),para(&para_),pos(0),fullBasis(&fullBasis_){
+	Sampler<coeffType>(eG_,numDets_),para(&para_),pos(0),fullBasis(&fullBasis_){
 	std::vector<detType> tmp(numDets_,HF);
 	diffuse(tmp);
 }
@@ -63,20 +63,6 @@ detType ListGen<F, coeffType>::getDet(int i) const{
 	  // we passed a negative index, this is trouble
 	  throw OutOfRangeError(i);
   }
-}
-
-//---------------------------------------------------------------------------------------------------//
-
-template <typename F, typename coeffType>
-detType ListGen<F, coeffType>::getDet() const{
-	pos += 1;
-	// cycle through the list, if we reach the end, start from the beginning
-	if(pos > diffuseList.size()){
-		pos = 1;
-		// and also generate a new list
-		diffuse(diffuseList);
-	}
-	return diffuseList[pos-1];
 }
 
 //---------------------------------------------------------------------------------------------------//

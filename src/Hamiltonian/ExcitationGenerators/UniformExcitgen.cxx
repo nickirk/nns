@@ -9,6 +9,7 @@
 #include <vector>
 #include "../../HilbertSpace/Determinant.hpp"
 #include "../../utilities/Errors.hpp"
+#include "../../utilities/RNGWrapper.hpp"
 #include "ExcitmatType.hpp"
 
 namespace networkVMC {
@@ -42,8 +43,7 @@ detType UniformExcitgen::generateExcitation(detType const &source, double &pGet)
     detType target;
     std::vector<int> holes,particles;
     double rand{0.0};
-    std::random_device rng;
-    double const normalisation=static_cast<double>(rng.max()); // minimal potentially returned values is 0
+    RNGWrapper rng;
     std::vector<int> noccs,nunoccs;
 
     exflag = 3;
@@ -93,7 +93,7 @@ detType UniformExcitgen::generateExcitation(detType const &source, double &pGet)
         pdoubnew = 1.0;
     }
     else if (ic==3){
-        rand = static_cast<double>(rng())/normalisation;
+        rand = rng();
         if (rand<pDoubles){
             ic = 2;
         }
@@ -142,9 +142,7 @@ detType UniformExcitgen::genSingleExcitation(detType const &source, std::vector<
     double rand{0.0};
     int iorb{0},aorb{0},ielec{0},aelec{0},ispin{0};
     int nel{0},norbs{0};
-    std::random_device rng;
-    double const normalisation=static_cast<double>(rng.max()); // minimal potentially returned values is 0
-
+    RNGWrapper rng;
     // number of electrons and spin orbitals
     nel = source_orbs.size();
     norbs = source.size();
@@ -186,7 +184,7 @@ detType UniformExcitgen::genSingleExcitation(detType const &source, std::vector<
     while (true){
 
         // choose a random electron
-        rand = rng()/normalisation;
+        rand = rng();
         // conversion into an integer in the range [a,b]
         // int(a+rand*(b-a+1))
         ielec = static_cast<int>(static_cast<double>(nel*rand));
@@ -234,7 +232,7 @@ detType UniformExcitgen::genSingleExcitation(detType const &source, std::vector<
         // to find the allowed one out of nexcit
 
         // choose the unoccupied orbital a
-        rand = rng()/normalisation;
+        rand = rng();
         aelec = static_cast<int>(static_cast<double>(nexcit)*rand) + 1;
 
         // run through all allowed orbitals until this one is found
@@ -260,7 +258,7 @@ detType UniformExcitgen::genSingleExcitation(detType const &source, std::vector<
             // draw randomly from the set of orbitals
             // impose the spin restriction by only
             // drawing either even or odd numbered orbitals
-            rand = rng()/normalisation;
+            rand = rng();
             aorb = 2*(1+static_cast<int>(rand*static_cast<double>(norbs/2))) + (ispin-2);
 
             // test whether it is in the source determinant

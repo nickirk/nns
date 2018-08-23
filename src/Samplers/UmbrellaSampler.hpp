@@ -10,8 +10,8 @@
 
 #include "Sampler.hpp"
 #include "MetropolisSampler.hpp"
-#include "../Network/TrialWfPara.hpp"
-#include "../Network/Parametrization.hpp"
+#include "../Network/ParametrizationForward.hpp"
+#include "../Network/TrialWfParaForward.hpp"
 
 namespace networkVMC{
 
@@ -34,7 +34,7 @@ class UmbrellaSampler: public Sampler<coeffType> {
     SamplerType type() const{return internalSampler.type();}
   private:
     using Sampler<coeffType>::numDets;
-    using Sampler<coeffType>::cDet;
+    detType cDet;
     MetropolisSampler<F, coeffType> internalSampler;
     TrialWfPara<F,coeffType> const *para;
 };

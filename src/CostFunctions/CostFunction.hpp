@@ -10,8 +10,7 @@
 
 #include <Eigen/Dense>
 #include "../utilities/TypeDefine.hpp"
-#include "../utilities/State.hpp"
-#include <memory>
+#include "../utilities/StateForward.hpp"
 
 namespace networkVMC{
 

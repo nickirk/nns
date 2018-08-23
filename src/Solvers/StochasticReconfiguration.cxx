@@ -7,7 +7,8 @@
 
 #include "StochasticReconfiguration.hpp"
 #include "../utilities/State.hpp"
-#include <iostream>
+#include "../Network/Parametrization.hpp"
+#include <Eigen/IterativeLinearSolvers>
 namespace networkVMC {
 
 template <typename F, typename coeffType>

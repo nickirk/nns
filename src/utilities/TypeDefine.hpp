@@ -11,7 +11,6 @@
 
 #include <complex>
 #include <vector>
-#include <Eigen/Dense>
 
 namespace networkVMC{
 
@@ -20,13 +19,6 @@ namespace networkVMC{
 // Typedef for coefficients
 using cType = std::complex<double>;
 using detType = std::vector<bool>;
-// the weightType and biasType will be eventually removed to be consistent with
-// the template implementation.
-//using weightType = std::vector<std::vector<Eigen::Map<Eigen::MatrixXd>>>;
-//numFilter<lengthFilter>
-//using biasType = std::vector<Eigen::Map<Eigen::VectorXd>>;
-// return type for cost function nabla (derivative with respect to a vector)
-//using nablaType = std::vector<coeffType>;
 
 // Supertypes for samplers and Hamiltonians to set defaults
 // and avoid invalid combinations

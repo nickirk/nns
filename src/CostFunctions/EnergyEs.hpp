@@ -12,10 +12,14 @@
 #include "EnergyCFBaseClass.hpp"
 #include "../utilities/DeepCpyUniquePtr.hpp"
 #include <Eigen/Dense>
+
+// set the default arguments
+#include "EnergyEsForward.hpp"
+
 namespace networkVMC {
 
 class Hamiltonian;
-template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
+template <typename F, typename coeffType>
 class EnergyEs: public CostFunction<F, coeffType> {
   public:
 	using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;

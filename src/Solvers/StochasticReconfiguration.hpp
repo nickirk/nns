@@ -10,8 +10,7 @@
 
 #include "Solver.hpp"
 #include "ADAM.hpp"
-#include "../Network/Parametrization.hpp"
-#include <Eigen/IterativeLinearSolvers>
+#include "../Network/ParametrizationForward.hpp"
 
 namespace networkVMC {
 template <typename F=std::complex<double>, typename coeffType=std::complex<double>>

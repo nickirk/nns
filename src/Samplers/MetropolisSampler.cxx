@@ -8,26 +8,34 @@
 #include "MetropolisSampler.hpp"
 
 #include <cmath>
-#include <iostream>
 #include "../utilities/RNGWrapper.hpp"
 #include "../Network/Parametrization.hpp"
+#include "../HilbertSpace/Basis.hpp"
 
 namespace networkVMC{
 
 template <typename F, typename coeffType>
 MetropolisSampler<F, coeffType>::MetropolisSampler(ExcitationGenerator const &eG_, detType const &HF,
 			          Basis const &fullBasis_, Parametrization<F, coeffType> const &para_,
-                int numDets_):Sampler<coeffType>(eG_,HF,numDets_),para(&para_),
-                lastCoeff(para_.getCoeff(cDet)),fullBasis(&fullBasis_){};
+                int numDets_):Sampler<coeffType>(eG_,numDets_),para(&para_),
+                lastCoeff(para_.getCoeff(HF)),fullBasis(&fullBasis_),cDet(HF){};
 
 template <typename F, typename coeffType>
 MetropolisSampler<F, coeffType>::MetropolisSampler(Hamiltonian const &H_, detType const &HF,
                 Basis const &fullBasis_,Parametrization<F, coeffType> const &para_,
                 int numDets_ ):Sampler<coeffType>(H_,HF,numDets_),para(&para_),
-                fullBasis(&fullBasis_),lastCoeff(para_.getCoeff(cDet)){};
+                fullBasis(&fullBasis_),lastCoeff(para_.getCoeff(HF)),cDet(HF){};
 
 template <typename F, typename coeffType>
 MetropolisSampler<F, coeffType>::~MetropolisSampler() {
+}
+
+//---------------------------------------------------------------------------//
+
+template<typename F, typename coeffType>
+void MetropolisSampler<F, coeffType>::setReference(detType const &a) {
+  cDet = a;
+  lastCoeff = para->getCoeff(a);
 }
 
 //---------------------------------------------------------------------------//
@@ -70,8 +78,6 @@ void MetropolisSampler<F, coeffType>::iterate(coeffType &cI, detType &dI, double
 	// And its coefficient
 	// unbiasing with generation probability in principle necessary (unless prob. is symmetric)
   pBack = Sampler<coeffType>::getConnectionProb(tmp,cDet);
-  //std::cout << "MetropolisSampler.cxx: uni(rng)=" << p << std::endl;
-  //std::cout << "MetropolisSampler.cxx: pJump=" << std::norm(tmpCoeff/lastCoeff)*pBack/pEx << std::endl;
 
   //prob = pBack/pEx*std::norm(tmpCoeffDeref/lastCoeffDeref);
   prob = pBack/pEx*std::norm(tmpCoeff/lastCoeff);
@@ -86,6 +92,15 @@ void MetropolisSampler<F, coeffType>::iterate(coeffType &cI, detType &dI, double
 	dI = cDet;
 	weight =1.;
 }
+
+//---------------------------------------------------------------------------//
+
+// create some random determinant - probably subject to change
+template <typename F, typename coeffType>
+detType MetropolisSampler<F, coeffType>::randDet() const{
+	return getRandomDeterminant(*fullBasis);
+}
+
 //instantiate class
 template class MetropolisSampler<double, double>;
 template class MetropolisSampler<std::complex<double>,std::complex<double>>;
