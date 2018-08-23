@@ -63,7 +63,7 @@ void StochasticReconfiguration<F, coeffType>::update(T &w, T const &force,
   // default hyperparameters tested with small Hubbard models,
   // no guarantee that they work for other systems. 
   // More tests should be run to observe the performace of these parameters
-  double lambda = std::max(100*std::pow(0.9,iteration), 1.);
+  double lambda = std::max(100*std::pow(0.9,iteration), 10.);
   T I = T::Ones(numPars);
   //std::cout << "I=" << I  << std::endl; 
   // Add \epsilon * I to S matrix to prevent ill inversion of the S matrix.
