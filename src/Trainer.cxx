@@ -89,10 +89,10 @@ void Trainer<F, coeffType>::updateParameters(State<coeffType> const &input){
 		dEdPars = NNW.calcNablaParsMarkovConnected(input,dEdC,getE());
 		break;
 	case PreFetched:
-		//dEdPars = NNW.calcNablaParsConnected(input,dEdC);
+		dEdPars = NNW.calcNablaParsConnected(input,dEdC);
 		break;
 	default:
-    throw SamplerTypeDoesNotExist(msampler.type());
+		throw SamplerTypeDoesNotExist(msampler.type());
 	}
 	// feed these to the solver
 	sl.update(NNW.pars(),dEdPars,input,msampler.type());

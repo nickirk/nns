@@ -71,7 +71,7 @@ EnergyEsMarkov<F, coeffType>::T EnergyEsMarkov<F, coeffType>::nabla(State<coeffT
     for (size_t j=0; j < coupledSize; ++j){
       if (input.det(i)==coupledDets[j]){
         std::cout << "EnergyEsMarkov.cxx: Stop!" << std::endl;
-        abort;
+        exit(1);
       }
       // weight
       dEdCtmp = H(input.det(i),coupledDets[j])* coupledC_j[j] * input.weight(i)

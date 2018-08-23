@@ -95,51 +95,6 @@ namespace networkVMC{
       return dCdWk;
   }
 
-  /*
-  template <typename F, typename coeffType>
-  Eigen::Matrix<F, Dynamic, Dynamic> RBM<F, coeffType>::calcdCdwSR(State const &outputState)
-  {
-      Eigen::MatrixXcd result(numPars, outputState.size());
-
-      #pragma omp parallel for
-      for(size_t i=0;i<outputState.size();i++)
-      {
-          T dCtdW= T::Zero(numPars);
-          // do the mapping inside for loop, private
-          //update vector dCidWk
-          dCtdW = getDeriv(outputState.det(i));
-          result.col(i) << (dCtdW);
-      }
-      return result;
-  }
-  */
-  // deprecated due to the change in the structure of outerDerivative
-  /*
-  T RBM<F, coeffType>::calcNablaPars(State const &input, T const &outerDerivative)
-  {
-      Eigen::MatrixXcd dCdW=calcdCdwSR(input);
-      T result= T::Zero(numPars);
-
-      //There is no reduction for vectors of Eigen, so we use critical section instead.
-      //Note: OpenMP 4.0 supports custom reduction. But it is not supported in my current gcc.
-      #pragma omp parallel
-      {
-          T private_result= T::Zero(numPars);
-          #pragma omp for
-          for(size_t i=0;i<input.size();i++)
-          {
-              private_result += (outerDerivative[i]*dCdW.col(i)).conjugate();
-          }
-
-          #pragma omp critical
-          result+=private_result;
-      }
-
-      return result;
-  }
-  */
-
-
   //instantiate
   template class RBM<double, double>;
 

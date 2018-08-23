@@ -29,22 +29,13 @@ class TrialWfPara: public ClonableParametrization<F, coeffType, TrialWfPara<F, c
 	coeffType getTrialCoeff(detType const &det) const;
 
 	Parametrization<F, coeffType> const &base() const{return *basePara;}
-	T calcNablaParsConnected(
-	    State<coeffType> const &inputState,
-	    T const &dEdC){
-		return basePara->calcNablaParsConnected(inputState, dEdC);
-	}
 
-	T calcNablaParsMarkovConnected(
-			State<coeffType> const &inputState,
-	        T const& dEdC, F const& energy){
-		return basePara->calcNablaParsMarkovConnected(inputState, dEdC, energy);
-	}
-
-	// get the coefficient
-	coeffType getCoeff(detType const &det) const;
 	// Obtain the inner derivative dX/dPars with given dX/dC (C are coefficients)
 	// delegated to basePara
+	T getDeriv(detType const &det){return basePara->getDeriv(det);}
+
+	// get the coefficient from base and trial para
+	coeffType getCoeff(detType const &det) const;
 private:
 	DeepCpyUniquePtr<Parametrization<F, coeffType> > basePara;
 	DeepCpyUniquePtr<Parametrization<F, coeffType> const> trialWf;

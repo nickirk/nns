@@ -9,10 +9,6 @@
 #define SRC_NETWORK_PARAMETRIZATION_HPP_
 
 #include "../utilities/TypeDefine.hpp"
-#include <fstream>
-#include <iterator>
-#include <string>
-#include <utility>
 #include <Eigen/Dense>
 #include "../utilities/State.hpp"
 #include "../utilities/Errors.hpp"
@@ -30,9 +26,14 @@ template <typename F=std::complex<double>, typename coeffType=std::complex<doubl
 class Parametrization {
   public:
 	using T=Eigen::Matrix<F, Eigen::Dynamic ,1>;
-    Parametrization(){};
-    // default the big five - required for virtual destructor
+    // default the virtual destructor
     virtual ~Parametrization() = default;
+    // default the move/copy constructors and assignment operators (not automatically done
+    // due to the virtual destructor)
+    Parametrization(Parametrization<F, coeffType> &&) = default;
+    Parametrization(Parametrization<F, coeffType> const&) = default;
+    Parametrization<F, coeffType> operator=(Parametrization<F, coeffType> &&) = default;
+    Parametrization<F, coeffType> operator=(Parametrization<F, coeffType> const&) = default;
 
     // It needs to be able to return coefficients somehow
     virtual coeffType getCoeff(detType const &det) const=0; // Can throw an invalidDeterminantError
@@ -41,139 +42,30 @@ class Parametrization {
     // We also need write access to the parameters (this is the non-const variant)
     virtual T& pars(){return const_cast<T&>
       (static_cast<Parametrization<F, coeffType> const&>(*this).pars());};
-    virtual void writeParsToFile(std::string file){
-      T tmpPars = pars();
-      std::vector<F> parsStd(tmpPars.data(), tmpPars.data()+tmpPars.size());
-      std::ofstream fout(file);
-      fout.precision(10);
-      std::copy(parsStd.begin(), parsStd.end(),
-      std::ostream_iterator<F>(fout, "\n"));
-      fout.close();
-    };
-    virtual void readParsFromFile(std::string file){
-      std::ifstream input(file);
-      if (!input){
-         throw FileNotFound(file);
-         abort();
-      }
 
-      T &innerPars = pars();
-      std::vector<F> buffer{
-        std::istream_iterator<F>(input),
-        std::istream_iterator<F>() };
-      assert (buffer.size() == pars().size());
-      innerPars = Eigen::Map<T> (buffer.data(),buffer.size());
-      //use the pars() with write access
-    };
-    virtual int getNumPars(){ return pars().size();};
-//   Obtain the inner derivative dX/dPars with given dX/dC (C are coefficients)
-    /*
-    virtual T calcNablaPars(
-  		  State const &input,
-  		  T const &outerDerivative) = 0; // can throw a SizeMismatchError if input and outerDerivative
-    	  	  	  	  	  	  	  	  	  	  	  	 // have different size
-    */
-    virtual T getMarkovDeriv(detType const &det) const{
-  	  return getDeriv(det)/getCoeff(det);
-    };
-    virtual T getDeriv(detType const &det) const{
-  	  return T();
-    };
-//   The following features are experimental and not essential to the interface
-    // Some other derivative
+    void writeParsToFile(std::string file) const;
+    void readParsFromFile(std::string file);
+
+    int getNumPars(){ return pars().size();};
+
   // The following function is used when use ListGen or fullSampler
-  T calcNablaParsConnected(
-    State<coeffType> const &inputState,
-    T const &dEdC
-   ){
-      int numDets = inputState.size();
-      // spaceSize = size of sampled dets and their coupled ones
-      int spaceSize = inputState.totalSize();
-      int numPars=getNumPars();
-      T dEdW= T::Zero(numPars);
-      // T dEdWTmp= T::Zero(numPars);
-      Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic> dCdW = Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>::Zero(numPars, spaceSize);
-      //std::vector<std::complex<double>> dedc=dEdC;
-        #pragma omp for
-        // fill up the matrix of dCdW, like in EnergyEsMarkov.cxx
-        // reserve space and in the end use matrix*vector instead of
-        // a summation
-        for (int i=0; i < numDets; ++i){
-          //need private dCtdW
-          T dCtdW= T::Zero(numPars);
-          // do the mapping inside for loop, private
-          //update vector dCidWk
-          dCtdW = getDeriv(inputState.det(i));
-          //update vector dCidWk
-          // multiplication should be done by matrix vector product
-          // fill up the dCdW matrix
-          dCdW.col(i) << (dCtdW.conjugate());
-          //dedc[i] = 1;
-          std::vector<detType> coupledDets = inputState.coupledDets(i);
-          std::vector<coeffType> coupledCoeffs = inputState.coupledCoeffs(i);
-          size_t coupledSize = inputState.coupledDets(i).size();
-          size_t pos = inputState.locate(i);
-          for (size_t j(0); j < coupledSize; ++j){
-            //update dCjdW
-            //dCtdW = getDeriv(coupledDets[j]);
-            // fill up the dCdW matrix with coupled dets contribution
-            dCdW.col(numDets+pos+j) << (dCtdW.conjugate());
-            //dEdWTmp +=  dCtdW * dEdC[pos];
-          }
-        }
-      // map std::vector of dEdC to Eigen Vector
-      //T dEdCEigen=Eigen::Map<T>(dedc.data(),spaceSize);
-      // make it parallel. TODO
-      dEdW = (dCdW * dEdC);//.conjugate();
-      return dEdW;
-    }
+    virtual T calcNablaParsConnected(State<coeffType> const &inputState,
+    		T const &dEdC);
 
+  // And this one is for Metropolis or Umbrella sampling
     virtual T calcNablaParsMarkovConnected(State<coeffType> const &inputState,
-                  T const& dEdC, F const& energy){
-      int numDets = inputState.size();
-      int spaceSize = inputState.totalSize();
-      int numPars=getNumPars();
-      T dEdW= T::Zero(numPars);
-      Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>
-      dCdW = Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>::Zero(numPars, spaceSize);
-      #pragma omp for
-      // fill up the matrix of dCdW, like in EnergyEsMarkov.cxx
-      // reserve space and in the end use matrix*vector instead of
-      // a summation
-      for (int i=0; i < numDets; ++i){
-        //need private dCtdW
-        T dCtdW= T::Zero(numPars);
-        // do the mapping inside for loop, private
-        //update vector dCidWk
-        dCtdW = getMarkovDeriv(inputState.det(i));
-        // multiplication should be done by matrix vector product
-        // fill up the dCdW matrix
-        dCdW.col(i) << (dCtdW.conjugate());
-        dEdW -= energy * dCtdW.conjugate()/ inputState.getTotalWeights();
-        //dedc[i] = 1;
-        std::vector<detType> coupledDets = inputState.coupledDets(i);
-        std::vector<coeffType> coupledCoeffs = inputState.coupledCoeffs(i);
-        size_t coupledSize = inputState.coupledDets(i).size();
-        size_t pos = inputState.locate(i);
-        for (size_t j(0); j < coupledSize; ++j){
-          // fill up the dCdW matrix with coupled dets contribution
-          dCdW.col(numDets+pos+j) << (dCtdW.conjugate());
-          //dEdWTmp +=  dCtdW * dEdC[pos];
-        }
-      }
-      dEdW += (dCdW * dEdC);//.conjugate();
-      return dEdW;
-    }
+            T const& dEdC, F const& energy);
 
-    // stochastic reconfiguration derivative
-    /*
-    virtual Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic> calcdCdwSR(
-      State const &outputState
-    ){return Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>();};
-    */
     // virtual construction
     virtual Parametrization<F, coeffType>* clone() const = 0;
     virtual Parametrization<F, coeffType>* move_clone() = 0;
+
+  private:
+    //   Obtain the inner derivative dX/dPars with given dX/dC (C are coefficients)
+        T getMarkovDeriv(detType const &det) const{
+      	  return getDeriv(det)/getCoeff(det);
+        };
+        virtual T getDeriv(detType const &det) const=0;
 
 };
 
@@ -195,7 +87,6 @@ class ClonableParametrization: public Parametrization<T, coeffType>{
 		return new Base(std::move(static_cast<Base &>(*this) ) );
 	}
 };
-
 
 } /* namespace networkVMC */
 

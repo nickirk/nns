@@ -15,7 +15,6 @@
 #include "CostFunctions/CostFunction.hpp"
 #include "Samplers/Sampler.hpp"
 #include <Eigen/Dense>
-#include <memory>
 
 namespace networkVMC{
 

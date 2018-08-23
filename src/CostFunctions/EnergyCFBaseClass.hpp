@@ -42,9 +42,6 @@ protected:
 	// cache variables for intermediate results
 	mutable coeffType energy;
 	mutable double normalizerCoeff;
-
-	// Has a reference member, so assignment is not a thing
-	EnergyCFBaseClass& operator=(EnergyCFBaseClass const &source);
 };
 
 } /* namespace networkVMC */

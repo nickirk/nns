@@ -26,14 +26,14 @@ class EnergyEsMarkov: public EnergyCFBaseClass<F, coeffType>{
 	// directly, this has to be done via EnergyEs
 	friend EnergyEs<F, coeffType>;
 
-	virtual coeffType calc(State<coeffType> const &input) const {return energy;};
+	coeffType calc(State<coeffType> const &input) const {return energy;};
 	T nabla(State<coeffType> const &input) const;
 
 	// Allow for polymorphic copy
-	virtual EnergyEsMarkov* clone() const {return new EnergyEsMarkov(*this);}
+	EnergyEsMarkov* clone() const {return new EnergyEsMarkov(*this);}
 
 	// For sake of completeness, we specify that this requires connections
-	virtual int connectionsRequired() const {return numCons;}
+	int connectionsRequired() const {return numCons;}
 private:
     // Make sure this is not manually constructed, but only via
     // EnergyEs. This way, we cannot attribute the wrong CF to a sampler
