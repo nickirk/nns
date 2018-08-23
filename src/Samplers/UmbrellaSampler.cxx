@@ -12,16 +12,15 @@ namespace networkVMC{
 template <typename F, typename coeffType>
 UmbrellaSampler<F, coeffType>::UmbrellaSampler(ExcitationGenerator const &eG_, detType const &HF,
 			    Basis const &fullBasis_, TrialWfPara<F, coeffType> const &para_,
-                int numDets_):Sampler(eG_,numDets_),cDet(HF),
-				internalSampler(eG_, fullBasis_, para_.base(), numDets_),para(para_),
-				lastCoeff(para_.getBaseCoeff(cDet)){};
+                int numDets_):Sampler<coeffType>(eG_,numDets_),cDet(HF),
+				internalSampler(eG_, HF, fullBasis_, para_.base(), numDets_),para(&para_){};
 
 template <typename F, typename coeffType>
 UmbrellaSampler<F, coeffType>::UmbrellaSampler(Hamiltonian const &H_, detType const &HF,
                 Basis const &fullBasis_,TrialWfPara<F, coeffType> const &para_,
-                int numDets_ ):Sampler(eG_,numDets_),cDet(HF),
+                int numDets_ ):Sampler<coeffType>(H_, HF, numDets_),cDet(HF),
 				internalSampler(H_,HF, fullBasis_, para_.base(), numDets_),
-				para(para_),lastCoeff(para_.getBaseCoeff(cDet)){};
+				para(&para_){};
 
 //---------------------------------------------------------------------------//
 
