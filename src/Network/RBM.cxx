@@ -6,6 +6,7 @@
  */
 
 #include "RBM.hpp"
+#include <new>
 
 namespace networkVMC{
 
@@ -30,7 +31,6 @@ w(pars_vec.data()+w_offset, sizeHidden_, sizeInput_){
 	//a.setZero();
 	//b.normalize();
 	//w.normalize();
-
 }
 
 //---------------------------------------------------------------------------//
@@ -65,9 +65,15 @@ RBM<F, coeffType>& RBM<F, coeffType>::operator=(RBM<F, coeffType> const &source)
 		new (&b) Eigen::Map<T>(pars_vec.data()+b_offset, sizeHidden);
 		new (&w) Eigen::Map<Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic> >
 			(pars_vec.data()+w_offset, sizeHidden, sizeInput);
+
 	}
 	return *this;
 }
+
+//---------------------------------------------------------------------------//
+
+template<typename F, typename coeffType>
+RBM<F, coeffType>::~RBM(){}
 
 //---------------------------------------------------------------------------//
 

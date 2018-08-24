@@ -30,7 +30,7 @@ namespace networkVMC{
     // but moving works
     RBM(RBM<F, coeffType> &&) = default;
     RBM<F, coeffType> & operator=(RBM<F, coeffType> &&) = default;
-    ~RBM(){};
+    ~RBM();
 
   private:
     int sizeHidden;

@@ -26,7 +26,7 @@ int main(){
 	// and a linear parametrization as a trial WF
 	auto trial = DirectParametrization<std::complex<double>>(twfBasis);
 
-	TrialWfPara<std::complex<double>> twfPara(network,trial);
+	auto twfPara = TrialWfPara<>::toTrialWfPara(network,trial);
 
 	// first compare the coefficients of the base*trial with that of the TrialWfPara
 	assert(std::abs(twfPara.getCoeff(HF) - twfPara.getTrialCoeff(HF)*twfPara.getBaseCoeff(HF)) < epsilon);
