@@ -30,6 +30,11 @@ int main(){
 	// first compare the coefficients of the base*trial with that of the TrialWfPara
 	assert(std::abs(twfPara.getCoeff(HF) - trial.getCoeff(HF)*network.getCoeff(HF)) < epsilon);
 
+  std::cout << "twfPara.getBaseCoeff(HF)= " << twfPara.getBaseCoeff(HF) << std::endl;
+  std::cout << "twfPara.getTrialCoeff(HF)= " << twfPara.getTrialCoeff(HF) << std::endl;
+  std::cout << "twfPara.getCoeff(HF)= " << twfPara.getCoeff(HF) << std::endl;
+  std::cout << "twfPara.getBaseCoeff(HF)*twfPara.getTrialCoeff(HF)= " << 
+    twfPara.getBaseCoeff(HF)*twfPara.getTrialCoeff(HF) << std::endl;
 	// and now check the derivative (w.r. to 1 coefficient)
 
 	// define a dummy state with 1 det and 3 times the same det as coupled (all with coeff. of 1)
@@ -39,7 +44,8 @@ int main(){
 	singleDet.coupledDets(0) = std::vector<detType>(0,HF);
 	singleDet.coupledCoeffs(0) = std::vector<cType>(0,1.0);
 
-	auto outerDerivative = Eigen::VectorXcd(cType(1,1.0));
+	Eigen::VectorXcd outerDerivative(1);
+  outerDerivative << (cType(1,1.0));
 
 	auto nabla = twfPara.calcNablaParsConnected(singleDet,outerDerivative);
 

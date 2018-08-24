@@ -9,6 +9,7 @@
 #include "../Hamiltonian/Hamiltonian.hpp"
 #include "Basis.hpp"
 #include <algorithm>
+#include <iostream> //for test
 #include "../utilities/RNGWrapper.hpp"
 
 #include "BasisGenerator.hpp"
@@ -50,7 +51,8 @@ int Basis::getIndexByDet(detType const & det_) const{
 detType getRandomDeterminant(Basis const &fullBasis){
   // Essentially, we just get a random number and then return the corresponding det
   RNGWrapper rng; // Wrapper class for Mersenne-Twister RNG
-  auto randomDet = fullBasis.getDetByIndex(rng());
+  //rng() generate real numbers!!
+  auto randomDet = fullBasis.getDetByIndex(static_cast<int>(fullBasis.size()*rng()));
   return randomDet;
 }
 

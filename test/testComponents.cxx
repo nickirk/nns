@@ -23,6 +23,20 @@ void testRBMMetropolis(networkVMC::SpinConfig const &sC, networkVMC::Hamiltonian
 	solveADAM(network, mySampler, H);
 }
 
+void testTrialMetropolis(SpinConfig const &sC, Hamiltonian const &H){
+	int const numHidden =  20;
+	// Base parametrization
+	RBM<cType,cType> basePara(sC.numSpinOrbs(), numHidden);
+	// Trial Wf
+	Basis basis(sC,H);
+	DirectParametrization<cType,cType> twf(basis);
+
+	TrialWfPara<cType,cType> varWF(basePara, twf);
+
+	MetropolisSampler<> mySampler(H,basis.getDetByIndex(0), basis, varWF);
+	solveADAM(varWF, mySampler, H);
+}
+
 void testAdj(LatticeHamiltonian const &test){
 	std::cout << "Number of sites: " << test.size() << std::endl;
 	for(int i = 0; i < test.size(); ++i){

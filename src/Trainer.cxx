@@ -94,6 +94,7 @@ void Trainer<F, coeffType>::updateParameters(State<coeffType> const &input){
 	default:
 		throw SamplerTypeDoesNotExist(msampler.type());
 	}
+
 	// feed these to the solver
 	sl.update(NNW.pars(),dEdPars,input,msampler.type());
 }

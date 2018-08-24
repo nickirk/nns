@@ -15,6 +15,8 @@
 void testDeterministicFullSampling(networkVMC::SpinConfig const &sC, networkVMC::Hamiltonian const &H);
 // use the RBM with metropolis sampling
 void testRBMMetropolis(networkVMC::SpinConfig const &sC, networkVMC::Hamiltonian const &H);
+// use a trial WF parametrized RBM with metropolis sampling
+void testTrialMetropolis(networkVMC::SpinConfig const &sC, networkVMC::Hamiltonian const &H);
 // check the adjacencyList of a lattice hamiltonian
 void testAdj(networkVMC::LatticeHamiltonian const &test);
 // check the basis generation

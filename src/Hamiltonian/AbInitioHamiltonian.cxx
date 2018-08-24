@@ -884,13 +884,6 @@ std::vector<detType> AbInitioHamiltonian::getCoupledStates(detType const &source
         coupledList.push_back(target);
     }
 
-    for(auto x:coupledList){
-    	if(x == source){
-    		std::cout << "WARNING: Connecting to self: \n";
-    		printDet(source);
-    	}
-    }
-
     return coupledList;
 
 }
