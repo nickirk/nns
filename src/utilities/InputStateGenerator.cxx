@@ -15,7 +15,8 @@
 namespace networkVMC {
 
 template <typename F, typename coeffType>
-InputStateGenerator<F, coeffType>::InputStateGenerator(Sampler<coeffType> &msampler_, Hamiltonian const &H_, Parametrization<F, coeffType> const &para_):
+InputStateGenerator<F, coeffType>::InputStateGenerator(Sampler<coeffType> &msampler_, Hamiltonian const &H_,
+		Parametrization<F, coeffType> const &para_):
 	msampler(msampler_), H(H_), para(para_){
 }
 

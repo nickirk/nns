@@ -25,9 +25,9 @@ coeffType EnergyEsMarkov<F, coeffType>::evaluate(State<coeffType> const &input) 
   for (int i=0; i < numDets; ++i){
     double Hij(0.);
     coeffType c_i=input.coeff(i);
-    std::vector<coeffType> coupledC_j = input.coupledCoeffs(i);
-    std::vector<detType> coupledDets = input.coupledDets(i);
-    std::vector<double> coupledWeights = input.coupledWeights(i);
+    std::vector<coeffType> const& coupledC_j = input.coupledCoeffs(i);
+    std::vector<detType> const& coupledDets = input.coupledDets(i);
+    std::vector<double> const& coupledWeights = input.coupledWeights(i);
     size_t coupledSize = coupledC_j.size();
     Hij = H(input.det(i), input.det(i)) * input.weight(i);
     energyVal += Hij;
@@ -63,9 +63,9 @@ EnergyEsMarkov<F, coeffType>::T EnergyEsMarkov<F, coeffType>::nabla(State<coeffT
     F dEdCtmp = (H(input.det(i), input.det(i))) * input.weight(i);
     // divide by  totalWeights
     dEdC(i) = dEdCtmp / input.getTotalWeights();
-    std::vector<coeffType> coupledC_j = input.coupledCoeffs(i);
-    std::vector<detType> coupledDets = input.coupledDets(i);
-    std::vector<double> coupledWeights = input.coupledWeights(i);
+    std::vector<coeffType> const &coupledC_j = input.coupledCoeffs(i);
+    std::vector<detType> const &coupledDets = input.coupledDets(i);
+    std::vector<double> const &coupledWeights = input.coupledWeights(i);
     size_t coupledSize = coupledDets.size();
     int pos=input.locate(i);
     for (size_t j=0; j < coupledSize; ++j){

@@ -58,7 +58,7 @@ class Parametrization {
 
     // virtual construction
     virtual Parametrization<F, coeffType>* clone() const = 0;
-    virtual Parametrization<F, coeffType>* move_clone() = 0;
+    virtual Parametrization<F, coeffType>* moveClone() = 0;
 
     //friend class TrialWfPara<F, coeffType>;
     virtual T getDeriv(detType const &det) const=0;
@@ -82,7 +82,7 @@ class ClonableParametrization: public Parametrization<T, coeffType>{
 	}
 
 	// move-clone (moves the data to the return pointer)
-	virtual Parametrization<T, coeffType>* move_clone(){
+	virtual Parametrization<T, coeffType>* moveClone(){
 		return new Base(std::move(static_cast<Base &>(*this) ) );
 	}
 };

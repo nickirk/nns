@@ -65,39 +65,21 @@ void StochasticReconfiguration<F, coeffType>::update(T &w, T const &force,
   // More tests should be run to observe the performace of these parameters
   double lambda = std::max(100*std::pow(0.9,iteration), 10.);
   T I = T::Ones(numPars);
-  //std::cout << "I=" << I  << std::endl; 
   // Add \epsilon * I to S matrix to prevent ill inversion of the S matrix.
   double error=1.;
   T x;
   Eigen::ConjugateGradient<Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Lower|Eigen::Upper> cg;
-  //Eigen::ConjugateGradient<Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Lower|Eigen::Upper> cg;
   cg.setTolerance(1e-16);
   cg.setMaxIterations(10000);
   while (error>1e-16){
-    //std::cout << "StochasticReconfiguration.cxx: lambda=" << lambda << std::endl;
     S+=I.asDiagonal()*lambda;
-    //S+=S.diagonal().asDiagonal()*lambda;
     cg.compute(S);
     x = cg.solve(force);
     error = cg.error();
     lambda += 0.002;
-    //std::cout << "StochasticReconfiguration.cxx: #iterations:     " 
-    //  << cg.iterations() << std::endl;
-    //std::cout << "StochasticReconfiguration.cxx: estimated error: " 
-    //  << cg.error()      << std::endl;
   }
   x /= std::sqrt(std::real(x.dot(S * x)));
 
-  //std::cout << "StochasticReconfiguration.cxx: S=" << std::endl;
-  //std::cout << S << std::endl;
-  //S+=S.diagonal().asDiagonal()*lambda;
-  //Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic> II = I.asDiagonal();
-  //Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic> residual = S*(S.llt().solve(II)).adjoint();
-  //std::cout << "StochasticReconfiguration.cxx: residual=" << std::endl;
-  //std::cout << residual << std::endl;
-  //w-=Solver<F, coeffType>::learningRate*S.llt().solve(II)*force;
-  //internalSolver.setLearningRate(Solver<F, coeffType>::learningRate);
-  //internalSolver.update(w, x, input, samplerType);
   w-=Solver<F, coeffType>::learningRate*x;
 	// increase the iteration counter
 	iteration += 1;

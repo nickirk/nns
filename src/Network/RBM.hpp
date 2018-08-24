@@ -24,6 +24,14 @@ namespace networkVMC{
     T getDeriv(detType const &det) const;
     T const& pars() const;
 
+    // copying has to be defined explicitly, because it requires re-initializing the maps
+    RBM(RBM<F, coeffType> const &source);
+    RBM<F, coeffType> & operator=(RBM<F, coeffType> const &);
+    // but moving works
+    RBM(RBM<F, coeffType> &&) = default;
+    RBM<F, coeffType> & operator=(RBM<F, coeffType> &&) = default;
+    ~RBM(){};
+
   private:
     int sizeHidden;
     int numPars;
