@@ -6,7 +6,6 @@
  */
 
 #include "RBM.hpp"
-#include <iostream>
 
 namespace networkVMC{
   template <typename F, typename coeffType>

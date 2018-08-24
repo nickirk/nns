@@ -11,7 +11,6 @@
 #include "../Network/Parametrization.hpp"
 #include "../Hamiltonian/ExcitationGenerators/ConnectionGenerators/ConnectionGenerator.hpp"
 #include <iostream>
-
 #include "../Hamiltonian/TwoBodyHamiltonian.hpp"
 namespace networkVMC {
 

@@ -18,7 +18,7 @@ int main(){
 	Basis basis(sC,HH);
 	int const numHidden = 20;
 	// RBM parametrization (needs complex coeffs)
-	RBM network(sC.numSpinOrbs(),numHidden);
+	RBM<> network(sC.numSpinOrbs(),numHidden);
 	// start with the AFM determinant
 	detType afmDet(sC.numSpinOrbs(),false);
 	for(int i = 0; i < afmDet.size(); i+=2){

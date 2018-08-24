@@ -18,20 +18,15 @@ int main(){
   double trainRate(0.005);
   double U{4}, t{-1};
   int numStates = numSites*2;
-  //FermiHubbardHamiltonian modelHam(U,t,numSites);
-  //HeisenbergHamiltonian modelHam(-1.,true, numSites);
-  //vector<detType> list;
   //generate hamiltonian
   AbInitioHamiltonian modelHam(0);
   std::string file_name = "FCIDUMP";
   modelHam = readAbInitioHamiltonian(file_name,1);
   numStates = modelHam.getNumOrbs();
-  //std::cout << "numStates=" << numStates << std::endl;
   SpinConfig spinConfig(spinUp, spinDown,numStates);// numStates);
   Basis basis(spinConfig,modelHam);
   std::cout << "basis size=" << basis.size() << std::endl;
   RBM<std::complex<double>, std::complex<double>> rbm(numStates, numHidden);
-  //DirectParametrization<std::complex<double>> rbm(basis);
 
   std::cout << "Initial vals of par=" << std::endl;
   std::cout << rbm.pars() << std::endl;
@@ -40,12 +35,9 @@ int main(){
 
   detType HF=basis.getDetByIndex(0);
   UniformExcitgen RSHG(HF);
-  //LatticeExcitgen RSHG(modelHam);
-  //WeightedExcitgen RSHG(modelHam,HF);
-  //MetropolisSampler<std::complex<double>,std::complex<double>> sampler(RSHG, HF,basis, rbm);
-  //ListGen<std::complex<double>> sampler(RSHG, basis, HF,rbm,100);
-  //sampler.setNumDets(500);
-  FullSampler<std::complex<double>> sampler(modelHam, basis, rbm);
+
+  MetropolisSampler<std::complex<double>,std::complex<double>> sampler(RSHG, HF,basis, rbm);
+
   EnergyEs<std::complex<double>,std::complex<double>> eCF(modelHam,-1);
   //Setup the trainer
   std::complex<double> energy{0.0};
