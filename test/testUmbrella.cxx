@@ -42,7 +42,7 @@ int main(){
   // the system
   //-----------------------------------------------------//
   // if read RBM from file
-  bool readRBMFromFile= true;
+  bool readRBMFromFile= false;
   RBM<std::complex<double>, std::complex<double>> rbm(numStates, numHidden);
   if (readRBMFromFile){
     std::cout << "Reading RBM pars from file" << std::endl;

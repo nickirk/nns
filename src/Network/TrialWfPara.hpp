@@ -23,13 +23,14 @@ class TrialWfPara: public ClonableParametrization<F, coeffType, TrialWfPara<F, c
     using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
 	// we move the parametrizations to the TrialWfParametrization, that is, their stand-alone
 	// versions are empty afterwards
-	TrialWfPara(Parametrization<F, coeffType> const &basePara_, Parametrization<F, coeffType> const &trialWf_):
-		basePara(basePara_.clone()),trialWf(trialWf_.clone()){};
+	TrialWfPara(Parametrization<F, coeffType> &basePara_, Parametrization<F, coeffType> &trialWf_):
+		// parametrizations typically coitan Eigen::Map to their own parameters, so we move here until we wrote
+		// custom copy constructors
+		basePara(basePara_.move_clone()),trialWf(trialWf_.move_clone()){};
 		//basePara(basePara_.clone()),trialWf(trialWf_.clone()){};
 
 	// return of the parameters is delegated to basePara
 	T const& pars() const {return basePara->pars();}
-
 	coeffType getBaseCoeff(detType const &det) const;
 
 	// additional functionality of the trialwfpara - return the coeffs of the trial wf

@@ -8,6 +8,7 @@
 #include <iostream>
 #include <assert.h>
 #include <complex>
+#include <Eigen/Dense>
 #include "../src/NNWLib.hpp"
 #include "defaultSystem.hpp"
 
@@ -28,7 +29,7 @@ int main(){
 	TrialWfPara<std::complex<double>> twfPara(network,trial);
 
 	// first compare the coefficients of the base*trial with that of the TrialWfPara
-	assert(std::abs(twfPara.getCoeff(HF) - trial.getCoeff(HF)*network.getCoeff(HF)) < epsilon);
+	assert(std::abs(twfPara.getCoeff(HF) - twfPara.getTrialCoeff(HF)*twfPara.getBaseCoeff(HF)) < epsilon);
 
   std::cout << "twfPara.getBaseCoeff(HF)= " << twfPara.getBaseCoeff(HF) << std::endl;
   std::cout << "twfPara.getTrialCoeff(HF)= " << twfPara.getTrialCoeff(HF) << std::endl;
@@ -49,18 +50,20 @@ int main(){
 
 	auto nabla = twfPara.calcNablaParsConnected(singleDet,outerDerivative);
 
+	// the base parametrization
+	Parametrization<cType, cType> const& baseRef = twfPara.base();
 	// the number of parameters does not change
-	assert(nabla.size() == network.pars().size());
+	assert(nabla.size() == baseRef.pars().size());
 
-	// and check if the derivative has the correct values
-	auto baseNabla = network.calcNablaParsConnected(singleDet,outerDerivative);
-
-	for(size_t i = 0; i < nabla.size(); ++i){
-		assert( std::abs(baseNabla(i) - nabla(i)) < epsilon);
-	}
-
-	// try something more involved
-	twfPara = TrialWfPara<std::complex<double>>(network,twfPara);
+	// simulate polymorphic access
+	Parametrization<cType, cType> &twfRef = twfPara;
+	// now test manipulation of the trial wf pars
+	std::cout << "Parameters checksum: "<< twfRef.pars().squaredNorm() << std::endl;
+	twfRef.pars() *= std::complex<double>(2.0,0.0);
+	std::cout << "Parameters checksum: "<< twfRef.pars().squaredNorm() << std::endl;
+	std::cout << "Coeff now: " << twfRef.getCoeff(HF) << std::endl;
+	std::cout << "Base checksum: " << baseRef.pars().squaredNorm() << std::endl;
+	std::cout << "Base coeff: " << baseRef.getCoeff(HF) << std::endl;
 }
 
 

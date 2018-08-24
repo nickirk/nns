@@ -29,10 +29,16 @@ void solveEs(networkVMC::Parametrization<F, coeffType> &para, networkVMC::Sample
 		networkVMC::Hamiltonian const &H, networkVMC::Solver<F, coeffType> &solver){
 	networkVMC::EnergyEs<F, coeffType> eCF(H,-1);
 	networkVMC::Trainer<F, coeffType> etr(para,msampler,solver,eCF,H);
-	for(int i = 1; i < 4000; ++i){
+	networkVMC::detType HF;
+	for(int i = 1; i < 4; ++i){
 		etr.train();
+		if(i==1) HF = etr.getState().det(0);
 		std::cout << "On iteration " << i << std::endl;
 		std::cout << "Current energy: " << etr.getE()<<std::endl;
+		std::cout << "Current state: " << std::endl;
+		auto pars = para.pars();
+		std::cout << pars(0) << std::endl;
+		std::cout << para.getCoeff(HF) << std::endl;
 	}
 }
 
