@@ -164,9 +164,14 @@ detType excite(detType const &source, int i, int j){
 
 bool operator==(detType const& a, detType const& b) { return verbatimCast(a) == verbatimCast(b);}
 
-bool operator < (detType const& lhs, detType const& rhs)
+bool operator< (detType const& lhs, detType const& rhs)
 {
   return verbatimCast(lhs) < verbatimCast(rhs);
+}
+
+bool operator> (detType const& lhs, detType const& rhs)
+{
+  return verbatimCast(lhs) > verbatimCast(rhs);
 }
 
 bool compare_det(detType const& lhs, detType const& rhs){
