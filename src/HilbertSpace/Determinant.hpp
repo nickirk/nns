@@ -41,8 +41,10 @@ void getExcitation(detType const &a, detType const &b, std::vector<int> &excitat
 // binary operators for determinants
 bool operator== (detType const &a, detType const &b);
 bool operator< (detType const &lhs, detType const &rhs);
-bool operator> (detType const &lhs, detType const &rhs);
-bool compare_det(detType const &lhs, detType const &rhs);
+inline bool operator> (detType const &lhs, detType const &rhs){return rhs < lhs;}
+inline bool operator<= (detType const &lhs, detType const &rhs){return !(lhs > rhs);}
+inline bool operator>= (detType const &lhs, detType const &rhs){return !(rhs > lhs);}
+inline bool operator!= (detType const &a, detType const &b){return !(a==b);}
 
 // output function for debugging
 void printDet(detType const &out);

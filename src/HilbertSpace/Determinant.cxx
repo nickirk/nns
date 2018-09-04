@@ -169,16 +169,6 @@ bool operator< (detType const& lhs, detType const& rhs)
   return verbatimCast(lhs) < verbatimCast(rhs);
 }
 
-bool operator> (detType const& lhs, detType const& rhs)
-{
-  return verbatimCast(lhs) > verbatimCast(rhs);
-}
-
-bool compare_det(detType const& lhs, detType const& rhs){
-
-    return (lhs<rhs);
-}
-
 // for debugging: output a determinant
 
 void printDet(detType const &out){

@@ -37,22 +37,13 @@ int main(){
   // generate the spin config
   std::cout << numStates << std::endl;
   // this is additional info, use something where we can construct the basis
-  int spinUp(3);
-  int spinDown(3);
+  int spinUp(2);
+  int spinDown(2);
   SpinConfig spinConfig{spinUp,spinDown, numStates};
   //generate basis, the basis class constructor takes in the spin configurations.
   Basis basis(spinConfig,modelHam);
 
   cout << "Basis size= " << basis.size() << endl;
-  cout << "Determinants: " << endl;
-  for (size_t i=0; i<basis.size(); ++i){
-      std::vector<int> positions = getOccupiedPositions(basis.getDetByIndex(i));
-      cout << " ";
-      for (size_t j=0; j<positions.size(); ++j){
-          cout << (positions[j]+1) << " , ";
-      }
-      cout << endl;
-  }
 
   // form Hamiltonian and diagonalise it
   // Eigen matrices are columnmajor by default
@@ -66,7 +57,6 @@ int main(){
       }
   }
   cout << "\n Non-zero Hamiltonian matrix elements: i,j,H_ij \n" << endl;
-
   cout.precision(12);
   for (int i=0; i<basis.size(); ++i){
       for (int j=0; j<basis.size(); ++j){
@@ -224,7 +214,7 @@ int main(){
           cout << " Number of double excitations: " << ndoubleexcit << endl;
           cout << " Total number of excitations: " << nexcit << endl;
           std::vector<detType> CoupledDeterminants = modelHam.getCoupledStates(basis.getDetByIndex(i));
-          std::sort(CoupledDeterminants.begin(),CoupledDeterminants.end(),compare_det);
+          std::sort(CoupledDeterminants.begin(),CoupledDeterminants.end());
 
           // histograms
           //std::vector<int> singlescount;
@@ -349,7 +339,7 @@ int main(){
           cout << " Number of double excitations: " << ndoubleexcit << endl;
           cout << " Total number of excitations: " << nexcit << endl;
           std::vector<detType> CoupledDeterminants = modelHam.getCoupledStates(basis.getDetByIndex(i));
-          std::sort(CoupledDeterminants.begin(),CoupledDeterminants.end(),compare_det);
+          std::sort(CoupledDeterminants.begin(),CoupledDeterminants.end());
           
           // histograms
           //std::vector<int> singlescount;
