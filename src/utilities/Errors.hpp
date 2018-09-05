@@ -14,6 +14,8 @@
 
 namespace networkVMC{
 
+namespace errors{
+
 class OutOfRangeError{
   public:
 	OutOfRangeError(int pos_):pos(pos_){};
@@ -37,10 +39,6 @@ class SizeMismatchError{
 	SizeMismatchError(int a,int b):sizeA(a),sizeB(b){};
 	int sizeA, sizeB;
 };
-
-inline void sizeCheck(int i, int j){
-	if(i!=j) throw SizeMismatchError(i,j);
-}
 
 class ActFuncDoNotExist{
     public:
@@ -85,6 +83,12 @@ class FileNotFound{
   FileNotFound(std::string file_);
   std::string file;
 };
+
+}
+
+inline void sizeCheck(int i, int j){
+	if(i!=j) throw errors::SizeMismatchError(i,j);
+}
 
 }
 

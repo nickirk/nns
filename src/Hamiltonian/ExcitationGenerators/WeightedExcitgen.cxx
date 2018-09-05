@@ -109,7 +109,7 @@ detType WeightedExcitgen::generateExcitation(
 		pGen *= pDoubles;
 	}
 	}
-	catch(NoExcitationFound const& err){
+	catch(errors::NoExcitationFound const& err){
 		// is this legit? do not make a move if there is none
 		target = source;
 		// Specifying the probability here is tricky
@@ -128,7 +128,7 @@ detType WeightedExcitgen::generateExcitation(
 				generateSingleExcit(source, helDummy, pDummy);
 			}
 		}
-		catch(NoExcitationFound const &){
+		catch(errors::NoExcitationFound const &){
 			// if it was not, we know that pGen = 1.0
 			pGen = 1.0;
 		}
@@ -162,7 +162,7 @@ detType WeightedExcitgen::generateSingleExcit(detType const &source,double &hel,
     int tgt = selector.selectSingleHole(src,pgen,hel);
     // if we did not find a hole, throw an exception
     if (tgt < 0){
-    	throw NoExcitationFound(1);
+    	throw errors::NoExcitationFound(1);
     }
 
     // generate the new determinant
@@ -229,7 +229,7 @@ detType WeightedExcitgen::generateDoubleExcit(detType const &source, double &hel
     // check that the two electrons have not been excited into the
     // same orbitals
     if (std::any_of(tgt.begin(),tgt.end(), [](const int i) {return i<0;})){
-    	throw NoExcitationFound(2);
+    	throw errors::NoExcitationFound(2);
     }
 
     // adjust the probabilities: if the two holes are selected from
@@ -630,7 +630,7 @@ double WeightedExcitgen::getExcitationProb(
         }
     }
     if (src.size() != tgt.size()){
-        throw SizeMismatchError(src.size(),tgt.size());
+        throw errors::SizeMismatchError(src.size(),tgt.size());
     }
     // if both are empty, i.e. target == source, return the
     // exceptional probability of self-excitation
@@ -744,7 +744,7 @@ double WeightedExcitgen::calcPgen(detType const &source, std::vector<int> const 
     }
     else{
     	// invalid excitation
-    	throw NoExcitationFound(3);
+    	throw errors::NoExcitationFound(3);
     }
     return calcedP;
 }
@@ -761,7 +761,7 @@ double WeightedExcitgen::selfExcitationProb(detType const &source){
 		// occurs if generateSingleExcit throws
 		generateSingleExcit(source,helDummy, pDummy);
 	}
-	catch(NoExcitationFound const&){
+	catch(errors::NoExcitationFound const&){
 		// the throwing call occurs with this probability
 		pgen += 1 - pDoubles;
 	}
@@ -769,7 +769,7 @@ double WeightedExcitgen::selfExcitationProb(detType const &source){
 		// also occurs if generateDoubleExcit throws
 		generateDoubleExcit(source,helDummy, pDummy);
 	}
-	catch(NoExcitationFound const&){
+	catch(errors::NoExcitationFound const&){
 		// and this one occurs with probability pDoubles
 		pgen += pDoubles;
 	}

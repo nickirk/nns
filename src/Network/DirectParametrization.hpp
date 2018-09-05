@@ -33,9 +33,9 @@ class DirectParametrization: public ClonableParametrization<F, coeffType, Direct
 	    auto i = fullBasis->getIndexByDet(det);
 	    return coeffs[i];
 	  }
-	  catch (OutOfRangeError const&){
+	  catch (errors::OutOfRangeError const&){
 		  // If the fed determinant is not valid, this is a problem
-		  throw InvalidDeterminantError(det);
+		  throw errors::InvalidDeterminantError(det);
 	  }
   }
 

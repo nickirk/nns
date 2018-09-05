@@ -97,16 +97,12 @@ coeffType NeuralNetwork<F, coeffType>::getCoeff(detType const &det) const{
 
 template <typename F, typename coeffType>
 NeuralNetwork<F, coeffType>::T NeuralNetwork<F, coeffType>::feedForward(detType const& det) const{
-	if(Layers.size()==0) throw EmptyNetworkError();
+	if(Layers.size()==0) throw errors::EmptyNetworkError();
   // Note that the first layer always needs to have a number
   // of neurons equal to the number of orbitals
   Layers[0]->processSignal(det);
-  //std::cout << "Acts layer " << 0 << " =" << std::endl;
-  //std::cout<< Layers[0]->getActs()[0] << std::endl;
   //0th layer has no weights!!! The getWeights() for InputLayer is not defined..
   //FixMe, return a 0 vector and throw error.
-  //std::cout << "Weights layer " << 0 << " =" << std::endl;
-  //std::cout<< Layers[0]->getWeights()[0] << std::endl;
   for (int layer(1); layer < numLayers; ++layer){
       Layers[layer]->processSignal();
   }
@@ -123,7 +119,7 @@ NeuralNetwork<F, coeffType>::T NeuralNetwork<F, coeffType>::backPropagate(
   //everytime the backPropagate is called, we should reset nabla* to zero.
   nablaNNP *= 0.;
   // Does not work with empty networks
-  if(Layers.size()==0) throw EmptyNetworkError();
+  if(Layers.size()==0) throw errors::EmptyNetworkError();
   // use the conjugate of lastLayerFeedBack
   Layers[numLayers-1]->backProp(std::conj(lastLayerFeedBack));
   for (size_t layer(numLayers-2); layer > 0; layer--){

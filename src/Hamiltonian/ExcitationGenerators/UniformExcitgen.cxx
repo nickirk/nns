@@ -211,7 +211,7 @@ detType UniformExcitgen::genSingleExcitation(detType const &source, std::vector<
 
         // to avoid infinity loops
         if (attempts>250){
-            throw OutOfRangeError(attempts);
+            throw errors::OutOfRangeError(attempts);
         }
 
         attempts += 1;
@@ -269,7 +269,7 @@ detType UniformExcitgen::genSingleExcitation(detType const &source, std::vector<
 
             // to avoid infinity loops
             if (attempts>250){
-                throw OutOfRangeError(attempts);
+                throw errors::OutOfRangeError(attempts);
             }
 
             attempts += 1;

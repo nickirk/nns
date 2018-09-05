@@ -37,7 +37,7 @@ inputs(inputs_){
     actFunc=&LogCosh;
     actFuncPrime=&LogCoshPrime;
   }
-  else throw ActFuncDoNotExist(actFunc_);
+  else throw errors::ActFuncDoNotExist(actFunc_);
 }
 
 template <typename F, typename coeffType>
@@ -50,7 +50,7 @@ template <typename F, typename coeffType>
 void Layer<F, coeffType>::processSignal(detType const &det) const{
   int numStates=det.size();
   // This only works if the fed determinant is valid
-  if(activations[0].size()!=numStates) throw InvalidDeterminantError(det);
+  if(activations[0].size()!=numStates) throw errors::InvalidDeterminantError(det);
   //set the activations into the determinants
   for (int state=0; state<numStates; ++state){
     activations[0](state) = det[state]?1.0:-1.0;

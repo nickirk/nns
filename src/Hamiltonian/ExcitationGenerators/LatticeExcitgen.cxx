@@ -65,7 +65,7 @@ double LatticeExcitgen::getExcitationProb(detType const& source,
 	std::vector<int> holes, excits, same;
 	getExcitation(source,target,excits,holes,same);
 	// consistency check, move to debug later
-	if(holes.size() != excits.size()) throw SizeMismatchError(holes.size(),excits.size());
+	if(holes.size() != excits.size()) throw errors::SizeMismatchError(holes.size(),excits.size());
 
 	// check if there is an excitation at all
 	if(holes.size() != 0){

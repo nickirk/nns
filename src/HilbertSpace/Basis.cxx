@@ -31,7 +31,7 @@ Basis::Basis(SpinConfig const &sC, Hamiltonian const &H){
 
 detType Basis::getDetByIndex(int index) const{
   // do some bound checking
-  if(static_cast<size_t>(index)>=basis.size() || index < 0) throw OutOfRangeError(index);
+  if(static_cast<size_t>(index)>=basis.size() || index < 0) throw errors::OutOfRangeError(index);
   return basis[index];
 }
 
@@ -41,7 +41,7 @@ int Basis::getIndexByDet(detType const & det_) const{
   // and get it's index
   auto dist = std::distance(basis.begin(),pos);
   // If we did not find the determinant, something went wrong
-  if(static_cast<size_t>(dist)==basis.size()) throw InvalidDeterminantError(det_);
+  if(static_cast<size_t>(dist)==basis.size()) throw errors::InvalidDeterminantError(det_);
   return dist;
 }
 

@@ -896,7 +896,7 @@ int AbInitioHamiltonian::countNumberCoupledStates(detType const &source, int exf
     int nalpha,nbeta,nunoccalpha,nunoccbeta;
 
     if ((exflag<1)||(exflag>3)){
-        throw OutOfRangeError(exflag);
+        throw errors::OutOfRangeError(exflag);
     }
 
     // number of occupied and unoccupied alpha and beta spin orbitals

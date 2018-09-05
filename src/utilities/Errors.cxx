@@ -12,6 +12,8 @@
 
 namespace networkVMC{
 
+namespace errors{
+
 InvalidDeterminantError::InvalidDeterminantError(detType const &a)
 {
 		std::cout << "Error: invalid determinant encountered:\n";
@@ -20,6 +22,8 @@ InvalidDeterminantError::InvalidDeterminantError(detType const &a)
 
 FileNotFound::FileNotFound(std::string file_):file(file_){
     std::cout << "File " << file << " not found" << std::endl;
+}
+
 }
 
 }

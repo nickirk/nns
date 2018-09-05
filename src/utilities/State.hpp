@@ -50,7 +50,7 @@ class State{
 	    if ( storedDets.size() != storedCoeffs.size() && 
            storedCoeffs.size() != storedWeights.size() &&
            storedWeights.size() != storedDets.size() ) 
-        throw SizeMismatchError(storedDets.size(),storedCoeffs.size());
+        throw errors::SizeMismatchError(storedDets.size(),storedCoeffs.size());
 	};
 
 //---------------------------------------------------------------------------------------------------//

@@ -19,14 +19,14 @@ void annihilate(detType &det, int pos){
   // remove an electron from orbital pos from det
   if (pos > static_cast<int>(det.size()) || pos < 0){
     std::cerr << "Error! Annihilate outside of range! "; 
-    throw OutOfRangeError(pos);
+    throw errors::OutOfRangeError(pos);
   }
   if (det[pos]){ 
     det[pos] = 0;
   }
   else{ 
     std::cerr << "Error! Cannot annihilate an unoccupied state! ";
-    throw InvalidAnnihilation(pos);
+    throw errors::InvalidAnnihilation(pos);
   }
 }
 
@@ -36,11 +36,11 @@ void create(detType &det, int pos){
   // add an electron to orbital pos from det
   if (pos > static_cast<int>(det.size()) || pos < 0){
     std::cerr << "Error! Create outside of range! "; 
-    throw OutOfRangeError(pos);
+    throw errors::OutOfRangeError(pos);
   }
   if (det[pos]){
     std::cerr << "Error! Cannot create on an occupied state! ";
-    throw InvalidCreation(pos);
+    throw errors::InvalidCreation(pos);
   }
   else{
     det[pos] = 1;
@@ -99,10 +99,10 @@ int verbatimCast(detType const & det){
 
 int getExcitLvl(detType const &a, detType const &b){
 	// excit lvls are only defined between same-sized dets
-	if(a.size() != b.size()) throw SizeMismatchError(a.size(),b.size());
+	if(a.size() != b.size()) throw errors::SizeMismatchError(a.size(),b.size());
 	// with the same number of electrons
 	if(getOccupiedPositions(a).size() != getOccupiedPositions(b).size())
-		throw InvalidDeterminantError(a);
+		throw errors::InvalidDeterminantError(a);
 	int elvl{0};
 	for(std::size_t i=0; i < a.size(); ++i){
 		// if the dets differ, this counts towards the excitation lvl
@@ -121,7 +121,7 @@ void getExcitation(detType const &a, detType const &b, std::vector<int> &excitat
 	excitations.clear();
 	same.clear();
 	// we can only get excitations between same-sized determinants
-	if(d != b.size()) throw SizeMismatchError(d,b.size());
+	if(d != b.size()) throw errors::SizeMismatchError(d,b.size());
     // get the differences in occupied obitals
     for (std::size_t i=0;i<d;++i){
         diff=static_cast<int>(a[i])-static_cast<int>(b[i]);

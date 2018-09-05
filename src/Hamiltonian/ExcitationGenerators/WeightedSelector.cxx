@@ -114,7 +114,7 @@ int WeightedSelector::selectSingleHole(int src, double &pgen, double &helOut) {
         return tgt;
     }
     else if (nexcit > nelem){
-        throw OutOfRangeError(nexcit);
+        throw errors::OutOfRangeError(nexcit);
     }
     else{
         double hel_picked = rng()*cum_sum;

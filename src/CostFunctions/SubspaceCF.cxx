@@ -44,7 +44,7 @@ State<coeffType> SubspaceCF<F, coeffType>::diagonalizeSubspace(State<coeffType> 
 			&HMatrix,&SparseHMatrix::MatMul,"SR",0,tol,maxIter,outputVec);
 	// solve it and write the eigenvector to output
 	int nconv = eigProblem.EigenValVectors(outputVec,energyPtr);
-	if(nconv == 0) throw UnconvergedEigenproblem();
+	if(nconv == 0) throw errors::UnconvergedEigenproblem();
 	return output;
 }
 

@@ -38,7 +38,7 @@ void AcceleratedGradientDescent<F, coeffType>::update(T &w, T const &force,
     Egz2 = T::Zero(numPars);
   }
   // we can only proceed, if the same number of parameters is given in each update
-  if(w.size()!=numPars) throw SizeMismatchError(w.size(),numPars);
+  if(w.size()!=numPars) throw errors::SizeMismatchError(w.size(),numPars);
 
   // Do the update
   lambdaS1 = (1+std::sqrt(1+4*lambdaS*lambdaS))/2.;

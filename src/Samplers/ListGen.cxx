@@ -61,7 +61,7 @@ detType ListGen<F, coeffType>::getDet(int i) const{
   }
   else{
 	  // we passed a negative index, this is trouble
-	  throw OutOfRangeError(i);
+	  throw errors::OutOfRangeError(i);
   }
 }
 

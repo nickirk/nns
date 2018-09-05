@@ -67,7 +67,7 @@ class NeuralNetwork: public ClonableParametrization<F, coeffType, NeuralNetwork<
   Layer<F, coeffType>* getLayer(int layer){
 	  if(static_cast<unsigned int>(layer)<Layers.size() && layer >= 0)
 	  return Layers[layer];
-	  throw OutOfRangeError(layer);
+	  throw errors::OutOfRangeError(layer);
   };
   //Eigen::Map<Eigen::MatrixXd> getWeights(int layer) const {return weights[layer];};
   //Eigen::Map<Eigen::VectorXd> getBiases(int layer) const {return biases[layer];};

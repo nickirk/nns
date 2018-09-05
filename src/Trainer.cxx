@@ -82,7 +82,7 @@ void Trainer<F, coeffType>::updateParameters(State<coeffType> const &input){
 	auto dEdC = cf.nabla(input);
 	// add the inner derivative to get the full derivative
 	// of the cost function with respect to the parameters
-	T dEdPars;
+	decltype(dEdC) dEdPars;
 	switch(msampler.type()){
 	case Markov:
 		// for markov-type samplers, use EnergyEsMarkov
@@ -92,7 +92,7 @@ void Trainer<F, coeffType>::updateParameters(State<coeffType> const &input){
 		dEdPars = NNW.calcNablaParsConnected(input,dEdC);
 		break;
 	default:
-		throw SamplerTypeDoesNotExist(msampler.type());
+		throw errors::SamplerTypeDoesNotExist(msampler.type());
 	}
 
 	// feed these to the solver

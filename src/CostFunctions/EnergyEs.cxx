@@ -13,7 +13,7 @@
 namespace networkVMC {
 template <typename F, typename coeffType>
 EnergyEs<F, coeffType>::EnergyEs(Hamiltonian const &H_, int numCons_):H(H_),
-		worker(new EnergyCF<F, coeffType>(H, numCons_)), numCons(numCons_){
+		worker(new EnergyCF<F, coeffType>(H)), numCons(numCons_){
 }
 
 template <typename F, typename coeffType>

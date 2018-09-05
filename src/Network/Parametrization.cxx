@@ -32,8 +32,7 @@ template<typename F, typename coeffType>
 void Parametrization<F,coeffType>::readParsFromFile(std::string file){
    std::ifstream input(file);
    if (!input){
-      throw FileNotFound(file);
-      exit(2);
+      throw errors::FileNotFound(file);
    }
 
    T &innerPars = pars();

@@ -79,7 +79,7 @@ class coeffComparer{
 class weightComparer{
   public:
   weightComparer(){};
-  // this is another callable object which only returns if a<b (in the sense of absolute value)
+  // this is another callable object which only returns if a>b (in the sense of value)
   bool operator()(double const &a, double const &b) const{return a>b;}
 };
 

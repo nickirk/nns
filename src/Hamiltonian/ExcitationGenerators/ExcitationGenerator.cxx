@@ -197,7 +197,7 @@ int pickOrbA(detType const &source, std::vector<int> const &spins, std::vector<i
                     }
                 }
                 // unable to find orbital a
-                throw OutOfRangeError(aelec);
+                throw errors::OutOfRangeError(aelec);
             }
             else{
                 // keep drawing orbitals randomly until an
@@ -214,7 +214,7 @@ int pickOrbA(detType const &source, std::vector<int> const &spins, std::vector<i
 
                     if (attemptsa > 250){
                         // unable to find orbital a
-                        throw OutOfRangeError(attemptsa);
+                        throw errors::OutOfRangeError(attemptsa);
                     }
                     attemptsa += 1;
                 }
@@ -260,7 +260,7 @@ int pickOrbA(detType const &source, std::vector<int> const &spins, std::vector<i
                         counter += 1;
                     }
                 }
-                throw OutOfRangeError(aelec);
+                throw errors::OutOfRangeError(aelec);
             }
             else{
                 // draw orbitals randomly until an unoccupied one is found
@@ -278,7 +278,7 @@ int pickOrbA(detType const &source, std::vector<int> const &spins, std::vector<i
                     }
 
                     if (attemptsa > 250){
-                        throw OutOfRangeError(attemptsa);
+                        throw errors::OutOfRangeError(attemptsa);
                     }
                     attemptsa += 1;
                 }
@@ -312,7 +312,7 @@ int pickOrbA(detType const &source, std::vector<int> const &spins, std::vector<i
         }
 
         if (attemptsoverall > (norbs*20)){
-            throw OutOfRangeError(attemptsoverall);
+            throw errors::OutOfRangeError(attemptsoverall);
         }
         attemptsoverall += 1;
     }
@@ -391,7 +391,7 @@ int pickOrbB(detType const &source, std::vector<int> const &spins, std::vector<i
         }
 
         if (counter != belec){
-            throw OutOfRangeError(belec);
+            throw errors::OutOfRangeError(belec);
         }
     }
     else{
@@ -413,7 +413,7 @@ int pickOrbB(detType const &source, std::vector<int> const &spins, std::vector<i
             }
 
             if (attemptsb>1000){
-                throw OutOfRangeError(attemptsb);
+                throw errors::OutOfRangeError(attemptsb);
             }
             attemptsb += 1;
         }

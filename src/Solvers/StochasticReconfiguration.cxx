@@ -56,7 +56,7 @@ void StochasticReconfiguration<F, coeffType>::update(T &w, T const &force,
     Ok /= static_cast<double>(numDets);
     break;
     default:
-    throw SamplerTypeDoesNotExist(samplerType);
+    throw errors::SamplerTypeDoesNotExist(samplerType);
   }
 
   S = OkOkp - (Ok*Ok.adjoint()).adjoint();
