@@ -50,14 +50,14 @@ void testAdj(LatticeHamiltonian const &test){
 
 void testBasis(Basis const &basis){
 	std::cout << "size= " << basis.size() << std::endl;
-	for (int i=0; i < basis.size(); ++i){
+	for (size_t i=0; i < basis.size(); ++i){
 	  detType det;
 	  det = basis.getDetByIndex(i);
 	  int index(basis.getIndexByDet(det));
 	  std::vector<int> pos(getOccupiedPositions(det));
 	  std::cout << "index= " << index << std::endl;
 	  std::cout << "i = " << i  << std::endl;
-	  for (int j=0; j < pos.size(); ++j){
+	  for (size_t j=0; j < pos.size(); ++j){
 		std::cout << pos[j] << "," ;
 	  }
 	  std::cout << std::endl;

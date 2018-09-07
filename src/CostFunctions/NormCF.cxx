@@ -11,7 +11,7 @@
 
 namespace networkVMC{
 template <typename F, typename coeffType>
-NormCF<F, coeffType>::T NormCF<F, coeffType>::nabla(State<coeffType> const &input) const{
+typename NormCF<F, coeffType>::T NormCF<F, coeffType>::nabla(State<coeffType> const &input) const{
 	T cfBuf(input.size());
 	for(std::size_t i=0;i<input.size();++i){
 		coeffType buf0;

@@ -51,7 +51,7 @@ coeffType EnergyEsPreFetched<F, coeffType>::evaluate(State<coeffType> const &inp
 }
 
 template <typename F, typename coeffType>
-EnergyEsPreFetched<F, coeffType>::T EnergyEsPreFetched<F, coeffType>::nabla(State<coeffType> const &input) const{
+typename EnergyEsPreFetched<F, coeffType>::T EnergyEsPreFetched<F, coeffType>::nabla(State<coeffType> const &input) const{
   energy = evaluate(input);
   int numDets = input.size();
   int spaceSize = input.totalSize();
@@ -59,8 +59,6 @@ EnergyEsPreFetched<F, coeffType>::T EnergyEsPreFetched<F, coeffType>::nabla(Stat
 
   #pragma omp parallel for
   for (int i=0; i < numDets; ++i){
-    coeffType dEdC_i;
-    coeffType A=0.;
     coeffType c_i = input.coeff(i);
     std::vector<coeffType> const &coupledC_j = input.coupledCoeffs(i);
     std::vector<detType> const &coupledDets = input.coupledDets(i);

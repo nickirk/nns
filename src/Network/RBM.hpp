@@ -34,8 +34,8 @@ namespace networkVMC{
 
   private:
     int sizeHidden;
-    int numPars;
     int sizeInput;
+    int numPars;
     int a_offset;
     int b_offset;
     int w_offset;

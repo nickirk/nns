@@ -19,7 +19,7 @@ SubspaceCF<F, coeffType>::~SubspaceCF() {
 }
 
 template <typename F, typename coeffType>
-SubspaceCF<F, coeffType>::T SubspaceCF<F, coeffType>::nabla(State<coeffType> const &input) const{
+typename SubspaceCF<F, coeffType>::T SubspaceCF<F, coeffType>::nabla(State<coeffType> const &input) const{
   auto dist = NormCF<F, coeffType>(diagonalizeSubspace(input));
   distance = dist.calc(input);
   return dist.nabla(input);

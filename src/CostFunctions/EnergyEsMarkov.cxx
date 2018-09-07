@@ -46,7 +46,7 @@ coeffType EnergyEsMarkov<F, coeffType>::evaluate(State<coeffType> const &input) 
 }
 
 template <typename F, typename coeffType>
-EnergyEsMarkov<F, coeffType>::T EnergyEsMarkov<F, coeffType>::nabla(State<coeffType> const &input) const{
+typename EnergyEsMarkov<F, coeffType>::T EnergyEsMarkov<F, coeffType>::nabla(State<coeffType> const &input) const{
   coeffType energyM = evaluate(input);
   energy = energyM;
   int numDets = input.size();

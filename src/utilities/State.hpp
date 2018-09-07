@@ -186,13 +186,13 @@ private:
 	std::vector<coeffType> storedCoeffs;
     std::vector<double> storedWeights;
 
-    double totalWeights;
    
   // util of flags
     bool fSortedCoeff;
     bool fSortedDet;
     bool fSortedWeight;
 
+    double totalWeights;
 
 	// preliminary implementation of coupled stuff
   // whenever a new det is added, update its coeff and weight

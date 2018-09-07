@@ -11,6 +11,7 @@
 #include "../utilities/RNGWrapper.hpp"
 #include "../Network/Parametrization.hpp"
 #include "../HilbertSpace/Basis.hpp"
+#include "../HilbertSpace/Determinant.hpp"
 
 namespace networkVMC{
 
@@ -24,7 +25,7 @@ template <typename F, typename coeffType>
 MetropolisSampler<F, coeffType>::MetropolisSampler(Hamiltonian const &H_, detType const &HF,
                 Basis const &fullBasis_,Parametrization<F, coeffType> const &para_,
                 int numDets_ ):Sampler<coeffType>(H_,HF,numDets_),para(&para_),
-                fullBasis(&fullBasis_),lastCoeff(para_.getCoeff(HF)),cDet(HF){};
+                lastCoeff(para_.getCoeff(HF)),fullBasis(&fullBasis_),cDet(HF){};
 
 template <typename F, typename coeffType>
 MetropolisSampler<F, coeffType>::~MetropolisSampler() {

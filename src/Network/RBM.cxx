@@ -79,7 +79,7 @@ RBM<F, coeffType>::~RBM(){}
 
 
 template <typename F, typename coeffType>
-RBM<F, coeffType>::T const& RBM<F, coeffType>::pars() const
+typename RBM<F, coeffType>::T const& RBM<F, coeffType>::pars() const
 {
 	return pars_vec;
 }
@@ -113,7 +113,7 @@ coeffType RBM<F, coeffType>::getCoeff(detType const &det) const
 
 
 template <typename F, typename coeffType>
-RBM<F, coeffType>::T RBM<F, coeffType>::getDeriv(detType const &det) const
+typename RBM<F, coeffType>::T RBM<F, coeffType>::getDeriv(detType const &det) const
 {
 	T dCdWk= T::Zero(numPars);
 	// do the mapping inside for loop, private

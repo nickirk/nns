@@ -34,7 +34,7 @@ class AbInitioHamiltonian: public TwoBodyHamiltonian {
 	int &exflag, bool &ballexcitfound) const;
 
     void getElecPair(std::vector<int> const &source_orbs,
-            int &el1, int &el2, int &spinpair, int &ind) const;
+            int &el1, int &el2, int &spinpair, int ind) const;
 
     // deterministic excitation generator: generates all connected determinants
     std::vector<detType> getCoupledStates(detType const &source) const;

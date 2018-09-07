@@ -41,7 +41,7 @@ coeffType EnergyCF<F, coeffType>::evaluate(State<coeffType> const &input) const{
 
 // Here, we get the derivative of the energy with respect to the coefficients of input
 template <typename F, typename coeffType>
-EnergyCF<F, coeffType>::T EnergyCF<F, coeffType>::nabla(State<coeffType> const &input) const{
+typename EnergyCF<F, coeffType>::T EnergyCF<F, coeffType>::nabla(State<coeffType> const &input) const{
 // To get the derivative, we also need the energy, so first evaluate
 // This also assigns the normalizer
   energy = evaluate(input);
@@ -49,7 +49,6 @@ EnergyCF<F, coeffType>::T EnergyCF<F, coeffType>::nabla(State<coeffType> const &
   int numDets = input.size();
   // works similar to computing the energy
   for (int i=0; i < numDets; ++i){
-    F dEdC_i;
     coeffType A=0.;
     for (int j=0; j < numDets; ++j){
       coeffType c_j=input.coeff(j);
@@ -62,11 +61,7 @@ EnergyCF<F, coeffType>::T EnergyCF<F, coeffType>::nabla(State<coeffType> const &
     // re-use the normalizer from evaluate
     A /= normalizerCoeff;
     // And assign to the output
-    // the way how it should implement depends on the feedforward nnw architecture, leave out for future when
-    // this cost function is really needed.
-    //dEdC_i.real(2. * std::real( A*std::conj(std::complex<double>(1.,0.))));
-    //dEdC_i.imag(2. * std::real( A*std::conj(std::complex<double>(0.0,1.0))));
-    dEdC(i)=(dEdC_i);
+    dEdC(i)=A;
   }
   return dEdC;
 }

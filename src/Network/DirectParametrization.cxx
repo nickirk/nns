@@ -11,14 +11,14 @@
 namespace networkVMC {
 
 template <typename F, typename coeffType>
-DirectParametrization<F, coeffType>::T DirectParametrization<F, coeffType>::getDeriv(detType const &det) const {
+typename DirectParametrization<F, coeffType>::T DirectParametrization<F, coeffType>::getDeriv(detType const &det) const {
   T dCdW=T::Zero(coeffs.size()); 
   dCdW(fullBasis->getIndexByDet(det))=F(1.0);
   return dCdW;
 }
 
 template <typename F, typename coeffType>
-DirectParametrization<F, coeffType>::T DirectParametrization<F, coeffType>::getMarkovDeriv(detType const &det) const {
+typename DirectParametrization<F, coeffType>::T DirectParametrization<F, coeffType>::getMarkovDeriv(detType const &det) const {
   T dCdW=T::Zero(coeffs.size()); 
   dCdW(fullBasis->getIndexByDet(det))=1./coeffs[fullBasis->getIndexByDet(det)];
   return dCdW;

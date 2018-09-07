@@ -806,7 +806,7 @@ found_double_excit:
 
 
 void AbInitioHamiltonian::getElecPair(std::vector<int> const &source_orbs, 
-        int &el1, int &el2, int &spinpair, int &ind) const{
+        int &el1, int &el2, int &spinpair, int ind) const{
     // return a pair of electrons (el1,el2) in the source determinant
     // uses a triangular indexing system in order to pick out two 
     // distinct electron 
@@ -826,10 +826,19 @@ void AbInitioHamiltonian::getElecPair(std::vector<int> const &source_orbs,
     // in order to move indices in range 0,..,m-1
     el1 -= 1;
     el2 -= 1;
-
+#pragma omp critical
+    {
+    	std::cout << "Elec pair " << el1 << " " << el2 << std::endl;
+    	std::cout << "elecpairs: " << elecpairs << std::endl;
+    	std::cout << "ind: " << ind << std::endl;
+    	std::cout << "k: " << k << std::endl;
+    	std::cout << "source_orbs: ";
+    	for(auto x : source_orbs) std::cout << x;
+    	std::cout << std::endl;
     // the orbitals
     orb1 = source_orbs[el1];
     orb2 = source_orbs[el2];
+    }
 
     // which type of spin pairs
     // spinpair = 1 -> alpha + alpha

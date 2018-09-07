@@ -12,6 +12,7 @@
 #include "../Hamiltonian/ExcitationGenerators/ConnectionGenerators/ConnectionGenerator.hpp"
 #include <iostream>
 #include "../Hamiltonian/TwoBodyHamiltonian.hpp"
+#include "../HilbertSpace/Determinant.hpp"
 namespace networkVMC {
 
 template <typename F, typename coeffType>
