@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.1)
+cmake_minimum_required (VERSION 2.8)
 
 project(networkVMC CXX)
 
@@ -16,8 +16,10 @@ message(STATUS "Using ${CMAKE_CXX_COMPILER_ID} compiler")
 include(cmake/${CMAKE_CXX_COMPILER_ID}_flags.cmake)
 
 #enable openmp
-find_package(OpenMP)
-if(OpenMP_FOUND)
+#find_package(OpenMP)
+include(FindOpenMP)
+
+if(OPENMP_FOUND)
 	message(STATUS "Using OpenMP ${OpenMP_VERSION}")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 else()

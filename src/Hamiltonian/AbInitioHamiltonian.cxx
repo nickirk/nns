@@ -322,8 +322,8 @@ detType AbInitioHamiltonian::getSingleExcitation(detType const &source, std::vec
     int nel,norbs;
     bool binitorbsfound;
     detType target=source;
-    static int orbiind = 0;
-    static int orbaind = 0;
+    static thread_local int orbiind = 0;
+    static thread_local int orbaind = 0;
 
     // number of electrons and spin orbitals
     nel = source_orbs.size();
@@ -525,10 +525,10 @@ detType AbInitioHamiltonian::getDoubleExcitation(detType const &source, std::vec
     int elecpairs,spinpair;
     int el1{0},el2{0},spinb{0};
     int nel,norbs;
-    static int ijind=0;
-    static int orbbind=0;
-    static int spina=0;
-    static int orbachosen=0;
+    static thread_local int ijind=0;
+    static thread_local int orbbind=0;
+    static thread_local int spina=0;
+    static thread_local int orbachosen=0;
     detType target=source;
 
     // number of electrons and spin orbitals
@@ -826,19 +826,9 @@ void AbInitioHamiltonian::getElecPair(std::vector<int> const &source_orbs,
     // in order to move indices in range 0,..,m-1
     el1 -= 1;
     el2 -= 1;
-#pragma omp critical
-    {
-    	std::cout << "Elec pair " << el1 << " " << el2 << std::endl;
-    	std::cout << "elecpairs: " << elecpairs << std::endl;
-    	std::cout << "ind: " << ind << std::endl;
-    	std::cout << "k: " << k << std::endl;
-    	std::cout << "source_orbs: ";
-    	for(auto x : source_orbs) std::cout << x;
-    	std::cout << std::endl;
     // the orbitals
     orb1 = source_orbs[el1];
     orb2 = source_orbs[el2];
-    }
 
     // which type of spin pairs
     // spinpair = 1 -> alpha + alpha
