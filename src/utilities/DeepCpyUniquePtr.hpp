@@ -64,11 +64,25 @@ class DeepCpyUniquePtr {
 //---------------------------------------------------------------------------//
 
 	/**
-	 * \brief deep copy/move assignment
-	 * \param[in] source DeepCpyUniquePtr to be copied/moved
+	 * \brief deep copy assignment
+	 * \param[in] source DeepCpyUniquePtr to be copied
 	 */
-	DeepCpyUniquePtr& operator=(DeepCpyUniquePtr<T> source){
-		// we create a deep copy, in particular, T has to be clonable
+	// we want to have the move assignment operator to be defined explicitly,
+	// so we pass by const& here.
+	DeepCpyUniquePtr& operator=(DeepCpyUniquePtr<T> const &source){
+		// swap with a temporary copy of source
+		DeepCpyUniquePtr<T> tmp(source);
+	    swap(*this, tmp);
+		return *this;
+	}
+
+	//---------------------------------------------------------------------------//
+
+   /**
+     * \brief move assignment (works intuitively)
+	 * \param[in] source DeepCpyUniquePtr to be moved
+     */
+	DeepCpyUniquePtr& operator=(DeepCpyUniquePtr<T> &&source):resource(nullptr){
 	    swap(*this,source);
 		return *this;
 	}
