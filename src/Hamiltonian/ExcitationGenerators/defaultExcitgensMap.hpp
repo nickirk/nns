@@ -16,8 +16,16 @@ namespace networkVMC{
 class ExcitationGenerator;
 class Hamiltonian;
 
+/// Pointer to ExcitationGenerator
 using excitgenPtr = std::unique_ptr<ExcitationGenerator>;
 
+/**
+ * \fn std::unique_ptr<ExcitationGenerator> getDefaultExcitgen(Hamiltonian const &H, detType const &HF);
+ * \brief Return the default ExcitationGenerator for a given Hamiltonian
+ * \param[in] H Hamiltonian for which to get the ExcitationGenerator
+ * \param[in] HF reference basis vector for the ExcitationGenerator (required for initialization)
+ * \return unique pointer to a new ExcitationGenerator of the type corresponding to H
+ */
 excitgenPtr getDefaultExcitgen(Hamiltonian const &H,
 		detType const &HF);
 

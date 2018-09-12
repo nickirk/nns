@@ -330,13 +330,4 @@ double TwoBodyHamiltonian::operator()(detType const &alpha, detType const &beta)
     }
 }
 
-//---------------------------------------------------------------------------------------------------//
-
-//for testing purposes - prints TwoBodyHamiltonian in N particle sector
-
-void TwoBodyHamiltonian::printMatrix(int N){
-  std::cout<<"Printing TwoBodyHamiltonian\n";
-  std::vector<int> alpha, beta;
-}
-
 }

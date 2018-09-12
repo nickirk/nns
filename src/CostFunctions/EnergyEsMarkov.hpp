@@ -51,8 +51,8 @@ private:
     // Make sure this is not manually constructed, but only via
     // EnergyEs. This way, we cannot attribute the wrong CF to a sampler
 	/**
-	 * \param H_ Hamiltonian used to obtain the energy
-	 * \param numCons_ Number of matrix elements taken into account per basis vector
+	 * \param[in] H_ Hamiltonian used to obtain the energy
+	 * \param[in] numCons_ Number of matrix elements taken into account per basis vector
 	 * Can only be called by the friend class
 	 */
 	explicit EnergyEsMarkov(Hamiltonian const &H_,int numCons_):
@@ -61,7 +61,7 @@ private:
 	/**
 	 * \brief Compute the energy expectation value and cache it
 	 *
-	 * \param input Vector represented by a State object
+	 * \param[in] input Vector represented by a State object
 	 * \return Expectation value of the energy
 	 */
 	coeffType evaluate(State<coeffType> const &input) const;

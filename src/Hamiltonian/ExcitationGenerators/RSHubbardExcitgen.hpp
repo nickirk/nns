@@ -13,6 +13,10 @@
 
 namespace networkVMC {
 
+/**
+ * \class RSHubbardExcitgen
+ * \brief ExcitationGenerator specifically for 1-d real-space Hubbard systems
+ */
 class RSHubbardExcitgen: public ClonableExcitgen<RSHubbardExcitgen> {
 public:
 	RSHubbardExcitgen();
@@ -23,6 +27,16 @@ public:
 			detType const &source, detType const &target);
 };
 
+/**
+ * \fn void getRSHubSpawnLists(detType const &source, std::vector<int> &spawnLeft, std::vector<int> &spawnRight);
+ * \brief The RSHubbardExcitgen version of the Lattice member function adjacents
+ * \param[in] source basis vector to spawn from
+ * \param[out] spawnLeft list of sites that can be spawned upon in a left-move
+ * \param[out] spawnRight list of sites that can be spawned upon in a right-move
+ *
+ * For a given basis vector, creates a list of all sites that can be reached by moving an electro to
+ * the left/right.
+ */
 void getRSHubSpawnLists(detType const &source, std::vector<int> &spawnLeft,
 		std::vector<int> &spawnRight);
 

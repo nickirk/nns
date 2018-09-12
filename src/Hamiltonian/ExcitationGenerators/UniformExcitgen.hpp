@@ -13,8 +13,18 @@
 
 namespace networkVMC {
 
+/**
+ * \class UniformExcitgen
+ * \brief Creates random excitations with a constant probability distribution
+ *
+ * Well suited for markov chain sampling, this ExcitationGenerator implementation picks a random
+ * connected basis vector uniformly from a subset of possible excitations, with the subset being chosen
+ * randomly with some dynamic probability distribution. These subsets are single excitations, same-spin
+ * double excitations and opposite-spin double excitations.
+ */
 class UniformExcitgen: public ClonableExcitgen<UniformExcitgen> {
 public:
+	/// \param HF reference basis vector to initialize some internal parameters
 	explicit UniformExcitgen(detType const &HF);
 	virtual ~UniformExcitgen();
 	virtual detType generateExcitation(detType const &source, double &pGen) ;
@@ -32,10 +42,11 @@ private:
 			std::vector<int> &holes, std::vector<int> &particles, double &pgen, double pdoubnew,
 			std::vector<int> noccs, std::vector<int> nunoccs) const;
 
+	/// Maintains updating of pDoubles and pParallel
 	ProbUpdater pBiasGen;
-    // probability of generating a double excitation
+    /// probability of generating a double excitation
     double pDoubles;
-    // probability of generating a parallel spin double excitation
+    /// probability of generating a same-spin double excitation
     double pParallel;
     // which part of the excitation generator
     bool linExact = false;

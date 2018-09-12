@@ -15,8 +15,18 @@ namespace networkVMC {
 
 class Hamiltonian;
 
-// this takes a determinant, a Hamiltonian and a number and generates a list of that many connected states
-// pGen is the array of probabilities
+//
+//
+/**
+ * \brief Randomly generate a list of basis vectors connected to a given basis vector
+ * \fn std::vector<detType> sampleConnections(Hamiltonian const &H, detType const &base, int numConnections, std::vector<double> &pGen);
+ * \param[in] H hamiltonian defining connectivity
+ * \param[in] base basis vector to sample from
+ * \param[in] numConnections number of connected states to sample
+ * \param[out] pGen array of generation probabilities
+ * \return list of randomly generated basis vectors
+ * Takes a determinant, a Hamiltonian and a number and generates a list of that many connected states
+ */
 std::vector<detType> sampleConnections(Hamiltonian const &H, detType const &base,
 		int numConnections, std::vector<double> &pGen);
 

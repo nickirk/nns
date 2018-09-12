@@ -33,7 +33,7 @@ class Hamiltonian {
 	 *
 	 * \param a first basis state
 	 * \param b second basis state
-	 * \return Matrix element of the Hamiltonian between a and b
+	 * \return matrix element of the Hamiltonian between a and b
 	 * Hamiltonians need to be able to produce a matrix element given two determinants
 	 */
 	virtual double operator()(detType const &a, detType const &b) const =0;
@@ -44,19 +44,19 @@ class Hamiltonian {
 	/**
 	 * \brief Generate all states coupling to source
 	 *
-	 * \param source Basis vector to which to couple
-	 * \return List of all basis vectors coupling to source
+	 * \param[in] source basis vector to which to couple
+	 * \return list of all basis vectors coupling to source
 	 * Note that - in contrast to excitation generation - this is really
 	 * a property of the Hamiltonian
 	 */
 	virtual std::vector<detType> getCoupledStates(detType const &source) const = 0;
 
-	/*
-	 * \brief Type of the Hamiltonian
+	/**
+	 * \brief type of the Hamiltonian
 	 *
 	 * \return enum indicating of which type the Hamiltonian is
 	 *
-	 * Possible types are Constant, Hubbard, AbInitio and Heisenberg
+	 * Possible types are Constant, Hubbard, AbInitio and Heisenberg. Default is Constant
 	 */
 	virtual HType type() const{return Constant;};
 };

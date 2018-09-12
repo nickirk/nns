@@ -36,7 +36,7 @@ class CostFunction{
 	/**
 	 * \brief Interface function for the derivative of the function to optimize
 	 *
-	 * \param [in] input Input vector as a State object, containing all vector coefficients and corresponding basis vectors
+	 * \param[in] input Input vector as a State object, containing all vector coefficients and corresponding basis vectors
 	 * Computes the vector df/dc where c are the vector coefficients of the input state.
 	 */
 	virtual T nabla(State<coeffType> const &input) const = 0;
@@ -44,7 +44,7 @@ class CostFunction{
 	/**
 	 * \brief Interface function for the function f to optimize
 	 *
-	 * \param [in] input Input vector as a State object, containing all vector coefficients and corresponding basis states
+	 * \param[in] input Input vector as a State object, containing all vector coefficients and corresponding basis states
 	 * Computes f(input)
 	 */
 	virtual coeffType calc(State<coeffType> const &input) const = 0;
@@ -55,7 +55,7 @@ class CostFunction{
 	/**
 	 * \brief Virtual constructor for CostFunction
 	 *
-	 * Create a new instance of a CostFunction of the same derived type as *this and return a pointer to the new one
+	 * \return pointer to a new instance of a CostFunction which is a copy of *this (with the same derived type)
 	 */
 	virtual CostFunction* clone() const = 0;
 
@@ -73,7 +73,7 @@ class CostFunction{
 	/**
 	 * \brief Initializes a CostFunction specialization
 	 *
-	 * \param [in] sT Type of the Sampler used to create the input vectors
+	 * \param[in] sT Type of the Sampler used to create the input vectors
 	 * Specializes the CostFunction for the given SamplerType. Exact behavior depends on the used CostFunction
 	 * implementation, but this ensures the CostFunction is always suited for a given SamplerType.
 	 */

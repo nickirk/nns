@@ -30,7 +30,7 @@ class EnergyCFBaseClass: public CostFunction<F, coeffType> {
 	/// Type of the derivative
 	using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
 	/**
-	 * \param H_ Hamiltonian used for obtaining the energy
+	 * \param[in] H_ Hamiltonian used for obtaining the energy
 	 */
 	EnergyCFBaseClass(Hamiltonian const &H_):H(H_), energy(0.0), 
   normalizerCoeff(0.0){};

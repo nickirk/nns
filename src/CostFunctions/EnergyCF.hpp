@@ -32,7 +32,7 @@ class EnergyCF: public EnergyCFBaseClass<F, coeffType>{
 	/// Type of the derivative
 	using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
 	/**
-	 * \param H_ Hamiltonian defining the energy functional
+	 * \param[in] H_ Hamiltonian defining the energy functional
 	 */
 	explicit EnergyCF(Hamiltonian const &H_):EnergyCFBaseClass<F, coeffType>(H_){};
 	virtual ~EnergyCF(){};
@@ -45,7 +45,7 @@ private:
 	/**
 	 * \brief Compute the energy expectation value and cache it
 	 *
-	 * \param input Vector represented by a State object
+	 * \param[in] input Vector represented by a State object
 	 * \return Expectation value of the energy
 	 */
 	coeffType evaluate(State<coeffType> const &input) const;

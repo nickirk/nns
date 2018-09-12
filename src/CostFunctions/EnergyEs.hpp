@@ -35,8 +35,8 @@ class EnergyEs: public CostFunction<F, coeffType> {
 	/// Type of the derivative
 	using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
 	/**
-	 * \param H_ Hamiltonian used for obtaining the energy
-	 * \param numCons_ Number of matrix elements taken into account per basis vector
+	 * \param[in] H_ Hamiltonian used for obtaining the energy
+	 * \param[in] numCons_ Number of matrix elements taken into account per basis vector
 	 */
 	EnergyEs(Hamiltonian const &H_, int numCons_=20);
 	virtual ~EnergyEs();

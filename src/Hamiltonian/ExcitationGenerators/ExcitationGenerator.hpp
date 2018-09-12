@@ -13,39 +13,65 @@
 
 namespace networkVMC {
 
-// Base class for excitation generation
+/**
+ * \class ExcitationGenerator
+ * \brief Abstract base class for excitation generation
+ *
+ * Interface for ExcitationGenerators, objects that can randomly generate basis vectors connected to a given one.
+ * In addition, they can output the probability of generating a given basis vector from another given one.
+ */
 class ExcitationGenerator {
 public:
 	ExcitationGenerator(){};
 	virtual ~ExcitationGenerator(){};
 
-	// we want polymorphic copy, it is implemented with CRTP (see below)
+	/**
+	 * \brief Virtual constructor (implemented with CRTP via ClonableExcitgen)
+	 * \return pointer to a new ExcitationGenerator which is a copy of *this (with the same derived type)
+	 */
 	virtual ExcitationGenerator* clone()const =0;
 
 	// we need to be able to
 	//	a) generate a random excitation and
+
+	/**
+	 * \brief Create a random excitation of a given basis vector
+	 * \param[in] source basis vector from which to excite
+	 * \param[out] pGen probability to pick this excitation
+	 * \return random coupled basis vector (excitation)
+	 */
 	virtual detType generateExcitation(detType const &source, double &pGen) = 0;
 	// 	b) get the probability for an excitation from source to target
+
+	/**
+	 * \brief Get the probability to create a given excitation
+	 * \param[in] source initial basis vector of the excitation generation
+	 * \param[in] target final basis vector of the excitation generation
+	 * \return probability to excite from source to target with generateExcitation()
+	 */
 	virtual double getExcitationProb(detType const &source, detType const &target) = 0;
-	// maintains the pDoubles/pParallel for our non-trivial excitgens
+	/// maintains the pDoubles/pParallel biases for our non-trivial excitgens
 	class ProbUpdater;
-	// additional feature: update internal biases of excitation generation, this can make a huge difference
-	// since this is not done on the same scope as generating excitations, we need to call this externally
+	/** additional feature: update internal biases of excitation generation, this can make a huge difference
+	* since this is not done on the same scope as generating excitations, we need to call this externally
+	*/
 	virtual void updateBiases(){};
 };
 
 
-// CRTP class for cloning
+/**
+ * \class ClonableExcitgen
+ * \brief CRTP class for cloning ExcitationGenerators
+ * \tparam T derived type that inherits from this instance
+ */
 
 template<typename T>
 class ClonableExcitgen: public ExcitationGenerator{
 public:
-	// inherit the constructor
+	/// inherit the constructor of ExcitationGenerator
 	using ExcitationGenerator::ExcitationGenerator;
 	virtual ~ClonableExcitgen(){};
 
-	// clone functionality for ExcitationGenerators
-	// only usable in direct child classes
 	virtual ExcitationGenerator* clone() const{
 			return new T{static_cast<T const&>(*this)};
 	}
