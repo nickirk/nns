@@ -29,6 +29,7 @@ class Hamiltonian;
  * \brief Wrapper class for optimizing parameters
  * \tparam F Type of the parameters to optimize
  * \tparam coeffType Type of the vector coefficients of the input of the function to optimize
+ *
  * Use a parametrization, a sampler, a solver, a cost function and a Hamiltonian
  * to optimize the parameters with respect to the cost function
  */
@@ -92,6 +93,7 @@ public:
 	/// Assignment operators are deleted
 	Trainer& operator=(Trainer &&source) = delete;
 private:
+	/// The Hamiltonian of the problem
 	Hamiltonian const &modelHam;
 	/// the parameterization of the wave function
 	Parametrization<F, coeffType> &NNW;
@@ -105,7 +107,7 @@ private:
 	// (is set up to fit the sampler)
 	CostFunction<F, coeffType> &cf;
 
-	// This is only for debugging
+	/// This is only for debugging
 	State<coeffType> inputState;
 };
 

@@ -6,7 +6,7 @@ using namespace networkVMC;
 // use the full sampler with the direct parametrization
 void testDeterministicFullSampling(SpinConfig const &sC, Hamiltonian const &H){
 	Basis basis(sC,H);
-	DirectParametrization<std::complex<double>, std::complex<double>> para(basis);
+	DirectParametrization<cType, cType> para(basis);
 	auto HF = basis.getDetByIndex(0);
 	FullSampler<> mySampler(H,basis,para);
 	solveADAM(para,mySampler,H);
@@ -17,7 +17,7 @@ void testRBMMetropolis(networkVMC::SpinConfig const &sC, networkVMC::Hamiltonian
 	Basis basis(sC,H);
 	int const numHidden = 20;
 	// RBM parametrization
-	RBM<std::complex<double>, std::complex<double>> network(sC.numSpinOrbs(),numHidden);
+	RBM<cType, cType> network(sC.numSpinOrbs(),numHidden);
 	// Metropolis Sampler (needs complex coeffs)
 	MetropolisSampler<> mySampler(H,basis.getDetByIndex(0), basis, network);
 	solveADAM(network, mySampler, H);
