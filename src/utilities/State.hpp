@@ -15,15 +15,11 @@
 #include "sorting.hpp"
 #include "Errors.hpp"
 
-// set the default argument
-#include "StateForward.hpp"
-
 namespace networkVMC{
 
 // A state is a list of determinants and the corresponding list of
 // their coefficients and weights, also the lists of the respective coupled Dets and
 // coupled coeffs. We want the State to behave like a std::vector.
-template <typename coeffType>
 class State{
   public:
 	State():
@@ -68,13 +64,13 @@ class State{
 
 	// implement the non-const version via the const version
 	detType& det(int i) {
-    return const_cast<detType &>(static_cast<State<coeffType> const &>((*this)).det(i));
+    return const_cast<detType &>(static_cast<State const &>((*this)).det(i));
   }
 	coeffType& coeff(int i){
-    return const_cast<coeffType &>(static_cast<State<coeffType> const &>((*this)).coeff(i));
+    return const_cast<coeffType &>(static_cast<State const &>((*this)).coeff(i));
   }
 	double& weight(int i){
-    return const_cast<double &>(static_cast<State<coeffType> const &>((*this)).weight(i));
+    return const_cast<double &>(static_cast<State const &>((*this)).weight(i));
   }
 
 	// access operators for the coupled determinants
@@ -85,17 +81,17 @@ class State{
 	// same as above: prevent code duplication
 	std::vector<detType>& coupledDets(int i) {
     return const_cast<std::vector<detType > &>(
-        static_cast<State<coeffType> const &>((*this)).coupledDets(i)
+        static_cast<State const &>((*this)).coupledDets(i)
         );
   }
 	std::vector<coeffType>& coupledCoeffs(int i){
     return const_cast<std::vector<coeffType> &>(
-        static_cast<State<coeffType> const &>((*this)).coupledCoeffs(i)
+        static_cast<State const &>((*this)).coupledCoeffs(i)
         );
   }
 	std::vector<double>& coupledWeights(int i){
     return const_cast<std::vector<double> &>(
-        static_cast<State<coeffType> const &>((*this)).coupledWeights(i)
+        static_cast<State const &>((*this)).coupledWeights(i)
         );
   }
 
@@ -131,7 +127,7 @@ class State{
   void sortCoeffs(){
   // sort the state using the coefficient-wise comparison
   // we employ the sorting.hpp utilities (same as above)
-    auto perm = getPermutation(storedCoeffs,coeffComparer<coeffType>());
+    auto perm = getPermutation(storedCoeffs,coeffComparer());
     permuteAll(perm);
     fSortedCoeff = 1;
     fSortedDet = 0;
@@ -200,9 +196,7 @@ private:
 	std::vector<std::vector<coeffType >> cCoeffs;
     std::vector<std::vector<double>> cWeights;
 };
-//instantiate it
-template class State<double>;
-template class State<std::complex<double>>;
+
 }
 
 #endif /* SRC_UTILITIES_STATE_HPP_ */

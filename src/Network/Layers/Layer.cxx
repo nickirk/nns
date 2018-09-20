@@ -11,9 +11,7 @@
 #include "Layer.hpp"
 
 namespace networkVMC{
-
-template <typename F, typename coeffType>
-Layer<F, coeffType>::Layer(std::vector<Eigen::VectorXd> const &inputs_, std::string actFunc_):
+Layer::Layer(std::vector<Eigen::VectorXd> const &inputs_, std::string actFunc_):
 inputs(inputs_){
   //default activation function
   numPara=0;
@@ -40,14 +38,12 @@ inputs(inputs_){
   else throw errors::ActFuncDoNotExist(actFunc_);
 }
 
-template <typename F, typename coeffType>
-Layer<F, coeffType>::~Layer(){
+Layer::~Layer(){
 }
 
 // Processing an input signal can be done by any Layer, given that the
 // number of neurons is equal to the number of orbitals
-template <typename F, typename coeffType>
-void Layer<F, coeffType>::processSignal(detType const &det) const{
+void Layer::processSignal(detType const &det) const{
   int numStates=det.size();
   // This only works if the fed determinant is valid
   if(activations[0].size()!=numStates) throw errors::InvalidDeterminantError(det);

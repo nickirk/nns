@@ -11,30 +11,27 @@
 #include "EnergyEsMarkov.hpp"
 
 namespace networkVMC {
-template <typename F, typename coeffType>
-EnergyEs<F, coeffType>::EnergyEs(Hamiltonian const &H_, int numCons_):H(H_),
-		worker(new EnergyCF<F, coeffType>(H)), numCons(numCons_){
+
+EnergyEs::EnergyEs(Hamiltonian const &H_, int numCons_):H(H_),
+		worker(new EnergyCF(H)), numCons(numCons_){
 }
 
-template <typename F, typename coeffType>
-EnergyEs<F, coeffType>::~EnergyEs() {
+
+EnergyEs::~EnergyEs() {
 }
 
-template <typename F, typename coeffType>
-void EnergyEs<F, coeffType>::setUpCF(SamplerType const &sT){
+void EnergyEs::setUpCF(SamplerType const &sT){
 	// create the energy estimator belonging to the sampler-type
 	switch(sT){
 	case Markov:
 		// for markov-type samplers, use EnergyEsMarkov
-		worker = DeepCpyUniquePtr<EnergyCFBaseClass<F, coeffType>>(new EnergyEsMarkov<F, coeffType>(H,numCons));
+		worker = DeepCpyUniquePtr<EnergyCFBaseClass>(new EnergyEsMarkov(H,numCons));
 		break;
 	case PreFetched:
 	default:
 		// by default, use the pre-fetched version (i.e. the 'normal')
-		worker = DeepCpyUniquePtr<EnergyCFBaseClass<F, coeffType>>(new EnergyEsPreFetched<F, coeffType>(H,numCons));
+		worker = DeepCpyUniquePtr<EnergyCFBaseClass>(new EnergyEsPreFetched(H,numCons));
 	}
 }
-//instantiate the templates
-template class EnergyEs<double, double>;
-template class EnergyEs<std::complex<double>, std::complex<double>>;
+
 } /* namespace networkVMC */

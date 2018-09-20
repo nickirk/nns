@@ -10,9 +10,8 @@
 #include <math.h>
 
 namespace networkVMC{
-template <typename F, typename coeffType>
-typename NormCF<F, coeffType>::T NormCF<F, coeffType>::nabla(State<coeffType> const &input) const{
-	T cfBuf(input.size());
+paraVector NormCF::nabla(State const &input) const{
+	paraVector cfBuf(input.size());
 	for(std::size_t i=0;i<input.size();++i){
 		coeffType buf0;
 		Eigen::VectorXd buf = Eigen::VectorXd::Zero(2);
@@ -26,8 +25,7 @@ typename NormCF<F, coeffType>::T NormCF<F, coeffType>::nabla(State<coeffType> co
 	return cfBuf;
 }
 
-template <typename F, typename coeffType>
-coeffType NormCF<F, coeffType>::calc(State<coeffType> const &input) const{
+coeffType NormCF::calc(State const &input) const{
 	coeffType buf=0.;
 	for(std::size_t i=0;i<input.size();++i){
 		coeffType tmp = input.coeff(i) - psi.coeff(i);
@@ -35,8 +33,6 @@ coeffType NormCF<F, coeffType>::calc(State<coeffType> const &input) const{
 	}
 	return buf;
 }
-template class NormCF<double, double>;
-template class NormCF<std::complex<double>, std::complex<double>>;
 
 }
 

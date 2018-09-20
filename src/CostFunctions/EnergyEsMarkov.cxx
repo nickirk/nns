@@ -16,8 +16,7 @@
 
 namespace networkVMC{
 
-template <typename F, typename coeffType>
-coeffType EnergyEsMarkov<F, coeffType>::evaluate(State<coeffType> const &input) const{
+coeffType EnergyEsMarkov::evaluate(State const &input) const{
   coeffType energyVal=0.;
   //normalizerCoeff=input.getTotalWeights();
   int numDets = input.size();
@@ -45,22 +44,21 @@ coeffType EnergyEsMarkov<F, coeffType>::evaluate(State<coeffType> const &input) 
   return energyVal;
 }
 
-template <typename F, typename coeffType>
-typename EnergyEsMarkov<F, coeffType>::T EnergyEsMarkov<F, coeffType>::nabla(State<coeffType> const &input) const{
+paraVector EnergyEsMarkov::nabla(State const &input) const{
   coeffType energyM = evaluate(input);
   energy = energyM;
   int numDets = input.size();
   // spaceSize = size of sampled dets and their coupled ones
   int spaceSize = input.totalSize();
   // For each n, it has the same number of connected Dets as others.!!!
-  T dEdC=T::Zero(spaceSize);
+  paraVector dEdC=paraVector::Zero(spaceSize);
   //not thread safe
   //assume we know the whole space size, reserve space
   #pragma omp parallel for
   for (int i=0; i < numDets; ++i){
     coeffType c_i = input.coeff(i);
     // put all the weighting step here instead of inside of RBM
-    F dEdCtmp = (H(input.det(i), input.det(i))) * input.weight(i);
+    paraType dEdCtmp = (H(input.det(i), input.det(i))) * input.weight(i);
     // divide by  totalWeights
     dEdC(i) = dEdCtmp / input.getTotalWeights();
     std::vector<coeffType> const &coupledC_j = input.coupledCoeffs(i);
@@ -86,7 +84,5 @@ typename EnergyEsMarkov<F, coeffType>::T EnergyEsMarkov<F, coeffType>::nabla(Sta
   return dEdC;
 }
 
-template class EnergyEsMarkov<double, double>;
-template class EnergyEsMarkov<std::complex<double>, std::complex<double>>;
 }
 

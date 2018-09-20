@@ -10,8 +10,7 @@
 
 namespace networkVMC{
 
-template <typename F, typename coeffType>
-RBM<F, coeffType>::RBM(int sizeInput_, int sizeHidden_):
+RBM::RBM(int sizeInput_, int sizeHidden_):
 sizeHidden(sizeHidden_),
 sizeInput(sizeInput_),
 numPars(sizeInput_+sizeHidden_+sizeInput_*sizeHidden_),
@@ -35,8 +34,7 @@ w(pars_vec.data()+w_offset, sizeHidden_, sizeInput_){
 
 //---------------------------------------------------------------------------//
 
-template <typename F, typename coeffType>
-RBM<F, coeffType>::RBM(RBM<F, coeffType> const& source):
+RBM::RBM(RBM const& source):
 	a(nullptr, source.sizeInput),b(nullptr, source.sizeHidden),
 	w(nullptr, source.sizeHidden, source.sizeInput){  // the maps have to be initialized, but leave them empty for now
 	// delegate this to the copy-assignment
@@ -45,8 +43,7 @@ RBM<F, coeffType>::RBM(RBM<F, coeffType> const& source):
 
 //---------------------------------------------------------------------------//
 
-template <typename F, typename coeffType>
-RBM<F, coeffType>& RBM<F, coeffType>::operator=(RBM<F, coeffType> const &source){
+RBM& RBM::operator=(RBM const &source){
 	if(&source != this){
 		// copy the data
 		sizeHidden = source.sizeHidden;
@@ -61,9 +58,9 @@ RBM<F, coeffType>& RBM<F, coeffType>::operator=(RBM<F, coeffType> const &source)
 		// which is why we default the move ctor)
 
 		// this is done using the placement-new syntax
-		new (&a) Eigen::Map<T>(pars_vec.data()+a_offset, sizeInput);
-		new (&b) Eigen::Map<T>(pars_vec.data()+b_offset, sizeHidden);
-		new (&w) Eigen::Map<Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic> >
+		new (&a) Eigen::Map<paraVector>(pars_vec.data()+a_offset, sizeInput);
+		new (&b) Eigen::Map<paraVector>(pars_vec.data()+b_offset, sizeHidden);
+		new (&w) Eigen::Map<Eigen::Matrix<paraType, Eigen::Dynamic, Eigen::Dynamic> >
 			(pars_vec.data()+w_offset, sizeHidden, sizeInput);
 
 	}
@@ -72,33 +69,28 @@ RBM<F, coeffType>& RBM<F, coeffType>::operator=(RBM<F, coeffType> const &source)
 
 //---------------------------------------------------------------------------//
 
-template<typename F, typename coeffType>
-RBM<F, coeffType>::~RBM(){}
+RBM::~RBM(){}
 
 //---------------------------------------------------------------------------//
 
-
-template <typename F, typename coeffType>
-typename RBM<F, coeffType>::T const& RBM<F, coeffType>::pars() const
+paraVector const& RBM::pars() const
 {
 	return pars_vec;
 }
 
 //---------------------------------------------------------------------------//
 
-
-template <typename F, typename coeffType>
-coeffType RBM<F, coeffType>::getCoeff(detType const &det) const
+coeffType RBM::getCoeff(detType const &det) const
 {
-	T s = T::Ones(sizeInput);
+	paraVector s = paraVector::Ones(sizeInput);
 
 	for (int j=0; j<sizeInput; j++)
 	{
 		s(j) = det[j]?1.0:-1.0;
 	}
 
-	T coshVec = (b+w*s).array().cosh();
-	F psi = std::exp(a.dot(s));
+	paraVector coshVec = (b+w*s).array().cosh();
+	paraType psi = std::exp(a.dot(s));
 	for(int i=0; i<sizeHidden;i++)
 	{
 		psi = psi * coshVec(i);
@@ -112,24 +104,23 @@ coeffType RBM<F, coeffType>::getCoeff(detType const &det) const
 //---------------------------------------------------------------------------//
 
 
-template <typename F, typename coeffType>
-typename RBM<F, coeffType>::T RBM<F, coeffType>::getDeriv(detType const &det) const
+paraVector RBM::getDeriv(detType const &det) const
 {
-	T dCdWk= T::Zero(numPars);
+	paraVector dCdWk= paraVector::Zero(numPars);
 	// do the mapping inside for loop, private
-	Eigen::Map<T> da(dCdWk.data()+a_offset, sizeInput);
-	Eigen::Map<T> db(dCdWk.data()+b_offset, sizeHidden);
-	Eigen::Map<Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>> dw(dCdWk.data()+w_offset, sizeHidden, sizeInput);
-	T s = T::Ones(sizeInput);
+	Eigen::Map<paraVector> da(dCdWk.data()+a_offset, sizeInput);
+	Eigen::Map<paraVector> db(dCdWk.data()+b_offset, sizeHidden);
+	Eigen::Map<Eigen::Matrix<paraType, Eigen::Dynamic, Eigen::Dynamic>> dw(dCdWk.data()+w_offset, sizeHidden, sizeInput);
+	paraVector s = paraVector::Ones(sizeInput);
 
 	for (int j=0; j<sizeInput; j++)
 	{
 		s(j) = det[j]?1.0:-1.0;
 	}
 
-	T coshVec = (b+w*s).array().cosh();
+	paraVector coshVec = (b+w*s).array().cosh();
 
-	F psi = std::exp(a.dot(s));
+	paraType psi = std::exp(a.dot(s));
 	for(int i=0; i<sizeHidden;i++)
 	{
 		psi = psi * coshVec(i);
@@ -137,7 +128,7 @@ typename RBM<F, coeffType>::T RBM<F, coeffType>::getDeriv(detType const &det) co
 
 	da = psi*s;
 
-	T tanhVec = (b+w*s).array().tanh();
+	paraVector tanhVec = (b+w*s).array().tanh();
 	db = psi*tanhVec;
 
 	dw = psi*tanhVec*s.transpose();
@@ -147,11 +138,5 @@ typename RBM<F, coeffType>::T RBM<F, coeffType>::getDeriv(detType const &det) co
 }
 
 //---------------------------------------------------------------------------//
-
-
-//instantiate
-template class RBM<double, double>;
-
-template class RBM<std::complex<double>, std::complex<double>>;
 
 }

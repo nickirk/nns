@@ -11,23 +11,21 @@
 #include <Eigen/IterativeLinearSolvers>
 namespace networkVMC {
 
-template <typename F, typename coeffType>
-StochasticReconfiguration<F, coeffType>::~StochasticReconfiguration() {
+StochasticReconfiguration::~StochasticReconfiguration() {
 }
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename F, typename coeffType>
-void StochasticReconfiguration<F, coeffType>::update(T &w, T const &force,
-		  State<coeffType> const &input, SamplerType const &samplerType){
+void StochasticReconfiguration::update(paraVector &w, paraVector const &force,
+		  State const &input, SamplerType const &samplerType){
 
 	// first, get the input vector's coefficients
   std::size_t numDets = input.size();
   int numPars=w.size();
-  Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic> OkOkp = Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>::Zero(numPars, numPars);
-  Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic> S = Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>::Zero(numPars, numPars);
-  T Ok = T::Zero(numPars);
-  T dCdWk= T::Zero(numPars);
+  Eigen::Matrix<paraType, Eigen::Dynamic, Eigen::Dynamic> OkOkp = Eigen::Matrix<paraType, Eigen::Dynamic, Eigen::Dynamic>::Zero(numPars, numPars);
+  Eigen::Matrix<paraType, Eigen::Dynamic, Eigen::Dynamic> S = Eigen::Matrix<paraType, Eigen::Dynamic, Eigen::Dynamic>::Zero(numPars, numPars);
+  paraVector Ok = paraVector::Zero(numPars);
+  paraVector dCdWk= paraVector::Zero(numPars);
   switch (samplerType){
     case Markov:
 	  for(std::size_t i = 0; i<numDets; ++ i){
@@ -64,11 +62,11 @@ void StochasticReconfiguration<F, coeffType>::update(T &w, T const &force,
   // no guarantee that they work for other systems. 
   // More tests should be run to observe the performace of these parameters
   double lambda = std::max(100*std::pow(0.9,iteration), 10.);
-  T I = T::Ones(numPars);
+  paraVector I = paraVector::Ones(numPars);
   // Add \epsilon * I to S matrix to prevent ill inversion of the S matrix.
   double error=1.;
-  T x;
-  Eigen::ConjugateGradient<Eigen::Matrix<F, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Lower|Eigen::Upper> cg;
+  paraVector x;
+  Eigen::ConjugateGradient<Eigen::Matrix<paraType, Eigen::Dynamic, Eigen::Dynamic>, Eigen::Lower|Eigen::Upper> cg;
   cg.setTolerance(1e-16);
   cg.setMaxIterations(10000);
   while (error>1e-16){
@@ -80,11 +78,8 @@ void StochasticReconfiguration<F, coeffType>::update(T &w, T const &force,
   }
   x /= std::sqrt(std::real(x.dot(S * x)));
 
-  w-=Solver<F, coeffType>::learningRate*x;
+  w-=Solver::learningRate*x;
 	// increase the iteration counter
 	iteration += 1;
 }
-template class StochasticReconfiguration<double, double>;
-
-template class StochasticReconfiguration<std::complex<double>, std::complex<double>>;
 } /* namespace networkVMC */

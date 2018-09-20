@@ -10,31 +10,30 @@
 #include "../Samplers/Sampler.hpp"
 #include "../Network/Parametrization.hpp"
 #include "../Hamiltonian/ExcitationGenerators/ConnectionGenerators/ConnectionGenerator.hpp"
-#include <iostream>
 #include "../Hamiltonian/TwoBodyHamiltonian.hpp"
 #include "../HilbertSpace/Determinant.hpp"
+
+#include <memory>
+#include <iostream>
 namespace networkVMC {
 
-template <typename F, typename coeffType>
-InputStateGenerator<F, coeffType>::InputStateGenerator(Sampler<coeffType> &msampler_, Hamiltonian const &H_,
-		Parametrization<F, coeffType> const &para_):
+InputStateGenerator::InputStateGenerator(Sampler &msampler_, Hamiltonian const &H_,
+		Parametrization const &para_):
 	msampler(msampler_), H(H_), para(para_){
 }
 
-template <typename F, typename coeffType>
-InputStateGenerator<F, coeffType>::~InputStateGenerator() {
+InputStateGenerator::~InputStateGenerator() {
 }
 
-template <typename F, typename coeffType>
-State<coeffType> InputStateGenerator<F, coeffType>::generate(int numCons) const{
+State InputStateGenerator::generate(int numCons) const{
   // set up a state of the matching size
   int numDets{msampler.getNumDets()};
-  State<coeffType> outputState(numDets);
+  State outputState(numDets);
   int accept(0);
   #pragma omp parallel
   {
     // sampling is not threadsafe, so each thread creates it's own sampler
-    std::unique_ptr<Sampler<coeffType>> samplerThread(msampler.clone());
+    std::unique_ptr<Sampler> samplerThread(msampler.clone());
 
     #pragma omp for
     for(int i=0; i < numDets; ++i){
@@ -71,8 +70,5 @@ State<coeffType> InputStateGenerator<F, coeffType>::generate(int numCons) const{
   std::cout << "InputStateGenerator.cxx: Accpt rate=" << double(accept)/numDets << std::endl;
   return outputState;
 }
-
-template class InputStateGenerator<double, double>;
-template class InputStateGenerator<std::complex<double>, std::complex<double>>;
 
 } /* namespace networkVMC */

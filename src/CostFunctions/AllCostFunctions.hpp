@@ -11,6 +11,5 @@
 #include "EnergyCF.hpp"
 #include "EnergyEs.hpp"
 #include "NormCF.hpp"
-#include "SubspaceCF.hpp"
 
 #endif /* SRC_COSTFUNCTIONS_ALLCOSTFUNCTIONS_HPP_ */

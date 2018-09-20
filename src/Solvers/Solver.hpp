@@ -9,16 +9,16 @@
 #define SRC_SOLVERS_SOLVER_HPP_
 
 #include "../utilities/TypeDefine.hpp"
-#include "../utilities/StateForward.hpp"
+#include "../utilities/MatrixTypeDefine.hpp"
 #include <Eigen/Dense>
 
 namespace networkVMC{
 
+class State;
+
 // Class doing the minimization in a force-field given by force by different schemes
-template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
 class Solver {
 public:
-  using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
   // all solvers have a train rate/step size parameter
   Solver(double learningRate_):learningRate(learningRate_){};
   virtual ~Solver(){};
@@ -27,7 +27,7 @@ public:
   // and get the second derivatives on the fly
   // Need samplerType especially in StochasticReconfiguration, because while
   // constructing the S matrix, need to know which getDeriv to call.
-  virtual void update(T &w, T const &force, State<coeffType> const &input, SamplerType
+  virtual void update(paraVector &w, paraVector const &force, State const &input, SamplerType
     const &samplerType=Markov)=0;
 
   // set/get the learning rate (the learning rate is an internal parameter,

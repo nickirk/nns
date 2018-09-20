@@ -16,8 +16,20 @@ namespace networkVMC{
 
 // We eventually want to use complex, but the current version uses VectorXd
 // Only keep it as long as nececcary in this stage
-// Typedef for coefficients
-using cType = std::complex<double>;
+/// Typedef for coefficients
+#ifdef __REAL_COEFF
+using coeffType = double;
+#else
+using coeffType = std::complex<double>;
+#endif
+
+///Typedef for parameters
+#ifdef __REAL_PARAMS
+	using paraType = double;
+#else
+	using paraType = std::complex<double>;
+#endif
+
 using detType = std::vector<bool>;
 
 // Supertypes for samplers and Hamiltonians to set defaults

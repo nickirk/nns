@@ -10,7 +10,7 @@
 #include "../src/utilities/State.hpp"
 #include "../src/HilbertSpace/Determinant.hpp"
 #include "../src/utilities/TypeDefine.hpp"
-#include "../src/Network/Nnw.hpp"
+#include "../src/Network/RBM.hpp"
 #include "../src/Hamiltonian/FermiHubbardHamiltonian.hpp"
 #include "../src/HilbertSpace/BasisGenerator.hpp"
 #include "../src/Samplers/MetropolisSampler.hpp"
@@ -38,9 +38,10 @@ int main(){
 
 	State targetState(targetDets, targetCoeffs);
 
-	NeuralNetwork network(eCF);
+	int nHidden = 20;
+	RBM network(nHidden);
 	MetropolisSampler msampler(modelHam,basisGen,D,network);
-	preTrain(network,targetState,msampler);
+	preTrain(network,targetState,msampler,0.01);
 }
 
 

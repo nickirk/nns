@@ -67,7 +67,6 @@ class detComparer{
 //---------------------------------------------------------------------------------------------------//
 
 // functor for comparing coeffs
-template <typename coeffType=std::complex<double>>
 class coeffComparer{
   public:
   coeffComparer(){};

@@ -10,9 +10,11 @@
 
 #include <Eigen/Dense>
 #include "../utilities/TypeDefine.hpp"
-#include "../utilities/StateForward.hpp"
+#include "../utilities/MatrixTypeDefine.hpp"
 
 namespace networkVMC{
+
+class State;
 
 /** \class CostFunction
  * \brief Pure abstract base class for cost functions
@@ -20,15 +22,11 @@ namespace networkVMC{
  * Defines the interface used for functions to optimize. The function f to optimize is a real- or complex-valued
  * function over a vector space, and both the function and its derivative have to be supplied.
  * For complex valued functions, the absolute value is minimized.
- * \tparam F Type of the parameters to optimize
- * \tparam coeffType Type of the vector coefficients of the input vector
  */
 
-template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
 class CostFunction{
   public:
 	/// Type of the derivative
-	using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
 	virtual ~CostFunction(){};
 // Two functions have to be present in a cost function: The function itself (calc) and its derivative
 // (nabla)
@@ -39,7 +37,7 @@ class CostFunction{
 	 * \param[in] input Input vector as a State object, containing all vector coefficients and corresponding basis vectors
 	 * Computes the vector df/dc where c are the vector coefficients of the input state.
 	 */
-	virtual T nabla(State<coeffType> const &input) const = 0;
+	virtual paraVector nabla(State const &input) const = 0;
 
 	/**
 	 * \brief Interface function for the function f to optimize
@@ -47,7 +45,7 @@ class CostFunction{
 	 * \param[in] input Input vector as a State object, containing all vector coefficients and corresponding basis states
 	 * Computes f(input)
 	 */
-	virtual coeffType calc(State<coeffType> const &input) const = 0;
+	virtual coeffType calc(State const &input) const = 0;
 
 	// Make the CostFunction clonable - as we have multiple inheritance, CRTP is
 	// not such a good idea

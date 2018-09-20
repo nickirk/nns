@@ -53,7 +53,7 @@ double testL1Norm(std::vector<int> directSample,
   //std::REQUIRE(Z <= 5.);
   return Z;
 }
-std::vector<int> genDirectSample(Parametrization<std::complex<double>> 
+std::vector<int> genDirectSample(Parametrization
     const &para, Basis const &basis, size_t nSweeps){
   // Setup the random bits
     std::random_device rd;
@@ -87,7 +87,7 @@ std::vector<int> genMarkovSample(Sampler &sampler,
     return count;
 }
 
-void runMetropolisTest(Parametrization<std::complex<double>> const& para,
+void runMetropolisTest(Parametrization const& para,
     Basis const& basis, Sampler &sampler, size_t nSweeps){
   std::vector<int> directSample = genDirectSample(para, basis, nSweeps);
   std::vector<int> markovSample = genMarkovSample(sampler, basis, nSweeps);
@@ -105,7 +105,7 @@ int main(){
   auto modelHam = generateDefaultHubbard(numSites);
   size_t nSweeps = std::max(1000 * basis.size(), size_t(10000));
   // The cost function does not matter, we only need the para to get the coeffs
-  DirectParametrization<std::complex<double>> para(basis);
+  DirectParametrization para(basis);
   // RBM para(numStates, numHidden);
 
   detType HF=basis.getDetByIndex(0);
@@ -128,7 +128,7 @@ int main(){
 
     ////// and one for the Uniform
     UniformExcitgen uniEG(HF);
-    MetropolisSampler<std::complex<double>> ugSampler(uniEG, HF, basis, para);
+    MetropolisSampler ugSampler(uniEG, HF, basis, para);
 
 
     std::cout << "Closeness for uniform EG: "<< std::endl;

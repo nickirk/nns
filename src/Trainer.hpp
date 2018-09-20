@@ -10,9 +10,6 @@
 
 #include "utilities/State.hpp"
 #include "utilities/TypeDefine.hpp"
-#include "Solvers/Solver.hpp"
-#include "Network/ParametrizationForward.hpp"
-#include "CostFunctions/CostFunction.hpp"
 #include "Samplers/Sampler.hpp"
 #include <Eigen/Dense>
 
@@ -20,20 +17,19 @@ namespace networkVMC{
 
 // forward declaration for more efficient compilation
 
-//class CostFunction;
-//class Sampler;
+class CostFunction;
+class Sampler;
+class Parametrization;
+class Solver;
 class Hamiltonian;
 
 /**
  * \class Trainer
  * \brief Wrapper class for optimizing parameters
- * \tparam F Type of the parameters to optimize
- * \tparam coeffType Type of the vector coefficients of the input of the function to optimize
  *
  * Use a parametrization, a sampler, a solver, a cost function and a Hamiltonian
  * to optimize the parameters with respect to the cost function
  */
-template <typename F=std::complex<double>, typename coeffType=std::complex<double> >
 class Trainer {
 public:
 	// supply a Parametrization, a sampler, a solver, the cost function, and a Hamiltonian
@@ -44,8 +40,8 @@ public:
 	 * \param cf_ CostFunction object containing the function to optimize
 	 * \param H_ Hamiltonian object containing the underlying Hamilton Operator, defining connections between basis vectors
 	 */
-	Trainer(Parametrization<F, coeffType> &NNW_, Sampler<coeffType> &msampler,
-			Solver<F, coeffType> &sl_, CostFunction<F, coeffType> &cf_, Hamiltonian const &H_);
+	Trainer(Parametrization &NNW_, Sampler &msampler,
+			Solver &sl_, CostFunction &cf_, Hamiltonian const &H_);
 /**
  * \brief Optimizes the parameters of the NNW with respect to its cost function
  *
@@ -70,13 +66,13 @@ public:
    * \brief Get the current vector
    * \return A State object containing the current vector coefficients on the currently sampled subspace
    */
-	State<coeffType> const& getState() const;
+	State const& getState() const;
 // For testing purposes: get the cost function
 	/**
 	 * \brief Get the cost function
 	 * \return A reference to the used CostFunction
 	 */
-	CostFunction<F, coeffType> const & getCF() const {return cf;}
+	CostFunction const & getCF() const {return cf;}
 // update the parameters of the Parametrization
 
 	/**
@@ -84,7 +80,7 @@ public:
 	 * Call the optimization algorithm on a sampled space to update the
 	 * parameters of the Parametrization NNW of the vector
 	 */
-	void updateParameters(State<coeffType> const &input);
+	void updateParameters(State const &input);
 	virtual ~Trainer();
 
 	// Has a reference member, so assignment is not a thing
@@ -96,19 +92,19 @@ private:
 	/// The Hamiltonian of the problem
 	Hamiltonian const &modelHam;
 	/// the parameterization of the wave function
-	Parametrization<F, coeffType> &NNW;
+	Parametrization &NNW;
 	/// the sampler generating the random states
 	// (changes state when sampling, thus not const)
-	Sampler<coeffType> &msampler;
+	Sampler &msampler;
 	/// the solver that optimizes the parameters
 	// (changes its parameters when iterating, thus not const)
-	Solver<F, coeffType> &sl;
+	Solver &sl;
 	/// The cost function with respect to which we optimize
 	// (is set up to fit the sampler)
-	CostFunction<F, coeffType> &cf;
+	CostFunction &cf;
 
 	/// This is only for debugging
-	State<coeffType> inputState;
+	State inputState;
 };
 
 }

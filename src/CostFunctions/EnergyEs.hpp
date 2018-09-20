@@ -13,9 +13,6 @@
 #include "../utilities/DeepCpyUniquePtr.hpp"
 #include <Eigen/Dense>
 
-// set the default arguments
-#include "EnergyEsForward.hpp"
-
 namespace networkVMC {
 
 class Hamiltonian;
@@ -29,11 +26,8 @@ class Hamiltonian;
  * The implemented CostFunction uses the expectation value of the energy expectation value
  * with respect to a stochastic sampling of the basis vectors
  */
-template <typename F, typename coeffType>
-class EnergyEs: public CostFunction<F, coeffType> {
+class EnergyEs: public CostFunction {
   public:
-	/// Type of the derivative
-	using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
 	/**
 	 * \param[in] H_ Hamiltonian used for obtaining the energy
 	 * \param[in] numCons_ Number of matrix elements taken into account per basis vector
@@ -43,8 +37,8 @@ class EnergyEs: public CostFunction<F, coeffType> {
 	virtual void setUpCF(SamplerType const &sT);
 
 // The operations are actually performed by another EnergyCF (worker)
-	T nabla(State<coeffType> const &input) const {return worker->nabla(input);}
-	coeffType calc(State<coeffType> const &input) const {return worker->calc(input);};
+	paraVector nabla(State const &input) const {return worker->nabla(input);}
+	coeffType calc(State const &input) const {return worker->calc(input);};
 
 	/**
 	 * \brief Auxiliary function to get the norm
@@ -63,7 +57,7 @@ private:
 	// this is not a stand-alone CF, the work is done by another,
 	// owned CF
 	/// Owned CostFunction doing the work
-	DeepCpyUniquePtr<EnergyCFBaseClass<F, coeffType>> worker;
+	DeepCpyUniquePtr<EnergyCFBaseClass> worker;
 	/// number of matrix elements to be taken into account per basis vector
 	int numCons;
 };

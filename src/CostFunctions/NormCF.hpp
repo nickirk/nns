@@ -18,32 +18,27 @@ namespace networkVMC{
  * \class NormCF
  * \brief Cost function that measures the L2-distance to a target vector
  *
- * \tparam F Type of the parameters to optimize
- * \tparam coeffType Type of the vector coefficients of the input vector
  * This class implements a CostFunction using the L2-distance to a supplied target vector, optimizing it tries
  * to create a parametrization of the target vector
  */
-template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
-class NormCF: public CostFunction<F, coeffType>{
+class NormCF: public CostFunction{
   public:
-	/// Type of the derivative
-	using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
 	// NormCF construction/destruction
 	/**
 	 * \param psi_ State object representing the target vector
 	 */
-	explicit NormCF(State<coeffType> const &psi_):psi(psi_){};
+	explicit NormCF(State const &psi_):psi(psi_){};
 	virtual ~NormCF(){};
 // derivative of ||psi - psi_0||^2 with respect to the coefficients of psi
-	T nabla(State<coeffType> const &input) const;
+	paraVector nabla(State const &input) const;
 // value of ||psi - psi_0||^2
-	coeffType calc(State<coeffType> const &input) const;
+	coeffType calc(State const &input) const;
 
 	// Allow for polymorphic copy
-	virtual CostFunction<F, coeffType>* clone() const {return new NormCF<F, coeffType>(*this);}
+	virtual CostFunction* clone() const {return new NormCF(*this);}
 private:
 	/// The target state
-	State<coeffType> psi;
+	State psi;
 };
 
 }

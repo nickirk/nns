@@ -19,21 +19,21 @@ int main(){
   auto modelHam = generateDefaultHubbard(numSites);
   auto basis = generateDefaultBasis(numSites);
 // Cost function setup
-  EnergyEs<> eCF(modelHam);
+  EnergyEs eCF(modelHam);
 
 // Solver setup
   double trainRate(0.001);
-  ADAM<> sl(trainRate);
+  ADAM sl(trainRate);
 
 // Parametrization setup
   DirectParametrization<> par(basis);
 
 // Sampler setup
   detType HF=basis.getDetByIndex(0);
-  FullSampler<> sample(modelHam,basis,par);
+  FullSampler sample(modelHam,basis,par);
 
 // And optimize the direct parametrization
-  Trainer<> ev(par,sample,sl,eCF,modelHam);
+  Trainer ev(par,sample,sl,eCF,modelHam);
 
   for(int i=0;i<10000;++i){
 	  ev.train();

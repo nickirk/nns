@@ -34,15 +34,15 @@ int main(){
   //ListGen<std::complex<double>> ugSampler(RSHG, basis, HF, rbm);
   //ugSampler.setNumDets(100);
   EnergyEs eCF(modelHam, -1);
-  MetropolisSampler<std::complex<double>> ugSampler(RSHG, HF, rbm);
+  MetropolisSampler ugSampler(RSHG, HF, basis, rbm);
   ugSampler.setNumDets(500);
   //sampler.diffuse(list,spinConfig);
   //Setup the trainer
-  double energy{0.0};
+  coeffType energy{0.0};
   //AcceleratedGradientDescent<std::complex<double>> sl(trainRate);
-  ADAM<std::complex<double>> sl(trainRate);
+  ADAM sl(trainRate);
   //StochasticReconfiguration<std::complex<double>> sl(rbm,trainRate);
-  Trainer<std::complex<double>> ev(rbm, ugSampler, sl, eCF,modelHam);
+  Trainer ev(rbm, ugSampler, sl, eCF,modelHam);
   ofstream myfile1;
   myfile1.open ("en2");
   for(int l(0); l<50000; ++l){

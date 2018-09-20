@@ -10,21 +10,19 @@
 
 #include "Parametrization.hpp"
 #include "../utilities/TypeDefine.hpp"
+#include "../utilities/MatrixTypeDefine.hpp"
 #include "../utilities/Errors.hpp"
 #include "../HilbertSpace/Basis.hpp"
 
 namespace networkVMC {
 
-
 // here we parametrize the wave function by its coefficients
 // it is mainly for testing purposes
-template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
-class DirectParametrization: public ClonableParametrization<F, coeffType, DirectParametrization<F, coeffType> > {
+class DirectParametrization: public ClonableParametrization<DirectParametrization> {
   public:
-	using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
   DirectParametrization(Basis const &fullBasis_):fullBasis(&fullBasis_){
     // start with a random vector
-    coeffs = T::Random(fullBasis->size());
+    coeffs = paraVector::Random(fullBasis->size());
   }
 
   // The coefficient of a determinant is just its entry
@@ -39,19 +37,19 @@ class DirectParametrization: public ClonableParametrization<F, coeffType, Direct
 	  }
   }
 
-  T const& pars() const{
+  paraVector const& pars() const{
 	  return coeffs;
   }
   // inner derivative implementation
-  T calcNablaPars(State<coeffType> const &inputState, T const &dEdC);
-  T getDeriv(detType const &det) const;
-  T getMarkovDeriv(detType const &det) const;
+  paraVector calcNablaPars(State const &inputState, paraVector const &dEdC);
+  paraVector getDeriv(detType const &det) const;
+  paraVector getMarkovDeriv(detType const &det) const;
 
 private:
   // The basis to which we refer
   Basis const *fullBasis;
   // directly store the coefficients
-  T coeffs;
+  paraVector coeffs;
 };
 
 } /* namespace networkVMC */

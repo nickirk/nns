@@ -82,7 +82,7 @@ class DeepCpyUniquePtr {
      * \brief move assignment (works intuitively)
 	 * \param[in] source DeepCpyUniquePtr to be moved
      */
-	DeepCpyUniquePtr<T>& operator=(DeepCpyUniquePtr<T> &&source):resource(nullptr){
+	DeepCpyUniquePtr<T>& operator=(DeepCpyUniquePtr<T> &&source){
 	    swap(*this,source);
 		return *this;
 	}

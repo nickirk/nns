@@ -16,8 +16,7 @@
 
 namespace networkVMC{
 
-template <typename F, typename coeffType>
-coeffType EnergyEsPreFetched<F, coeffType>::evaluate(State<coeffType> const &input) const{
+coeffType EnergyEsPreFetched::evaluate(State const &input) const{
   //std::complex<double, Eigen::Matrix<double, Dynamic, 1> normalizerCoeffComplex(0.,0.);
   int numDets = input.size();
   //double energyVal = 0.0;
@@ -50,12 +49,11 @@ coeffType EnergyEsPreFetched<F, coeffType>::evaluate(State<coeffType> const &inp
   return energyVal;
 }
 
-template <typename F, typename coeffType>
-typename EnergyEsPreFetched<F, coeffType>::T EnergyEsPreFetched<F, coeffType>::nabla(State<coeffType> const &input) const{
+paraVector EnergyEsPreFetched::nabla(State const &input) const{
   energy = evaluate(input);
   int numDets = input.size();
   int spaceSize = input.totalSize();
-  T dEdC(spaceSize);
+  paraVector dEdC(spaceSize);
 
   #pragma omp parallel for
   for (int i=0; i < numDets; ++i){
@@ -75,6 +73,4 @@ typename EnergyEsPreFetched<F, coeffType>::T EnergyEsPreFetched<F, coeffType>::n
   return dEdC;
 }
 
-template class EnergyEsPreFetched<double, double>;
-template class EnergyEsPreFetched<std::complex<double>, std::complex<double>>;
 }

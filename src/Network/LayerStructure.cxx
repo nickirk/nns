@@ -13,22 +13,19 @@
 
 namespace networkVMC{
 
-template <typename F, typename coeffType>
-LayerStructure<F, coeffType>::LayerStructure(){
+LayerStructure::LayerStructure(){
 	layers.clear();
 }
 
 //---------------------------------------------------------------------------//
 
 // copy constructor
-template <typename F, typename coeffType>
-LayerStructure<F, coeffType>::LayerStructure(LayerStructure<F, coeffType> const &source){
+LayerStructure::LayerStructure(LayerStructure const &source){
 	copyLayerStructure(source);
 }
 
 // move constructor
-template <typename F, typename coeffType>
-LayerStructure<F, coeffType>::LayerStructure(LayerStructure<F, coeffType> &&source){
+LayerStructure::LayerStructure(LayerStructure &&source){
 	// take over the pointers from the source - we now own source's layers
 	layers=source.layers;
 	// and clear the source layers
@@ -36,8 +33,7 @@ LayerStructure<F, coeffType>::LayerStructure(LayerStructure<F, coeffType> &&sour
 }
 
 // assignment operator
-template <typename F, typename coeffType>
-LayerStructure<F, coeffType>& LayerStructure<F, coeffType>::operator=(LayerStructure<F, coeffType> const &source){
+LayerStructure& LayerStructure::operator=(LayerStructure const &source){
 	// check for self-assignment: we dont need to do anything in that case
 	if(this!=&source){
 		// else, call the copy functionality
@@ -49,8 +45,7 @@ LayerStructure<F, coeffType>& LayerStructure<F, coeffType>::operator=(LayerStruc
 }
 
 // move assignment operator
-template <typename F, typename coeffType>
-LayerStructure<F, coeffType>& LayerStructure<F, coeffType>::operator=(LayerStructure<F, coeffType> &&source){
+LayerStructure& LayerStructure::operator=(LayerStructure &&source){
 	// again, check for self-move
 	if(this!=&source){
 		release();
@@ -65,16 +60,14 @@ LayerStructure<F, coeffType>& LayerStructure<F, coeffType>::operator=(LayerStruc
 //---------------------------------------------------------------------------//
 
 // also free the layers upon destruction
-template <typename F, typename coeffType>
-LayerStructure<F, coeffType>::~LayerStructure(){
+LayerStructure::~LayerStructure(){
 	// use the release() function, which frees all memory of the layers
 	release();
 }
 
 //---------------------------------------------------------------------------//
 
-template <typename F, typename coeffType>
-void LayerStructure<F, coeffType>::release(){
+void LayerStructure::release(){
 	// deallocate all layers
 	for(size_t i{0};i<layers.size();++i){
 		delete layers[i];
@@ -84,8 +77,7 @@ void LayerStructure<F, coeffType>::release(){
 //---------------------------------------------------------------------------//
 
 // This is the body of copy construction/assignment
-template <typename F, typename coeffType>
-void LayerStructure<F, coeffType>::copyLayerStructure(LayerStructure<F, coeffType> const &source){
+void LayerStructure::copyLayerStructure(LayerStructure const &source){
 	layers.resize(source.layers.size());
 	for(size_t i{0}; i<layers.size();++i){
 		// the type is taken from the source via the virtual clone()
@@ -98,21 +90,18 @@ void LayerStructure<F, coeffType>::copyLayerStructure(LayerStructure<F, coeffTyp
 
 // add the different kinds of layers to the structure
 
-template <typename F, typename coeffType>
-void LayerStructure<F, coeffType>::addInputLayer(std::vector<Eigen::VectorXd> const &feedIns, int numStates){
+void LayerStructure::addInputLayer(std::vector<Eigen::VectorXd> const &feedIns, int numStates){
 	layers.push_back(new InputLayer(feedIns,numStates));
 }
 
 //---------------------------------------------------------------------------//
-template <typename F, typename coeffType>
-void LayerStructure<F, coeffType>::addDenseLayer(std::vector<T> const &input,
+void LayerStructure::addDenseLayer(std::vector<paraVector> const &input,
 		std::string const &actFunc, int size){
 	layers.push_back(new DenseLayer(input,actFunc,size));
 }
 
 //---------------------------------------------------------------------------//
-template <typename F, typename coeffType>
-void LayerStructure<F, coeffType>::addConvLayer(std::vector<T> const &inputs, std::string const &actFunc,
+void LayerStructure::addConvLayer(std::vector<paraVector> const &inputs, std::string const &actFunc,
 		int numFilters, int lengthFilter,int stride){
 	layers.push_back(new ConvLayer(inputs,actFunc,numFilters,lengthFilter,stride));
 }

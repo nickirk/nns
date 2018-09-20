@@ -15,55 +15,48 @@
 
 namespace networkVMC{
 
-template<typename F, typename coeffType>
-void Parametrization<F,coeffType>::writeParsToFile(std::string file) const{
-  T tmpPars = pars();
-  std::vector<F> parsStd(tmpPars.data(), tmpPars.data()+tmpPars.size());
+void Parametrization::writeParsToFile(std::string file) const{
+  paraVector tmpPars = pars();
+  std::vector<paraType> parsStd(tmpPars.data(), tmpPars.data()+tmpPars.size());
   std::ofstream fout(file);
   fout.precision(10);
   std::copy(parsStd.begin(), parsStd.end(),
-  std::ostream_iterator<F>(fout, "\n"));
+  std::ostream_iterator<paraType>(fout, "\n"));
   fout.close();
 };
 
 //---------------------------------------------------------------------------//
 
-template<typename F, typename coeffType>
-void Parametrization<F,coeffType>::readParsFromFile(std::string file){
+void Parametrization::readParsFromFile(std::string file){
    std::ifstream input(file);
    if (!input){
       throw errors::FileNotFound(file);
    }
 
-   T &innerPars = pars();
-   std::vector<F> buffer{
-     std::istream_iterator<F>(input),
-     std::istream_iterator<F>() };
+   paraVector &innerPars = pars();
+   std::vector<paraType> buffer{
+     std::istream_iterator<paraType>(input),
+     std::istream_iterator<paraType>() };
    assert (buffer.size() == pars().size());
-   innerPars = Eigen::Map<T> (buffer.data(),buffer.size());
+   innerPars = Eigen::Map<paraVector> (buffer.data(),buffer.size());
    //use the pars() with write access
  };
 
 //---------------------------------------------------------------------------//
 
-template<typename F, typename coeffType>
-typename Parametrization<F, coeffType>::T Parametrization<F,coeffType>::calcNablaParsConnected(
-  State<coeffType> const &inputState, Eigen::Matrix<F, Eigen::Dynamic ,1> const &dEdC){
-	return calcNabla(inputState, dEdC, F(), [this](detType const &det){return this->getDeriv(det);},
+paraVector Parametrization::calcNablaParsConnected(
+  State const &inputState, paraVector const &dEdC){
+	return calcNabla(inputState, dEdC, paraType(), [this](detType const &det){return this->getDeriv(det);},
 			PreFetched, getNumPars());
 }
 
 //---------------------------------------------------------------------------//
 
-template<typename F, typename coeffType>
-typename Parametrization<F, coeffType>::T Parametrization<F,coeffType>::calcNablaParsMarkovConnected(
-		State<coeffType> const &inputState, Eigen::Matrix<F, Eigen::Dynamic ,1> const& dEdC, F const& energy){
+paraVector Parametrization::calcNablaParsMarkovConnected(
+		State const &inputState, paraVector const& dEdC, paraType const& energy){
 	return calcNabla(inputState, dEdC, energy, [this](detType const &det){return this->getMarkovDeriv(det);},
 			Markov, getNumPars());
 }
-
-template class Parametrization<double, double>;
-template class Parametrization<cType, cType>;
 
 }
 

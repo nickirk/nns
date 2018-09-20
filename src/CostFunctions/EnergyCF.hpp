@@ -21,26 +21,21 @@ class Hamiltonian;
 /**
  * \class EnergyCF
  * \brief This CostFunction uses the energy expecation value
- * \tparam F Type of the parameters to optimize
- * \tparam coeffType Type of the vector coefficients of the input vector
  * The function implemented here is the energy expectation value of a supplied Hamiltonian
  */
 
-template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
-class EnergyCF: public EnergyCFBaseClass<F, coeffType>{
+class EnergyCF: public EnergyCFBaseClass{
   public:
-	/// Type of the derivative
-	using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
 	/**
 	 * \param[in] H_ Hamiltonian defining the energy functional
 	 */
-	explicit EnergyCF(Hamiltonian const &H_):EnergyCFBaseClass<F, coeffType>(H_){};
+	explicit EnergyCF(Hamiltonian const &H_):EnergyCFBaseClass(H_){};
 	virtual ~EnergyCF(){};
 // implementation of the function itself and its derivative
-	virtual T nabla(State<coeffType> const &input) const;
+	virtual paraVector nabla(State const &input) const;
 
 	// Allow for polymorphic copy
-	virtual EnergyCF<F, coeffType>* clone() const {return new EnergyCF<F, coeffType>(*this);}
+	virtual EnergyCF* clone() const {return new EnergyCF(*this);}
 private:
 	/**
 	 * \brief Compute the energy expectation value and cache it
@@ -48,10 +43,7 @@ private:
 	 * \param[in] input Vector represented by a State object
 	 * \return Expectation value of the energy
 	 */
-	coeffType evaluate(State<coeffType> const &input) const;
-	using EnergyCFBaseClass<F, coeffType>::H;
-	using EnergyCFBaseClass<F, coeffType>::energy;
-	using EnergyCFBaseClass<F, coeffType>::normalizerCoeff;
+	coeffType evaluate(State const &input) const;
 };
 
 }

@@ -21,8 +21,7 @@ namespace networkVMC{
 
 // Try to match the neural network to a given input determinant
 
-template <typename F=std::complex<double>>
-void preTrain(Parametrization<F> &network, State const &target, Sampler const &msampler, double trainRate){
+void preTrain(Parametrization &network, State const &target, Sampler const &msampler, double trainRate){
 // Trains the network to represent some state target
 // Then, set the cost function to the L2-distance to target
 	NormCF stateDistance(target);
@@ -32,9 +31,9 @@ void preTrain(Parametrization<F> &network, State const &target, Sampler const &m
 // Caveat: All determinants not present in the state do not matter
 // i.e. their coefficients are treated as unknown
 	//std::vector<detType > list = target.getDets();
-	ADAM<F> sl(trainRate);
+	ADAM sl(trainRate);
 	// set up the trainer
-	Trainer<F> ev(network,msampler,sl,stateDistance,dummy);
+	Trainer ev(network,msampler,sl,stateDistance,dummy);
     // Train the network
 	int const maxTrainCount = 1000;
 	for(int i = 0; i < maxTrainCount;++i){

@@ -9,38 +9,34 @@
 #include "../HilbertSpace/Basis.hpp"
 #include "../Network/Parametrization.hpp"
 #include "../utilities/Errors.hpp"
+#include "../utilities/RNGWrapper.hpp"
 
 namespace networkVMC{
 
-template <typename F, typename coeffType>
-ListGen<F, coeffType>::ListGen(ExcitationGenerator const &eG_, Basis const &fullBasis_, detType const &HF,
-		Parametrization<F, coeffType> const &para_, int numDets_):
-	Sampler<coeffType>(eG_,numDets_),para(&para_),pos(0),fullBasis(&fullBasis_){
+ListGen::ListGen(ExcitationGenerator const &eG_, Basis const &fullBasis_, detType const &HF,
+		Parametrization const &para_, int numDets_):
+	Sampler(eG_,numDets_),para(&para_),pos(0),fullBasis(&fullBasis_){
 	std::vector<detType> tmp(numDets_,HF);
 	diffuse(tmp);
 }
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename F, typename coeffType>
-ListGen<F, coeffType>::ListGen(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
-		Parametrization<F, coeffType> const &para_, int numDets_):
-	Sampler<coeffType>(H_,HF,numDets_),para(&para_),pos(0),fullBasis(&fullBasis_){
+ListGen::ListGen(Hamiltonian const &H_, Basis const &fullBasis_, detType const &HF,
+		Parametrization const &para_, int numDets_):
+	Sampler(H_,HF,numDets_),para(&para_),pos(0),fullBasis(&fullBasis_){
 	std::vector<detType> tmp(numDets_,HF);
 	diffuse(tmp);
 }
 
 //---------------------------------------------------------------------------------------------------//
 
-
-template <typename F, typename coeffType>
-ListGen<F, coeffType>::~ListGen() {
+ListGen::~ListGen() {
 }
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename F, typename coeffType>
-void ListGen<F, coeffType>::iterate(coeffType &cI, detType &dI, double& weight, int i){
+void ListGen::iterate(coeffType &cI, detType &dI, double& weight, int i){
 	// Fetch the next entry from the pre-arranged list
 	dI = getDet(i);
 	// Get its coefficient
@@ -49,8 +45,7 @@ void ListGen<F, coeffType>::iterate(coeffType &cI, detType &dI, double& weight, 
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename F, typename coeffType>
-detType ListGen<F, coeffType>::getDet(int i) const{
+detType ListGen::getDet(int i) const{
   if(i < diffuseList.size() && i >= 0){
     return diffuseList[i];
   }
@@ -67,13 +62,11 @@ detType ListGen<F, coeffType>::getDet(int i) const{
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename F, typename coeffType>
-int ListGen<F, coeffType>::getNumDets() const{return diffuseList.size();}
+int ListGen::getNumDets() const{return diffuseList.size();}
 
 //---------------------------------------------------------------------------------------------------//
 
-template <typename F, typename coeffType>
-void ListGen<F, coeffType>::diffuse(std::vector<detType> &list) const{
+void ListGen::diffuse(std::vector<detType> &list) const{
  list=diffuseList;
  detType buf;
  while (list.size() < static_cast<unsigned int>(numDets)){
@@ -84,14 +77,12 @@ void ListGen<F, coeffType>::diffuse(std::vector<detType> &list) const{
  coeffType c_j = coeffType();
  double prandom = 0.0;
  double pEx = 0.0;
- std::random_device rd;     // only used once to initialise (seed) engine
- std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
- std::uniform_real_distribution<double> uni;		// Uniform distribution from 0.0 to 1.0
+ RNGWrapper rng;
 
  for (size_t i = 0; i<list.size(); ++i){
-  prandom = uni(rng);
+  prandom = rng();
    c_i=para->getCoeff(list[i]);
-   buf = Sampler<coeffType>::getRandomConnection(list[i],pEx);
+   buf = Sampler::getRandomConnection(list[i],pEx);
    //buf = getRandomDeterminant(spinConfig);
    c_j=para->getCoeff(buf);
    //getRandomCoupledState(buf,probUnbias);
@@ -103,10 +94,4 @@ void ListGen<F, coeffType>::diffuse(std::vector<detType> &list) const{
  diffuseList = list;
 }
 
-
-//---------------------------------------------------------------------------//
-//instantiate class
-template class ListGen<double, double>;
-;
-template class ListGen<std::complex<double>, std::complex<double>>;
 }

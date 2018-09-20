@@ -10,21 +10,18 @@
 
 namespace networkVMC {
 
-template <typename F, typename coeffType>
-typename DirectParametrization<F, coeffType>::T DirectParametrization<F, coeffType>::getDeriv(detType const &det) const {
-  T dCdW=T::Zero(coeffs.size()); 
-  dCdW(fullBasis->getIndexByDet(det))=F(1.0);
+paraVector DirectParametrization::getDeriv(detType const &det) const {
+  paraVector dCdW=paraVector::Zero(coeffs.size()); 
+  dCdW(fullBasis->getIndexByDet(det))=paraType(1.0);
   return dCdW;
 }
 
-template <typename F, typename coeffType>
-typename DirectParametrization<F, coeffType>::T DirectParametrization<F, coeffType>::getMarkovDeriv(detType const &det) const {
-  T dCdW=T::Zero(coeffs.size()); 
+//---------------------------------------------------------------------------//
+
+paraVector DirectParametrization::getMarkovDeriv(detType const &det) const {
+  paraVector dCdW=paraVector::Zero(coeffs.size()); 
   dCdW(fullBasis->getIndexByDet(det))=1./coeffs[fullBasis->getIndexByDet(det)];
   return dCdW;
 }
-//---------------------------------------------------------------------------//
-//instantiate class
-template class DirectParametrization<double, double>;
-template class DirectParametrization<std::complex<double>, std::complex<double>>;
+
 } /* namespace networkVMC */

@@ -9,23 +9,20 @@
 
 namespace networkVMC{
 
-template <typename F, typename coeffType>
-UmbrellaSampler<F, coeffType>::UmbrellaSampler(ExcitationGenerator const &eG_, detType const &HF,
-			    Basis const &fullBasis_, TrialWfPara<F, coeffType> const &para_,
-                int numDets_):Sampler<coeffType>(eG_,numDets_),cDet(HF),
+UmbrellaSampler::UmbrellaSampler(ExcitationGenerator const &eG_, detType const &HF,
+			    Basis const &fullBasis_, TrialWfPara const &para_,
+                int numDets_):Sampler(eG_,numDets_),cDet(HF),
 				internalSampler(eG_, HF, fullBasis_, para_.base(), numDets_),para(&para_){};
 
-template <typename F, typename coeffType>
-UmbrellaSampler<F, coeffType>::UmbrellaSampler(Hamiltonian const &H_, detType const &HF,
-                Basis const &fullBasis_,TrialWfPara<F, coeffType> const &para_,
-                int numDets_ ):Sampler<coeffType>(H_, HF, numDets_),cDet(HF),
+UmbrellaSampler::UmbrellaSampler(Hamiltonian const &H_, detType const &HF,
+                Basis const &fullBasis_,TrialWfPara const &para_,
+                int numDets_ ):Sampler(H_, HF, numDets_),cDet(HF),
 				internalSampler(H_,HF, fullBasis_, para_.base(), numDets_),
 				para(&para_){};
 
 //---------------------------------------------------------------------------//
 
-template<typename F, typename coeffType>
-void UmbrellaSampler<F,coeffType>::iterate(coeffType &cI, detType &dI, double &weight,
+void UmbrellaSampler::iterate(coeffType &cI, detType &dI, double &weight,
 	    int i){
 	internalSampler.iterate(cI,dI,weight,i);
 	auto tI= para->getTrialCoeff(dI);
@@ -33,8 +30,5 @@ void UmbrellaSampler<F,coeffType>::iterate(coeffType &cI, detType &dI, double &w
 	weight *= std::norm(tI);
 }
 
-// instantiate it
-template class UmbrellaSampler<double, double>;
-template class UmbrellaSampler<std::complex<double>, std::complex<double>>;
 
 }

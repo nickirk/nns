@@ -9,29 +9,28 @@
 #define SRC_SAMPLERS_FULLSAMPLER_HPP_
 
 #include "Sampler.hpp"
-#include "../Network/ParametrizationForward.hpp"
 
 namespace networkVMC {
 
+class Parametrization;
 // This sampler does not sample: It loops over all determinants
 // and returns them one-by-one
-template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
-class FullSampler: public Sampler<coeffType> {
+class FullSampler: public Sampler {
   public:
 	FullSampler(ExcitationGenerator const &eG_, Basis const &fullBasis_,
-			Parametrization<F, coeffType> const &para_);
+			Parametrization const &para_);
 	FullSampler(Hamiltonian const &H_, Basis const &fullBasis_,
-			Parametrization<F, coeffType> const &para_);
+			Parametrization const &para_);
 	void iterate(coeffType &cI, detType &dI, double& weight, int i);
 	// create a dynamic polymorphic copy
-	virtual FullSampler* clone() const {return new FullSampler<F, coeffType>(*this);}
+	virtual FullSampler* clone() const {return new FullSampler(*this);}
 	virtual ~FullSampler();
 private:
 	int pos;
   // sampling depends on the coefficients, as they have to be given alongside the determinants
-    Parametrization<F, coeffType> const *para;
+    Parametrization const *para;
     Basis const *fullBasis;
-    using Sampler<coeffType>::numDets;
+    using Sampler::numDets;
 };
 
 } /* namespace networkVMC */

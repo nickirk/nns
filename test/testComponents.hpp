@@ -23,31 +23,14 @@ void testAdj(networkVMC::LatticeHamiltonian const &test);
 void testBasis(networkVMC::Basis const &basis);
 
 
-// use ADAM to solve
-template<typename F, typename coeffType>
-void solveEs(networkVMC::Parametrization<F, coeffType> &para, networkVMC::Sampler<coeffType> &msampler,
-		networkVMC::Hamiltonian const &H, networkVMC::Solver<F, coeffType> &solver){
-	networkVMC::EnergyEs<F, coeffType> eCF(H,-1);
-	networkVMC::Trainer<F, coeffType> etr(para,msampler,solver,eCF,H);
-	for(int i = 1; i < 4000; ++i){
-		etr.train();
-		std::cout << "On iteration " << i << std::endl;
-		std::cout << "Current energy: " << etr.getE()<<std::endl;
-	}
-}
+// use ES to solve (then uses ADAM)
+void solveEs(networkVMC::Parametrization &para, networkVMC::Sampler &msampler,
+		networkVMC::Hamiltonian const &H, networkVMC::Solver &solver);
 
-template<typename F, typename coeffType>
-void solveADAM(networkVMC::Parametrization<F, coeffType> &para, networkVMC::Sampler<coeffType> &msampler,
-		networkVMC::Hamiltonian const &H){
-	networkVMC::ADAM<F, coeffType> solver(0.01);
-    solveEs(para,msampler,H,solver);
-}
+void solveADAM(networkVMC::Parametrization &para, networkVMC::Sampler &msampler,
+		networkVMC::Hamiltonian const &H);
 
-template<typename F, typename coeffType>
-void solveSRec(networkVMC::Parametrization<F, coeffType> &para, networkVMC::Sampler<coeffType> &msampler, networkVMC::Hamiltonian const &H){
-	networkVMC::StochasticReconfiguration<F, coeffType> solver(para,0.01);
-	solveEs(para,msampler,H,solver);
-}
+void solveSRec(networkVMC::Parametrization &para, networkVMC::Sampler &msampler, networkVMC::Hamiltonian const &H);
 
 
 

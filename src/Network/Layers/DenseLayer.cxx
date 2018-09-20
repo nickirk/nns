@@ -11,8 +11,7 @@
 
 namespace networkVMC{
 
-template <typename F, typename coeffType>
-DenseLayer<F, coeffType>::DenseLayer(std::vector<T> const &inputs_,
+DenseLayer::DenseLayer(std::vector<T> const &inputs_,
     std::string actFunc_, int size_):
   Layer(inputs_, actFunc_), numNrn(size_){
   z.resize(1,T::Zero(numNrn));
@@ -21,12 +20,10 @@ DenseLayer<F, coeffType>::DenseLayer(std::vector<T> const &inputs_,
   numPara = numNrn*inputs[0].size()*inputs.size()+numNrn;
 }
 
-template <typename F, typename coeffType>
-DenseLayer<F, coeffType>::~DenseLayer(){
+DenseLayer::~DenseLayer(){
 }
 
-template <typename F, typename coeffType>
-void DenseLayer<F, coeffType>::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
+void DenseLayer::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
   std::vector<Eigen::Map<Eigen::MatrixXd>> weightsTmp;
   std::vector<Eigen::Map<Eigen::MatrixXd>> NablaWeightsTmp;
   for(size_t i(0); i<inputs.size(); i++){
@@ -51,8 +48,7 @@ void DenseLayer<F, coeffType>::mapPara(double *adNNP, double *adNablaNNP, int &s
   startPoint+=numNrn;
 }
 
-template <typename F, typename coeffType>
-void DenseLayer<F, coeffType>::processSignal() const{
+void DenseLayer::processSignal() const{
   // we can only process signals with the right number of input arguments
   if(inputs.size()!=weights[0].size()) throw errors::SizeMismatchError(inputs.size(),weights[0].size());
   activations[0]=T::Zero(numNrn);
@@ -66,8 +62,7 @@ void DenseLayer<F, coeffType>::processSignal() const{
 }
 
 
-template <typename F, typename coeffType>
-void DenseLayer<F, coeffType>::backProp(std::vector<T> const &prevDelta,
+void DenseLayer::backProp(std::vector<T> const &prevDelta,
     weightType const &prevWeights){
     deltas[0] = prevWeights[0][0].transpose() * prevDelta[0];
     deltas[0] = deltas[0].array()* (z[0].unaryExpr(actFuncPrime)).array();
@@ -79,8 +74,7 @@ void DenseLayer<F, coeffType>::backProp(std::vector<T> const &prevDelta,
       nablaWeights[0][i] = deltas[0] * inputs[i].transpose();
 }
 
-template <typename F, typename coeffType>
-void DenseLayer<F, coeffType>::backProp(
+void DenseLayer::backProp(
     coeffType const &prevDelta_
     ){
 	//conversion from coeffType to VectorXd

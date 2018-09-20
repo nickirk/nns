@@ -12,8 +12,7 @@
 namespace networkVMC{
 
 
-template <typename F, typename coeffType>
-ConvLayer<F, coeffType>::ConvLayer(
+ConvLayer::ConvLayer(
           std::vector<T> const &inputs_,
           std::string actFunc_, 
           int numFilters_,
@@ -34,13 +33,11 @@ ConvLayer<F, coeffType>::ConvLayer(
   numPara = depthFilter*lengthFilter*numFilters+numFilters;
 }
 
-template <typename F, typename coeffType>
-ConvLayer<F, coeffType>::~ConvLayer(){
+ConvLayer::~ConvLayer(){
 
 }
 
-template <typename F, typename coeffType>
-void ConvLayer<F, coeffType>::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
+void ConvLayer::mapPara(double *adNNP, double *adNablaNNP, int &startPoint){
   //remember that filters always extend the full depth of the input volume
   //in our case, a filter consists of several 2 dimensional matrix, i.e. 
   //std::vecotr<Eigen::MatrixXd> (we restrict ourselves for now to one D 
@@ -71,8 +68,7 @@ void ConvLayer<F, coeffType>::mapPara(double *adNNP, double *adNablaNNP, int &st
   }
 }
 
-template <typename F, typename coeffType>
-void ConvLayer<F, coeffType>::processSignal() const{
+void ConvLayer::processSignal() const{
   //need to determine the output size. 
   //calculate the output vector size, 
   //(N_in-lengthFilter)/stride+1;
@@ -105,8 +101,7 @@ void ConvLayer<F, coeffType>::processSignal() const{
   } 
 }
 
-template <typename F, typename coeffType>
-void ConvLayer<F, coeffType>::backProp(
+void ConvLayer::backProp(
     std::vector<T> const &prevDelta,
     weightType const &prevWeights
     ){

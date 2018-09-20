@@ -18,16 +18,14 @@
 namespace networkVMC{
 
 // explicit constructor
-template <typename coeffType>
-Sampler<coeffType>::Sampler(ExcitationGenerator const &eG_, int numDets_):
+Sampler::Sampler(ExcitationGenerator const &eG_, int numDets_):
 	  excitGen(eG_.clone()),
 	  numDets(numDets_){};
 
 //---------------------------------------------------------------------------//
 
 // construct the ExcitationGenerator implicitly from the Hamiltonian
-template <typename coeffType>
-Sampler<coeffType>::Sampler(Hamiltonian const &H_,
+Sampler::Sampler(Hamiltonian const &H_,
 		  detType const &HF_, int numDets_):
 			  excitGen(getDefaultExcitgen(H_,HF_).release()),
 			  numDets(numDets_){};
@@ -35,20 +33,14 @@ Sampler<coeffType>::Sampler(Hamiltonian const &H_,
 //---------------------------------------------------------------------------//
 
 // Just take any connected determinant and let the Excitation generator decide what is connected
-template <typename coeffType>
-detType Sampler<coeffType>::getRandomConnection(detType const &startingPoint, double &p) const{
+detType Sampler::getRandomConnection(detType const &startingPoint, double &p) const{
 	return excitGen->generateExcitation(startingPoint, p);
 }
 
 //---------------------------------------------------------------------------//
 
-template <typename coeffType>
-double Sampler<coeffType>::getConnectionProb(detType const &source, detType const &target) const{
+double Sampler::getConnectionProb(detType const &source, detType const &target) const{
 	return excitGen->getExcitationProb(source,target);
 }
-
-//instantiate them
-template class Sampler<double>;
-template class Sampler<std::complex<double>>;
 
 }

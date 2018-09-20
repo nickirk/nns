@@ -24,11 +24,8 @@ class Hamiltonian;
  * evaluate them during calls of nabla(), such that calc() comes at no extra cost
  *
 */
-template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
-class EnergyCFBaseClass: public CostFunction<F, coeffType> {
+class EnergyCFBaseClass: public CostFunction{
   public:
-	/// Type of the derivative
-	using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
 	/**
 	 * \param[in] H_ Hamiltonian used for obtaining the energy
 	 */
@@ -37,7 +34,7 @@ class EnergyCFBaseClass: public CostFunction<F, coeffType> {
 	virtual ~EnergyCFBaseClass(){};
 
 	// these are the same in all EnergyEs cost functions
-	virtual coeffType calc(State<coeffType> const &input) const {return energy;};
+	virtual coeffType calc(State const &input) const {return energy;};
 	/**
 	 * \brief Auxiliary function to get the norm
 	 * \return The norm of the last input state
@@ -46,7 +43,7 @@ class EnergyCFBaseClass: public CostFunction<F, coeffType> {
 
 	// The EnergyEs base class is still abstract, as the rules of how to
 	// get the energy & nabla are to be specified
-	virtual T nabla(State<coeffType> const &input) const = 0;
+	virtual paraVector nabla(State const &input) const = 0;
 
 	virtual EnergyCFBaseClass *clone() const = 0;
 protected:

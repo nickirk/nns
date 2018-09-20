@@ -11,17 +11,16 @@
 #include "Solver.hpp"
 
 namespace networkVMC {
-template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
-class StochasticGradientDescent: public Solver<F, coeffType> {
+class StochasticGradientDescent: public Solver {
 public:
-  using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
-  StochasticGradientDescent(double gamma_):Solver<F, coeffType>(gamma_){};
+  using T=Eigen::Matrix<paraType, Eigen::Dynamic, 1>;
+  StochasticGradientDescent(double gamma_):Solver(gamma_){};
   virtual ~StochasticGradientDescent(){};
   // gradient descent update scheme
   virtual void update(T  &w, T const &force,
-		  State<coeffType> const &input, SamplerType const &samplerType=Markov){
+		  State const &input, SamplerType const &samplerType=Markov){
   // just walk along the gradient with some stepsize gamma
-	  w-=Solver<F>::learningRate*force;
+	  w-=Solver::learningRate*force;
   }
 };
 

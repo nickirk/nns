@@ -32,7 +32,7 @@ int main(){
   Basis basis(spinConfig,modelHam);
   std::cout << "basis size=" << basis.size() << std::endl;
   //RBM<std::complex<double>, std::complex<double>> rbm(numStates, numHidden);
-  DirectParametrization<std::complex<double>> rbm(basis);
+  DirectParametrization rbm(basis);
 
   std::cout << "Initial vals of par=" << std::endl;
   std::cout << rbm.pars() << std::endl;
@@ -44,18 +44,18 @@ int main(){
 
   //LatticeExcitgen RSHG(modelHam);
   //WeightedExcitgen RSHG(modelHam,HF);
-  MetropolisSampler<std::complex<double>,std::complex<double>> sampler(RSHG, HF,basis, rbm);
-  //ListGen<std::complex<double>> sampler(RSHG, basis, HF,rbm,100);
+  MetropolisSampler sampler(RSHG, HF,basis, rbm);
+  //ListGen sampler(RSHG, basis, HF,rbm,100);
   sampler.setNumDets(500);
-  //FullSampler<std::complex<double>> sampler(modelHam, basis, rbm);
+  //FullSampler sampler(modelHam, basis, rbm);
 
-  EnergyEs<std::complex<double>,std::complex<double>> eCF(modelHam,-1);
+  EnergyEs eCF(modelHam,-1);
   //Setup the trainer
   std::complex<double> energy{0.0};
-  //AcceleratedGradientDescent<std::complex<double>> sl(trainRate);
-  //ADAM<std::complex<double>, std::complex<double>> sl(trainRate);
-  StochasticReconfiguration<std::complex<double>> sl(rbm,trainRate);
-  Trainer<std::complex<double>, std::complex<double>> ev(rbm, sampler, sl, eCF,modelHam);
+  //AcceleratedGradientDescent sl(trainRate);
+  //ADAM sl(trainRate);
+  StochasticReconfiguration sl(rbm,trainRate);
+  Trainer ev(rbm, sampler, sl, eCF,modelHam);
   ofstream myfile1;
   myfile1.open ("en");
   //std::cout << "reading rbm pars from file..." << std::endl;

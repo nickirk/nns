@@ -12,14 +12,12 @@
 
 namespace networkVMC {
 
-template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
-class ADAM: public Solver<F, coeffType> {
+class ADAM: public Solver {
 public:
-  using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
   ADAM(double learningRate);
   virtual ~ADAM();
   // implementation of the update method
-  void update(T &w, T const &force, State<coeffType> const &input, SamplerType
+  void update(paraVector &w, paraVector const &force, State const &input, SamplerType
       const &samplerType=Markov);
 private:
   // number of parameters to be optimized
@@ -29,7 +27,7 @@ private:
   int iteration;
 
   // some internal ADAM parameters
-  T m,m1,v,v1;
+  paraVector m,m1,v,v1;
   double beta1, beta2;
 };
 

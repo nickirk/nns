@@ -10,26 +10,27 @@
 
 #include "Solver.hpp"
 #include "ADAM.hpp"
-#include "../Network/ParametrizationForward.hpp"
+#include "../utilities/MatrixTypeDefine.hpp"
 
 namespace networkVMC {
-template <typename F=std::complex<double>, typename coeffType=std::complex<double>>
-class StochasticReconfiguration: public Solver<F, coeffType> {
+
+class Parametrization;
+
+class StochasticReconfiguration: public Solver {
 public:
-  using T=Eigen::Matrix<F, Eigen::Dynamic, 1>;
-  StochasticReconfiguration(Parametrization<F, coeffType> &NNW_, double gamma_):
-	  Solver<F, coeffType>(gamma_),NNW(NNW_),iteration(0),internalSolver(gamma_) {};
+  StochasticReconfiguration(Parametrization &NNW_, double gamma_):
+	  Solver(gamma_),NNW(NNW_),iteration(0),internalSolver(gamma_) {};
   virtual ~StochasticReconfiguration();
 
-  virtual void update(T &w, T const &force, State<coeffType> const &input, SamplerType
+  virtual void update(paraVector &w, paraVector const &force, State const &input, SamplerType
       const &samplerType=Markov);
 private:
   // need the parametrisation to get derivatives in order to construct  the 
   // S matrix
-  Parametrization<F, coeffType> &NNW;
+  Parametrization &NNW;
   // and an iteration counter
   int iteration;
-  ADAM<F, coeffType> internalSolver;
+  ADAM internalSolver;
 };
 
 } /* namespace networkVMC */
