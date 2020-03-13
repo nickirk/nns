@@ -2,7 +2,7 @@
 
 1. Exploring the possibility to use neural network to represent wavefunction and compute ground state energy in ab-initio systems;
 2. Targeting strongly correlated systems (static correlations)
-3. Exploring sampling scheme similar to DMC.
+3. Exploring different sampling schemes.
 
 ## Methods
 
@@ -62,15 +62,6 @@ where
 6. Going back to 1 and repeat the steps for $`M (t=0,1,2,...,M)`$ times (or until $`\delta_i^{(t)}<\epsilon`$ where $`\epsilon`$ is the tolerance). Or simple the energy converges.
 
 
-## Naming of Variables
-
-This is borrowed from CC4S code to make sure that when different contributors contribute, we can stay in more or less the same style.
-- Class names are in CamelCase, starting with an upper case character. They should have noun character. (AmplitudeSolver, Algorithm, not Solve),
-- Derived classes should end with the name of the super class, unless it is kind of obvious (BinaryFtodLoader)
-- Methods are in camelCase, starting with a lower case character. They should have verb character. (solve, normalize, not loader)
-- Instances of classes and types are named in camelCase, preferably according to the class name they are an instance of. (Parser parser, int maxIterations)
-- Mathematical objects, such as numbers and tensors, may additionally be named according to the  ematical symbol nomenclature (int n, Tensor<> Vabij).
-- Acronyms should be treated as a normal word. (FtodLoader, not FTODLoader)
 
 ## Doing test
 
