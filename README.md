@@ -22,13 +22,15 @@ for the seed and its connection from the neural network. Decide to move to
 2. Store all the coefficents for each determiant obtained from last step and the inputs and activations of each neuron for each dterminant. (This will be the memory bottle neck).
 
 3. Calculating
+   
 ```math
-E(\{W_i\})^{(t)}=\frac{<\Psi^{(t)}|H|\Psi^{(t)}>}{<\Psi^{(t)}|\Psi^{(t)}>}=\frac{\sum_{i}^N\sum_{j'}C_i^*C_j<i|H|j>}{\sum_i|C_i|^2}
-=\left<C_jH_{ij}/C_i^*\right>_M
+E(\{W_i\})^{(t)}=\frac{<\Psi^{(t)}|H|\Psi^{(t)}>}{<\Psi^{(t)}|\Psi^{(t)}>}=\frac{\sum_{ij'}C_i^*C_j<i|H|j>}{\sum_i|C_i|^2}
+=<C_jH_{ij}/C_i^*>_M
 ```
+
 where the prime on the $`j`$ index means sum over the determinants which are connected to each $`i`$ determinant in the list. In the futuer, we should move to a stochastic version to sum over the connected determinants. In the last step, we adopt the Metropolis sampling and calculate the expectation value via the average of a Markov chain process.
 
-4. The derivatives
+5. The derivatives
 
 ```math
 \delta_i^{(t)}=\frac{\partial E}{\partial W_i^{(t)}}
